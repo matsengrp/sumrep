@@ -1,21 +1,23 @@
 library(alakazam)
+library(dplyr)
+library(RecordLinkage)
 library(shazam)
+library(stringdist)
 library(textmineR)
 
-compare.pairwise.distance.distribution <- function(list.a, list.b) {
-    distance.matrix.a <- pairwiseDist(list.a)
-    distance.vector.a <- as.vector(distance.matrix.a[lower.tri(distance.matrix.a)])
-    distance.matrix.b <- pairwiseDist(list.b)
-    distance.vector.b <- as.vector(distance.matrix.b[lower.tri(distance.matrix.b)])
-    divergence <- CalcJSDivergence(distance.vector.a, distance.vector.b)
+get.distance.vector <- function(distance.matrix) {
+    vec <- distance.matrix[distance.matrix %>% lower.tri] %>% as.vector
+    return(vec)
 }
 
-sequence.1 <- c(A="ATGGC", B="ATGGG", C="ATGGG", D="AT--C")
-sequence.2 <- c(A="TTGGC", B="ATGGG", C="ATGGG", D="ATGAC")
+compare.pairwise.distance.distribution <- function(list.a, list.b) {
+    distance.vector.a <- stringdistmatrix(list.a) %>% as.matrix %>% get.distance.vector
+    distance.vector.b <- stringdistmatrix(list.b) %>% as.matrix %>% get.distance.vector
+    divergence <- CalcJSDivergence(distance.vector.a, distance.vector.b)
+    return(divergence)
+}
 
-sequence.3 <- c(A="CGAAC", B="GGAAT", C="TACCC", D="ATAGC")
+compare.NN.distance.distribution <- function(list.a, list.b) {
+     
+}
 
-c1 <- compare.pairwise.distance.distribution(sequence.1, sequence.2)
-c2 <- compare.pairwise.distance.distribution(sequence.1, sequence.3)
-
-cat(c1, c2, '\n')
