@@ -5,9 +5,19 @@ library(shazam)
 library(stringdist)
 library(textmineR)
 
+get.JS.divergence <- function(l1, l2) {
+    p <- l1/(l1 %>% sum)
+    q <- l2/(l2 %>% sum)
+    m <- (p + q)/2
+    KL.div.1 <- (p*log(p/m)) %>% sum
+    KL.div.2 <- (q*log(q/m)) %>% sum
+    divergence <- (KL.div.1 + KL.div.2)/2
+    return(divergence)
+}
+
 get.distance.matrix <- function(sequence.list) {
-    distance.matrix <- sequence.list %>% stringdistmatrix %>% as.matrix
-    return(distance.matrix)
+    mat <- sequence.list %>% stringdistmatrix %>% as.matrix
+    return(mat)
 }
 
 get.distance.vector <- function(sequence.list) {
