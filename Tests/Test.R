@@ -6,9 +6,10 @@ db <- read.csv("Data/test_data.csv")
 seqs <- db$SEQUENCE_VDJ %>% sapply(toString)
 
 seq.1 <- c(A="AT", B="AT")
-seq.2 <- c(A="AA", B="A")
-seq.3 <- c(A="", B="CGTA")
+seq.2 <- c(A="AA", B="AC")
+seq.3 <- c(A="", B="C-TA")
 seq.4 <- c(A="", B="")
+seq.5 <- c("AAA", "AAT", "TTT")
 
 apply.row.column.names <- function(m) {
     y <- m
@@ -35,4 +36,12 @@ test.get.distance.matrix <- function() {
 
     m4 <- matrix(0, 2, 2) %>% apply.row.column.names
     checkEquals(get.distance.matrix(seq.4), m4)
+}
+
+test.get.nearest.neighbor.distances <- function() {
+    d1 <- c(0, 0)
+    checkEquals(get.nearest.neighbor.distances(seq.1), d1)
+
+    d2 <- c(1, 1, 2)    
+    checkEquals(get.nearest.neighbor.distances(seq.5) %>% sort, d2)
 }

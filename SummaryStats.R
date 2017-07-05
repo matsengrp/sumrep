@@ -38,7 +38,7 @@ get.nearest.neighbor.distances <- function(sequence.list) {
     n <- sequence.list %>% length
     distances <- rep(NA, n)
     for(i in 1:n) {
-        distances[i] <- mat[i, which.min(mat[i, -i])]
+        distances[i] <- min(mat[i, -i]) 
     }
     return(distances)
 }
