@@ -1,4 +1,5 @@
 library(alakazam)
+library(ape)
 library(dplyr)
 library(RecordLinkage)
 library(shazam)
@@ -48,5 +49,10 @@ compare.NN.distance.distribution <- function(list.a, list.b) {
     distances.b <- get.nearest.neighbor.distances(list.b)
     divergence <- CalcJSDivergence(distances.a, distances.b)
     return(divergence)
+}
+
+get.GC.distribution <- function(sequence.list) {
+    dna.list <- sequence.list %>% strsplit(split='') %>% lapply(as.DNAbin)
+    return(sapply(dna.list, GC.content))
 }
 

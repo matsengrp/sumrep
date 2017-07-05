@@ -10,6 +10,7 @@ seq.2 <- c(A="AA", B="AC")
 seq.3 <- c(A="", B="C-TA")
 seq.4 <- c(A="", B="")
 seq.5 <- c("AAA", "AAT", "TTT")
+seq.6 <- c("A-T-", "GCAC", "CGGC", "ACGT")
 
 apply.row.column.names <- function(m) {
     y <- m
@@ -44,4 +45,12 @@ test.get.nearest.neighbor.distances <- function() {
 
     d2 <- c(1, 1, 2)    
     checkEquals(get.nearest.neighbor.distances(seq.5) %>% sort, d2)
+}
+
+test.get.GC.distribution <- function() {
+    d1 <- rep(0, 3)
+    checkEquals(get.GC.distribution(seq.5), d1)
+
+    d2 <- c(0, 0.75, 1.0, 0.5)
+    checkEquals(get.GC.distribution(seq.6), d2)
 }
