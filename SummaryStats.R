@@ -1,12 +1,13 @@
 library(alakazam)
 library(ape)
 library(dplyr)
+library(flexmix)
 library(RecordLinkage)
 library(shazam)
 library(stringdist)
 library(textmineR)
 
-get.JS.divergence <- function(l1, l2) {
+get.JS.divergence <- function(l1, l2, continuous=FALSE) {
     p <- l1/(l1 %>% sum)
     q <- l2/(l2 %>% sum)
     m <- (p + q)/2
@@ -17,7 +18,9 @@ get.JS.divergence <- function(l1, l2) {
 }
 
 get.distance.matrix <- function(sequence.list) {
-    mat <- sequence.list %>% stringdistmatrix %>% as.matrix
+    length.count <- sequence.list %>% sapply(nchar) %>% table %>% length 
+    comparison.method <- ifelse(length.count > 1, "lv", "hamming")
+    mat <- sequence.list %>% stringdistmatrix(method=comparison.method) %>% as.matrix
     return(mat)
 }
 
@@ -37,12 +40,12 @@ compare.pairwise.distance.distribution <- function(list.a, list.b) {
     return(divergence)
 }
 
-get.nearest.neighbor.distances <- function(sequence.list) {
+get.nearest.neighbor.distances <- function(sequence.list, k=1) {
     mat <- sequence.list %>% get.distance.matrix
     n <- sequence.list %>% length
     distances <- rep(NA, n)
     for(i in 1:n) {
-        distances[i] <- min(mat[i, -i]) 
+        distances[i] <- sort(mat[i, -i], partial=k)[k]
     }
     return(distances)
 }

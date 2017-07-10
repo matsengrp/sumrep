@@ -46,6 +46,10 @@ test.get.nearest.neighbor.distances <- function() {
 
     d2 <- c(1, 1, 2)    
     checkEquals(get.nearest.neighbor.distances(seq.5) %>% sort, d2)
+
+    checkEquals(get.nearest.neighbor.distances(seq.6, k=1), c(3, 3, 3, 3))
+    checkEquals(get.nearest.neighbor.distances(seq.6, k=2), c(4, 3, 3, 3))
+    checkEquals(get.nearest.neighbor.distances(seq.6, k=3), c(4, 4, 4, 3))
 }
 
 test.compare.pairwise.distance.distribution <- function() {
