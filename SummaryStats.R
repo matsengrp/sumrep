@@ -23,14 +23,17 @@ get.distance.matrix <- function(sequence.list) {
 
 get.distance.vector <- function(sequence.list) {
     mat <- sequence.list %>% get.distance.matrix
-    vec <- mat[mat %>% lower.tri] %>% as.vector
+    vec <- mat[mat %>% lower.tri] %>% as.vector %>% sort
     return(vec)
 }
 
-compare.pairwise.distance.distribution <- function(list.a, list.b) {
-    distance.vector.a <- list.a %>% get.distance.vector
-    distance.vector.b <- list.b %>% get.distance.vector
-    divergence <- CalcJSDivergence(distance.vector.a, distance.vector.b)
+compare.pairwise.distance.distribution <- function(list.a, list.b) {    
+    distances.a <- list.a %>% get.distance.vector
+    distances.b <- list.b %>% get.distance.vector
+    max.val <- max(distances.a, distances.b)
+    table.a <- factor(distances.a, levels=0:max.val) %>% table %>% as.vector
+    table.b <- factor(distances.b, levels=0:max.val) %>% table %>% as.vector
+    divergence <- CalcJSDivergence(table.a, table.b)
     return(divergence)
 }
 
@@ -54,5 +57,13 @@ compare.NN.distance.distribution <- function(list.a, list.b) {
 get.GC.distribution <- function(sequence.list) {
     dna.list <- sequence.list %>% strsplit(split='') %>% lapply(as.DNAbin)
     return(sapply(dna.list, GC.content))
+}
+
+# In-progress
+compare.GC.distributions <- function(list.a, list.b) {
+    density.a <- get.GC.distribution(list.a) %>% density
+    density.b <- get.GC.distribution(list.b) %>% density
+    divergence <- CalcJSDivergence(density.a, density.b)
+    return(divergence)
 }
 

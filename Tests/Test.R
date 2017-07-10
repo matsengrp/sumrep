@@ -11,6 +11,7 @@ seq.3 <- c(A="", B="C-TA")
 seq.4 <- c(A="", B="")
 seq.5 <- c("AAA", "AAT", "TTT")
 seq.6 <- c("A-T-", "GCAC", "CGGC", "ACGT")
+seq.7 <- c("GT", "TA")
 
 apply.row.column.names <- function(m) {
     y <- m
@@ -47,10 +48,30 @@ test.get.nearest.neighbor.distances <- function() {
     checkEquals(get.nearest.neighbor.distances(seq.5) %>% sort, d2)
 }
 
+test.compare.pairwise.distance.distribution <- function() {
+    s1 <- c("AAA", "AAT", "ATT")
+    s2 <- c("ATT", "AAA", "AAT")
+    s3 <- c("AAA", "AAT", "TTT")
+    s4 <- c("AAA", "ATC", "GGG")
+    checkEquals(compare.pairwise.distance.distribution(s1, s2), 0)    
+    
+    c1 <- compare.pairwise.distance.distribution(s1, s3)
+    c2 <- compare.pairwise.distance.distribution(s1, s4)
+    checkTrue(c1 < c2)
+
+    c3 <- compare.pairwise.distance.distribution(s4, s1)
+    checkEquals(c2, c3)
+}
+
 test.get.GC.distribution <- function() {
     d1 <- rep(0, 3)
     checkEquals(get.GC.distribution(seq.5), d1)
 
     d2 <- c(0, 0.75, 1.0, 0.5)
     checkEquals(get.GC.distribution(seq.6), d2)
+}
+
+test.compare.GC.distributions <- function() {
+    checkEquals(compare.GC.distributions(seq.2, seq.7), 0)    
+    checkTrue(compare.GC.distributions(seq.1, seq.2) > 0)    
 }
