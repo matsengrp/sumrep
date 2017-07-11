@@ -7,7 +7,44 @@ library(shazam)
 library(stringdist)
 library(textmineR)
 
+if(!exists("biocLite")) {
+    source("https://bioconductor.org/biocLite.R")
+    biocLite("Biostrings")
+}
+
+# Hot/cold spot motif data from S5F model given my Yaari et al. 2013
+motifs <- read.table("Data/Mutability.csv", header=TRUE)
+motifs.2 <- read.table("Data/Substitution.csv", header=TRUE)
+
+motifs$Rate <- motifs$Mutability/sum(motifs$Mutability)
+
+get.continuous.JS.divergence <- function(s1, s2) {
+    p <- s1 %>% density %>% approxfun()
+    q <- s2 %>% density %>% approxfun()
+    m <- function(x) {
+        res <- 0.5*(p(x) + q(x))
+        return(res)
+    }
+
+    integrand <- function(f, g) {
+        func <- function(x) {
+            res <- ifelse(f(x) == 0, 0, ifelse(g(x) == 0, Inf, f(x)*(log(f(x)) - log(g(x)))))
+            return(res)
+        }
+        return(func)
+    }
+    lower <- max(min(s1), min(s2))
+    upper <- min(max(s1), max(s2))
+    KL.div.1 <- integrate(integrand(p, m), lower, upper)$value
+    KL.div.2 <- integrate(integrand(q, m), lower, upper)$value
+    divergence <- 0.5*(KL.div.1 + KL.div.2)
+    return(divergence)
+}
+
 get.JS.divergence <- function(l1, l2, continuous=FALSE) {
+    if(continuous) {
+        return(get.continuous.JS.divergence(l1, l2))
+    }
     p <- l1/(l1 %>% sum)
     q <- l2/(l2 %>% sum)
     m <- (p + q)/2

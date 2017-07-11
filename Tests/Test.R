@@ -1,10 +1,6 @@
 source("SummaryStats.R")
 library(dplyr)
 
-db <- read.csv("Data/test_data.csv")
-
-seqs <- db$SEQUENCE_VDJ %>% sapply(toString)
-
 seq.1 <- c(A="AT", B="AT")
 seq.2 <- c(A="AA", B="AC")
 seq.3 <- c(A="", B="C-TA")
@@ -12,6 +8,8 @@ seq.4 <- c(A="", B="")
 seq.5 <- c("AAA", "AAT", "TTT")
 seq.6 <- c("A-T-", "GCAC", "CGGC", "ACGT")
 seq.7 <- c("GT", "TA")
+seq.8 <- c("AAAAAA", "TTTTTT", "AAAAGGGG", "AAAAACCCC", "CCCCCCCCC", "GGGCCCCCGG")
+seq.9 <- c("AAAAAC", "TTTCCT", "AAAAGGGG", "AAAAACCCC", "CCCCTTTC", "GGGCCCCCGG")
 
 apply.row.column.names <- function(m) {
     y <- m
@@ -77,5 +75,5 @@ test.get.GC.distribution <- function() {
 
 test.compare.GC.distributions <- function() {
     checkEquals(compare.GC.distributions(seq.2, seq.7), 0)    
-    checkTrue(compare.GC.distributions(seq.1, seq.2) > 0)    
+    checkTrue(compare.GC.distributions(seq.8, seq.9) > 0)    
 }
