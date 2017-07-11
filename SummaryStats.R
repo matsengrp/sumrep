@@ -12,45 +12,48 @@ if(!exists("biocLite")) {
     biocLite("Biostrings")
 }
 
-# Hot/cold spot motif data from S5F model given my Yaari et al. 2013
+# Hot/cold spot motif data from S5F model given by Yaari et al. 2013
 motifs <- read.table("Data/Mutability.csv", header=TRUE)
 motifs.2 <- read.table("Data/Substitution.csv", header=TRUE)
 
 motifs$Rate <- motifs$Mutability/sum(motifs$Mutability)
 
-get.continuous.JS.divergence <- function(s1, s2) {
-    p <- s1 %>% density %>% approxfun()
-    q <- s2 %>% density %>% approxfun()
+get.continuous.JS.divergence <- function(sample.1, sample.2) {
     m <- function(x) {
-        res <- 0.5*(p(x) + q(x))
-        return(res)
+        result <- 0.5*(p(x) + q(x))
+        return(result)
     }
 
     integrand <- function(f, g) {
         func <- function(x) {
-            res <- ifelse(f(x) == 0, 0, ifelse(g(x) == 0, Inf, f(x)*(log(f(x)) - log(g(x)))))
-            return(res)
+            result <- ifelse(f(x) == 0, 0, ifelse(g(x) == 0, Inf, 
+                                                  f(x)*(log(f(x)) - log(g(x)))))
+            return(result)
         }
         return(func)
     }
-    lower <- max(min(s1), min(s2))
-    upper <- min(max(s1), max(s2))
+
+    p <- sample.1 %>% density %>% approxfun
+    q <- sample.2 %>% density %>% approxfun
+    lower <- max(min(sample.1), min(sample.2))
+    upper <- min(max(sample.1), max(sample.2))
     KL.div.1 <- integrate(integrand(p, m), lower, upper)$value
     KL.div.2 <- integrate(integrand(q, m), lower, upper)$value
-    divergence <- 0.5*(KL.div.1 + KL.div.2)
-    return(divergence)
+    JS.divergence <- 0.5*(KL.div.1 + KL.div.2)
+    return(JS.divergence)
 }
 
 get.JS.divergence <- function(l1, l2, continuous=FALSE) {
     if(continuous) {
-        return(get.continuous.JS.divergence(l1, l2))
+        divergence <- get.continuous.JS.divergence(l1, l2)
+    } else {
+        p <- l1/(l1 %>% sum)
+        q <- l2/(l2 %>% sum)
+        m <- (p + q)/2
+        KL.div.1 <- (p*log(p/m)) %>% sum
+        KL.div.2 <- (q*log(q/m)) %>% sum
+        divergence <- (KL.div.1 + KL.div.2)/2
     }
-    p <- l1/(l1 %>% sum)
-    q <- l2/(l2 %>% sum)
-    m <- (p + q)/2
-    KL.div.1 <- (p*log(p/m)) %>% sum
-    KL.div.2 <- (q*log(q/m)) %>% sum
-    divergence <- (KL.div.1 + KL.div.2)/2
     return(divergence)
 }
 
@@ -71,8 +74,8 @@ compare.pairwise.distance.distribution <- function(list.a, list.b) {
     distances.a <- list.a %>% get.distance.vector
     distances.b <- list.b %>% get.distance.vector
     max.val <- max(distances.a, distances.b)
-    table.a <- factor(distances.a, levels=0:max.val) %>% table %>% as.vector
-    table.b <- factor(distances.b, levels=0:max.val) %>% table %>% as.vector
+    table.a <- distances.a %>% factor(levels=0:max.val) %>% table %>% as.vector
+    table.b <- distances.b %>% factor(levels=0:max.val) %>% table %>% as.vector
     divergence <- CalcJSDivergence(table.a, table.b)
     return(divergence)
 }
@@ -87,22 +90,23 @@ get.nearest.neighbor.distances <- function(sequence.list, k=1) {
     return(distances)
 }
 
-compare.NN.distance.distribution <- function(list.a, list.b) {
-    distances.a <- get.nearest.neighbor.distances(list.a) 
-    distances.b <- get.nearest.neighbor.distances(list.b)
+compare.NN.distance.distribution <- function(list.a, list.b, k=1) {
+    distances.a <- list.a %>% get.nearest.neighbor.distances(k=k)
+    distances.b <- list.b %>% get.nearest.neighbor.distances(k=k)
     divergence <- CalcJSDivergence(distances.a, distances.b)
     return(divergence)
 }
 
 get.GC.distribution <- function(sequence.list) {
     dna.list <- sequence.list %>% strsplit(split='') %>% lapply(as.DNAbin)
-    return(sapply(dna.list, GC.content))
+    gc.dist <- dna.list %>% sapply(GC.content)
+    return(gc.dist)
 }
 
 # In-progress
 compare.GC.distributions <- function(list.a, list.b) {
-    density.a <- get.GC.distribution(list.a)
-    density.b <- get.GC.distribution(list.b)
+    density.a <- list.a %>% get.GC.distribution
+    density.b <- list.b %>% get.GC.distribution
     divergence <- get.continuous.JS.divergence(density.a, density.b)
     return(divergence)
 }
