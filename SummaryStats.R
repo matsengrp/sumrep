@@ -101,9 +101,9 @@ get.GC.distribution <- function(sequence.list) {
 
 # In-progress
 compare.GC.distributions <- function(list.a, list.b) {
-    density.a <- get.GC.distribution(list.a) %>% density
-    density.b <- get.GC.distribution(list.b) %>% density
-    divergence <- CalcJSDivergence(density.a, density.b)
+    density.a <- get.GC.distribution(list.a)
+    density.b <- get.GC.distribution(list.b)
+    divergence <- get.continuous.JS.divergence(density.a, density.b)
     return(divergence)
 }
 

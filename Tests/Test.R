@@ -75,5 +75,8 @@ test.get.GC.distribution <- function() {
 
 test.compare.GC.distributions <- function() {
     checkEquals(compare.GC.distributions(seq.2, seq.7), 0)    
-    checkTrue(compare.GC.distributions(seq.8, seq.9) > 0)    
+    c1 <- compare.GC.distributions(seq.8, seq.9)
+    c2 <- compare.GC.distributions(seq.9, seq.8)
+    checkTrue(c1 > 0)
+    checkTrue(c1 == c2)
 }
