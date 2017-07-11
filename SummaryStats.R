@@ -57,7 +57,13 @@ get.JS.divergence <- function(l1, l2, continuous=FALSE) {
     return(divergence)
 }
 
-get.distance.matrix <- function(sequence.list) {
+standardize.list <- function(l) {
+    new.list <- l %>% sapply(paste, collapse='') %>% unname
+    return(new.list)
+}
+
+get.distance.matrix <- function(raw.sequences) {
+    sequence.list <- standardize.list(raw.sequences)
     length.count <- sequence.list %>% sapply(nchar) %>% table %>% length 
     comparison.method <- ifelse(length.count > 1, "lv", "hamming")
     mat <- sequence.list %>% stringdistmatrix(method=comparison.method) %>% as.matrix
@@ -97,7 +103,8 @@ compare.NN.distance.distribution <- function(list.a, list.b, k=1) {
     return(divergence)
 }
 
-get.GC.distribution <- function(sequence.list) {
+get.GC.distribution <- function(raw.sequences) {
+    sequence.list <- raw.sequences %>% sapply(paste, collapse='') %>% unname
     dna.list <- sequence.list %>% strsplit(split='') %>% lapply(as.DNAbin)
     gc.dist <- dna.list %>% sapply(GC.content)
     return(gc.dist)

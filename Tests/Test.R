@@ -2,12 +2,12 @@ source("SummaryStats.R")
 library(dplyr)
 
 seq.1 <- c(A="AT", B="AT")
-seq.2 <- c(A="AA", B="AC")
+seq.2 <- list(A="AA", B="AC")
 seq.3 <- c(A="", B="C-TA")
 seq.4 <- c(A="", B="")
 seq.5 <- c("AAA", "AAT", "TTT")
 seq.6 <- c("A-T-", "GCAC", "CGGC", "ACGT")
-seq.7 <- c("GT", "TA")
+seq.7 <- list(c("G", "T"), c("T", "A"))
 seq.8 <- c("AAAAAA", "TTTTTT", "AAAAGGGG", "AAAAACCCC", "CCCCCCCCC", "GGGCCCCCGG")
 seq.9 <- c("AAAAAC", "TTTCCT", "AAAAGGGG", "AAAAACCCC", "CCCCTTTC", "GGGCCCCCGG")
 
@@ -22,6 +22,7 @@ test.get.distance.vector <- function() {
     checkEquals(get.distance.vector(seq.2), 1)
     checkEquals(get.distance.vector(seq.3), 4)
     checkEquals(get.distance.vector(seq.4), 0)
+    checkEquals(get.distance.vector(seq.7), 2)
 }
 
 test.get.distance.matrix <- function() {
