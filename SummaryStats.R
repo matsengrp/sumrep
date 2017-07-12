@@ -9,6 +9,17 @@ library(textmineR)
 
 library(Biostrings)
 
+bin.continuous.lists.as.discrete <- function(list.a, list.b) {
+    a.length <- list.a %>% length
+    b.length <- list.b %>% length
+    bin.count <- min(a.length, b.length) %>% sqrt %>% ceiling
+    bin.count <- ifelse(bin.count  < 2, 2, bin.count)
+    bins <- c(list.a, list.b) %>% cut(breaks=bin.count, labels=1:bin.count)
+    table.a <- bins[1:a.length] %>% table %>% unname %>% as.vector
+    table.b <- bins[-(1:a.length)] %>% table %>% unname %>% as.vector
+    return(list(table.a, table.b))
+}
+
 get.continuous.JS.divergence <- function(sample.1, sample.2) {
     m <- function(x) {
         result <- 0.5*(p(x) + q(x))
@@ -105,7 +116,8 @@ get.GC.distribution <- function(raw.sequences) {
 compare.GC.distributions <- function(list.a, list.b) {
     density.a <- list.a %>% get.GC.distribution
     density.b <- list.b %>% get.GC.distribution
-    divergence <- get.continuous.JS.divergence(density.a, density.b)
+    binned <- bin.continuous.lists.as.discrete(density.a, density.b)
+    divergence <- CalcJSDivergence(binned[[1]], binned[[2]])
     return(divergence)
 }
 

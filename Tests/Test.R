@@ -8,7 +8,7 @@ seq.4 <- c(A="", B="")
 seq.5 <- c("AAA", "AAT", "TTT")
 seq.6 <- c("A-T-", "GCAC", "CGGC", "ACGT")
 seq.7 <- list(c("G", "T"), c("T", "A"))
-seq.8 <- c("AAAAAA", "TTTTTT", "AAAAGGGG", "AAAAACCCC", "CCCCCCCCC", "GGGCCCCCGG")
+seq.8 <- c("AAAAAA", "TTTTTT", "AAAA", "AAAAACC", "AAAAAAATTTT", "GGGCCCCCGG")
 seq.9 <- list("AAAAAC", c("T", "T", "T", "C", "C", "T"), "AAAAGGGG", "AAAAACCCC", "CCCCTTTC", 
               list("G", "G", "G", "C", "C", "C", "C", "C", "G", "G"))
 
@@ -16,6 +16,16 @@ apply.row.column.names <- function(m) {
     y <- m
     rownames(y) <- colnames(y) <- 1:dim(y)[1]
     return(y)
+}
+
+test.bin.continuous.lists.as.discrete <- function() {
+    l1 <- 1:20
+    l2 <- rep(1, 20)
+    binned <- bin.continuous.lists.as.discrete(l1, l2)
+    bin.a <- binned[[1]]
+    bin.b <- binned[[2]]
+    checkEquals(bin.a, rep(4, 5))
+    checkEquals(bin.b, c(20, rep(0, 4)))
 }
 
 test.get.distance.vector <- function() {
