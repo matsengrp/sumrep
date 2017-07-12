@@ -114,3 +114,17 @@ test.get.coldspot.count <- function() {
     checkEquals(get.coldspot.count(seq.c), 1)
     checkEquals(get.coldspot.count(seq.d), 4)
 }
+
+test.get.nucleotide.diversity <- function() {
+    d1 <- get.nucleotide.diversity(list("AT", "AT"))
+    d2 <- get.nucleotide.diversity(list("AT", "AC"))
+    d3 <- get.nucleotide.diversity(list("AT", "GC"))
+    d4 <- get.nucleotide.diversity(list("ATATATATAT", "AAAAAAAAAA"))
+    d5 <- get.nucleotide.diversity(list("ATATATATAT", "CGTACGTAAT"))
+    checkEquals(d1, 0)
+    checkEquals(d2, 0.5)
+    checkEquals(d3, 1)
+    checkTrue(d4 < d5)
+}
+
+

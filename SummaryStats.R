@@ -112,7 +112,6 @@ get.GC.distribution <- function(raw.sequences) {
     return(gc.dist)
 }
 
-# In-progress
 compare.GC.distributions <- function(list.a, list.b) {
     density.a <- list.a %>% get.GC.distribution
     density.b <- list.b %>% get.GC.distribution
@@ -138,3 +137,11 @@ get.coldspot.count <- function(dna.sequence) {
     count <- coldspot %>% get.motif.count(dna.sequence)
     return(count)
 }
+
+get.nucleotide.diversity <- function(repertoire) {
+    diversity <- repertoire %>% sapply(strsplit, split='') %>% as.DNAbin %>% nuc.div
+    return(diversity)
+}
+
+
+
