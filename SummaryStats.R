@@ -7,16 +7,7 @@ library(shazam)
 library(stringdist)
 library(textmineR)
 
-if(!exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-    biocLite("Biostrings")
-}
-
-# Hot/cold spot motif data from S5F model given by Yaari et al. 2013
-motifs <- read.table("Data/Mutability.csv", header=TRUE)
-motifs.2 <- read.table("Data/Substitution.csv", header=TRUE)
-
-motifs$Rate <- motifs$Mutability/sum(motifs$Mutability)
+library(Biostrings)
 
 get.continuous.JS.divergence <- function(sample.1, sample.2) {
     m <- function(x) {
@@ -118,3 +109,20 @@ compare.GC.distributions <- function(list.a, list.b) {
     return(divergence)
 }
 
+get.motif.count <- function(motif, subject) {
+    dna.strings <- subject %>% unlist %>% DNAStringSet
+    count <- motif %>% vcountPattern(dna.strings, fixed=FALSE) %>% sum
+    return(count)
+}
+
+get.hotspot.count <- function(dna.sequence) {
+    hotspots <- c("WRC", "WA")
+    count <- hotspots %>% sapply(get.motif.count, subject=dna.sequence) %>% sum
+    return(count)
+}
+
+get.coldspot.count <- function(dna.sequence) {
+    coldspot <- "SYC"
+    count <- coldspot %>% get.motif.count(dna.sequence)
+    return(count)
+}

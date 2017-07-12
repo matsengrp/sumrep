@@ -9,7 +9,8 @@ seq.5 <- c("AAA", "AAT", "TTT")
 seq.6 <- c("A-T-", "GCAC", "CGGC", "ACGT")
 seq.7 <- list(c("G", "T"), c("T", "A"))
 seq.8 <- c("AAAAAA", "TTTTTT", "AAAAGGGG", "AAAAACCCC", "CCCCCCCCC", "GGGCCCCCGG")
-seq.9 <- c("AAAAAC", "TTTCCT", "AAAAGGGG", "AAAAACCCC", "CCCCTTTC", "GGGCCCCCGG")
+seq.9 <- list("AAAAAC", c("T", "T", "T", "C", "C", "T"), "AAAAGGGG", "AAAAACCCC", "CCCCTTTC", 
+              list("G", "G", "G", "C", "C", "C", "C", "C", "G", "G"))
 
 apply.row.column.names <- function(m) {
     y <- m
@@ -80,4 +81,26 @@ test.compare.GC.distributions <- function() {
     c2 <- compare.GC.distributions(seq.9, seq.8)
     checkTrue(c1 > 0)
     checkTrue(c1 == c2)
+}
+
+test.get.hotspot.count <- function() {
+    seq.a <- "TTTTT"
+    seq.b <- list("AAC", "TTTT")
+    seq.c <- "NWRC"
+    seq.d <- c("WRC", "WRC", "WGC")
+    checkEquals(get.hotspot.count(seq.a), 0)
+    checkEquals(get.hotspot.count(seq.b), 2)
+    checkEquals(get.hotspot.count(seq.c), 3)
+    checkEquals(get.hotspot.count(seq.d), 5)
+}
+
+test.get.coldspot.count <- function() {
+    seq.a <- "TTTTT"
+    seq.b <- list("GCC", "AAA", "AAAA")
+    seq.c <- c("AAA", "CTC")
+    seq.d <- "SYCSYC"
+    checkEquals(get.coldspot.count(seq.a), 0)
+    checkEquals(get.coldspot.count(seq.b), 1)
+    checkEquals(get.coldspot.count(seq.c), 1)
+    checkEquals(get.coldspot.count(seq.d), 4)
 }
