@@ -127,4 +127,13 @@ test.get.nucleotide.diversity <- function() {
     checkTrue(d4 < d5)
 }
 
-
+test.compare.nucleotide.diversities <- function() {
+    r1 <- list("AT", "AT")
+    r2 <- list("AT", "AC")
+    r3 <- list("AT", "GC")
+    r4 <- list("ATATATATAT", "AAAAAAAAAA")
+    r5 <- list("ATATATATAT", "CGTACGTAAT")
+    checkEquals(compare.nucleotide.diversities(r1, r1), 0)
+    checkEquals(compare.nucleotide.diversities(r1, r2), 0.5)
+    checkEquals(compare.nucleotide.diversities(r2, r3), 0.5)
+}

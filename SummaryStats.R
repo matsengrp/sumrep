@@ -2,6 +2,7 @@ library(alakazam)
 library(ape)
 library(dplyr)
 library(flexmix)
+library(pegas)
 library(RecordLinkage)
 library(shazam)
 library(stringdist)
@@ -143,5 +144,9 @@ get.nucleotide.diversity <- function(repertoire) {
     return(diversity)
 }
 
-
-
+compare.nucleotide.diversities <- function(rep.a, rep.b) {
+    nuc.div.a <- get.nucleotide.diversity(rep.a)
+    nuc.div.b <- get.nucleotide.diversity(rep.b)    
+    distance <- (nuc.div.b - nuc.div.a) %>% abs
+    return(distance)
+}
