@@ -147,3 +147,21 @@ test.get.distances.from.naive.to.mature <- function() {
 
     checkEquals(get.distances.from.naive.to.mature(naive, list(m1, m2, m3, m4)), c(0, 1, 3, 6))
 }
+
+test.compare.distances.from.naive.to.mature <- function() {
+    naive.a <- c("AAAAAA")
+    naive.b <- c("GGGGGG")
+    m1 <- c("AAAAAA")
+    m2 <- c("AAAAAG")
+    m3 <- c("GAAAAA")
+    m4 <- c("AAAGGG")
+    m5 <- c("GGGGGG")
+    m.list.1 <- list(m1, m2, m3)
+    m.list.2 <- list(m2, m3, m4) 
+    c1 <- compare.distances.from.naive.to.mature(naive.a, m.list.1, naive.a, m.list.1)
+    c2 <- compare.distances.from.naive.to.mature(naive.a, m.list.1, naive.b, m.list.2)
+    c3 <- compare.distances.from.naive.to.mature(naive.b, m.list.2, naive.a, m.list.1)
+    checkEquals(c1, 0)
+    checkEquals(c2, c3)
+    checkTrue(c2 > 0)
+}

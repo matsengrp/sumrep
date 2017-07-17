@@ -46,16 +46,14 @@ get.continuous.JS.divergence <- function(sample.1, sample.2) {
     return(JS.divergence)
 }
 
-get.JS.divergence <- function(l1, l2, continuous=FALSE) {
+get.JS.divergence <- function(list.a, list.b, continuous=FALSE) {
     if(continuous) {
-        divergence <- get.continuous.JS.divergence(l1, l2)
+        divergence <- get.continuous.JS.divergence(list.a, list.b)
     } else {
-        p <- l1/(l1 %>% sum)
-        q <- l2/(l2 %>% sum)
-        m <- (p + q)/2
-        KL.div.1 <- (p*log(p/m)) %>% sum
-        KL.div.2 <- (q*log(q/m)) %>% sum
-        divergence <- (KL.div.1 + KL.div.2)/2
+        max.val <- max(list.a, list.b)
+        table.a <- list.a %>% factor(levels=0:max.val) %>% table %>% as.vector
+        table.b <- list.b %>% factor(levels=0:max.val) %>% table %>% as.vector
+        divergence <- CalcJSDivergence(table.a, table.b)
     }
     return(divergence)
 }
@@ -82,10 +80,7 @@ get.distance.vector <- function(sequence.list) {
 compare.pairwise.distance.distribution <- function(list.a, list.b) {    
     distances.a <- list.a %>% get.distance.vector
     distances.b <- list.b %>% get.distance.vector
-    max.val <- max(distances.a, distances.b)
-    table.a <- distances.a %>% factor(levels=0:max.val) %>% table %>% as.vector
-    table.b <- distances.b %>% factor(levels=0:max.val) %>% table %>% as.vector
-    divergence <- CalcJSDivergence(table.a, table.b)
+    divergence <- get.JS.divergence(distances.a, distances.b)
     return(divergence)
 }
 
@@ -102,7 +97,7 @@ get.nearest.neighbor.distances <- function(sequence.list, k=1) {
 compare.NN.distance.distribution <- function(list.a, list.b, k=1) {
     distances.a <- list.a %>% get.nearest.neighbor.distances(k=k)
     distances.b <- list.b %>% get.nearest.neighbor.distances(k=k)
-    divergence <- CalcJSDivergence(distances.a, distances.b)
+    divergence <- get.JS.divergence(distances.a, distances.b)
     return(divergence)
 }
 
@@ -155,4 +150,11 @@ get.distances.from.naive.to.mature <- function(naive, mature.list) {
     mat <- mature.list %>% unlist %>% append(naive, after=0) %>% get.distance.matrix
     distances <- mat[1, -1] %>% unname %>% sort
     return(distances)
+}
+
+compare.distances.from.naive.to.mature <- function(naive.a, mature.list.a, naive.b, mature.list.b) {
+    distances.a <- get.distances.from.naive.to.mature(naive.a, mature.list.a)
+    distances.b <- get.distances.from.naive.to.mature(naive.b, mature.list.b)
+    divergence <- get.JS.divergence(distances.a, distances.b)
+    return(divergence)
 }
