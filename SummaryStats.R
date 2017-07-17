@@ -150,3 +150,9 @@ compare.nucleotide.diversities <- function(rep.a, rep.b) {
     distance <- (nuc.div.b - nuc.div.a) %>% abs
     return(distance)
 }
+
+get.distances.from.naive.to.mature <- function(naive, mature.list) {
+    mat <- mature.list %>% unlist %>% append(naive, after=0) %>% get.distance.matrix
+    distances <- mat[1, -1] %>% unname %>% sort
+    return(distances)
+}

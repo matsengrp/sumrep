@@ -137,3 +137,13 @@ test.compare.nucleotide.diversities <- function() {
     checkEquals(compare.nucleotide.diversities(r1, r2), 0.5)
     checkEquals(compare.nucleotide.diversities(r2, r3), 0.5)
 }
+
+test.get.distances.from.naive.to.mature <- function() {
+    naive <- c("AAAAAA")
+    m1 <- c("AAAAAT")
+    m2 <- c("CGCAAA")
+    m3 <- c("GGGGGG")
+    m4 <- c("AAAAAA")
+
+    checkEquals(get.distances.from.naive.to.mature(naive, list(m1, m2, m3, m4)), c(0, 1, 3, 6))
+}
