@@ -155,7 +155,7 @@ test.compare.distances.from.naive.to.mature <- function() {
     m2 <- c("AAAAAG")
     m3 <- c("GAAAAA")
     m4 <- c("AAAGGG")
-    m5 <- c("GGGGGG")
+    m5 <- c("GGGG")
     m.list.1 <- list(m1, m2, m3)
     m.list.2 <- list(m2, m3, m4) 
     c1 <- compare.distances.from.naive.to.mature(naive.a, m.list.1, naive.a, m.list.1)

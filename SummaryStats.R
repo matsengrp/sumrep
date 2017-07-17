@@ -63,10 +63,15 @@ standardize.list <- function(l) {
     return(new.list)
 }
 
-get.distance.matrix <- function(raw.sequences) {
-    sequence.list <- standardize.list(raw.sequences)
-    length.count <- sequence.list %>% sapply(nchar) %>% table %>% length 
+determine.comparison.method <- function(sequences) {
+    length.count <- sequences %>% standardize.list %>% sapply(nchar) %>% table %>% length 
     comparison.method <- ifelse(length.count > 1, "lv", "hamming")
+    return(comparison.method)
+}
+
+get.distance.matrix <- function(raw.sequences) {
+    sequence.list <- raw.sequences %>% standardize.list
+    comparison.method <- sequence.list %>% determine.comparison.method
     mat <- sequence.list %>% stringdistmatrix(method=comparison.method) %>% as.matrix
     return(mat)
 }
@@ -147,7 +152,8 @@ compare.nucleotide.diversities <- function(rep.a, rep.b) {
 }
 
 get.distances.from.naive.to.mature <- function(naive, mature.list) {
-    distances <- mature.list %>% sapply(stringdist, naive) %>% sort
+    comparison.method <- mature.list %>% standardize.list %>% determine.comparison.method
+    distances <- mature.list %>% sapply(stringdist, b=naive, method=comparison.method) %>% sort
     return(distances)
 }
 
@@ -157,3 +163,4 @@ compare.distances.from.naive.to.mature <- function(naive.a, mature.list.a, naive
     divergence <- get.JS.divergence(distances.a, distances.b)
     return(divergence)
 }
+
