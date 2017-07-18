@@ -1,5 +1,6 @@
 library(alakazam)
 library(ape)
+library(Biostrings)
 library(dplyr)
 library(flexmix)
 library(pegas)
@@ -7,8 +8,6 @@ library(RecordLinkage)
 library(shazam)
 library(stringdist)
 library(textmineR)
-
-library(Biostrings)
 
 bin.continuous.lists.as.discrete <- function(list.a, list.b) {
     a.length <- list.a %>% length
@@ -164,3 +163,36 @@ compare.distances.from.naive.to.mature <- function(naive.a, mature.list.a, naive
     return(divergence)
 }
 
+call.partis <- function(action, input.filename, output.filename, partis.path, num.procs, cleanup) {
+    shell <- Sys.getenv("SHELL")
+    command <- paste(shell, "run_partis.sh", 
+                     "-p", partis.path, 
+                     "-a", action, 
+                     "-i", input.filename, 
+                     "-o", output.filename, 
+                     "-n", num.procs)
+    command %>% system
+    partis.dataset <- output.filename %>% read.csv
+    if(cleanup) {
+        paste("rm", output.filename, sep=' ') %>% system
+        if("_output" %in% list.files()) {
+            if(length(list.files("_output")) == 0) {
+                "rm -rf _output" %>% system
+            }
+        }
+        "rm -f *cluster-annotations.csv" %>% system
+    }
+    return(partis.dataset)
+} 
+
+annotate.sequences <- function(input.filename, output.filename="partis_output.csv", partis.path='partis',
+                               num.procs=4, cleanup=TRUE) {
+    annotated.data <- call.partis("annotate", input.filename, output.filename, partis.path, num.procs, cleanup)
+    return(annotated.data)
+}
+
+partition.sequences <- function(input.filename, output.filename="partis_output.csv", partis.path='partis',
+                               num.procs=4, cleanup=TRUE) {
+    partitioned.data <- call.partis("partition", input.filename, output.filename, partis.path, num.procs, cleanup)
+    return(partitioned.data)
+}
