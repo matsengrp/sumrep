@@ -172,7 +172,7 @@ call.partis <- function(action, input.filename, output.filename, partis.path, nu
                      "-o", output.filename, 
                      "-n", num.procs)
     command %>% system
-    partis.dataset <- output.filename %>% read.csv
+    partis.dataset <- output.filename %>% fread(stringsAsFactors=TRUE)
     if(cleanup) {
         paste("rm", output.filename, sep=' ') %>% system
         if("_output" %in% list.files()) {
@@ -222,3 +222,15 @@ compare.CDR3.lengths <- function(file.a, file.b) {
     divergence <- get.JS.divergence(a.lengths, b.lengths)
     return(divergence)
 }
+
+compare.germline.gene.distributions <- function(data.table.a, data.table.b, gene.type) {
+    column.name <- switch(gene.type,
+                          V="v_gene",
+                          D="d_gene",
+                          J="j_gene")
+    levels.a <- data.table.a[, column.name, with=FALSE] %>% sapply(as.numeric) 
+    levels.b <- data.table.b[, column.name, with=FALSE] %>% sapply(as.numeric) 
+    divergence <- get.JS.divergence(levels.a, levels.b)
+    return(divergence)
+}
+
