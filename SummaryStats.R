@@ -47,7 +47,8 @@ get.continuous.JS.divergence <- function(sample.1, sample.2) {
 
 get.JS.divergence <- function(list.a, list.b, continuous=FALSE) {
     if(continuous) {
-        divergence <- get.continuous.JS.divergence(list.a, list.b)
+        binned <- bin.continuous.lists.as.discrete(list.a, list.b)
+        divergence <- get.continuous.JS.divergence(binned[[1]], binned[[2]])
     } else {
         max.val <- max(list.a, list.b)
         table.a <- list.a %>% factor(levels=0:max.val) %>% table %>% as.vector
@@ -115,8 +116,7 @@ get.GC.distribution <- function(raw.sequences) {
 compare.GC.distributions <- function(list.a, list.b) {
     density.a <- list.a %>% get.GC.distribution
     density.b <- list.b %>% get.GC.distribution
-    binned <- bin.continuous.lists.as.discrete(density.a, density.b)
-    divergence <- CalcJSDivergence(binned[[1]], binned[[2]])
+    divergence <- get.JS.divergence(density.a, density.b, continuous=TRUE)
     return(divergence)
 }
 
