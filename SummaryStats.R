@@ -196,3 +196,16 @@ partition.sequences <- function(input.filename, output.filename="partis_output.c
     partitioned.data <- call.partis("partition", input.filename, output.filename, partis.path, num.procs, cleanup)
     return(partitioned.data)
 }
+
+get.CDR3.lengths <- function(filename, output.filename="partis_output.csv", partis.path, cleanup=TRUE) {
+    annotations <- annotate.sequences(filename, output.filename, partis.path, cleanup)
+    CDR3.lengths <- annotations$cdr3_length
+    return(CDR3.lengths)
+}
+
+compare.CDR3.lengths <- function(file.a, file.b) {
+    a.lengths <- get.CDR3.lengths(file.a, partis.path=partis.path, cleanup=TRUE)
+    b.lengths <- get.CDR3.lengths(file.b, partis.path=partis.path, cleanup=TRUE)
+    divergence <- get.JS.divergence(a.lengths, b.lengths)
+    return(divergence)
+}
