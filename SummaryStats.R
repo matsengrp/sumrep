@@ -178,10 +178,11 @@ call.partis <- function(action, input.filename, output.filename, partis.path, nu
         paste("rm", output.filename, sep=' ') %>% system
         if("_output" %in% list.files()) {
             if(length(list.files("_output")) == 0) {
-                "rm -rf _output" %>% system
+                "_output" %>% unlink(recursive=TRUE)
             }
         }
-        "rm -f *cluster-annotations.csv" %>% system
+        files.to.remove <- dir(path=".", pattern="*cluster-annotations.csv")
+        files.to.remove %>% file.remove
     }
     return(partis.dataset)
 } 
