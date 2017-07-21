@@ -13,15 +13,15 @@ library(textmineR)
 compare.categorical.distributions <- function(a, b) {
     dims <- dim(a)
     entry.compare <- (a - b) %>% abs %>% sum
-    entry.compare <- entry.compare/(dims %>% prod)
-    dimension <- dims %>% length
-    dimension.diffs <- rep(NA, dimension)
-    for(i in 1:dimension) {
+    entry.compare <- entry.compare/prod(dims)
+    dimension.count <- dims %>% length
+    dimension.diffs <- rep(NA, dimension.count)
+    for(i in 1:dimension.count) {
         dimension.sums.a <- apply(a, i, sum)
         dimension.sums.b <- apply(b, i, sum)
         dimension.diff <- (dimension.sums.a - dimension.sums.b) %>% abs %>% sum
-        dimension.length <- dims[i]
-        dimension.diffs[[i]] <- dimension.diff/dimension.length
+        dimension.lengths <- dims[-i]
+        dimension.diffs[[i]] <- dimension.diff/prod(dimension.lengths)
     }
     total.compare <- entry.compare + sum(dimension.diffs)
     return(total.compare)
