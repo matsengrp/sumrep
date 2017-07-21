@@ -170,18 +170,21 @@ compare.nucleotide.diversities <- function(rep.a, rep.b) {
 
 get.distances.from.naive.to.mature <- function(naive, mature.list) {
     comparison.method <- mature.list %>% standardize.list %>% determine.comparison.method
-    distances <- mature.list %>% sapply(stringdist, b=naive, method=comparison.method) %>% sort
+    distances <- mature.list %>% 
+                 sapply(stringdist, b=naive, method=comparison.method) %>% sort
     return(distances)
 }
 
-compare.distances.from.naive.to.mature <- function(naive.a, mature.list.a, naive.b, mature.list.b) {
+compare.distances.from.naive.to.mature <- function(naive.a, mature.list.a, 
+                                                   naive.b, mature.list.b) {
     distances.a <- get.distances.from.naive.to.mature(naive.a, mature.list.a)
     distances.b <- get.distances.from.naive.to.mature(naive.b, mature.list.b)
     divergence <- get.JS.divergence(distances.a, distances.b)
     return(divergence)
 }
 
-call.partis <- function(action, input.filename, output.filename, partis.path, num.procs, cleanup) {
+call.partis <- function(action, input.filename, output.filename, partis.path, num.procs, 
+                        cleanup) {
     shell <- Sys.getenv("SHELL")
     command <- paste(shell, "run_partis.sh", 
                      "-p", partis.path, 
@@ -204,15 +207,17 @@ call.partis <- function(action, input.filename, output.filename, partis.path, nu
     return(partis.dataset)
 } 
 
-annotate.sequences <- function(input.filename, output.filename="partis_output.csv", partis.path='partis',
-                               num.procs=4, cleanup=TRUE) {
-    annotated.data <- call.partis("annotate", input.filename, output.filename, partis.path, num.procs, cleanup)
+annotate.sequences <- function(input.filename, output.filename="partis_output.csv", 
+                               partis.path='partis', num.procs=4, cleanup=TRUE) {
+    annotated.data <- call.partis("annotate", input.filename, output.filename, 
+                                  partis.path, num.procs, cleanup)
     return(annotated.data)
 }
 
-partition.sequences <- function(input.filename, output.filename="partis_output.csv", partis.path='partis',
-                               num.procs=4, cleanup=TRUE) {
-    partitioned.data <- call.partis("partition", input.filename, output.filename, partis.path, num.procs, cleanup)
+partition.sequences <- function(input.filename, output.filename="partis_output.csv", 
+                                partis.path='partis', num.procs=4, cleanup=TRUE) {
+    partitioned.data <- call.partis("partition", input.filename, output.filename, 
+                                    partis.path, num.procs, cleanup)
     return(partitioned.data)
 }
 
