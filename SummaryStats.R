@@ -10,6 +10,23 @@ library(shazam)
 library(stringdist)
 library(textmineR)
 
+compare.categorical.distributions <- function(a, b) {
+    dims <- dim(a)
+    entry.compare <- (a - b) %>% abs %>% sum
+    entry.compare <- entry.compare/(dims %>% prod)
+    dimension <- dims %>% length
+    dimension.diffs <- rep(NA, dimension)
+    for(i in 1:dimension) {
+        dimension.sums.a <- apply(a, i, sum)
+        dimension.sums.b <- apply(b, i, sum)
+        dimension.diff <- (dimension.sums.a - dimension.sums.b) %>% abs %>% sum
+        dimension.length <- dims[i]
+        dimension.diffs[[i]] <- dimension.diff/dimension.length
+    }
+    total.compare <- entry.compare + sum(dimension.diffs)
+    return(total.compare)
+}
+
 bin.continuous.lists.as.discrete <- function(list.a, list.b) {
     a.length <- list.a %>% length
     b.length <- list.b %>% length
@@ -222,3 +239,9 @@ compare.germline.gene.distributions <- function(data.table.a, data.table.b, gene
     return(divergence)
 }
 
+compare.vdj.distributions <- function(dt.a, dt.b) {
+    table.a <- table(dt.a$v_gene, dt.a$d_gene, dt.a$j_gene)
+    table.b <- table(dt.b$v_gene, dt.b$d_gene, dt.b$j_gene)
+    divergence <- compare.categorical.distributions(table.a, table.b)
+    return(divergence)
+}
