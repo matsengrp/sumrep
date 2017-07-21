@@ -165,3 +165,9 @@ test.compare.distances.from.naive.to.mature <- function() {
     checkEquals(c2, c3)
     checkTrue(c2 > 0)
 }
+
+test.get.GRAVY.distribution <- function() {
+    s <- c("AAA", "GGG", "ACGTACGTACGT")
+    checkEquals(get.GRAVY.distribution(s) %>% sort,
+                c(-0.4, 0.8, 1.8))
+}

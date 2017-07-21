@@ -76,8 +76,14 @@ get.JS.divergence <- function(list.a, list.b, continuous=FALSE) {
     return(divergence)
 }
 
+remove.empty.strings <- function(l) {
+    return(l[l != ""])
+}
+
 standardize.list <- function(l) {
-    new.list <- l %>% sapply(paste, collapse='') %>% unname
+    new.list <- l %>% 
+                sapply(toString) %>%
+                sapply(paste, collapse='') %>% unname
     return(new.list)
 }
 
@@ -248,5 +254,21 @@ compare.vdj.distributions <- function(dt.a, dt.b) {
     table.a <- table(dt.a$v_gene, dt.a$d_gene, dt.a$j_gene)
     table.b <- table(dt.b$v_gene, dt.b$d_gene, dt.b$j_gene)
     divergence <- compare.categorical.distributions(table.a, table.b)
+    return(divergence)
+}
+
+get.GRAVY.distribution <- function(sequence.list) {
+    dist <- sequence.list %>% remove.empty.strings %>% 
+            standardize.list %>%
+            sapply(gravy) %>% unname
+    return(dist)
+}
+
+
+compare.GRAVY.distributions <- function(list.a, list.b) {
+    dist.a <- get.GRAVY.distribution(list.a)
+    dist.b <- get.GRAVY.distribution(list.b)
+    divergence <- get.JS.divergence(list.a, list.b,
+                                    continuous=TRUE)
     return(divergence)
 }
