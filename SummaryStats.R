@@ -1,9 +1,9 @@
 library(alakazam)
 library(ape)
 library(Biostrings)
+library(data.table)
 library(dplyr)
 library(flexmix)
-library(data.table)
 library(pegas)
 library(RecordLinkage)
 library(shazam)
@@ -200,23 +200,36 @@ call.partis <- function(action, input.filename, output.filename, partis.path, nu
                      "-n", num.procs)
     command %>% system
     partis.dataset <- output.filename %>% fread(stringsAsFactors=TRUE)
+    return(partis.dataset)
+} 
+
+annotate.sequences <- function(input.filename, output.filename="partis_output.csv", 
+                               partis.path='partis', num.procs=4, cleanup=TRUE, do.full.annotation=TRUE) {
+    annotated.data <- call.partis("annotate", input.filename, output.filename, 
+                                  partis.path, num.procs, cleanup)
+    if(do.full.annotation) {
+        extended.output.filename <- "new_output.csv"
+        system(paste("python process_output.py", output.filename, extended.output.filename, sep=' '))
+        annotated.data <- extended.output.filename %>% fread(stringsAsFactors=TRUE)
+        
+        if(cleanup) {
+            extended.output.filename %>% file.remove
+        }
+    }
+
     if(cleanup) {
         paste("rm", output.filename, sep=' ') %>% system
+
         if("_output" %in% list.files()) {
             if(length(list.files("_output")) == 0) {
                 "_output" %>% unlink(recursive=TRUE)
             }
         }
+
         files.to.remove <- dir(path=".", pattern="*cluster-annotations.csv")
         files.to.remove %>% file.remove
     }
-    return(partis.dataset)
-} 
 
-annotate.sequences <- function(input.filename, output.filename="partis_output.csv", 
-                               partis.path='partis', num.procs=4, cleanup=TRUE) {
-    annotated.data <- call.partis("annotate", input.filename, output.filename, 
-                                  partis.path, num.procs, cleanup)
     return(annotated.data)
 }
 
