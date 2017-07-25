@@ -12,7 +12,7 @@ seq.8 <- c("AAAAAA", "TTTTTT", "AAAA", "AAAAACC", "AAAAAAATTTT", "GGGCCCCCGG")
 seq.9 <- list("AAAAAC", c("T", "T", "T", "C", "C", "T"), "AAAAGGGG", "AAAAACCCC", "CCCCTTTC", 
               list("G", "G", "G", "C", "C", "C", "C", "C", "G", "G"))
 
-applyRowColumnNames <- function(m) {
+applyRowAndColumnNames <- function(m) {
     y <- m
     rownames(y) <- colnames(y) <- 1:dim(y)[1]
     return(y)
@@ -37,16 +37,16 @@ test.getDistanceVector <- function() {
 }
 
 test.getDistanceMatrix <- function() {
-    m <- matrix(0, 2, 2) %>% applyRowColumnNames
+    m <- matrix(0, 2, 2) %>% applyRowAndColumnNames
     checkEquals(getDistanceMatrix(seq.1), m)
 
-    m2 <- matrix(c(0, 1, 1, 0), 2, 2) %>% applyRowColumnNames
+    m2 <- matrix(c(0, 1, 1, 0), 2, 2) %>% applyRowAndColumnNames
     checkEquals(getDistanceMatrix(seq.2), m2)
 
-    m3 <- matrix(c(0, 4, 4, 0), 2, 2) %>% applyRowColumnNames
+    m3 <- matrix(c(0, 4, 4, 0), 2, 2) %>% applyRowAndColumnNames
     checkEquals(getDistanceMatrix(seq.3), m3)
 
-    m4 <- matrix(0, 2, 2) %>% applyRowColumnNames
+    m4 <- matrix(0, 2, 2) %>% applyRowAndColumnNames
     checkEquals(getDistanceMatrix(seq.4), m4)
 }
 
