@@ -171,3 +171,10 @@ test.getGRAVYDistribution <- function() {
     checkEquals(getGRAVYDistribution(s) %>% sort,
                 c(-0.4, 0.8, 1.8))
 }
+
+test.annotateSequences <- function() {
+    dt_a <- annotateSequences("Tests/test_data.fa", do_full_annotation=FALSE)
+    dt_b <- annotateSequences("Tests/test_data.fa", output_filename="blah.csv",
+                              num_procs=8)
+    "_output" %>% unlink(recursive=TRUE)
+}
