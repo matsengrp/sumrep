@@ -285,3 +285,28 @@ compare.GRAVY.distributions <- function(list.a, list.b) {
                                     continuous=TRUE)
     return(divergence)
 }
+
+extract.CDR3.codon.start.positions <- function(dictionary) {
+    parse.python.key.value <- function(x) {
+        splits <- x %>% strsplit(split=",") 
+        pair <- gsub("[^0-9]", " ", splits) %>% strsplit("\\s+") %>% unlist %>% remove.empty.strings
+        start <- pair[2]
+        return(start)
+    }
+
+    dict.length <- length(dictionary)
+    positions <- dictionary %>% sapply(toString) %>% sapply(parse.python.key.value) %>% unlist %>% as.numeric
+
+    # partis returns zero-based positions, so add one. 
+    positions <- positions + 1
+    return(positions)
+}
+
+get.CDR3s <- function(dt, raw.seqs) {
+    codon_starts <- dt$codon_positions %>% extract.CDR3.codon.start.positions
+    codon_ends <- codon_starts + dt$cdr3_length
+    collapsed.seqs <- raw.seqs %>% sapply(paste, collapse='')
+    ordered.seqs <- collapsed.seqs[dt$unique_ids]
+    cdr3s <- ordered.seqs %>% substr(codon_starts, codon_ends - 1)
+    return(cdr3s)
+}
