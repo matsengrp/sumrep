@@ -1,15 +1,15 @@
 source("SummaryStats.R")
 library(dplyr)
 
-seq.1 <- c(A="AT", B="AT")
-seq.2 <- list(A="AA", B="AC")
-seq.3 <- c(A="", B="C-TA")
-seq.4 <- c(A="", B="")
-seq.5 <- c("AAA", "AAT", "TTT")
-seq.6 <- c("A-T-", "GCAC", "CGGC", "ACGT")
-seq.7 <- list(c("G", "T"), c("T", "A"))
-seq.8 <- c("AAAAAA", "TTTTTT", "AAAA", "AAAAACC", "AAAAAAATTTT", "GGGCCCCCGG")
-seq.9 <- list("AAAAAC", c("T", "T", "T", "C", "C", "T"), "AAAAGGGG", "AAAAACCCC", "CCCCTTTC", 
+seq_1 <- c(A="AT", B="AT")
+seq_2 <- list(A="AA", B="AC")
+seq_3 <- c(A="", B="C-TA")
+seq_4 <- c(A="", B="")
+seq_5 <- c("AAA", "AAT", "TTT")
+seq_6 <- c("A-T-", "GCAC", "CGGC", "ACGT")
+seq_7 <- list(c("G", "T"), c("T", "A"))
+seq_8 <- c("AAAAAA", "TTTTTT", "AAAA", "AAAAACC", "AAAAAAATTTT", "GGGCCCCCGG")
+seq_9 <- list("AAAAAC", c("T", "T", "T", "C", "C", "T"), "AAAAGGGG", "AAAAACCCC", "CCCCTTTC", 
               list("G", "G", "G", "C", "C", "C", "C", "C", "G", "G"))
 
 applyRowAndColumnNames <- function(m) {
@@ -22,44 +22,44 @@ test.binContinuousListsAsDiscrete <- function() {
     l1 <- 1:20
     l2 <- rep(1, 20)
     binned <- binContinuousListsAsDiscrete(l1, l2)
-    bin.a <- binned[[1]]
-    bin.b <- binned[[2]]
-    checkEquals(bin.a, rep(4, 5))
-    checkEquals(bin.b, c(20, rep(0, 4)))
+    bin_a <- binned[[1]]
+    bin_b <- binned[[2]]
+    checkEquals(bin_a, rep(4, 5))
+    checkEquals(bin_b, c(20, rep(0, 4)))
 }
 
 test.getDistanceVector <- function() {
-    checkEquals(getDistanceVector(seq.1), 0)
-    checkEquals(getDistanceVector(seq.2), 1)
-    checkEquals(getDistanceVector(seq.3), 4)
-    checkEquals(getDistanceVector(seq.4), 0)
-    checkEquals(getDistanceVector(seq.7), 2)
+    checkEquals(getDistanceVector(seq_1), 0)
+    checkEquals(getDistanceVector(seq_2), 1)
+    checkEquals(getDistanceVector(seq_3), 4)
+    checkEquals(getDistanceVector(seq_4), 0)
+    checkEquals(getDistanceVector(seq_7), 2)
 }
 
 test.getDistanceMatrix <- function() {
     m <- matrix(0, 2, 2) %>% applyRowAndColumnNames
-    checkEquals(getDistanceMatrix(seq.1), m)
+    checkEquals(getDistanceMatrix(seq_1), m)
 
     m2 <- matrix(c(0, 1, 1, 0), 2, 2) %>% applyRowAndColumnNames
-    checkEquals(getDistanceMatrix(seq.2), m2)
+    checkEquals(getDistanceMatrix(seq_2), m2)
 
     m3 <- matrix(c(0, 4, 4, 0), 2, 2) %>% applyRowAndColumnNames
-    checkEquals(getDistanceMatrix(seq.3), m3)
+    checkEquals(getDistanceMatrix(seq_3), m3)
 
     m4 <- matrix(0, 2, 2) %>% applyRowAndColumnNames
-    checkEquals(getDistanceMatrix(seq.4), m4)
+    checkEquals(getDistanceMatrix(seq_4), m4)
 }
 
 test.getNearestNeighborDistances <- function() {
     d1 <- c(0, 0)
-    checkEquals(getNearestNeighborDistances(seq.1), d1)
+    checkEquals(getNearestNeighborDistances(seq_1), d1)
 
     d2 <- c(1, 1, 2)    
-    checkEquals(getNearestNeighborDistances(seq.5) %>% sort, d2)
+    checkEquals(getNearestNeighborDistances(seq_5) %>% sort, d2)
 
-    checkEquals(getNearestNeighborDistances(seq.6, k=1), c(3, 3, 3, 3))
-    checkEquals(getNearestNeighborDistances(seq.6, k=2), c(4, 3, 3, 3))
-    checkEquals(getNearestNeighborDistances(seq.6, k=3), c(4, 4, 4, 3))
+    checkEquals(getNearestNeighborDistances(seq_6, k=1), c(3, 3, 3, 3))
+    checkEquals(getNearestNeighborDistances(seq_6, k=2), c(4, 3, 3, 3))
+    checkEquals(getNearestNeighborDistances(seq_6, k=3), c(4, 4, 4, 3))
 }
 
 test.comparePairwiseDistanceDistributions <- function() {
@@ -79,40 +79,40 @@ test.comparePairwiseDistanceDistributions <- function() {
 
 test.getGCDistribution <- function() {
     d1 <- rep(0, 3)
-    checkEquals(getGCDistribution(seq.5), d1)
+    checkEquals(getGCDistribution(seq_5), d1)
 
     d2 <- c(0, 0.75, 1.0, 0.5)
-    checkEquals(getGCDistribution(seq.6), d2)
+    checkEquals(getGCDistribution(seq_6), d2)
 }
 
 test.compareGCDistributions <- function() {
-    checkEquals(compareGCDistributions(seq.2, seq.7), 0)    
-    c1 <- compareGCDistributions(seq.8, seq.9)
-    c2 <- compareGCDistributions(seq.9, seq.8)
+    checkEquals(compareGCDistributions(seq_2, seq_7), 0)    
+    c1 <- compareGCDistributions(seq_8, seq_9)
+    c2 <- compareGCDistributions(seq_9, seq_8)
     checkTrue(c1 > 0)
     checkTrue(c1 == c2)
 }
 
 test.getHotspotCount <- function() {
-    seq.a <- "TTTTT"
-    seq.b <- list("AAC", "TTTT")
-    seq.c <- "NWRC"
-    seq.d <- c("WRC", "WRC", "WGC")
-    checkEquals(getHotspotCount(seq.a), 0)
-    checkEquals(getHotspotCount(seq.b), 2)
-    checkEquals(getHotspotCount(seq.c), 3)
-    checkEquals(getHotspotCount(seq.d), 5)
+    seq_a <- "TTTTT"
+    seq_b <- list("AAC", "TTTT")
+    seq_c <- "NWRC"
+    seq_d <- c("WRC", "WRC", "WGC")
+    checkEquals(getHotspotCount(seq_a), 0)
+    checkEquals(getHotspotCount(seq_b), 2)
+    checkEquals(getHotspotCount(seq_c), 3)
+    checkEquals(getHotspotCount(seq_d), 5)
 }
 
 test.getColdspotCount <- function() {
-    seq.a <- "TTTTT"
-    seq.b <- list("GCC", "AAA", "AAAA")
-    seq.c <- c("AAA", "CTC")
-    seq.d <- "SYCSYC"
-    checkEquals(getColdspotCount(seq.a), 0)
-    checkEquals(getColdspotCount(seq.b), 1)
-    checkEquals(getColdspotCount(seq.c), 1)
-    checkEquals(getColdspotCount(seq.d), 4)
+    seq_a <- "TTTTT"
+    seq_b <- list("GCC", "AAA", "AAAA")
+    seq_c <- c("AAA", "CTC")
+    seq_d <- "SYCSYC"
+    checkEquals(getColdspotCount(seq_a), 0)
+    checkEquals(getColdspotCount(seq_b), 1)
+    checkEquals(getColdspotCount(seq_c), 1)
+    checkEquals(getColdspotCount(seq_d), 4)
 }
 
 test.getNucleotideDiversity <- function() {
@@ -149,18 +149,18 @@ test.getDistancesFromNaiveToMature <- function() {
 }
 
 test.compareDistancesFromNaiveToMature <- function() {
-    naive.a <- c("AAAAAA")
-    naive.b <- c("GGGGGG")
+    naive_a <- c("AAAAAA")
+    naive_b <- c("GGGGGG")
     m1 <- c("AAAAAA")
     m2 <- c("AAAAAG")
     m3 <- c("GAAAAA")
     m4 <- c("AAAGGG")
     m5 <- c("GGGG")
-    m.list.1 <- list(m1, m2, m3)
-    m.list.2 <- list(m2, m3, m4) 
-    c1 <- compareDistancesFromNaiveToMature(naive.a, m.list.1, naive.a, m.list.1)
-    c2 <- compareDistancesFromNaiveToMature(naive.a, m.list.1, naive.b, m.list.2)
-    c3 <- compareDistancesFromNaiveToMature(naive.b, m.list.2, naive.a, m.list.1)
+    m_list_1 <- list(m1, m2, m3)
+    m_list_2 <- list(m2, m3, m4) 
+    c1 <- compareDistancesFromNaiveToMature(naive_a, m_list_1, naive_a, m_list_1)
+    c2 <- compareDistancesFromNaiveToMature(naive_a, m_list_1, naive_b, m_list_2)
+    c3 <- compareDistancesFromNaiveToMature(naive_b, m_list_2, naive_a, m_list_1)
     checkEquals(c1, 0)
     checkEquals(c2, c3)
     checkTrue(c2 > 0)
