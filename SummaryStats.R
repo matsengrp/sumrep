@@ -10,7 +10,7 @@ library(shazam)
 library(stringdist)
 library(textmineR)
 
-compare.categorical.distributions <- function(a, b) {
+compareCategoricalDistributions <- function(a, b) {
     dims <- dim(a)
     entry.compare <- (a - b) %>% abs %>% sum
     entry.compare <- entry.compare/prod(dims)
@@ -27,7 +27,7 @@ compare.categorical.distributions <- function(a, b) {
     return(total.compare)
 }
 
-bin.continuous.lists.as.discrete <- function(list.a, list.b) {
+binContinuousListsAsDiscrete <- function(list.a, list.b) {
     a.length <- list.a %>% length
     b.length <- list.b %>% length
     bin.count <- min(a.length, b.length) %>% sqrt %>% ceiling
@@ -38,7 +38,7 @@ bin.continuous.lists.as.discrete <- function(list.a, list.b) {
     return(list(table.a, table.b))
 }
 
-get.continuous.JS.divergence <- function(sample.1, sample.2) {
+getContinuousJSDivergence <- function(sample.1, sample.2) {
     m <- function(x) {
         result <- 0.5*(p(x) + q(x))
         return(result)
@@ -63,10 +63,10 @@ get.continuous.JS.divergence <- function(sample.1, sample.2) {
     return(JS.divergence)
 }
 
-get.JS.divergence <- function(list.a, list.b, continuous=FALSE) {
+getJSDivergence <- function(list.a, list.b, continuous=FALSE) {
     if(continuous) {
-        binned <- bin.continuous.lists.as.discrete(list.a, list.b)
-        divergence <- get.continuous.JS.divergence(binned[[1]], binned[[2]])
+        binned <- binContinuousListsAsDiscrete(list.a, list.b)
+        divergence <- CalcJSDivergence(binned[[1]], binned[[2]])
     } else {
         max.val <- max(list.a, list.b)
         table.a <- list.a %>% factor(levels=0:max.val) %>% table %>% as.vector
@@ -76,45 +76,45 @@ get.JS.divergence <- function(list.a, list.b, continuous=FALSE) {
     return(divergence)
 }
 
-remove.empty.strings <- function(l) {
+removeEmptyStrings <- function(l) {
     return(l[l != ""])
 }
 
-standardize.list <- function(l) {
+standardizeList <- function(l) {
     new.list <- l %>% 
                 sapply(toString) %>%
                 sapply(paste, collapse='') %>% unname
     return(new.list)
 }
 
-determine.comparison.method <- function(sequences) {
-    length.count <- sequences %>% standardize.list %>% sapply(nchar) %>% table %>% length 
+determineComparisonMethod <- function(sequences) {
+    length.count <- sequences %>% standardizeList %>% sapply(nchar) %>% table %>% length 
     comparison.method <- ifelse(length.count > 1, "lv", "hamming")
     return(comparison.method)
 }
 
-get.distance.matrix <- function(raw.sequences) {
-    sequence.list <- raw.sequences %>% standardize.list
-    comparison.method <- sequence.list %>% determine.comparison.method
+getDistanceMatrix <- function(raw.sequences) {
+    sequence.list <- raw.sequences %>% standardizeList
+    comparison.method <- sequence.list %>% determineComparisonMethod
     mat <- sequence.list %>% stringdistmatrix(method=comparison.method) %>% as.matrix
     return(mat)
 }
 
-get.distance.vector <- function(sequence.list) {
-    mat <- sequence.list %>% get.distance.matrix
+getDistanceVector <- function(sequence.list) {
+    mat <- sequence.list %>% getDistanceMatrix
     vec <- mat[mat %>% lower.tri] %>% as.vector %>% sort
     return(vec)
 }
 
-compare.pairwise.distance.distribution <- function(list.a, list.b) {    
-    distances.a <- list.a %>% get.distance.vector
-    distances.b <- list.b %>% get.distance.vector
-    divergence <- get.JS.divergence(distances.a, distances.b)
+comparePairwiseDistanceDistributions <- function(list.a, list.b) {    
+    distances.a <- list.a %>% getDistanceVector
+    distances.b <- list.b %>% getDistanceVector
+    divergence <- getJSDivergence(distances.a, distances.b)
     return(divergence)
 }
 
-get.nearest.neighbor.distances <- function(sequence.list, k=1) {
-    mat <- sequence.list %>% get.distance.matrix
+getNearestNeighborDistances <- function(sequence.list, k=1) {
+    mat <- sequence.list %>% getDistanceMatrix
     n <- sequence.list %>% length
     distances <- rep(NA, n)
     for(i in 1:n) {
@@ -123,73 +123,73 @@ get.nearest.neighbor.distances <- function(sequence.list, k=1) {
     return(distances)
 }
 
-compare.NN.distance.distribution <- function(list.a, list.b, k=1) {
-    distances.a <- list.a %>% get.nearest.neighbor.distances(k=k)
-    distances.b <- list.b %>% get.nearest.neighbor.distances(k=k)
-    divergence <- get.JS.divergence(distances.a, distances.b)
+compareNNDistanceDistribution <- function(list.a, list.b, k=1) {
+    distances.a <- list.a %>% getNearestNeighborDistances(k=k)
+    distances.b <- list.b %>% getNearestNeighborDistances(k=k)
+    divergence <- getJSDivergence(distances.a, distances.b)
     return(divergence)
 }
 
-get.GC.distribution <- function(raw.sequences) {
+getGCDistribution <- function(raw.sequences) {
     sequence.list <- raw.sequences %>% sapply(paste, collapse='') %>% unname
     dna.list <- sequence.list %>% strsplit(split='') %>% lapply(as.DNAbin)
     gc.dist <- dna.list %>% sapply(GC.content)
     return(gc.dist)
 }
 
-compare.GC.distributions <- function(list.a, list.b) {
-    density.a <- list.a %>% get.GC.distribution
-    density.b <- list.b %>% get.GC.distribution
-    divergence <- get.JS.divergence(density.a, density.b, continuous=TRUE)
+compareGCDistributions <- function(list.a, list.b) {
+    density.a <- list.a %>% getGCDistribution
+    density.b <- list.b %>% getGCDistribution
+    divergence <- getJSDivergence(density.a, density.b, continuous=TRUE)
     return(divergence)
 }
 
-get.motif.count <- function(motif, subject) {
+getMotifCount <- function(motif, subject) {
     dna.strings <- subject %>% unlist %>% DNAStringSet
     count <- motif %>% vcountPattern(dna.strings, fixed=FALSE) %>% sum
     return(count)
 }
 
-get.hotspot.count <- function(dna.sequence) {
+getHotspotCount <- function(dna.sequence) {
     hotspots <- c("WRC", "WA")
-    count <- hotspots %>% sapply(get.motif.count, subject=dna.sequence) %>% sum
+    count <- hotspots %>% sapply(getMotifCount, subject=dna.sequence) %>% sum
     return(count)
 }
 
-get.coldspot.count <- function(dna.sequence) {
+getColdspotCount <- function(dna.sequence) {
     coldspot <- "SYC"
-    count <- coldspot %>% get.motif.count(dna.sequence)
+    count <- coldspot %>% getMotifCount(dna.sequence)
     return(count)
 }
 
-get.nucleotide.diversity <- function(repertoire) {
+getNucleotideDiversity <- function(repertoire) {
     diversity <- repertoire %>% sapply(strsplit, split='') %>% as.DNAbin %>% nuc.div
     return(diversity)
 }
 
-compare.nucleotide.diversities <- function(rep.a, rep.b) {
-    nuc.div.a <- get.nucleotide.diversity(rep.a)
-    nuc.div.b <- get.nucleotide.diversity(rep.b)    
+compareNucleotideDiversities <- function(rep.a, rep.b) {
+    nuc.div.a <- getNucleotideDiversity(rep.a)
+    nuc.div.b <- getNucleotideDiversity(rep.b)    
     distance <- (nuc.div.b - nuc.div.a) %>% abs
     return(distance)
 }
 
-get.distances.from.naive.to.mature <- function(naive, mature.list) {
-    comparison.method <- mature.list %>% standardize.list %>% determine.comparison.method
+getDistancesFromNaiveToMature <- function(naive, mature.list) {
+    comparison.method <- mature.list %>% standardizeList %>% determineComparisonMethod
     distances <- mature.list %>% 
                  sapply(stringdist, b=naive, method=comparison.method) %>% sort
     return(distances)
 }
 
-compare.distances.from.naive.to.mature <- function(naive.a, mature.list.a, 
+compareDistancesFromNaiveToMature <- function(naive.a, mature.list.a, 
                                                    naive.b, mature.list.b) {
-    distances.a <- get.distances.from.naive.to.mature(naive.a, mature.list.a)
-    distances.b <- get.distances.from.naive.to.mature(naive.b, mature.list.b)
-    divergence <- get.JS.divergence(distances.a, distances.b)
+    distances.a <- getDistancesFromNaiveToMature(naive.a, mature.list.a)
+    distances.b <- getDistancesFromNaiveToMature(naive.b, mature.list.b)
+    divergence <- getJSDivergence(distances.a, distances.b)
     return(divergence)
 }
 
-call.partis <- function(action, input.filename, output.filename, partis.path, num.procs, 
+callPartis <- function(action, input.filename, output.filename, partis.path, num.procs, 
                         cleanup) {
     shell <- Sys.getenv("SHELL")
     command <- paste(shell, "run_partis.sh", 
@@ -203,13 +203,15 @@ call.partis <- function(action, input.filename, output.filename, partis.path, nu
     return(partis.dataset)
 } 
 
-annotate.sequences <- function(input.filename, output.filename="partis_output.csv", 
-                               partis.path='partis', num.procs=4, cleanup=TRUE, do.full.annotation=TRUE) {
-    annotated.data <- call.partis("annotate", input.filename, output.filename, 
+annotateSequences <- function(input.filename, output.filename="partis_output.csv", 
+                              partis.path='partis', num.procs=4, cleanup=TRUE, 
+                              do.full.annotation=TRUE) {
+    annotated.data <- callPartis("annotate", input.filename, output.filename, 
                                   partis.path, num.procs, cleanup)
     if(do.full.annotation) {
         extended.output.filename <- "new_output.csv"
-        system(paste("python process_output.py", output.filename, extended.output.filename, sep=' '))
+        system(paste("python process_output.py", output.filename, 
+                     extended.output.filename, sep=' '))
         annotated.data <- extended.output.filename %>% fread(stringsAsFactors=TRUE)
         
         if(cleanup) {
@@ -233,77 +235,79 @@ annotate.sequences <- function(input.filename, output.filename="partis_output.cs
     return(annotated.data)
 }
 
-partition.sequences <- function(input.filename, output.filename="partis_output.csv", 
+partitionSequences <- function(input.filename, output.filename="partis_output.csv", 
                                 partis.path='partis', num.procs=4, cleanup=TRUE) {
-    partitioned.data <- call.partis("partition", input.filename, output.filename, 
+    partitioned.data <- callPartis("partition", input.filename, output.filename, 
                                     partis.path, num.procs, cleanup)
     return(partitioned.data)
 }
 
-get.CDR3.lengths <- function(dt) {
+getCDR3Lengths <- function(dt) {
     CDR3.lengths <- dt$cdr3_length %>% na.omit
     return(CDR3.lengths)
 }
 
-compare.CDR3.lengths <- function(dt.a, dt.b) {
-    a.lengths <- get.CDR3.lengths(dt.a)
-    b.lengths <- get.CDR3.lengths(dt.b)
-    divergence <- get.JS.divergence(a.lengths, b.lengths)
+compareCDR3Lengths <- function(dt.a, dt.b) {
+    a.lengths <- getCDR3Lengths(dt.a)
+    b.lengths <- getCDR3Lengths(dt.b)
+    divergence <- getJSDivergence(a.lengths, b.lengths)
     return(divergence)
 }
 
-compare.germline.gene.distributions <- function(data.table.a, data.table.b, gene.type) {
+compareGermlineGeneDistributions <- function(data.table.a, data.table.b, gene.type) {
     column.name <- switch(gene.type,
                           V="v_gene",
                           D="d_gene",
                           J="j_gene")
     levels.a <- data.table.a[, column.name, with=FALSE] %>% sapply(as.numeric) 
     levels.b <- data.table.b[, column.name, with=FALSE] %>% sapply(as.numeric) 
-    divergence <- get.JS.divergence(levels.a, levels.b)
+    divergence <- getJSDivergence(levels.a, levels.b)
     return(divergence)
 }
 
-compare.vdj.distributions <- function(dt.a, dt.b) {
+compareVDJDistributions <- function(dt.a, dt.b) {
     table.a <- table(dt.a$v_gene, dt.a$d_gene, dt.a$j_gene)
     table.b <- table(dt.b$v_gene, dt.b$d_gene, dt.b$j_gene)
-    divergence <- compare.categorical.distributions(table.a, table.b)
+    divergence <- compareCategoricalDistributions(table.a, table.b)
     return(divergence)
 }
 
-get.GRAVY.distribution <- function(sequence.list) {
-    dist <- sequence.list %>% remove.empty.strings %>% 
-            standardize.list %>%
+getGRAVYDistribution <- function(sequence.list) {
+    dist <- sequence.list %>% removeEmptyStrings %>% 
+            standardizeList %>%
             sapply(gravy) %>% unname
     return(dist)
 }
 
 
-compare.GRAVY.distributions <- function(list.a, list.b) {
-    dist.a <- get.GRAVY.distribution(list.a)
-    dist.b <- get.GRAVY.distribution(list.b)
-    divergence <- get.JS.divergence(list.a, list.b,
+compareGRAVYDistributions <- function(list.a, list.b) {
+    dist.a <- getGRAVYDistribution(list.a)
+    dist.b <- getGRAVYDistribution(list.b)
+    divergence <- getJSDivergence(list.a, list.b,
                                     continuous=TRUE)
     return(divergence)
 }
 
-extract.CDR3.codon.start.positions <- function(dictionary) {
-    parse.python.key.value <- function(x) {
+extractCDR3CodonStartPositions <- function(dictionary) {
+    parsePythonKeyValue <- function(x) {
         splits <- x %>% strsplit(split=",") 
-        pair <- gsub("[^0-9]", " ", splits) %>% strsplit("\\s+") %>% unlist %>% remove.empty.strings
+        pair <- gsub("[^0-9]", " ", splits) %>% strsplit("\\s+") %>% unlist %>% 
+            removeEmptyStrings
         start <- pair[2]
         return(start)
     }
 
     dict.length <- length(dictionary)
-    positions <- dictionary %>% sapply(toString) %>% sapply(parse.python.key.value) %>% unlist %>% as.numeric
+    positions <- dictionary %>% sapply(toString) %>% sapply(parsePythonKeyValue) %>% 
+        unlist %>% as.numeric
 
     # partis returns zero-based positions, so add one. 
     positions <- positions + 1
     return(positions)
 }
 
-get.CDR3s <- function(dt, raw.seqs) {
-    codon_starts <- dt$codon_positions %>% extract.CDR3.codon.start.positions
+getCDR3s <- function(dt, raw.seqs) {
+    codon_starts <- dt$codon_positions %>% extractCDR3CodonStartPositions
     codon_ends <- codon_starts + dt$cdr3_length
     collapsed.seqs <- raw.seqs %>% sapply(paste, collapse='')
     ordered.seqs <- collapsed.seqs[dt$unique_ids]
