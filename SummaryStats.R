@@ -4,6 +4,8 @@ library(Biostrings)
 library(data.table)
 library(dplyr)
 library(flexmix)
+library(jsonlite)
+library(magrittr)
 library(pegas)
 library(RecordLinkage)
 library(shazam)
@@ -298,18 +300,15 @@ compareGRAVYDistributions <- function(list_a, list_b) {
     return(divergence)
 }
 
-extractCDR3CodonStartPositions <- function(dictionary) {
-    parsePythonKeyValue <- function(x) {
-        splits <- x %>% strsplit(split=",") 
-        pair <- gsub("[^0-9]", " ", splits) %>% strsplit("\\s+") %>% unlist %>% 
-            removeEmptyStrings
-        start <- pair[2]
-        return(start)
-    }
+parsePythonDictionary <- function(dictionary) {
+    parsed <- dictionary %>% gsub(pattern="'", replacement='"') %>% fromJSON
+    return(parsed)
+}
 
+extractCDR3CodonStartPositions <- function(dictionary) {
     dict_length <- length(dictionary)
-    positions <- dictionary %>% sapply(toString) %>% sapply(parsePythonKeyValue) %>% 
-        unlist %>% as.numeric
+    positions <- dictionary %>% sapply(toString) %>% lapply(parsePythonDictionary) %>% 
+        sapply(extract, "v") %>% unlist %>% as.numeric
 
     # partis returns zero-based positions, so add one. 
     positions <- positions + 1
