@@ -10,21 +10,30 @@ library(shazam)
 library(stringdist)
 library(textmineR)
 
-compareCategoricalDistributions <- function(a, b) {
-    dims <- dim(a)
-    entry.compare <- (a - b) %>% abs %>% sum
-    entry.compare <- entry.compare/prod(dims)
-    dimension.count <- dims %>% length
-    dimension.diffs <- rep(NA, dimension.count)
-    for(i in 1:dimension.count) {
-        dimension.sums.a <- apply(a, i, sum)
-        dimension.sums.b <- apply(b, i, sum)
-        dimension.diff <- (dimension.sums.a - dimension.sums.b) %>% abs %>% sum
-        dimension.lengths <- dims[-i]
-        dimension.diffs[[i]] <- dimension.diff/prod(dimension.lengths)
+compareCategoricalDistributions <- function(table_a, table_b) {
+    table_a_dims <- table_a %>% dim
+    table_b_dims <- table_b %>% dim
+    dim_count_a <- table_a_dims %>% length
+    dim_count_b <- table_b_dims %>% length
+    if(dim_count_a != dim_count_b || !all(table_a_dims == table_b_dims)) {
+        stop("Table dimensions must agree")
     }
-    total.compare <- entry.compare + sum(dimension.diffs)
-    return(total.compare)
+    dims <- table_a_dims
+    entrywise_sum_of_absolute_differences <- (table_a - table_b) %>% abs %>% sum
+    entrywise_comparison <- entrywise_sum_of_absolute_differences/prod(dims)
+    dimension_count <- dims %>% length
+    dimension_comparisons <- rep(NA, dimension_count)
+    for(i in 1:dimension_count) {
+        dimension_sums_a <- apply(table_a, i, sum)
+        dimension_sums_b <- apply(table_b, i, sum)
+        dimension_sum_of_absolute_differences <- 
+            (dimension_sums_a - dimension_sums_b) %>% abs %>% sum
+        other_dims <- dims[-i]
+        dimension_comparisons[[i]] <- 
+            dimension_sum_of_absolute_differences/prod(other_dims)
+    }
+    total_comparison <- entrywise_comparison + sum(dimension_comparisons)
+    return(total_comparison)
 }
 
 binContinuousListsAsDiscrete <- function(list.a, list.b) {
