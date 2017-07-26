@@ -7,6 +7,10 @@ test_that("test.annotateSequences", {
     dt_b <- annotateSequences(test_data_path, output_filename = "blah.csv", 
         num_procs = 8)
     "_output" %>% unlink(recursive = TRUE)
+    expect_equal(ncol(dt_a), 28)
+    expect_equal(nrow(dt_a), 20)
+    expect_equal(ncol(dt_b), 41)
+    expect_equal(nrow(dt_b), 17)
 })
 
 test_that("test.binContinuousListsAsDiscrete", {
