@@ -9,6 +9,7 @@ library(magrittr)
 library(pegas)
 library(RecordLinkage)
 library(shazam)
+library(seqinr)
 library(stringdist)
 library(textmineR)
 
@@ -225,7 +226,8 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
         extended_output_filename <- "new_output.csv"
         system(paste("python process_output.py", output_filename, 
                      extended_output_filename, sep=' '))
-        annotated_data <- extended_output_filename %>% fread(stringsAsFactors=TRUE)
+        annotated_data <- extended_output_filename %>% fread(stringsAsFactors=TRUE) %>% 
+            subset(select=which(!duplicated(names(.))))
         
         if(cleanup) {
             extended_output_filename %>% file.remove

@@ -23,7 +23,8 @@ else:
 with open(input_filename) as infile:
     with open(output_filename, 'w') as outfile:
         reader = csv.DictReader(infile)
-        writer_fieldnames = utils.annotation_headers + [name for name in utils.implicit_linekeys] 
+        writer_fieldnames = utils.annotation_headers + \
+                [name for name in utils.implicit_linekeys] 
         writer = csv.DictWriter(outfile, writer_fieldnames)
         writer.writeheader()
         for line in reader:
@@ -31,7 +32,9 @@ with open(input_filename) as infile:
                 continue
             utils.process_input_line(line)
             utils.add_implicit_info(glfo, line)
-            line_to_write = {key:value for key, value in utils.get_line_for_output(line).items() \
+            output_line_items = utils.get_line_for_output(line).items()
+            line_to_write = {key:value \
+                    for key, value in output_line_items \
                     if key in writer_fieldnames} 
             writer.writerow(line_to_write)
 
