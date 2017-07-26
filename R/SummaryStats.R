@@ -206,7 +206,8 @@ compareDistancesFromNaiveToMature <- function(naive_a, mature_list_a,
 callPartis <- function(action, input_filename, output_filename, partis_path, num_procs, 
                         cleanup) {
     shell <- Sys.getenv("SHELL")
-    command <- paste(shell, "run_partis.sh", 
+    script.file <- system.file("run_partis.sh", package="sumrep")
+    command <- paste(shell, script.file, 
                      "-p", partis_path, 
                      "-a", action, 
                      "-i", input_filename, 
@@ -224,7 +225,8 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
                                   partis_path, num_procs, cleanup)
     if(do_full_annotation) {
         extended_output_filename <- "new_output.csv"
-        system(paste("python process_output.py", output_filename, 
+        script.file <- system.file("process_output.py", package="sumrep")
+        system(paste("python", script.file, output_filename, 
                      extended_output_filename, sep=' '))
         annotated_data <- extended_output_filename %>% fread(stringsAsFactors=TRUE) %>% 
             subset(select=which(!duplicated(names(.))))
