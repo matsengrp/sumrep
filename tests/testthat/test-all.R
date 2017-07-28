@@ -7,9 +7,9 @@ test_that("test.annotateSequences", {
     dt_b <- annotateSequences(test_data_path, output_filename = "blah.csv", 
         num_procs = 8)
     "_output" %>% unlink(recursive = TRUE)
-    expect_equal(ncol(dt_a), 28)
+    expect_equal(ncol(dt_a), 29)
     expect_equal(nrow(dt_a), 20)
-    expect_equal(ncol(dt_b), 41)
+    expect_equal(ncol(dt_b), 42)
     expect_equal(nrow(dt_b), 17)
 })
 
@@ -31,14 +31,11 @@ test_that("test.compareDistancesFromNaiveToMature", {
     m3 <- c("GAAAAA")
     m4 <- c("AAAGGG")
     m5 <- c("GGGG")
-    m_list_1 <- list(m1, m2, m3)
-    m_list_2 <- list(m2, m3, m4)
-    c1 <- compareDistancesFromNaiveToMature(naive_a, m_list_1, 
-        naive_a, m_list_1)
-    c2 <- compareDistancesFromNaiveToMature(naive_a, m_list_1, 
-        naive_b, m_list_2)
-    c3 <- compareDistancesFromNaiveToMature(naive_b, m_list_2, 
-        naive_a, m_list_1)
+    dt_a <- data.table(naive_seq=naive_a, mature_seq=list(m1, m2, m3))
+    dt_b <- data.table(naive_seq=naive_b, mature_seq=list(m2, m3, m4))
+    c1 <- compareDistancesFromNaiveToMature(dt_a, dt_a)
+    c2 <- compareDistancesFromNaiveToMature(dt_a, dt_b)
+    c3 <- compareDistancesFromNaiveToMature(dt_b, dt_a)
     expect_equal(0, c1)
     expect_equal(c3, c2)
     expect_true(c2 > 0)
@@ -100,13 +97,13 @@ test_that("test.getDistanceMatrix", {
 })
 
 test_that("test.getDistancesFromNaiveToMature", {
-    naive <- c("AAAAAA")
+    naives <- c("AAAAAC", rep(c("AAAAAA"), 3))
     m1 <- c("AAAAAT")
     m2 <- c("CGCAAA")
     m3 <- c("GGGGGG")
     m4 <- c("AAAAAA")
-    expect_equal(c(0, 1, 3, 6), getDistancesFromNaiveToMature(naive, 
-        list(m1, m2, m3, m4)))
+    dt <- data.table(naive_seq=naive, mature_seq=c(m1, m2, m3, m4))
+    expect_equal(c(0, 1, 3, 6), getDistancesFromNaiveToMature(dt))
 })
 
 test_that("test.getDistanceVector", {

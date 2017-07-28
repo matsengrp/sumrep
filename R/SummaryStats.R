@@ -187,20 +187,24 @@ compareNucleotideDiversities <- function(repertoire_a, repertoire_b) {
     return(distance)
 }
 
-getDistancesFromNaiveToMature <- function(naive, mature_list) {
-    comparison_method <- mature_list %>% standardizeList %>% 
-        determineComparisonMethod
-    distances <- mature_list %>% 
-                 sapply(stringdist, b=naive, method=comparison_method) %>% sort
+getDistancesFromNaiveToMature <- function(dt) {
+    distances <- dt$mature_seq %>% 
+        mapply(FUN=stringdist, b=dt$naive_seq, method="lv") %>% 
+        sort %>% unname
     return(distances)
 }
 
-compareDistancesFromNaiveToMature <- function(naive_a, mature_list_a, 
-                                                   naive_b, mature_list_b) {
-    distances_a <- getDistancesFromNaiveToMature(naive_a, mature_list_a)
-    distances_b <- getDistancesFromNaiveToMature(naive_b, mature_list_b)
+compareDistancesFromNaiveToMature <- function(dt_a, dt_b) {
+    distances_a <- getDistancesFromNaiveToMature(dt_a)
+    distances_b <- getDistancesFromNaiveToMature(dt_b)
     divergence <- getJSDivergence(distances_a, distances_b)
     return(divergence)
+}
+
+getSequenceListFromFasta <- function(filename) {
+    sequences <- filename %>% read.fasta %>% lapply(paste, collapse="") %>% 
+        unlist %>% unname
+    return(sequences)
 }
 
 callPartis <- function(action, input_filename, output_filename, partis_path, num_procs, 
@@ -249,6 +253,8 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
         files_to_remove %>% file.remove
     }
 
+    raw_sequences <- input_filename %>% getSequenceListFromFasta
+    annotated_data$mature_seq <- raw_sequences[annotated_data$unique_ids]
     return(annotated_data)
 }
 
@@ -319,10 +325,10 @@ extractCDR3CodonStartPositions <- function(dictionary) {
     return(positions)
 }
 
-getCDR3s <- function(dt, raw_seqs) {
+getCDR3s <- function(dt) {
     codon_starts <- dt$codon_positions %>% extractCDR3CodonStartPositions
     codon_ends <- codon_starts + dt$cdr3_length
-    collapsed_seqs <- raw_seqs %>% sapply(paste, collapse='')
+    collapsed_seqs <- dt$mature_seq %>% sapply(paste, collapse='')
     ordered_seqs <- collapsed_seqs[dt$unique_ids]
     cdr3s <- ordered_seqs %>% substr(codon_starts, codon_ends - 1)
     return(cdr3s)
