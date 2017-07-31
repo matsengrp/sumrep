@@ -224,33 +224,24 @@ callPartis <- function(action, input_filename, output_filename, partis_path, num
 
 annotateSequences <- function(input_filename, output_filename="partis_output.csv", 
                               partis_path='partis', num_procs=4, cleanup=TRUE, 
-                              do_full_annotation=TRUE) {
-    annotated_data <- callPartis("annotate", input_filename, output_filename, 
+                              do_full_annotation=TRUE, output_path="_output") {
+    if(length(list.files("_output")) > 0 && output_path == "_output" && cleanup) {
+        stop("_output path already exists. Please remove it or use another path name.")
+    }
+    output_file <- file.path(output_path, output_filename)
+    annotated_data <- callPartis("annotate", input_filename, output_file, 
                                   partis_path, num_procs, cleanup)
     if(do_full_annotation) {
-        extended_output_filename <- "new_output.csv"
-        script.file <- system.file("process_output.py", package="sumrep")
-        system(paste("python", script.file, output_filename, 
+        extended_output_filename <- file.path(output_path, "new_output.csv")
+        script_file <- system.file("process_output.py", package="sumrep")
+        system(paste("python", script_file, output_file, 
                      extended_output_filename, sep=' '))
         annotated_data <- extended_output_filename %>% fread(stringsAsFactors=TRUE) %>% 
             subset(select=which(!duplicated(names(.))))
-        
-        if(cleanup) {
-            extended_output_filename %>% file.remove
-        }
     }
 
     if(cleanup) {
-        paste("rm", output_filename, sep=' ') %>% system
-
-        if("_output" %in% list.files()) {
-            if(length(list.files("_output")) == 0) {
-                "_output" %>% unlink(recursive=TRUE)
-            }
-        }
-
-        files_to_remove <- dir(path=".", pattern="*cluster-annotations.csv")
-        files_to_remove %>% file.remove
+        output_path %>% unlink(recursive=TRUE)
     }
 
     raw_sequences <- input_filename %>% getSequenceListFromFasta

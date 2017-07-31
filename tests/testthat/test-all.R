@@ -6,11 +6,16 @@ test_that("test.annotateSequences", {
     dt_a <- annotateSequences(test_data_path, do_full_annotation = FALSE)
     dt_b <- annotateSequences(test_data_path, output_filename = "blah.csv", 
         num_procs = 8)
-    "_output" %>% unlink(recursive = TRUE)
     expect_equal(ncol(dt_a), 29)
     expect_equal(nrow(dt_a), 20)
     expect_equal(ncol(dt_b), 42)
     expect_equal(nrow(dt_b), 17)
+
+    dir.create("_output")
+    file.create("_output/blah.txt")
+    expect_error(annotateSequences(test_data_path))
+    "_output" %>% unlink(recursive=TRUE)
+    
 })
 
 test_that("test.binContinuousListsAsDiscrete", {
@@ -102,7 +107,7 @@ test_that("test.getDistancesFromNaiveToMature", {
     m2 <- c("CGCAAA")
     m3 <- c("GGGGGG")
     m4 <- c("AAAAAA")
-    dt <- data.table(naive_seq=naive, mature_seq=c(m1, m2, m3, m4))
+    dt <- data.table(naive_seq=naives, mature_seq=c(m1, m2, m3, m4))
     expect_equal(c(0, 1, 3, 6), getDistancesFromNaiveToMature(dt))
 })
 
