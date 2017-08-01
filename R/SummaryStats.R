@@ -44,7 +44,7 @@ binContinuousListsAsDiscrete <- function(list_a, list_b) {
     a_length <- list_a %>% length
     b_length <- list_b %>% length
     bin_count <- min(a_length, b_length) %>% sqrt %>% ceiling
-    bin_count <- ifelse(bin_count  < 2, 2, bin_count)
+    bin_count <- ifelse(bin_count < 2, 2, bin_count)
     bins <- c(list_a, list_b) %>% cut(breaks=bin_count, labels=1:bin_count)
     table_a <- bins[1:a_length] %>% table %>% unname %>% as.vector
     table_b <- bins[-(1:a_length)] %>% table %>% unname %>% as.vector
@@ -120,7 +120,7 @@ getDistanceVector <- function(sequence_list) {
     return(vec)
 }
 
-comparePairwiseDistanceDistributions <- function(list_a, list_b) {    
+comparePairwiseDistanceDistributions <- function(list_a, list_b) {
     distances_a <- list_a %>% getDistanceVector
     distances_b <- list_b %>% getDistanceVector
     divergence <- getJSDivergence(distances_a, distances_b)
@@ -183,7 +183,7 @@ getNucleotideDiversity <- function(repertoire) {
 
 compareNucleotideDiversities <- function(repertoire_a, repertoire_b) {
     nuc_div_a <- getNucleotideDiversity(repertoire_a)
-    nuc_div_b <- getNucleotideDiversity(repertoire_b)    
+    nuc_div_b <- getNucleotideDiversity(repertoire_b)
     distance <- (nuc_div_b - nuc_div_a) %>% abs
     return(distance)
 }
