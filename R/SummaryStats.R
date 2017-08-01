@@ -255,7 +255,11 @@ getMutationInfo <- function(filename) {
     result$allele <- gene_info[2]
     states <- yaml_object$states[-(1:2)]
 
-    substitution_rates <- states %>% sapply(getSubstitutionRate) %>% subset(!is.na(.))
+    overall_substitution_rate <- yaml_object$extras$overall_mute_freq
+    position_substitution_rates <- states %>% sapply(getSubstitutionRate) %>% subset(!is.na(.))
+    substitution_rates <- {}
+    substitution_rates$overall_mut_rate <- overall_substitution_rate
+    substitution_rates$mut_rate_by_position <- position_substitution_rates
     return(substitution_rates)
 }
 

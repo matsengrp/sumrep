@@ -3,11 +3,14 @@ context("All functions")
 
 test_that("test.annotateSequences", {
     test_data_path <- system.file("data/test_data.fa", package="sumrep")
+
     dt_a <- annotateSequences(test_data_path, do_full_annotation = FALSE)
     dt_b <- annotateSequences(test_data_path, output_filename = "blah.csv", 
         output_path="arbitrary", num_procs = 8)
 
     expect_equal(dt_a %>% names, c("annotations", "mutation_rates"))
+    expect_equal(dt_a$mutation_rates[[1]] %>% names, c("overall_mut_rate", "mut_rate_by_position"))
+
     expect_equal(ncol(dt_a$annotations), 29)
     expect_equal(nrow(dt_a$annotations), 20)
     expect_equal(ncol(dt_b$annotations), 42)
