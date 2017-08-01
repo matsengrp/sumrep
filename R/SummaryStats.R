@@ -12,6 +12,7 @@ library(shazam)
 library(seqinr)
 library(stringdist)
 library(textmineR)
+library(yaml)
 
 compareCategoricalDistributions <- function(table_a, table_b) {
     table_a_dims <- table_a %>% dim
@@ -207,8 +208,8 @@ getSequenceListFromFasta <- function(filename) {
     return(sequences)
 }
 
-callPartis <- function(action, input_filename, output_filename, partis_path, num_procs, 
-                        cleanup) {
+callPartis <- function(action, input_filename, output_filename, output_path, 
+                       partis_path, num_procs, cleanup) {
     shell <- Sys.getenv("SHELL")
     script.file <- system.file("run_partis.sh", package="sumrep")
     command <- paste(shell, script.file, 
@@ -216,21 +217,72 @@ callPartis <- function(action, input_filename, output_filename, partis_path, num
                      "-a", action, 
                      "-i", input_filename, 
                      "-o", output_filename, 
-                     "-n", num_procs)
+                     "-n", num_procs,
+                     "-h", file.path(output_path, "params"))
     command %>% system
     partis_dataset <- output_filename %>% fread(stringsAsFactors=TRUE)
     return(partis_dataset)
 } 
 
+getMutationInfo <- function(filename) {
+    getSubstitutionRate <- function(state) {
+        position <- state$name %>% strsplit("_") %>% unlist %>% last
+        if(!grepl("[0-9]+", gsub("[^0-9]+", "", position))) {
+            # The state in question does not represent an allele-position entry
+            # (partis returns various metadata as 'states')
+            result <- NA
+        } else {
+            # Partis returns zero-based position values, so add one
+            position <- as.numeric(position) + 1
+            germline_base <- state$extras$germline
+            pos_emissions <- state$emissions
+            highest_base_sub <- pos_emissions$probs %>% which.max %>% names
+
+            # If the germline is not the most frequent base, the rate is unreliable,
+            # so treat as missing info
+            result <- ifelse(highest_base_sub == germline_base,
+                             1 - get(highest_base_sub, pos_emissions$probs),
+                             NA)
+        }
+        names(result) <- position
+        return(result)
+    }
+
+    result <- list()
+    yaml_object <- yaml.load_file(filename)
+    gene_info <- yaml_object$name %>% strsplit("_star_") %>% unlist
+    result$gene <- gene_info[1]
+    result$allele <- gene_info[2]
+    states <- yaml_object$states[-(1:2)]
+
+    substitution_rates <- states %>% sapply(getSubstitutionRate) %>% subset(!is.na(.))
+    return(substitution_rates)
+}
+
 annotateSequences <- function(input_filename, output_filename="partis_output.csv", 
                               partis_path='partis', num_procs=4, cleanup=TRUE, 
                               do_full_annotation=TRUE, output_path="_output") {
     if(length(list.files("_output")) > 0 && output_path == "_output" && cleanup) {
-        stop("_output path already exists. Please remove it or use another path name.")
+        stop("_output path already exists. Please remove it, use another path name, or set 'cleanup' to 'FALSE'.")
     }
     output_file <- file.path(output_path, output_filename)
-    annotated_data <- callPartis("annotate", input_filename, output_file, 
+    annotated_data <- callPartis("annotate", input_filename, output_file, output_path,
                                   partis_path, num_procs, cleanup)
+
+
+    hmm_yaml_filepath <- file.path(output_path, "params/hmm/hmms")
+    yaml_files <- hmm_yaml_filepath %>% list.files
+    yaml_filepath_and_files <- sapply(yaml_files, 
+                                      function(x) { file.path(hmm_yaml_filepath, x) }) 
+
+    mutation_rates <- {}
+    for(yaml_file in yaml_files) {
+        allele <- yaml_file %>% gsub(pattern=".yaml", replace='') %>%
+            gsub(pattern="_star_", replace="\\*")
+        mutation_rates[[allele]] <- hmm_yaml_filepath %>% file.path(yaml_file) %>%
+            getMutationInfo
+    }
+
     if(do_full_annotation) {
         extended_output_filename <- file.path(output_path, "new_output.csv")
         script_file <- system.file("process_output.py", package="sumrep")
@@ -246,7 +298,11 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
 
     raw_sequences <- input_filename %>% getSequenceListFromFasta
     annotated_data$mature_seq <- raw_sequences[annotated_data$unique_ids]
-    return(annotated_data)
+
+    annotation_object <- {}
+    annotation_object$annotations <- annotated_data
+    annotation_object$mutation_rates <- mutation_rates
+    return(annotation_object)
 }
 
 partitionSequences <- function(input_filename, output_filename="partis_output.csv", 
