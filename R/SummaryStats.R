@@ -362,7 +362,9 @@ compareGRAVYDistributions <- function(list_a, list_b) {
 }
 
 parsePythonDictionary <- function(dictionary) {
-    parsed <- dictionary %>% gsub(pattern="'", replacement='"') %>% fromJSON
+    parsed <- dictionary %>% gsub(pattern="'", replacement='"') %>% 
+        gsub(pattern="\\(", replacement="\\[") %>% 
+        gsub(pattern="\\)", replacement="\\]") %>% fromJSON
     return(parsed)
 }
 
