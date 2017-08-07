@@ -4,17 +4,17 @@ context("All functions")
 test_that("test.annotateSequences", {
     test_data_path <- system.file("data/test_data.fa", package="sumrep")
 
-    dt_a <- annotateSequences(test_data_path, do_full_annotation = FALSE)
-    dt_b <- annotateSequences(test_data_path, output_filename = "blah.csv", 
+    dat_a <- annotateSequences(test_data_path, do_full_annotation = FALSE)
+    dat_b <- annotateSequences(test_data_path, output_filename = "blah.csv", 
         output_path="arbitrary", num_procs = 8)
 
-    expect_equal(dt_a %>% names, c("annotations", "mutation_rates"))
-    expect_equal(dt_a$mutation_rates[[1]] %>% names, c("overall_mut_rate", "mut_rate_by_position"))
+    expect_equal(dat_a %>% names, c("annotations", "mutation_rates"))
+    expect_equal(dat_a$mutation_rates[[1]] %>% names, c("overall_mut_rate", "mut_rate_by_position"))
 
-    expect_equal(ncol(dt_a$annotations), 29)
-    expect_equal(nrow(dt_a$annotations), 20)
-    expect_equal(ncol(dt_b$annotations), 42)
-    expect_equal(nrow(dt_b$annotations), 17)
+    expect_equal(ncol(dat_a$annotations), 29)
+    expect_equal(nrow(dat_a$annotations), 20)
+    expect_equal(ncol(dat_b$annotations), 42)
+    expect_equal(nrow(dat_b$annotations), 17)
 
     dir.create("_output")
     file.create("_output/blah.txt")
@@ -41,11 +41,11 @@ test_that("test.compareDistancesFromNaiveToMature", {
     m3 <- c("GAAAAA")
     m4 <- c("AAAGGG")
     m5 <- c("GGGG")
-    dt_a <- data.table(naive_seq=naive_a, mature_seq=list(m1, m2, m3))
-    dt_b <- data.table(naive_seq=naive_b, mature_seq=list(m2, m3, m4))
-    c1 <- compareDistancesFromNaiveToMature(dt_a, dt_a)
-    c2 <- compareDistancesFromNaiveToMature(dt_a, dt_b)
-    c3 <- compareDistancesFromNaiveToMature(dt_b, dt_a)
+    dat_a <- data.table(naive_seq=naive_a, mature_seq=list(m1, m2, m3))
+    dat_b <- data.table(naive_seq=naive_b, mature_seq=list(m2, m3, m4))
+    c1 <- compareDistancesFromNaiveToMature(dat_a, dat_a)
+    c2 <- compareDistancesFromNaiveToMature(dat_a, dat_b)
+    c3 <- compareDistancesFromNaiveToMature(dat_b, dat_a)
     expect_equal(0, c1)
     expect_equal(c3, c2)
     expect_true(c2 > 0)
@@ -112,8 +112,8 @@ test_that("test.getDistancesFromNaiveToMature", {
     m2 <- c("CGCAAA")
     m3 <- c("GGGGGG")
     m4 <- c("AAAAAA")
-    dt <- data.table(naive_seq=naives, mature_seq=c(m1, m2, m3, m4))
-    expect_equal(c(0, 1, 3, 6), getDistancesFromNaiveToMature(dt))
+    dat <- data.table(naive_seq=naives, mature_seq=c(m1, m2, m3, m4))
+    expect_equal(c(0, 1, 3, 6), getDistancesFromNaiveToMature(dat))
 })
 
 test_that("test.getDistanceVector", {
