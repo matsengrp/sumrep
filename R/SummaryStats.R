@@ -382,7 +382,6 @@ getCDR3s <- function(dt) {
     codon_starts <- dt$codon_positions %>% extractCDR3CodonStartPositions
     codon_ends <- codon_starts + dt$cdr3_length
     collapsed_seqs <- dt$mature_seq %>% sapply(paste, collapse='')
-    ordered_seqs <- collapsed_seqs[dt$unique_ids]
-    cdr3s <- ordered_seqs %>% substr(codon_starts, codon_ends - 1)
+    cdr3s <- collapsed_seqs %>% substr(codon_starts, codon_ends - 1)
     return(cdr3s)
 }
