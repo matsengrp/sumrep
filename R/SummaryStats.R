@@ -188,16 +188,16 @@ compareNucleotideDiversities <- function(repertoire_a, repertoire_b) {
     return(distance)
 }
 
-getDistancesFromNaiveToMature <- function(dt) {
-    distances <- dt$mature_seq %>% 
-        mapply(FUN=stringdist, b=dt$naive_seq, method="lv") %>% 
+getDistancesFromNaiveToMature <- function(dat) {
+    distances <- dat$mature_seq %>% 
+        mapply(FUN=stringdist, b=dat$naive_seq, method="lv") %>% 
         sort %>% unname
     return(distances)
 }
 
-compareDistancesFromNaiveToMature <- function(dt_a, dt_b) {
-    distances_a <- getDistancesFromNaiveToMature(dt_a)
-    distances_b <- getDistancesFromNaiveToMature(dt_b)
+compareDistancesFromNaiveToMature <- function(dat_a, dat_b) {
+    distances_a <- getDistancesFromNaiveToMature(dat_a)
+    distances_b <- getDistancesFromNaiveToMature(dat_b)
     divergence <- getJSDivergence(distances_a, distances_b)
     return(divergence)
 }
@@ -316,14 +316,14 @@ partitionSequences <- function(input_filename, output_filename="partis_output.cs
     return(partitioned_data)
 }
 
-getCDR3Lengths <- function(dt) {
-    CDR3_lengths <- dt$cdr3_length %>% na.omit
+getCDR3Lengths <- function(dat) {
+    CDR3_lengths <- dat$cdr3_length %>% na.omit
     return(CDR3_lengths)
 }
 
-compareCDR3Lengths <- function(dt_a, dt_b) {
-    a_lengths <- getCDR3Lengths(dt_a)
-    b_lengths <- getCDR3Lengths(dt_b)
+compareCDR3Lengths <- function(dat_a, dat_b) {
+    a_lengths <- getCDR3Lengths(dat_a)
+    b_lengths <- getCDR3Lengths(dat_b)
     divergence <- getJSDivergence(a_lengths, b_lengths)
     return(divergence)
 }
@@ -339,9 +339,9 @@ compareGermlineGeneDistributions <- function(data_table_a, data_table_b, gene_ty
     return(divergence)
 }
 
-compareVDJDistributions <- function(dt_a, dt_b) {
-    table_a <- table(dt_a$v_gene, dt_a$d_gene, dt_a$j_gene)
-    table_b <- table(dt_b$v_gene, dt_b$d_gene, dt_b$j_gene)
+compareVDJDistributions <- function(dat_a, dat_b) {
+    table_a <- table(dat_a$v_gene, dat_a$d_gene, dat_a$j_gene)
+    table_b <- table(dat_b$v_gene, dat_b$d_gene, dat_b$j_gene)
     divergence <- compareCategoricalDistributions(table_a, table_b)
     return(divergence)
 }
@@ -378,10 +378,10 @@ extractCDR3CodonStartPositions <- function(dictionary) {
     return(positions)
 }
 
-getCDR3s <- function(dt) {
-    codon_starts <- dt$codon_positions %>% extractCDR3CodonStartPositions
-    codon_ends <- codon_starts + dt$cdr3_length
-    collapsed_seqs <- dt$mature_seq %>% sapply(paste, collapse='')
+getCDR3s <- function(dat) {
+    codon_starts <- dat$codon_positions %>% extractCDR3CodonStartPositions
+    codon_ends <- codon_starts + dat$cdr3_length
+    collapsed_seqs <- dat$mature_seq %>% sapply(paste, collapse='')
     cdr3s <- collapsed_seqs %>% substr(codon_starts, codon_ends - 1)
     return(cdr3s)
 }
