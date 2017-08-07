@@ -385,3 +385,14 @@ getCDR3s <- function(dat) {
     cdr3s <- collapsed_seqs %>% substr(codon_starts, codon_ends - 1)
     return(cdr3s)
 }
+
+compareCDR3Distributions <- function(dat_a, dat_b, subsample=TRUE, 
+                                     subsample_count=10000) {
+    subsample_count <- min(nrow(dat_a), nrow(dat_b), subsample_count)
+    dist_a <- dat_a[sample(nrow(dat_a), subsample_count), ] %>% getCDR3s %>% 
+        getDistanceVector
+    dist_b <- dat_b[sample(nrow(dat_b), subsample_count), ] %>% getCDR3s %>%
+        getDistanceVector
+    divergence <- getJSDivergence(dist_a, dist_b)
+    return(divergence)
+}
