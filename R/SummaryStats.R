@@ -256,7 +256,8 @@ getMutationInfo <- function(filename) {
     states <- yaml_object$states[-(1:2)]
 
     overall_substitution_rate <- yaml_object$extras$overall_mute_freq
-    position_substitution_rates <- states %>% sapply(getSubstitutionRate) %>% subset(!is.na(.))
+    position_substitution_rates <- states %>% sapply(getSubstitutionRate) %>% 
+        subset(!is.na(.))
     substitution_rates <- {}
     substitution_rates$overall_mut_rate <- overall_substitution_rate
     substitution_rates$mut_rate_by_position <- position_substitution_rates
@@ -294,6 +295,8 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
                      extended_output_filename, sep=' '))
         annotated_data <- extended_output_filename %>% fread(stringsAsFactors=TRUE) %>% 
             subset(select=which(!duplicated(names(.))))
+        annotated_data$naive_seq <- annotated_data$naive_seq %>% sapply(toString) %>%
+            tolower
     }
 
     if(cleanup) {
@@ -394,5 +397,42 @@ compareCDR3Distributions <- function(dat_a, dat_b, subsample=TRUE,
     dist_b <- dat_b[sample(nrow(dat_b), subsample_count), ] %>% getCDR3s %>%
         getDistanceVector
     divergence <- getJSDivergence(dist_a, dist_b)
+}
+
+getDistancesBetweenMutationsBySequence <- function(naive, mature) {
+    if(nchar(naive) != nchar(mature)) {
+        stop(paste0("nchar(naive) [", nchar(naive), "] != ", "nchar(mature) [", 
+                    nchar(mature), "]"))
+    }
+    naive_char_list <- naive %>% strsplit(split='') %>% unlist
+    mature_char_list <- mature %>% strsplit(split='') %>% unlist
+    mut_indices_list <- which(naive_char_list != mature_char_list)
+    if(length(mut_indices_list) > 1) {
+        distances <- (mut_indices_list %>% diff - 1) %>% list
+    } else {
+        # If there are less than two mutations, this statistic is undefined,
+        # so return NA and eventually ignore
+        distances <- NA
+    }
+    return(distances)
+}
+
+getDistancesBetweenMutations <- function(naive_list, mature_list) {
+    dists <- mapply(function(x, y) {
+                        if(nchar(x) == nchar(y)) {
+                            res <- getDistancesBetweenMutationsBySequence(x, y)
+                        } else {
+                            res <- NA
+                        }
+                    },
+                    naive_list,
+                    mature_list) %>% unname %>% unlist %>% subset(!is.na(.))
+    return(dists)
+}
+
+compareDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
+    dists_a <- getDistancesBetweenMutations(dat_a$naive_seq, dat_a$mature_seq)
+    dists_b <- getDistancesBetweenMutations(dat_b$naive_seq, dat_b$mature_seq)
+    divergence <- getJSDivergence(dists_a, dists_b)
     return(divergence)
 }

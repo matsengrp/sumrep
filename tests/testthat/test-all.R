@@ -173,3 +173,15 @@ test_that("test.getNucleotideDiversity", {
     expect_true(d4 < d5)
 })
 
+test_that("test.getPositionalDistancesBetweenMutations", {
+    naive_seq <- c("AAAA", "AAAA", "TTTT", "GGGGGGG")
+    mature_seq <- c("AAAA", "ATAG", "TTAT", "CGGCGCG")
+
+    expect_equal(getDistancesBetweenMutations(naive_seq[1], mature_seq[1]), logical(0))
+    expect_equal(getDistancesBetweenMutations(naive_seq[2], mature_seq[2]), 1)
+    expect_equal(getDistancesBetweenMutations(naive_seq[3], mature_seq[3]), logical(0))
+    expect_equal(getDistancesBetweenMutations(naive_seq[4], mature_seq[4]) %>% sort,
+                 c(1, 2))
+    expect_equal(getDistancesBetweenMutations(naive_seq, mature_seq) %>% sort, 
+                 c(1, 1, 2))
+})
