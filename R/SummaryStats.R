@@ -4,6 +4,7 @@ library(Biostrings)
 library(data.table)
 library(dplyr)
 library(flexmix)
+library(HDMD)
 library(jsonlite)
 library(magrittr)
 library(pegas)
@@ -350,7 +351,7 @@ compareVDJDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-convertDNAtoAminoAcids <- function(sequence) {
+convertDNAToAminoAcids <- function(sequence) {
     aa_list <- sequence %>% sapply(strsplit, '') %>% sapply(translate) %>%
         paste0(collapse='')
     return(aa_list)
@@ -374,8 +375,21 @@ getHydrophobicityDistribution <- function(sequence_list) {
 }
 
 compareHydrophobicityDistributions <- function(dat_a, dat_b) {
-    dist_a <- getHydrophobicityDistribution(dat_a$naive_seq)
-    dist_b <- getHydrophobicityDistribution(dat_b$naive_seq)
+    dist_a <- dat_a$naive_seq %>% getHydrophobicityDistribution
+    dist_b <- dat_b$naive_seq %>% getHydrophobicityDistribution
+    divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
+    return(divergence)
+}
+
+getMeanAtchleyFactorDistribution <- function(sequence_list) {
+    atchley_factors <- sequence_list %>% sapply(convertDNAToAminoAcids) %>% 
+        FactorTransform %>% sapply(mean, na.rm=TRUE) %>% unname
+    return(atchley_factors)
+}
+
+compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
+    dist_a <- dat_a$naive_seq %>% getMeanAtchleyFactorDistribution
+    dist_b <- dat_b$naive_seq %>% getMeanAtchleyFactorDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
