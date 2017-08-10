@@ -7,6 +7,7 @@ library(flexmix)
 library(jsonlite)
 library(magrittr)
 library(pegas)
+library(Peptides)
 library(RecordLinkage)
 library(shazam)
 library(seqinr)
@@ -346,6 +347,36 @@ compareVDJDistributions <- function(dat_a, dat_b) {
     table_a <- table(dat_a$v_gene, dat_a$d_gene, dat_a$j_gene)
     table_b <- table(dat_b$v_gene, dat_b$d_gene, dat_b$j_gene)
     divergence <- compareCategoricalDistributions(table_a, table_b)
+    return(divergence)
+}
+
+convertDNAtoAminoAcids <- function(sequence) {
+    aa_list <- sequence %>% sapply(strsplit, '') %>% sapply(translate) %>%
+        paste0(collapse='')
+    return(aa_list)
+}
+
+getKideraFactorsBySequence <- function(sequence) {
+    kideraFactors <- sequence %>% convertDNAtoAminoAcids %>% kideraFactors %>% 
+        unlist %>% as.list
+    return(kideraFactors)
+}
+
+getKideraFactors <- function(sequence_list) {
+    kidera_factors <- sequence_list %>% sapply(getKideraFactorsBySequence) %>% t
+    return(kidera_factors)
+}
+
+getHydrophobicityDistribution <- function(sequence_list) {
+    hydrophobicity_list <- sequence_list %>% getKideraFactors %>%
+        data.table %>% select(KF4) %>% unlist
+    return(hydrophobicity_list)
+}
+
+compareHydrophobicityDistributions <- function(dat_a, dat_b) {
+    dist_a <- getHydrophobicityDistribution(dat_a$naive_seq)
+    dist_b <- getHydrophobicityDistribution(dat_b$naive_seq)
+    divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
 
