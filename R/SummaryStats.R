@@ -394,6 +394,18 @@ compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
+getAliphaticIndexDistribution <- function(sequence_list) {
+    a_indices <- sequence_list %>% sapply(convertDNAToAminoAcids) %>% sapply(aIndex)
+    return(a_indices)
+}
+
+compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
+    dist_a <- dat_a$naive_seq %>% getAliphaticIndexDistribution
+    dist_b <- dat_b$naive_seq %>% getAliphaticIndexDistribution
+    divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
+    return(divergence)
+}
+
 getGRAVYDistribution <- function(sequence_list) {
     dist <- sequence_list %>% removeEmptyStrings %>% 
             standardizeList %>%
