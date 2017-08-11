@@ -257,7 +257,7 @@ getMutationInfo <- function(filename) {
     result$allele <- gene_info[2]
     states <- yaml_object$states[-(1:2)]
 
-    overall_substitution_rate <- yaml_object$extras$overall_mute_freq
+    overall_substitution_rate <- yaml_object$extras$per_gene_mute_freq
     position_substitution_rates <- states %>% sapply(getSubstitutionRate) %>% 
         subset(!is.na(.))
     substitution_rates <- {}
@@ -492,4 +492,10 @@ compareDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
     dists_b <- getDistancesBetweenMutations(dat_b$naive_seq, dat_b$mature_seq)
     divergence <- getJSDivergence(dists_a, dists_b)
     return(divergence)
+}
+
+getPerGeneMutationRates <- function(dat) {
+    rates <- dat$mutation_rates %>% sapply( function(gene) { 
+                                                gene$overall_mut_rate })
+    return(rates)
 }

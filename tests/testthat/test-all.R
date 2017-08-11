@@ -9,7 +9,8 @@ test_that("test.annotateSequences", {
         output_path="arbitrary", num_procs = 8)
 
     expect_equal(dat_a %>% names, c("annotations", "mutation_rates"))
-    expect_equal(dat_a$mutation_rates[[1]] %>% names, c("overall_mut_rate", "mut_rate_by_position"))
+    expect_equal(dat_a$mutation_rates[[1]] %>% names, 
+                 c("overall_mut_rate", "mut_rate_by_position"))
 
     expect_equal(ncol(dat_a$annotations), 29)
     expect_equal(nrow(dat_a$annotations), 20)
