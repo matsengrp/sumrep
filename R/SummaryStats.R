@@ -499,3 +499,13 @@ getPerGeneMutationRates <- function(dat) {
                                                 gene$overall_mut_rate })
     return(rates)
 }
+
+comparePerGeneMutationRates <- function(dat_a, dat_b) {
+    rates_a <- dat_a %>% getPerGeneMutationRates
+    rates_b <- dat_b %>% getPerGeneMutationRates
+    common_genes <- intersect(rates_a %>% names, rates_b %>% names)
+    rates_a_common <- rates_a[names(rates_a) %in% common_genes][common_genes] %>% unname
+    rates_b_common <- rates_b[names(rates_b) %in% common_genes][common_genes] %>% unname
+    divergence <- (rates_a_common - rates_b_common) %>% abs %>% sum
+    return(divergence/length(common_genes))
+}
