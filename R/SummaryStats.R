@@ -496,7 +496,7 @@ compareDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
 
 getPerGeneMutationRates <- function(dat) {
     rates <- dat$mutation_rates %>% sapply( function(gene) { 
-                                                gene$overall_mut_rate })
+                                                gene$overall_mut_rate } )
     return(rates)
 }
 
@@ -507,5 +507,32 @@ comparePerGeneMutationRates <- function(dat_a, dat_b) {
     rates_a_common <- rates_a[names(rates_a) %in% common_genes][common_genes] %>% unname
     rates_b_common <- rates_b[names(rates_b) %in% common_genes][common_genes] %>% unname
     divergence <- (rates_a_common - rates_b_common) %>% abs %>% sum
-    return(divergence/length(common_genes))
+    return(divergence/length(common_genes)) 
 }
+
+getPerGenePerPositionMutationRates <- function(dat) {
+    rates <- dat$mutation_rates %>% sapply( function(gene) {
+                                                gene$mut_rate_by_position } )
+    return(rates)
+}
+
+comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
+    rates_a <- dat_a %>% getPerGenePerPositionMutationRates
+    rates_b <- dat_b %>% getPerGenePerPositionMutationRates
+    common_genes <- intersect(rates_a %>% names, rates_b %>% names)
+    rates_a_common <- rates_a[names(rates_a) %in% common_genes][common_genes] %>% unname
+    rates_b_common <- rates_b[names(rates_b) %in% common_genes][common_genes] %>% unname
+    divergence <- mapply(function(positions_a, positions_b) { 
+                            common_positions <- intersect(positions_a %>% names, 
+                                                          positions_b %>% names)
+                            a_common <- positions_a[names(positions_a) %in% 
+                                                    common_positions][common_positions]
+                            b_common <- positions_b[names(positions_b) %in% 
+                                                    common_positions][common_positions]
+                            cat(length(a_common), length(b_common), '\n')
+                            abs(a_common - b_common)/length(common_positions)
+                         }, 
+                         rates_a_common, rates_b_common) %>% unlist %>% sum
+    return(divergence/length(common_genes)) 
+}
+
