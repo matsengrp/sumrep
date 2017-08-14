@@ -529,7 +529,6 @@ comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
                                                     common_positions][common_positions]
                             b_common <- positions_b[names(positions_b) %in% 
                                                     common_positions][common_positions]
-                            cat(length(a_common), length(b_common), '\n')
                             abs(a_common - b_common)/length(common_positions)
                          }, 
                          rates_a_common, rates_b_common) %>% unlist %>% sum
