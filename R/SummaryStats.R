@@ -535,3 +535,17 @@ comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
     return(divergence/length(common_genes)) 
 }
 
+getSubstitutionModel <- function(dat) {
+    sub_mat <- dat %>% subset(nchar(dat$mature_seq) == nchar(dat$naive_seq)) %>% 
+        createSubstitutionMatrix(sequenceColumn="mature_seq",
+                                                germlineColumn="naive_seq",
+                                                vCallColumn="v_gene")
+    return(sub_mat)
+}
+
+compareSubstitutionModels <- function(dat_a, dat_b) {
+    model_a <- dat_a %>% getSubstitutionModel %>% c %>% subset(!is.na(.))
+    model_b <- dat_b %>% getSubstitutionModel %>% c %>% subset(!is.na(.))
+    divergence <- (model_a - model_b) %>% abs %>% mean
+    return(divergence)
+}
