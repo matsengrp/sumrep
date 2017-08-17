@@ -2,7 +2,7 @@
 import csv
 import sys
 
-partis_path = "/home/bolson2/Software/partis"  # edit this if you're not running from the main partis dir
+partis_path = sys.argv[3]
 sys.path.insert(1, partis_path + '/python')
 
 import utils
