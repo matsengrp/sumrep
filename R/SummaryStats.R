@@ -535,17 +535,39 @@ comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
     return(divergence/length(common_genes)) 
 }
 
+removeSequencesWithDifferentNaiveAndMatureLengths <- function(dat) {
+    return(dat %>% subset(nchar(dat$mature_seq) == nchar(dat$naive_seq)))
+}
+
 getSubstitutionModel <- function(dat) {
-    sub_mat <- dat %>% subset(nchar(dat$mature_seq) == nchar(dat$naive_seq)) %>% 
+    sub_mat <- dat %>% removeSequencesWithDifferentNaiveAndMatureLengths %>%
         createSubstitutionMatrix(sequenceColumn="mature_seq",
-                                                germlineColumn="naive_seq",
-                                                vCallColumn="v_gene")
+                                 germlineColumn="naive_seq",
+                                 vCallColumn="v_gene")
     return(sub_mat)
 }
 
 compareSubstitutionModels <- function(dat_a, dat_b) {
     model_a <- dat_a %>% getSubstitutionModel %>% c %>% subset(!is.na(.))
     model_b <- dat_b %>% getSubstitutionModel %>% c %>% subset(!is.na(.))
-    divergence <- (model_a - model_b) %>% abs %>% mean
+    divergence <- (model_a - model_b) %>% abs %>% sum
+    return(divergence)
+}
+
+getMutabilityModel <- function(dat, substitution_model=getSubstitutionModel(dat)) {
+    mut_mat <- dat %>% removeSequencesWithDifferentNaiveAndMatureLengths %>%
+        createMutabilityMatrix(substitutionModel=substitution_model,
+                               sequenceColumn="mature_seq",
+                               germlineColumn="naive_seq",
+                               vCallColumn="v_gene")
+    return(mut_mat)
+}
+
+compareMutabilityModels <- function(dat_a, dat_b, 
+                                    sub_mod_a=getSubstitutionModel(dat_a),
+                                    sub_mod_b=getSubstitutionModel(dat_b)) {
+    model_a <- dat_a %>% getMutabilityModel(substitution_model=sub_mod_a)
+    model_b <- dat_b %>% getMutabilityModel(substitution_model=sub_mod_b)
+    divergence <- (model_a - model_b) %>% abs %>% sum
     return(divergence)
 }
