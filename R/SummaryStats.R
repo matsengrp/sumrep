@@ -293,7 +293,8 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
         extended_output_filename <- file.path(output_path, "new_output.csv")
         script_file <- system.file("process_output.py", package="sumrep")
         system(paste("python", script_file, output_file, 
-                     extended_output_filename, sep=' '))
+                     extended_output_filename, partis_path %>% dirname %>% dirname,
+                     sep=' '))
         annotated_data <- extended_output_filename %>% fread(stringsAsFactors=TRUE) %>% 
             subset(select=which(!duplicated(names(.))))
         annotated_data$naive_seq <- annotated_data$naive_seq %>% sapply(toString) %>%
