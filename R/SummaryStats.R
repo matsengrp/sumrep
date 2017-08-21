@@ -41,6 +41,21 @@ compareCategoricalDistributions <- function(table_a, table_b) {
     return(total_comparison)
 }
 
+#' Discretize two lists of continuous data into mutual, well-defined bins.
+#' This function is 
+#' @param list_a First list to bin
+#' @param list_b Second list to bin
+#' @return a list of vectors containing the corresponding counts for each bin 
+#' @examples
+#' list_a <- runif(100)
+#' list_b <- runif(100)
+#' binned <- binContinuousListsAsDiscrete(list_a, list_b) %>% 
+#'     melt(value.factor=TRUE) %>% 
+#'     mutate(bin_number=rep(seq(1:(nrow(.)/2)), 2))
+#' names(binned)[1:2] <- c("count", "list_id")
+#' ggplot(binned, aes(x=bin_number, y=count, fill=as.factor(list_id))) + 
+#'     geom_bar(stat="identity", position="dodge")
+
 binContinuousListsAsDiscrete <- function(list_a, list_b) {
     a_length <- list_a %>% length
     b_length <- list_b %>% length
