@@ -586,3 +586,94 @@ compareMutabilityModels <- function(dat_a, dat_b,
     divergence <- (model_a - model_b) %>% abs %>% sum
     return(divergence)
 }
+
+getDeletionLengths <- function(dat, column) {
+    lengths <- dat %>% select_(column) %>% unlist(use.names=FALSE)
+    return(lengths)
+}
+
+getVGene3PrimeDeletionLengths <- function(dat) {
+    return(getDeletionLengths(dat, "v_3p_del"))
+}
+
+getVGene5PrimeDeletionLengths <- function(dat) {
+    return(getDeletionLengths(dat, "v_5p_del"))
+}
+
+getDGene3PrimeDeletionLengths <- function(dat) {
+    return(getDeletionLengths(dat, "d_3p_del"))
+}
+
+getDGene5PrimeDeletionLengths <- function(dat) {
+    return(getDeletionLengths(dat, "d_5p_del"))
+}
+
+getJGene3PrimeDeletionLengths <- function(dat) {
+    return(getDeletionLengths(dat, "j_3p_del"))
+}
+
+getJGene5PrimeDeletionLengths <- function(dat) {
+    return(getDeletionLengths(dat, "j_5p_del"))
+}
+
+compareDeletionLengths <- function(dat_a, dat_b, gene, end) {
+    deletion_length_function <- paste0("get", gene, end, "DeletionLengths") %>% get
+    dist_a <- dat_a %>% deletion_length_function
+    dist_b <- dat_b %>% deletion_length_function
+    divergence <- getJSDivergence(dist_a, dist_b)
+    return(divergence)
+}
+
+compareVGene3PrimeDeletionLengths <- function(dat_a, dat_b) {
+    return(compareDeletionLengths(dat_a, dat_b, "VGene", "3Prime"))
+}
+
+compareVGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
+    return(compareDeletionLengths(dat_a, dat_b, "VGene", "5Prime"))
+}
+
+compareDGene3PrimeDeletionLengths <- function(dat_a, dat_b) {
+    return(compareDeletionLengths(dat_a, dat_b, "DGene", "3Prime"))
+}
+
+compareDGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
+    return(compareDeletionLengths(dat_a, dat_b, "DGene", "5Prime"))
+}
+
+compareJGene3PrimeDeletionLengths <- function(dat_a, dat_b) {
+    return(compareDeletionLengths(dat_a, dat_b, "JGene", "3Prime"))
+}
+
+compareJGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
+    return(compareDeletionLengths(dat_a, dat_b, "JGene", "5Prime"))
+}
+
+getInsertionLengths <- function(dat, column) {
+    lengths <- dat %>% select_(column) %>% unlist %>% sapply(toString) %>%
+        sapply(nchar) %>% unname
+    return(lengths)
+}
+
+getVDInsertionLengths <- function(dat) {
+    return(getInsertionLengths(dat, "vd_insertion"))
+}
+
+getDJInsertionLengths <- function(dat) {
+    return(getInsertionLengths(dat, "dj_insertion"))
+}
+
+compareInsertionLengths <- function(dat_a, dat_b, genes) {
+    insertion_length_function <- paste0("get", genes, "InsertionLengths") %>% get
+    dist_a <- dat_a %>% insertion_length_function
+    dist_b <- dat_b %>% insertion_length_function
+    divergence <- getJSDivergence(dist_a, dist_b)
+    return(divergence)
+}
+
+compareVDInsertionLengths <- function(dat_a, dat_b) {
+    return(compareInsertionLengths(dat_a, dat_b, "VD"))
+}
+
+compareDJInsertionLengths <- function(dat_a, dat_b) {
+    return(compareInsertionLengths(dat_a, dat_b, "DJ"))
+}
