@@ -649,20 +649,12 @@ compareVGene3PrimeDeletionLengths <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "VGene", "3Prime"))
 }
 
-compareVGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
-    return(compareDeletionLengths(dat_a, dat_b, "VGene", "5Prime"))
-}
-
 compareDGene3PrimeDeletionLengths <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "DGene", "3Prime"))
 }
 
 compareDGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "DGene", "5Prime"))
-}
-
-compareJGene3PrimeDeletionLengths <- function(dat_a, dat_b) {
-    return(compareDeletionLengths(dat_a, dat_b, "JGene", "3Prime"))
 }
 
 compareJGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
