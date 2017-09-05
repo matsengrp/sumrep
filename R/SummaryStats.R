@@ -92,6 +92,19 @@ getContinuousJSDivergence <- function(sample_1, sample_2) {
     return(JS_divergence)
 }
 
+#' Compute the JS Divergence of two samples, assumed to contain discrete data by
+#' default. If continuous, the lists are passed to binContinuousListsAsDiscrete to be
+#' discretized into bins commensurate to the list sizes. 
+#' Note: This function is symmetric in list_a and list_b, since JS-divergence is symmetric.
+#' @param list_a First sample
+#' @param list_b Second sample
+#' @return The positive-valued JS-divergence of the distributions induced from list_a and list_b
+#' @examples
+#' l1 <- sample.int(100, replace=TRUE)
+#' l2 <- sample.int(100, replace=TRUE)
+#' getJSDivergence(l1, l2)
+#' getJSDivergence(l2, l1)
+#' getJSDivergence(l1, l1)
 getJSDivergence <- function(list_a, list_b, continuous=FALSE) {
     if(continuous) {
         binned <- binContinuousListsAsDiscrete(list_a, list_b)
@@ -109,13 +122,21 @@ removeEmptyStrings <- function(l) {
     return(l[l != ""])
 }
 
+#' Convert lists of factors and/or vectors of characters into a vector of strings
+#' @param List or vector of either strings or char vectors of DNA sequences
+#' @return Vector of strings of DNA sequences
 standardizeList <- function(l) {
     new_list <- l %>% 
                 sapply(toString) %>%
+                gsub(pattern=", *", replace="") %>%
                 sapply(paste, collapse='') %>% unname
     return(new_list)
 }
 
+#' Determine the comparison method to use in stringdistmatrix based on whether all sequences
+#' are of the same length. If so, use hamming distance; else use Levenshtein.
+#' @param List/vector of DNA sequences
+#' @return String-valued comparison method for use in stringdistmatrix within the getDistanceMatrix function
 determineComparisonMethod <- function(sequence_list) {
     length_count <- sequence_list %>% standardizeList %>% sapply(nchar) %>% 
         table %>% length 
