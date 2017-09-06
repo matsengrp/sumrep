@@ -698,3 +698,16 @@ compareVDInsertionLengths <- function(dat_a, dat_b) {
 compareDJInsertionLengths <- function(dat_a, dat_b) {
     return(compareInsertionLengths(dat_a, dat_b, "DJ"))
 }
+
+getClusterSizes <- function(dat) {
+    sizes <- dat$partition %>% toString %>% strsplit(";") %>% lapply(strsplit, ":") %>%
+        first %>% sapply(length)
+    return(sizes)
+}
+
+compareClusterSizes <- function(dat_a, dat_b) {
+    dist_a <- dat_a %>% getClusterSizes
+    dist_b <- dat_b %>% getClusterSizes
+    divergence <- getJSDivergence(dist_a, dist_b)
+    return(divergence)
+}
