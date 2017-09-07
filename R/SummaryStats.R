@@ -705,10 +705,11 @@ getCloneList <- function(dat) {
     return(clone_list)
 }
 
-includeClonalMemberships <- function(ann, clone_list) {
+includeClonalMemberships <- function(annotations, partitions) {
+    clone_list <- partitions %>% getCloneList
     clone_df <- clone_list %>% melt
     names(clone_df) <- c("unique_ids", "clone")
-    new_df <- merge(ann, clone_df, by="unique_ids")
+    new_df <- merge(annotations, clone_df, by="unique_ids")
     return(new_df)
 }
 
