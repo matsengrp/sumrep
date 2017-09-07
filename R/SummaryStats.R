@@ -699,9 +699,21 @@ compareDJInsertionLengths <- function(dat_a, dat_b) {
     return(compareInsertionLengths(dat_a, dat_b, "DJ"))
 }
 
+getCloneList <- function(dat) {
+    clone_list <- dat$partition %>% first %>% toString %>% strsplit(";") %>% 
+        lapply(strsplit, ":") %>% first %>% lapply(as.numeric)
+    return(clone_list)
+}
+
+includeClonalMemberships <- function(ann, clone_list) {
+    clone_df <- clone_list %>% melt
+    names(clone_df) <- c("unique_ids", "clone")
+    new_df <- merge(ann, clone_df, by="unique_ids")
+    return(new_df)
+}
+
 getClusterSizes <- function(dat) {
-    sizes <- dat$partition[1] %>% toString %>% strsplit(";") %>% lapply(strsplit, ":") %>%
-        first %>% sapply(length)
+    sizes <- dat %>% getCloneList %>% sapply(length)
     return(sizes)
 }
 
