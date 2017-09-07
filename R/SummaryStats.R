@@ -725,7 +725,7 @@ compareClusterSizes <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getHillNumber <- function(dat, diversity_orders) {
+getHillNumbers <- function(dat, diversity_orders) {
     counts <- dat %>% getClusterSizes
     diversity <- alakazam::calcDiversity(counts, diversity_orders)
     return(diversity)
@@ -740,8 +740,8 @@ getHillNumber <- function(dat, diversity_orders) {
 #' Hill diversity index. Can be any real value although nonnegative values are
 #' recommended as biologically meaningful.
 compareHillNumbers <- function(dat_a, dat_b, diversity_orders) {
-    hill_numbers_a <- dat_a %>% getHillNumber(diversity_orders)
-    hill_numbers_b <- dat_b %>% getHillNumber(diversity_orders)
+    hill_numbers_a <- dat_a %>% getHillNumbers(diversity_orders)
+    hill_numbers_b <- dat_b %>% getHillNumbers(diversity_orders)
     distance <- (hill_numbers_a - hill_numbers_b) %>% abs %>% sum
     return(distance)
 }
