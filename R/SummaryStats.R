@@ -724,3 +724,24 @@ compareClusterSizes <- function(dat_a, dat_b) {
     divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
+
+getHillNumber <- function(dat, diversity_orders) {
+    counts <- dat %>% getClusterSizes
+    diversity <- alakazam::calcDiversity(counts, diversity_orders)
+    return(diversity)
+}
+
+#' Compare one or multiple Hill numbers of two datasets. The measure of distance
+#' is a sum of absolute differences (or just the absolute difference if there is
+#' only one diversity_order value
+#' @param dat_a First dataset to compare
+#' @param dat_b Second dataset to compare
+#' @param diversity_orders Scalar- or vector-valued list of parameters to the
+#' Hill diversity index. Can be any real value although nonnegative values are
+#' recommended as biologically meaningful.
+compareHillNumbers <- function(dat_a, dat_b, diversity_orders) {
+    hill_numbers_a <- dat_a %>% getHillNumber(diversity_orders)
+    hill_numbers_b <- dat_b %>% getHillNumber(diversity_orders)
+    distance <- (hill_numbers_a - hill_numbers_b) %>% abs %>% sum
+    return(distance)
+}
