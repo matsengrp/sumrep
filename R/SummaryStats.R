@@ -700,7 +700,7 @@ compareDJInsertionLengths <- function(dat_a, dat_b) {
 }
 
 getClusterSizes <- function(dat) {
-    sizes <- dat$partition %>% toString %>% strsplit(";") %>% lapply(strsplit, ":") %>%
+    sizes <- dat$partition[1] %>% toString %>% strsplit(";") %>% lapply(strsplit, ":") %>%
         first %>% sapply(length)
     return(sizes)
 }
