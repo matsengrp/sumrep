@@ -309,15 +309,20 @@ getMutationInfo <- function(filename) {
     return(substitution_rates)
 }
 
-annotateSequences <- function(input_filename, output_filename="partis_output.csv", 
-                              partis_path=Sys.getenv("PARTIS_PATH"), num_procs=4, 
-                              cleanup=TRUE, 
-                              do_full_annotation=TRUE, output_path="_output") {
+preventOutputOverwrite <- function(output_path, cleanup) {
     if(length(list.files("_output")) > 0 && output_path == "_output" && cleanup) {
         stop(paste("_output path already exists.",
                    "Please remove it, use another path name,",
                    "or set 'cleanup' to 'FALSE'."))
     }
+}
+
+annotateSequences <- function(input_filename, output_filename="partis_output.csv", 
+                              partis_path=Sys.getenv("PARTIS_PATH"), num_procs=4, 
+                              cleanup=TRUE, 
+                              do_full_annotation=TRUE, output_path="_output") {
+    preventOutputOverwrite(output_path, cleanup)
+
     output_file <- file.path(output_path, output_filename)
     annotated_data <- callPartis("annotate", input_filename, output_file, 
                                  output_path, partis_path, num_procs, cleanup)
@@ -369,6 +374,8 @@ partitionSequences <- function(input_filename,
                                partis_path=Sys.getenv("PARTIS_PATH"), 
                                num_procs=4, 
                                cleanup=TRUE, output_path="_output") {
+    preventOutputOverwrite(output_path, cleanup)
+
     output_file <- file.path(output_path, output_filename)
     partitioned_data <- callPartis("partition", input_filename, output_file, 
                                     output_path, partis_path, num_procs, 
