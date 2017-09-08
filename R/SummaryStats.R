@@ -739,6 +739,25 @@ includeClonalMemberships <- function(annotations, partitions) {
     return(new_df)
 }
 
+annotateAndPartitionSequences <- function(input_filename, 
+                                          output_filename="partis_output.csv", 
+                                          partis_path=Sys.getenv("PARTIS_PATH"),
+                                          num_procs=4, 
+                                          cleanup=TRUE, 
+                                          do_full_annotation=TRUE, 
+                                          output_path="_output") {
+    annotation_object <- annotateSequences(input_filename, output_filename, 
+                                           partis_path, num_procs, cleanup, 
+                                           do_full_annotation,
+                                     output_path)
+    partitions <- partitionSequences(input_filename, output_filename, 
+                                     partis_path, num_procs, cleanup, 
+                                     output_path)
+    annotation_object$annotations <- 
+        includeClonalMemberships(annotation_object$annotations, partitions)
+    return(annotation_object)
+}
+
 getClusterSizes <- function(dat) {
     sizes <- dat %>% getCloneList %>% sapply(length)
     return(sizes)
