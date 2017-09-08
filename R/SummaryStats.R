@@ -420,7 +420,7 @@ convertDNAToAminoAcids <- function(sequence) {
 
 getKideraFactorsBySequence <- function(sequence) {
     kideraFactors <- sequence %>% convertDNAtoAminoAcids %>% 
-        Peptides::kideraFactors %>% unlist %>% as.list
+        Peptides::kideraFactors() %>% unlist %>% as.list
     return(kideraFactors)
 }
 
@@ -486,7 +486,7 @@ compareGRAVYDistributions <- function(list_a, list_b) {
 parsePythonDictionary <- function(dictionary) {
     parsed <- dictionary %>% gsub(pattern="'", replacement='"') %>% 
         gsub(pattern="\\(", replacement="\\[") %>% 
-        gsub(pattern="\\)", replacement="\\]") %>% jsonlite::fromJSON
+        gsub(pattern="\\)", replacement="\\]") %>% jsonlite::fromJSON()
     return(parsed)
 }
 
@@ -733,7 +733,7 @@ getCloneList <- function(dat) {
 
 includeClonalMemberships <- function(annotations, partitions) {
     clone_list <- partitions %>% getCloneList
-    clone_df <- clone_list %>% data.table::melt
+    clone_df <- clone_list %>% data.table::melt()
     names(clone_df) <- c("unique_ids", "clone")
     new_df <- merge(annotations, clone_df, by="unique_ids")
     return(new_df)
