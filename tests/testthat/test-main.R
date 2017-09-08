@@ -1,28 +1,5 @@
 library(sumrep)
-context("All functions")
-
-test_that("test.annotateSequences", {
-    test_data_path <- system.file("data/test_data.fa", package="sumrep")
-
-    dat_a <- annotateSequences(test_data_path, do_full_annotation = FALSE)
-    dat_b <- annotateSequences(test_data_path, output_filename = "blah.csv", 
-        output_path="arbitrary", num_procs = 8)
-
-    expect_equal(dat_a %>% names, c("annotations", "mutation_rates"))
-    expect_equal(dat_a$mutation_rates[[1]] %>% names, 
-                 c("overall_mut_rate", "mut_rate_by_position"))
-
-    expect_equal(ncol(dat_a$annotations), 29)
-    expect_equal(nrow(dat_a$annotations), 20)
-    expect_equal(ncol(dat_b$annotations), 42)
-    expect_equal(nrow(dat_b$annotations), 17)
-
-    dir.create("_output")
-    file.create("_output/blah.txt")
-    expect_error(annotateSequences(test_data_path))
-    "_output" %>% unlink(recursive=TRUE)
-    
-})
+context("Summary statistics")
 
 test_that("test.binContinuousListsAsDiscrete", {
     l1 <- 1:20
