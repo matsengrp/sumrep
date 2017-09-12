@@ -252,6 +252,19 @@ getSequenceListFromFasta <- function(filename) {
     return(sequences)
 }
 
+#' Call partis
+#'
+#' \code{callPartis} calls partis from within the sumrep package.
+#' This is done through the bash script run_partis.sh.
+#' It is assumed that a "SHELL" environmental variable is set to run the above script.
+#' @param action The desired partis command
+#' @param input_filename The input (fasta) file, i.e. --infname argument
+#' @param output_filename Desired output (csv) filename, i.e. --outfname argument
+#' @param output_path Desired output directory, which will contain output_filename
+#' @param partis_path The full path to the partis executable
+#' @param num_procs The number of processors to use in parallel
+#' @param cleanup Flag to delete all interim files created by partis
+#' @return A data.table object containing the output of the partis call
 callPartis <- function(action, input_filename, output_filename, output_path, 
                        partis_path, num_procs, cleanup) {
     shell <- Sys.getenv("SHELL")
@@ -269,6 +282,14 @@ callPartis <- function(action, input_filename, output_filename, output_path,
     return(partis_dataset)
 } 
 
+#' Get per-gene and per-gene-per-position mutation information from partis
+#'
+#' \code{getMutationInfo} is run if \code{doFullAnnotation} is true in the 
+#'   \link{annotateSequences} call. This function extracts mutation information
+#'   from the given YAML file in the parameter directory output by partis.
+#' @param filename YAML file from partis output folder corresponding to a gene
+#' @return Object containing the gene's overall mutation rate as well as a 
+#'   vector of positional mutation rates
 getMutationInfo <- function(filename) {
     getSubstitutionRate <- function(state) {
         position <- state$name %>% strsplit("_") %>% unlist %>% last
@@ -309,6 +330,9 @@ getMutationInfo <- function(filename) {
     return(substitution_rates)
 }
 
+# Ensure sumrep does not accidentally delete any previous _output folders created by partis
+#' @param output_path Desired partis output directory, which is _output by default
+#' @param cleanup Flag to delete all interim files created by partis
 preventOutputOverwrite <- function(output_path, cleanup) {
     if(length(list.files("_output")) > 0 && output_path == "_output" && cleanup) {
         stop(paste("_output path already exists.",
@@ -317,6 +341,16 @@ preventOutputOverwrite <- function(output_path, cleanup) {
     }
 }
 
+#' Perform sequence annotation with partis
+#'
+#' @param input_filename The input (fasta) file, i.e. --infname argument
+#' @param output_filename Desired output (csv) filename, i.e. --outfname argument
+#' @param partis_path The full path to the partis executable
+#' @param num_procs The number of processors to use in parallel
+#' @param cleanup Flag to delete all interim files created by partis
+#' @param do_full_annotation Include per-gene and per-gene-per-position mutation rate information
+#' @param output_path Desired output directory, which will contain output_filename
+#' @return A data.table object containing the output of the partis call
 annotateSequences <- function(input_filename, output_filename="partis_output.csv", 
                               partis_path=Sys.getenv("PARTIS_PATH"), num_procs=4, 
                               cleanup=TRUE, 
@@ -369,6 +403,15 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
     return(annotation_object)
 }
 
+#' Perform clonal partitioning with partis
+#'
+#' @param input_filename The input (fasta) file, i.e. --infname argument
+#' @param output_filename Desired output (csv) filename, i.e. --outfname argument
+#' @param partis_path The full path to the partis executable
+#' @param num_procs The number of processors to use in parallel
+#' @param cleanup Flag to delete all interim files created by partis
+#' @param output_path Desired output directory, which will contain output_filename
+#' @return A data.table object containing the output of the partis call
 partitionSequences <- function(input_filename, 
                                output_filename="partis_output.csv", 
                                partis_path=Sys.getenv("PARTIS_PATH"), 
