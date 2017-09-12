@@ -11,7 +11,8 @@ partitionSequences(input_filename, output_filename = "partis_output.csv",
 \arguments{
 \item{input_filename}{The input (fasta) file, i.e. --infname argument}
 
-\item{output_filename}{Desired output (csv) filename, i.e. --outfname argument}
+\item{output_filename}{Desired output (csv) filename, i.e. --outfname 
+argument}
 
 \item{partis_path}{The full path to the partis executable}
 
@@ -19,7 +20,8 @@ partitionSequences(input_filename, output_filename = "partis_output.csv",
 
 \item{cleanup}{Flag to delete all interim files created by partis}
 
-\item{output_path}{Desired output directory, which will contain output_filename}
+\item{output_path}{Desired output directory, which will contain 
+output_filename}
 }
 \value{
 A data.table object containing the output of the partis call

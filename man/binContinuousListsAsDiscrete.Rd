@@ -2,8 +2,7 @@
 % Please edit documentation in R/SummaryStats.R
 \name{binContinuousListsAsDiscrete}
 \alias{binContinuousListsAsDiscrete}
-\title{Discretize two lists of continuous data into mutual, well-defined bins.
-This function is}
+\title{Discretize two lists of continuous data into mutual, well-defined bins.}
 \usage{
 binContinuousListsAsDiscrete(list_a, list_b)
 }
@@ -17,7 +16,6 @@ a list of vectors containing the corresponding counts for each bin
 }
 \description{
 Discretize two lists of continuous data into mutual, well-defined bins.
-This function is
 }
 \examples{
 list_a <- runif(100)

@@ -12,9 +12,11 @@ callPartis(action, input_filename, output_filename, output_path, partis_path,
 
 \item{input_filename}{The input (fasta) file, i.e. --infname argument}
 
-\item{output_filename}{Desired output (csv) filename, i.e. --outfname argument}
+\item{output_filename}{Desired output (csv) filename, i.e. --outfname 
+argument}
 
-\item{output_path}{Desired output directory, which will contain output_filename}
+\item{output_path}{Desired output directory, which will contain 
+\code{output_filename}}
 
 \item{partis_path}{The full path to the partis executable}
 
@@ -28,5 +30,6 @@ A data.table object containing the output of the partis call
 \description{
 \code{callPartis} calls partis from within the sumrep package.
 This is done through the bash script run_partis.sh.
-It is assumed that a "SHELL" environmental variable is set to run the above script.
+It is assumed that a "SHELL" environmental variable is set to run the above 
+script.
 }

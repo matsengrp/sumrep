@@ -42,7 +42,7 @@ compareCategoricalDistributions <- function(table_a, table_b) {
 }
 
 #' Discretize two lists of continuous data into mutual, well-defined bins.
-#' This function is 
+#' 
 #' @param list_a First list to bin
 #' @param list_b Second list to bin
 #' @return a list of vectors containing the corresponding counts for each bin 
@@ -92,15 +92,18 @@ getContinuousJSDivergence <- function(sample_1, sample_2) {
     return(JS_divergence)
 }
 
-#' Compute the JS Divergence of two samples, assumed to contain discrete data by
-#' default. If continuous, the lists are passed to binContinuousListsAsDiscrete 
+#' Compute the JS Divergence of two samples
+#'
+#' The samples are assumed to contain discrete data by
+#' default. If continuous, the lists are passed to 
+#' \link{binContinuousListsAsDiscrete}
 #' to be discretized into bins commensurate to the list sizes. 
-#' Note: This function is symmetric in list_a and list_b, since JS-divergence 
-#' is symmetric.
+#' Note: This function is symmetric in \code{list_a} and \code{list_b}, 
+#' since JS-divergence is symmetric.
 #' @param list_a First sample
 #' @param list_b Second sample
 #' @return The positive-valued JS-divergence of the distributions induced from 
-#' list_a and list_b
+#'   list_a and list_b
 #' @examples
 #' l1 <- sample.int(100, replace=TRUE)
 #' l2 <- sample.int(100, replace=TRUE)
@@ -125,6 +128,7 @@ removeEmptyStrings <- function(l) {
 }
 
 #' Convert lists of factors or vectors of characters into a vector of strings
+#' 
 #' @param List or vector of either strings or char vectors of DNA sequences
 #' @return Vector of strings of DNA sequences
 standardizeList <- function(l) {
@@ -135,12 +139,14 @@ standardizeList <- function(l) {
     return(new_list)
 }
 
-#' Determine the comparison method to use in stringdistmatrix based on whether 
-#' all sequences
-#' are of the same length. If so, use hamming distance; else use Levenshtein.
+#' Determine the comparison method for stringdistmatrix 
+#'
+#' The comparison method is determined based on whether 
+#' all sequences are of the same length. If so, use hamming distance; 
+#' else use Levenshtein.
 #' @param List/vector of DNA sequences
 #' @return String-valued comparison method for use in stringdistmatrix within 
-#' the getDistanceMatrix function
+#'   the getDistanceMatrix function
 determineComparisonMethod <- function(sequence_list) {
     length_count <- sequence_list %>% standardizeList %>% sapply(nchar) %>% 
         table %>% length 
@@ -256,11 +262,14 @@ getSequenceListFromFasta <- function(filename) {
 #'
 #' \code{callPartis} calls partis from within the sumrep package.
 #' This is done through the bash script run_partis.sh.
-#' It is assumed that a "SHELL" environmental variable is set to run the above script.
+#' It is assumed that a "SHELL" environmental variable is set to run the above 
+#' script.
 #' @param action The desired partis command
 #' @param input_filename The input (fasta) file, i.e. --infname argument
-#' @param output_filename Desired output (csv) filename, i.e. --outfname argument
-#' @param output_path Desired output directory, which will contain output_filename
+#' @param output_filename Desired output (csv) filename, i.e. --outfname 
+#'   argument
+#' @param output_path Desired output directory, which will contain 
+#'   \code{output_filename}
 #' @param partis_path The full path to the partis executable
 #' @param num_procs The number of processors to use in parallel
 #' @param cleanup Flag to delete all interim files created by partis
@@ -330,8 +339,10 @@ getMutationInfo <- function(filename) {
     return(substitution_rates)
 }
 
-# Ensure sumrep does not accidentally delete any previous _output folders created by partis
-#' @param output_path Desired partis output directory, which is _output by default
+#' Ensure sumrep does not accidentally delete any previous _output folders 
+#' created by partis
+#' @param output_path Desired partis output directory, which is \code{_output}
+#'   by default
 #' @param cleanup Flag to delete all interim files created by partis
 preventOutputOverwrite <- function(output_path, cleanup) {
     if(length(list.files("_output")) > 0 && output_path == "_output" && cleanup) {
@@ -344,12 +355,15 @@ preventOutputOverwrite <- function(output_path, cleanup) {
 #' Perform sequence annotation with partis
 #'
 #' @param input_filename The input (fasta) file, i.e. --infname argument
-#' @param output_filename Desired output (csv) filename, i.e. --outfname argument
+#' @param output_filename Desired output (csv) filename, i.e. --outfname 
+#'   argument
 #' @param partis_path The full path to the partis executable
 #' @param num_procs The number of processors to use in parallel
 #' @param cleanup Flag to delete all interim files created by partis
-#' @param do_full_annotation Include per-gene and per-gene-per-position mutation rate information
-#' @param output_path Desired output directory, which will contain output_filename
+#' @param do_full_annotation Include per-gene and per-gene-per-position mutation
+#'   rate information
+#' @param output_path Desired output directory, which will contain 
+#'   output_filename
 #' @return A data.table object containing the output of the partis call
 annotateSequences <- function(input_filename, output_filename="partis_output.csv", 
                               partis_path=Sys.getenv("PARTIS_PATH"), num_procs=4, 
@@ -406,11 +420,13 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
 #' Perform clonal partitioning with partis
 #'
 #' @param input_filename The input (fasta) file, i.e. --infname argument
-#' @param output_filename Desired output (csv) filename, i.e. --outfname argument
+#' @param output_filename Desired output (csv) filename, i.e. --outfname 
+#'   argument
 #' @param partis_path The full path to the partis executable
 #' @param num_procs The number of processors to use in parallel
 #' @param cleanup Flag to delete all interim files created by partis
-#' @param output_path Desired output directory, which will contain output_filename
+#' @param output_path Desired output directory, which will contain 
+#'   output_filename
 #' @return A data.table object containing the output of the partis call
 partitionSequences <- function(input_filename, 
                                output_filename="partis_output.csv", 
