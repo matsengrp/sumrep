@@ -15,6 +15,14 @@ library(stringdist)
 library(textmineR)
 library(yaml)
 
+#' Similarity metric for joint categorical distributions
+#'
+#' Currently unused. This metric attempts to compare contingency tables of two
+#'   distributions that accounts for joint and all marginal usage rates.
+#' @param table_a First contingency table
+#' @param table_b Second contingency table
+#' @return A positive-valued distance metric reflecting the similarity of the
+#'   distributions manifest in table_a and table_b
 compareCategoricalDistributions <- function(table_a, table_b) {
     table_a_dims <- table_a %>% dim
     table_b_dims <- table_b %>% dim
@@ -67,6 +75,15 @@ binContinuousListsAsDiscrete <- function(list_a, list_b) {
     return(list(table_a, table_b))
 }
 
+#' Compute JS divergence for continuous samples
+#'
+#' This is currently not the default method for continuous data, as it requires
+#'   constructing approximating functions of the two densities, and then using
+#'   numerical integrals for the expectation steps. 
+#' @param sample_1 First data sample
+#' @param sample_2 Second data sample
+#' @return Approximate JS divergence of the distributions induced from sample_1
+#'   and sample_2
 getContinuousJSDivergence <- function(sample_1, sample_2) {
     m <- function(x) {
         result <- 0.5*(p(x) + q(x))
@@ -123,6 +140,10 @@ getJSDivergence <- function(list_a, list_b, continuous=FALSE) {
     return(divergence)
 }
 
+#' Remove empty strings from a list or vector
+#'
+#' @param l List or vector of strings
+#' @return The given list or vector with all empty strings removed
 removeEmptyStrings <- function(l) {
     return(l[l != ""])
 }
@@ -154,6 +175,12 @@ determineComparisonMethod <- function(sequence_list) {
     return(comparison_method)
 }
 
+#' Get distance matrix from stringdist
+#' 
+#' \code{getDistanceMatrix} determines 
+#' @param raw_sequences List or vector of DNA sequences
+#' @return Distance matrix of the sequences, using hamming distances if all
+#'   sequences are the same length, and levenshtein otherwise
 getDistanceMatrix <- function(raw_sequences) {
     sequence_list <- raw_sequences %>% standardizeList
     comparison_method <- sequence_list %>% determineComparisonMethod
@@ -162,12 +189,27 @@ getDistanceMatrix <- function(raw_sequences) {
     return(mat)
 }
 
+#' Get sorted vector of pairwise distances
+#'
+#' Convert the matrix given by \link{getDistanceMatrix} into a sorted
+#'   vector of distance values.
+#' @param sequence_list List of DNA sequence strings
+#' @return Vector of pairwise distances
 getDistanceVector <- function(sequence_list) {
     mat <- sequence_list %>% getDistanceMatrix
     vec <- mat[mat %>% lower.tri] %>% as.vector %>% sort
     return(vec)
 }
 
+#' Compare pairwise distance distributions of two lists of sequences
+#'
+#' \code{comparePairwiseDistanceDistributions} computes the JS
+#'   divergence of the pairwise distance distribution of two lists of
+#'   DNA sequences
+#' @param list_a First list of sequences
+#' @param list_b Second list of sequences
+#' @return JS divergence of the distributions inferred from list_a
+#'   and list_b
 comparePairwiseDistanceDistributions <- function(list_a, list_b) {
     distances_a <- list_a %>% getDistanceVector
     distances_b <- list_b %>% getDistanceVector
@@ -175,6 +217,15 @@ comparePairwiseDistanceDistributions <- function(list_a, list_b) {
     return(divergence)
 }
 
+#' Get sorted list of nearest neighbor distances
+#'
+#' \code{getNearestNeighborDistances} returns a list of distances of
+#'   the kth nearest neighbor.
+#' @param sequence_list List of DNA sequence strings
+#' @param k The separation depth for the nearest neighbor distances.
+#'   k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
+#'   the second-nearest neighbor, etc.
+#' @return Vector of kth nearest neighbor distances
 getNearestNeighborDistances <- function(sequence_list, k=1) {
     mat <- sequence_list %>% getDistanceMatrix
     n <- sequence_list %>% length
@@ -185,6 +236,18 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
     return(distances)
 }
 
+#' Compare kth nearest neighbor distance distributions of two lists of
+#'   sequences
+#' \code{compareNNDistanceDistribution} computes the JS divergence of
+#'   the kth nearest neighbor distance distribution of two lists of
+#'   DNA sequences
+#' @param list_a First list of sequences
+#' @param list_b Second list of sequences
+#' @param k The separation depth for the nearest neighbor distances.
+#'   k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
+#'   the second-nearest neighbor, etc.
+#' @return JS divergence of the distributions inferred from list_a
+#'   and list_b
 compareNNDistanceDistribution <- function(list_a, list_b, k=1) {
     distances_a <- list_a %>% getNearestNeighborDistances(k=k)
     distances_b <- list_b %>% getNearestNeighborDistances(k=k)
