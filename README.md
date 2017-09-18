@@ -11,7 +11,7 @@
     source("https://bioconductor.org/biocLite.R")
     biocLite("Biostrings")
     ```
-  (try http:// if https:// URLs are not supported)
+  (try `http://` if `https://` URLs are not supported)
 
 * [`partis`](https://github.com/psathyrella/partis) is used for sequence annotation and clonal family partitioning. 
   Once installed, you will need to either set an environmental variable `'PARTIS_PATH'` to the path of the partis executable,
