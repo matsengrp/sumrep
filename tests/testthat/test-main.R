@@ -41,17 +41,6 @@ test_that("test.compareGCContents", {
     expect_true(c1 == c2)
 })
 
-test_that("test.compareNucleotideDiversities", {
-    r1 <- list("AT", "AT")
-    r2 <- list("AT", "AC")
-    r3 <- list("AT", "GC")
-    r4 <- list("ATATATATAT", "AAAAAAAAAA")
-    r5 <- list("ATATATATAT", "CGTACGTAAT")
-    expect_equal(0, compareNucleotideDiversities(r1, r1))
-    expect_equal(0.5, compareNucleotideDiversities(r1, r2))
-    expect_equal(0.5, compareNucleotideDiversities(r2, r3))
-})
-
 test_that("test.comparePairwiseDistanceDistributions", {
     s1 <- c("AAA", "AAT", "ATT")
     s2 <- c("ATT", "AAA", "AAT")
@@ -141,18 +130,6 @@ test_that("test.getNearestNeighborDistances", {
         k = 2))
     expect_equal(c(4, 4, 4, 3), getNearestNeighborDistances(seq_6, 
         k = 3))
-})
-
-test_that("test.getNucleotideDiversity", {
-    d1 <- getNucleotideDiversity(list("AT", "AT"))
-    d2 <- getNucleotideDiversity(list("AT", "AC"))
-    d3 <- getNucleotideDiversity(list("AT", "GC"))
-    d4 <- getNucleotideDiversity(list("ATATATATAT", "AAAAAAAAAA"))
-    d5 <- getNucleotideDiversity(list("ATATATATAT", "CGTACGTAAT"))
-    expect_equal(0, d1)
-    expect_equal(0.5, d2)
-    expect_equal(1, d3)
-    expect_true(d4 < d5)
 })
 
 test_that("test.getPositionalDistancesBetweenMutations", {

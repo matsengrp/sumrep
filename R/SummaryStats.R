@@ -317,19 +317,6 @@ compareColdspotCounts <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getNucleotideDiversity <- function(repertoire) {
-    diversity <- repertoire %>% sapply(strsplit, split='') %>% 
-        ape::as.DNAbin() %>% pegas::nuc.div()
-    return(diversity)
-}
-
-compareNucleotideDiversities <- function(dat_a, dat_b) {
-    nuc_div_a <- dat_a %$% mature_seq %>% getNucleotideDiversity
-    nuc_div_b <- dat_b %$% mature_seq %>% getNucleotideDiversity
-    distance <- (nuc_div_b - nuc_div_a) %>% abs
-    return(distance)
-}
-
 getDistancesFromNaiveToMature <- function(dat) {
     distances <- dat$mature_seq %>% 
         mapply(FUN=stringdist::stringdist, b=dat$naive_seq, method="lv") %>% 
