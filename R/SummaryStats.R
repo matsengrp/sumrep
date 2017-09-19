@@ -259,12 +259,12 @@ compareNNDistanceDistribution <- function(list_a, list_b, k=1) {
 
 #' Get the GC content distribution of a list of DNA sequences
 #'
-#' \code{getGCDistribution} returns a list of the GC content of each DNA
+#' \code{getGCContentDistribution} returns a list of the GC content of each DNA
 #'   sequence in \code{raw_sequences}, given by the \code{ape} library
 #' @param raw_sequences List or vector of strings or character sequences
 #'   corresponding to DNA sequences
 #' @return A vector of GC content values
-getGCDistribution <- function(raw_sequences) {
+getGCContentDistribution <- function(raw_sequences) {
     sequence_list <- raw_sequences %>% sapply(paste, collapse='') %>% unname
     dna_list <- sequence_list %>% strsplit(split='') %>% lapply(ape::as.DNAbin)
     gc_dist <- dna_list %>% sapply(ape::GC.content)
@@ -277,9 +277,9 @@ getGCDistribution <- function(raw_sequences) {
 #' @param list_b Second list or vector of DNA sequences
 #' @return JS divergence of the GC content distributions inferred from list_a
 #'   and list_b
-compareGCDistributions <- function(list_a, list_b) {
-    density_a <- list_a %>% getGCDistribution
-    density_b <- list_b %>% getGCDistribution
+compareGCContents <- function(dat_a, dat_b) {
+    density_a <- dat_a %$% naive_seq %>% getGCContentDistribution
+    density_b <- dat_b %$% naive_seq %>% getGCContentDistribution
     divergence <- getJSDivergence(density_a, density_b, continuous=TRUE)
     return(divergence)
 }

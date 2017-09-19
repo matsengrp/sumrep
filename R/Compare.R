@@ -10,7 +10,7 @@ options(scipen=999)
 #' @param repertoire_1 First repertoire
 #' @param repertoire_2 Second repertoire
 compareRepertoires <- function(repertoire_1, repertoire_2) {
-    function_strings <- list(
+    function_strings <- list("compareGCContents",
                              "compareHotspotCounts",
                              "compareColdspotCounts",
                              "compareDistancesFromNaiveToMature",

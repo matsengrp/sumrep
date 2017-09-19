@@ -29,10 +29,14 @@ test_that("test.compareDistancesFromNaiveToMature", {
     expect_true(c2 > 0)
 })
 
-test_that("test.compareGCDistributions", {
-    expect_equal(0, compareGCDistributions(seq_2, seq_7))
-    c1 <- compareGCDistributions(seq_8, seq_9)
-    c2 <- compareGCDistributions(seq_9, seq_8)
+test_that("test.compareGCContents", {
+    dat_a <- data.table(naive_seq=seq_2)
+    dat_b <- data.table(naive_seq=seq_7)
+    dat_c <- data.table(naive_seq=seq_8)
+    dat_d <- data.table(naive_seq=seq_9)
+    expect_equal(0, compareGCContents(dat_a, dat_b))
+    c1 <- compareGCContents(dat_c, dat_d)
+    c2 <- compareGCContents(dat_d, dat_c)
     expect_true(c1 > 0)
     expect_true(c1 == c2)
 })
@@ -102,11 +106,11 @@ test_that("test.getDistanceVector", {
     expect_equal(2, getDistanceVector(seq_7))
 })
 
-test_that("test.getGCDistribution", {
+test_that("test.getGCContentDistribution", {
     d1 <- rep(0, 3)
-    expect_equal(d1, getGCDistribution(seq_5))
+    expect_equal(d1, getGCContentDistribution(seq_5))
     d2 <- c(0, 0.75, 1, 0.5)
-    expect_equal(d2, getGCDistribution(seq_6))
+    expect_equal(d2, getGCContentDistribution(seq_6))
 })
 
 test_that("test.getGRAVYDistribution", {
