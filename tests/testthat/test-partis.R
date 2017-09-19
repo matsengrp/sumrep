@@ -6,7 +6,7 @@ test_data_path <- system.file("data/test_data.fa", package="sumrep")
 test_that("sumrep correctly calls partis annotate", {
     dat_a <- annotateSequences(test_data_path, do_full_annotation = FALSE)
     dat_b <- annotateSequences(test_data_path, output_filename = "blah.csv",
-        output_path="arbitrary", num_procs = 8)
+        output_path="_output_arbitrary", num_procs = 8)
 
     expect_equal(dat_a %>% names, c("annotations", "mutation_rates"))
     expect_equal(dat_a$mutation_rates[[1]] %>% names, 
@@ -25,7 +25,7 @@ test_that("sumrep correctly calls partis annotate", {
 
 test_that("sumrep correctly calls partis partition", {
     dat <- partitionSequences(test_data_path, output_filename="blah2.csv",
-                              output_path="arbitrary_again", num_procs=8)
+                              output_path="_output_arbitrary_again", num_procs=8)
 
     expect_equal(dat %>% names, c("logprob", "n_clusters", "n_procs", 
                                   "partition"))

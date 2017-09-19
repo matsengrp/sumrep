@@ -1,0 +1,7 @@
+*~
+*.sw*
+.nfs*
+.Rproj.user
+Dev/*
+_output/*
+tests/testthat/_output*
