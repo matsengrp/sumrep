@@ -561,7 +561,7 @@ convertDNAToAminoAcids <- function(sequence) {
 }
 
 getKideraFactorsBySequence <- function(sequence) {
-    kideraFactors <- sequence %>% convertDNAtoAminoAcids %>% 
+    kideraFactors <- sequence %>% convertDNAToAminoAcids %>% 
         Peptides::kideraFactors() %>% unlist %>% as.list
     return(kideraFactors)
 }
@@ -713,7 +713,7 @@ comparePerGeneMutationRates <- function(dat_a, dat_b) {
                               common_genes][common_genes] %>% unname
     rates_b_common <- rates_b[names(rates_b) %in% 
                               common_genes][common_genes] %>% unname
-    divergence <- (rates_a_common - rates_b_common) %>% abs %>% sum
+    divergence <- (rates_a_common - rates_b_common) %>% abs %>% mean
     return(divergence/length(common_genes)) 
 }
 
@@ -740,7 +740,7 @@ comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
                                             common_positions][common_positions]
                             abs(a_common - b_common)/length(common_positions)
                          }, 
-                         rates_a_common, rates_b_common) %>% unlist %>% sum
+                         rates_a_common, rates_b_common) %>% unlist %>% mean
     return(divergence/length(common_genes)) 
 }
 
@@ -759,7 +759,7 @@ getSubstitutionModel <- function(dat) {
 compareSubstitutionModels <- function(dat_a, dat_b) {
     model_a <- dat_a %>% getSubstitutionModel %>% c %>% subset(!is.na(.))
     model_b <- dat_b %>% getSubstitutionModel %>% c %>% subset(!is.na(.))
-    divergence <- (model_a - model_b) %>% abs %>% sum
+    divergence <- (model_a - model_b) %>% abs %>% mean
     return(divergence)
 }
 
@@ -778,7 +778,7 @@ compareMutabilityModels <- function(dat_a, dat_b,
                                     sub_mod_b=getSubstitutionModel(dat_b)) {
     model_a <- dat_a %>% getMutabilityModel(substitution_model=sub_mod_a)
     model_b <- dat_b %>% getMutabilityModel(substitution_model=sub_mod_b)
-    divergence <- (model_a - model_b) %>% abs %>% sum
+    divergence <- (model_a - model_b) %>% abs %>% mean
     return(divergence)
 }
 
@@ -901,7 +901,7 @@ annotateAndPartitionSequences <- function(input_filename,
 }
 
 getClusterSizes <- function(dat) {
-    sizes <- dat %>% getCloneList %>% sapply(length)
+    sizes <- dat$clone %>% table %>% unname %>% sort
     return(sizes)
 }
 
@@ -912,7 +912,7 @@ compareClusterSizes <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getHillNumbers <- function(dat, diversity_orders) {
+getHillNumbers <- function(dat, diversity_orders=c(0, 1, 2)) {
     counts <- dat %>% getClusterSizes
     diversity <- alakazam::calcDiversity(counts, diversity_orders)
     return(diversity)
@@ -926,9 +926,9 @@ getHillNumbers <- function(dat, diversity_orders) {
 #' @param diversity_orders Scalar- or vector-valued list of parameters to the
 #' Hill diversity index. Can be any real value although nonnegative values are
 #' recommended as biologically meaningful.
-compareHillNumbers <- function(dat_a, dat_b, diversity_orders) {
+compareHillNumbers <- function(dat_a, dat_b, diversity_orders=c(0, 1, 2)) {
     hill_numbers_a <- dat_a %>% getHillNumbers(diversity_orders)
     hill_numbers_b <- dat_b %>% getHillNumbers(diversity_orders)
-    distance <- (hill_numbers_a - hill_numbers_b) %>% abs %>% sum
+    distance <- (hill_numbers_a - hill_numbers_b) %>% abs %>% mean
     return(distance)
 }
