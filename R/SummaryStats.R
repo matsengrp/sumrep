@@ -295,10 +295,24 @@ getHotspotCount <- function(dna_sequence) {
     return(count)
 }
 
+compareHotspotCounts <- function(dat_a, dat_b) {
+    counts_a <- dat_a$mature_seq %>% sapply(getHotspotCount)
+    counts_b <- dat_b$mature_seq %>% sapply(getHotspotCount)
+    divergence <- getJSDivergence(counts_a, counts_b)
+    return(divergence)
+}
+
 getColdspotCount <- function(dna_sequence) {
     coldspot <- "SYC"
     count <- coldspot %>% getMotifCount(dna_sequence)
     return(count)
+}
+
+compareColdspotCounts <- function(dat_a, dat_b) {
+    counts_a <- dat_a$mature_seq %>% sapply(getColdspotCount)
+    counts_b <- dat_b$mature_seq %>% sapply(getColdspotCount)
+    divergence <- getJSDivergence(counts_a, counts_b)
+    return(divergence)
 }
 
 getNucleotideDiversity <- function(repertoire) {
