@@ -901,7 +901,7 @@ annotateAndPartitionSequences <- function(input_filename,
 }
 
 getClusterSizes <- function(dat) {
-    sizes <- dat$clone %>% table %>% unname %>% sort
+    sizes <- dat$clone %>% table %>% unname %>% c %>% sort
     return(sizes)
 }
 

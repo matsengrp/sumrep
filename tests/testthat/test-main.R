@@ -165,9 +165,9 @@ test_that("test.getPositionalDistancesBetweenMutations", {
 })
 
 test_that("getClusterSizes returns the correct cluster size distribution", {
-    clones <- "1;2:3:4;5;6;7:8:9:10"
-    dat <- data.frame(partition=clones)
-    expect_equal(getClusterSizes(dat) %>% sort, c(1, 1, 1, 3, 4))
+    dat <- data.frame(clone=c(13, 14, 15, 13, 13, 14, 14, 13, 16, 17))
+    cluster_sizes <- dat %>% getClusterSizes %>% sort
+    expect_equal(c(1, 1, 1, 3, 4), cluster_sizes)
 
     expect_equal(getHillNumbers(dat, c(0, 2)), c(5, 3.571429), tolerance=0.001)
 })
