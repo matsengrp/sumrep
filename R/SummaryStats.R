@@ -356,7 +356,17 @@ getGeneUsageTableFromFullList <- function(gene_list, full_gene_list) {
     return(usage_table)
 }
 
-compareGeneUsage <- function(gene_list_a, gene_list_b) {
+collapseAlleles <- function(gene_list) {
+    collapsed_gene_list <- gene_list %>% sapply(gsub, pattern="\\*\\d+",
+                                                replace="")
+    return(collapsed_gene_list)
+}
+
+compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles=TRUE) {
+    if(collapse_alleles) {
+        gene_list_a <- gene_list_a %>% collapseAlleles
+        gene_list_b <- gene_list_b %>% collapseAlleles
+    }
     full_gene_list <- union(gene_list_a, gene_list_b)
     table_a <- gene_list_a %>% getGeneUsageTableFromFullList(full_gene_list)
     table_b <- gene_list_b %>% getGeneUsageTableFromFullList(full_gene_list)
@@ -366,8 +376,13 @@ compareGeneUsage <- function(gene_list_a, gene_list_b) {
     return(divergence)
 }
 
-compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type) {
+compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type, 
+                                             collapse_alleles=TRUE) {
     gene_list_a <- dat_a[, gene_type, with=FALSE] %>% first
+    if(collapse_alleles) {
+        gene_list_a <- gene_list_a %>% 
+            sapply(gsub, pattern="\\*\\d+", replace="")
+    }
     gene_list_b <- dat_b[, gene_type, with=FALSE] %>% first
     divergence <- compareGeneUsage(gene_list_a, gene_list_b) 
     return(divergence)
