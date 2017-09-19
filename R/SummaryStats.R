@@ -323,9 +323,9 @@ getNucleotideDiversity <- function(repertoire) {
     return(diversity)
 }
 
-compareNucleotideDiversities <- function(repertoire_a, repertoire_b) {
-    nuc_div_a <- getNucleotideDiversity(repertoire_a)
-    nuc_div_b <- getNucleotideDiversity(repertoire_b)
+compareNucleotideDiversities <- function(dat_a, dat_b) {
+    nuc_div_a <- dat_a %$% mature_seq %>% getNucleotideDiversity
+    nuc_div_b <- dat_b %$% mature_seq %>% getNucleotideDiversity
     distance <- (nuc_div_b - nuc_div_a) %>% abs
     return(distance)
 }
@@ -363,16 +363,39 @@ compareCDR3Lengths <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-compareGermlineGeneDistributions <- function(data_table_a, data_table_b, 
-                                             gene_type) {
-    column_name <- switch(gene_type,
-                          V="v_gene",
-                          D="d_gene",
-                          J="j_gene")
-    levels_a <- data_table_a[, column_name, with=FALSE] %>% sapply(as.numeric) 
-    levels_b <- data_table_b[, column_name, with=FALSE] %>% sapply(as.numeric) 
-    divergence <- getJSDivergence(levels_a, levels_b)
+getGeneUsageTableFromFullList <- function(gene_list, full_gene_list) {
+    usage_table <- gene_list %>% table
+    usage_table[full_gene_list %>% setdiff(gene_list) %>% unlist] <- 0
+    return(usage_table)
+}
+
+compareGeneUsage <- function(gene_list_a, gene_list_b) {
+    full_gene_list <- union(gene_list_a, gene_list_b)
+    table_a <- gene_list_a %>% getGeneUsageTableFromFullList(full_gene_list)
+    table_b <- gene_list_b %>% getGeneUsageTableFromFullList(full_gene_list)
+
+    divergence <- full_gene_list %>% 
+        sapply(function(x) { abs(table_a[x] - table_b[x]) }) %>% mean
     return(divergence)
+}
+
+compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type) {
+    gene_list_a <- dat_a[, gene_type, with=FALSE] %>% first
+    gene_list_b <- dat_b[, gene_type, with=FALSE] %>% first
+    divergence <- compareGeneUsage(gene_list_a, gene_list_b) 
+    return(divergence)
+}
+
+compareVGeneDistributions <- function(dat_a, dat_b) {
+    return(compareGermlineGeneDistributions(dat_a, dat_b, "v_gene"))
+}
+
+compareDGeneDistributions <- function(dat_a, dat_b) {
+    return(compareGermlineGeneDistributions(dat_a, dat_b, "d_gene"))
+}
+
+compareJGeneDistributions <- function(dat_a, dat_b) {
+    return(compareGermlineGeneDistributions(dat_a, dat_b, "j_gene"))
 }
 
 compareVDJDistributions <- function(dat_a, dat_b) {
