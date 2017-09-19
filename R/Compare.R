@@ -18,6 +18,7 @@ compareRepertoires <- function(repertoire_1, repertoire_2) {
                              "compareVGeneDistributions",
                              "compareDGeneDistributions",
                              "compareJGeneDistributions",
+                             "compareVDJDistributions",
                              "compareCDR3Distributions",
                              "compareDistanceBetweenMutationsDistributions",
                              "compareSubstitutionModels",

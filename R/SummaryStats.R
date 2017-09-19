@@ -403,7 +403,7 @@ compareJGeneDistributions <- function(dat_a, dat_b) {
 compareVDJDistributions <- function(dat_a, dat_b) {
     table_a <- table(dat_a$v_gene, dat_a$d_gene, dat_a$j_gene)
     table_b <- table(dat_b$v_gene, dat_b$d_gene, dat_b$j_gene)
-    divergence <- compareCategoricalDistributions(table_a, table_b)
+    divergence <- (table_a - table_b) %>% abs %>% mean
     return(divergence)
 }
 
