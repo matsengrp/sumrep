@@ -414,25 +414,30 @@ convertDNAToAminoAcids <- function(sequence) {
 }
 
 getKideraFactorsBySequence <- function(sequence) {
-    kideraFactors <- sequence %>% convertDNAToAminoAcids %>% 
-        Peptides::kideraFactors() %>% unlist %>% as.list
-    return(kideraFactors)
+    kidera_factors <- tryCatch( 
+             sequence %>% 
+                 convertDNAToAminoAcids %>% 
+                 Peptides::kideraFactors() %>% first,
+                  warning=function(w) {} 
+          )
+    return(kidera_factors)
 }
 
 getKideraFactors <- function(sequence_list) {
-    kidera_factors <- sequence_list %>% sapply(getKideraFactorsBySequence) %>% t
+    kidera_factors <- sequence_list %>%
+        sapply(getKideraFactorsBySequence) %>% do.call(what=rbind)
     return(kidera_factors)
 }
 
 getHydrophobicityDistribution <- function(sequence_list) {
     hydrophobicity_list <- sequence_list %>% getKideraFactors %>%
-        data.table %>% select(KF4) %>% unlist
+        data.table %>% select_("KF4") %>% unlist
     return(hydrophobicity_list)
 }
 
 compareHydrophobicityDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a$mature_seq %>% getHydrophobicityDistribution
-    dist_b <- dat_b$mature_seq %>% getHydrophobicityDistribution
+    dist_a <- dat_a %$% naive_seq %>% getHydrophobicityDistribution
+    dist_b <- dat_b %$% naive_seq %>% getHydrophobicityDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
