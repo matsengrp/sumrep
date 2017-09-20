@@ -30,10 +30,10 @@ test_that("test.compareDistancesFromNaiveToMature", {
 })
 
 test_that("test.compareGCContents", {
-    dat_a <- data.table(naive_seq=seq_2)
-    dat_b <- data.table(naive_seq=seq_7)
-    dat_c <- data.table(naive_seq=seq_8)
-    dat_d <- data.table(naive_seq=seq_9)
+    dat_a <- data.table(mature_seq=seq_2)
+    dat_b <- data.table(mature_seq=seq_7)
+    dat_c <- data.table(mature_seq=seq_8)
+    dat_d <- data.table(mature_seq=seq_9)
     expect_equal(0, compareGCContents(dat_a, dat_b))
     c1 <- compareGCContents(dat_c, dat_d)
     c2 <- compareGCContents(dat_d, dat_c)

@@ -278,8 +278,8 @@ getGCContentDistribution <- function(raw_sequences) {
 #' @return JS divergence of the GC content distributions inferred from list_a
 #'   and list_b
 compareGCContents <- function(dat_a, dat_b) {
-    density_a <- dat_a %$% naive_seq %>% getGCContentDistribution
-    density_b <- dat_b %$% naive_seq %>% getGCContentDistribution
+    density_a <- dat_a %$% mature_seq %>% getGCContentDistribution
+    density_b <- dat_b %$% mature_seq %>% getGCContentDistribution
     divergence <- getJSDivergence(density_a, density_b, continuous=TRUE)
     return(divergence)
 }
@@ -431,8 +431,8 @@ getHydrophobicityDistribution <- function(sequence_list) {
 }
 
 compareHydrophobicityDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a$naive_seq %>% getHydrophobicityDistribution
-    dist_b <- dat_b$naive_seq %>% getHydrophobicityDistribution
+    dist_a <- dat_a$mature_seq %>% getHydrophobicityDistribution
+    dist_b <- dat_b$mature_seq %>% getHydrophobicityDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
@@ -444,8 +444,8 @@ getMeanAtchleyFactorDistribution <- function(sequence_list) {
 }
 
 compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a$naive_seq %>% getMeanAtchleyFactorDistribution
-    dist_b <- dat_b$naive_seq %>% getMeanAtchleyFactorDistribution
+    dist_a <- dat_a$mature_seq %>% getMeanAtchleyFactorDistribution
+    dist_b <- dat_b$mature_seq %>% getMeanAtchleyFactorDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
@@ -457,8 +457,8 @@ getAliphaticIndexDistribution <- function(sequence_list) {
 }
 
 compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a$naive_seq %>% getAliphaticIndexDistribution
-    dist_b <- dat_b$naive_seq %>% getAliphaticIndexDistribution
+    dist_a <- dat_a$mature_seq %>% getAliphaticIndexDistribution
+    dist_b <- dat_b$mature_seq %>% getAliphaticIndexDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
