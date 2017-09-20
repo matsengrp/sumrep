@@ -5,3 +5,4 @@
 Dev/*
 _output/*
 tests/testthat/_output*
+*.rds

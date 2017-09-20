@@ -21,7 +21,6 @@ resample_data <- function(dat) {
 #' @param repertoire_2 Second repertoire
 compareRepertoires <- function(repertoire_1, repertoire_2) {
     sig_digs <- 4
-    options(digits=sig_digs)
     function_strings <- list("compareGCContents",
                              "compareHotspotCounts",
                              "compareColdspotCounts",
@@ -48,9 +47,9 @@ compareRepertoires <- function(repertoire_1, repertoire_2) {
         pt <- proc.time()
         comparison <- f(repertoire_1, repertoire_2)
         elapsed <- (proc.time() - pt)[3]
-        print(paste0("Result of ", f_string, ": ", 
-                     format(comparison, scientific=FALSE), 
-                     ' (', format(elapsed, scientific=FALSE), 's)'), 
-              dig=sig_digs)
+        cat("Result of ", f_string, ": ", 
+            crayon::green(comparison %>% signif(4) %>% toString),
+            ' (', elapsed, 's)', '\n', 
+            sep='')
     }
 }
