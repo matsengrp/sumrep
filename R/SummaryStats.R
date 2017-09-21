@@ -402,8 +402,8 @@ compareVDJDistributions <- function(dat_a, dat_b) {
     full_d_gene_list <- union(dat_a$d_gene, dat_b$d_gene)
     full_j_gene_list <- union(dat_a$j_gene, dat_b$j_gene)
 
-    table_a <- plyr::count(dat_a, c("v_gene", "d_gene", "j_gene"))
-    table_b <- plyr::count(dat_b, c("v_gene", "d_gene", "j_gene"))
+    table_a <- dat_a %>% plyr::count(c("v_gene", "d_gene", "j_gene"))
+    table_b <- dat_b %>% plyr::count(c("v_gene", "d_gene", "j_gene"))
 
     summands <- {}
     for(v in full_v_gene_list) {
@@ -415,22 +415,21 @@ compareVDJDistributions <- function(dat_a, dat_b) {
                 b_count <- table_b[table_b$v_gene == v &
                                    table_b$d_gene == d &
                                    table_b$j_gene == j, ]$freq
-                res <- {}
-                if(length(a_count)) {
-                    if(length(b_count)) {
-                        res <- abs(a_count - b_count)
-                    } else {
-                        res <- a_count
-                    }
-                } else {
-                    res <- b_count
+                a_nonzero <- length(a_count) == 1
+                b_nonzero <- length(b_count) == 1
+                if(a_nonzero || b_nonzero) {
+                    summand <- ifelse(length(a_count) == 1, 
+                                  ifelse(length(b_count) == 1,
+                                         abs(a_count - b_count),
+                                         a_count),
+                                  b_count)
+                    summands <- c(summands, summand)
                 }
-                summands <- c(summands, abs(a_count - b_count))
             }
         }
     }
     
-    divergence <- mean(summands) 
+    divergence <- summands %>% mean
     return(divergence)
 }
 
