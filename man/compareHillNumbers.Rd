@@ -6,7 +6,7 @@
 is a sum of absolute differences (or just the absolute difference if there is
 only one diversity_order value}
 \usage{
-compareHillNumbers(dat_a, dat_b, diversity_orders)
+compareHillNumbers(dat_a, dat_b, diversity_orders = c(0, 1, 2))
 }
 \arguments{
 \item{dat_a}{First dataset to compare}
