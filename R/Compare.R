@@ -1,5 +1,3 @@
-source("R/SummaryStats.R")
-
 #' Resample a dataset with replacement
 #'
 #' \code{resample_data} returns a data.table (or data.frame) object with

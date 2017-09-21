@@ -362,7 +362,7 @@ collapseAlleles <- function(gene_list) {
     return(collapsed_gene_list)
 }
 
-compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles=TRUE) {
+compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
     if(collapse_alleles) {
         gene_list_a <- gene_list_a %>% collapseAlleles
         gene_list_b <- gene_list_b %>% collapseAlleles
@@ -376,15 +376,12 @@ compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles=TRUE) {
     return(divergence)
 }
 
-compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type, 
+compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type,
                                              collapse_alleles=TRUE) {
     gene_list_a <- dat_a[, gene_type, with=FALSE] %>% first
-    if(collapse_alleles) {
-        gene_list_a <- gene_list_a %>% 
-            sapply(gsub, pattern="\\*\\d+", replace="")
-    }
     gene_list_b <- dat_b[, gene_type, with=FALSE] %>% first
-    divergence <- compareGeneUsage(gene_list_a, gene_list_b) 
+    divergence <- compareGeneUsage(gene_list_a, gene_list_b, 
+                                   collapse_alleles) 
     return(divergence)
 }
 
@@ -401,9 +398,39 @@ compareJGeneDistributions <- function(dat_a, dat_b) {
 }
 
 compareVDJDistributions <- function(dat_a, dat_b) {
-    table_a <- table(dat_a$v_gene, dat_a$d_gene, dat_a$j_gene)
-    table_b <- table(dat_b$v_gene, dat_b$d_gene, dat_b$j_gene)
-    divergence <- (table_a - table_b) %>% abs %>% mean
+    full_v_gene_list <- union(dat_a$v_gene, dat_b$v_gene)
+    full_d_gene_list <- union(dat_a$d_gene, dat_b$d_gene)
+    full_j_gene_list <- union(dat_a$j_gene, dat_b$j_gene)
+
+    table_a <- plyr::count(dat_a, c("v_gene", "d_gene", "j_gene"))
+    table_b <- plyr::count(dat_b, c("v_gene", "d_gene", "j_gene"))
+
+    summands <- {}
+    for(v in full_v_gene_list) {
+        for(d in full_d_gene_list) {
+            for(j in full_j_gene_list) {
+                a_count <- table_a[table_a$v_gene == v &
+                                   table_a$d_gene == d &
+                                   table_a$j_gene == j, ]$freq
+                b_count <- table_b[table_b$v_gene == v &
+                                   table_b$d_gene == d &
+                                   table_b$j_gene == j, ]$freq
+                res <- {}
+                if(length(a_count)) {
+                    if(length(b_count)) {
+                        res <- abs(a_count - b_count)
+                    } else {
+                        res <- a_count
+                    }
+                } else {
+                    res <- b_count
+                }
+                summands <- c(summands, abs(a_count - b_count))
+            }
+        }
+    }
+    
+    divergence <- mean(summands) 
     return(divergence)
 }
 
