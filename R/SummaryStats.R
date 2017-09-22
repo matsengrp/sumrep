@@ -583,9 +583,9 @@ compareDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getPerGeneMutationRates <- function(dat) {
-    rates <- dat$mutation_rates %>% sapply( function(gene) { 
-                                                gene$overall_mut_rate } )
+getPerGeneMutationRates <- function(rate_dat) {
+    rates <- rate_dat %>% sapply( function(gene) { 
+                                      gene$overall_mut_rate } )
     return(rates)
 }
 
@@ -601,9 +601,9 @@ comparePerGeneMutationRates <- function(dat_a, dat_b) {
     return(divergence/length(common_genes)) 
 }
 
-getPerGenePerPositionMutationRates <- function(dat) {
-    rates <- dat$mutation_rates %>% sapply( function(gene) {
-                                                gene$mut_rate_by_position } )
+getPerGenePerPositionMutationRates <- function(rate_dat) {
+    rates <- rate_dat %>% sapply( function(gene) {
+                                      gene$mut_rate_by_position } )
     return(rates)
 }
 
