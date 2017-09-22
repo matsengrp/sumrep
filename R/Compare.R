@@ -44,8 +44,7 @@ compareRepertoires <- function(repertoire_1, repertoire_2) {
     annotations_2 <- repertoire_2$annotations
 
     sig_digs <- 4
-    function_strings <- list("comparePairwiseDistanceDistributions",
-                             "compareNNDistanceDistribution",
+    function_strings <- list(
                              "compareGCContents",
                              "compareHotspotCounts",
                              "compareColdspotCounts",
@@ -64,7 +63,8 @@ compareRepertoires <- function(repertoire_1, repertoire_2) {
                              "compareDGene5PrimeDeletionLengths",
                              "compareJGene5PrimeDeletionLengths", 
                              "compareVDInsertionLengths",
-                             "compareDJInsertionLengths")
+                             "compareDJInsertionLengths"
+                             )
 
     partition_function_strings <- list("compareClusterSizes",
                                        "compareHillNumbers")

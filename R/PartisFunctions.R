@@ -85,11 +85,33 @@ getMutationInfo <- function(filename) {
 #'   by default
 #' @param cleanup Flag to delete all interim files created by partis
 preventOutputOverwrite <- function(output_path, cleanup) {
-    if(length(list.files("_output")) > 0 && output_path == "_output" && cleanup) {
+    if(length(list.files("_output")) > 0 && 
+       output_path == "_output" && cleanup) {
         stop(paste("_output path already exists.",
                    "Please remove it, use another path name,",
                    "or set 'cleanup' to 'FALSE'."))
     }
+}
+
+#' Do extended partis processing of annotations
+#'
+#' @inheritParams annotateSequences
+doFullAnnotation <- function(output_path, output_file, partis_path) {
+    extended_output_filename <- "new_output.csv"
+    extended_output_filepath <- file.path(output_path, extended_output_filename)
+    script_file <- system.file("process_output.py", package="sumrep")
+    script_command <-  paste("python", script_file, output_file, 
+                             extended_output_filepath, 
+                             partis_path %>% dirname %>% dirname,
+                             sep=' ')
+    script_command %>% system
+    annotated_data <- extended_output_filepath %>% 
+        data.table::fread(stringsAsFactors=TRUE) %>% 
+        subset(select=which(!duplicated(names(.))))
+    annotated_data$naive_seq <- annotated_data$naive_seq %>% 
+        sapply(toString) %>% tolower
+    extended_output_filepath %>% file.remove
+    return(annotated_data)
 }
 
 #' Perform sequence annotation with partis
@@ -131,17 +153,7 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
     }
 
     if(do_full_annotation) {
-        extended_output_filename <- file.path(output_path, "new_output.csv")
-        script_file <- system.file("process_output.py", package="sumrep")
-        system(paste("python", script_file, output_file, 
-                     extended_output_filename, 
-                     partis_path %>% dirname %>% dirname,
-                     sep=' '))
-        annotated_data <- extended_output_filename %>% 
-            data.table::fread(stringsAsFactors=TRUE) %>% 
-            subset(select=which(!duplicated(names(.))))
-        annotated_data$naive_seq <- annotated_data$naive_seq %>% 
-            sapply(toString) %>% tolower
+        annotated_data <- doFullAnnotation(output_path, output_file, partis_path)
     }
 
     if(cleanup) {
@@ -205,3 +217,34 @@ annotateAndPartitionSequences <- function(input_filename,
         includeClonalMemberships(annotation_object$annotations, partitions)
     return(annotation_object)
 }
+
+simulateDataset <- function(parameter_dir,
+                            partis_path=Sys.getenv("PARTIS_PATH"),
+                            output_file="simu.csv",
+                            num_events=100,
+                            cleanup=TRUE,
+                            do_full_annotation=TRUE) {
+    partis_command <- paste(partis_path, "simulate", 
+                            "--parameter-dir", parameter_dir,
+                            "--outfname", output_file,
+                            "--n-sim-events", num_events)
+    partis_command %>% system
+    sim_annotations <- output_file %>% fread(stringsAsFactors=FALSE)
+    if(do_full_annotation) {
+        sim_annotations <- doFullAnnotation(output_file,
+                                            output_path=".",
+                                            partis_path)
+    }
+
+    if(cleanup) {
+        output_file %>% unlink
+    }
+
+    names(sim_annotations)[which(names(sim_annotations) == "input_seqs")] <- 
+        "mature_seq"
+    sim_annotations$mature_seq <- sim_annotations$mature_seq %>% 
+        sapply(toString) %>% sapply(tolower)
+    sim_data <- list(annotations=sim_annotations)
+    return(sim_data)
+}
+
