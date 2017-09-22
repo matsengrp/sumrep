@@ -21,10 +21,11 @@ argument}
 \item{cleanup}{Flag to delete all interim files created by partis}
 
 \item{output_path}{Desired output directory, which will contain 
-output_filename}
+\code{output_filename}}
 }
 \value{
-A data.table object containing the output of the partis call
+A data.table object containing the output of the partis partition 
+  call
 }
 \description{
 Perform clonal partitioning with partis

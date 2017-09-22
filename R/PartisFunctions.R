@@ -81,9 +81,8 @@ getMutationInfo <- function(filename) {
 
 #' Ensure sumrep does not accidentally delete any previous _output folders 
 #' created by partis
-#' @param output_path Desired partis output directory, which is \code{_output}
-#'   by default
-#' @param cleanup Flag to delete all interim files created by partis
+#'
+#' @inheritParams callPartis
 preventOutputOverwrite <- function(output_path, cleanup) {
     if(length(list.files("_output")) > 0 && output_path == "_output" && cleanup) {
         stop(paste("_output path already exists.",
@@ -94,17 +93,10 @@ preventOutputOverwrite <- function(output_path, cleanup) {
 
 #' Perform sequence annotation with partis
 #'
-#' @param input_filename The input (fasta) file, i.e. --infname argument
-#' @param output_filename Desired output (csv) filename, i.e. --outfname 
-#'   argument
-#' @param partis_path The full path to the partis executable
-#' @param num_procs The number of processors to use in parallel
-#' @param cleanup Flag to delete all interim files created by partis
+#' @inheritParams callPartis
 #' @param do_full_annotation Include per-gene and per-gene-per-position mutation
 #'   rate information
-#' @param output_path Desired output directory, which will contain 
-#'   output_filename
-#' @return A data.table object containing the output of the partis call
+#' @return A data.table object containing the output of the partis annotate call
 annotateSequences <- function(input_filename, output_filename="partis_output.csv", 
                               partis_path=Sys.getenv("PARTIS_PATH"), num_procs=4, 
                               cleanup=TRUE, 
@@ -159,15 +151,9 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
 
 #' Perform clonal partitioning with partis
 #'
-#' @param input_filename The input (fasta) file, i.e. --infname argument
-#' @param output_filename Desired output (csv) filename, i.e. --outfname 
-#'   argument
-#' @param partis_path The full path to the partis executable
-#' @param num_procs The number of processors to use in parallel
-#' @param cleanup Flag to delete all interim files created by partis
-#' @param output_path Desired output directory, which will contain 
-#'   output_filename
-#' @return A data.table object containing the output of the partis call
+#' @inheritParams callPartis
+#' @return A data.table object containing the output of the partis partition 
+#'   call
 partitionSequences <- function(input_filename, 
                                output_filename="partis_output.csv", 
                                partis_path=Sys.getenv("PARTIS_PATH"), 
@@ -187,6 +173,11 @@ partitionSequences <- function(input_filename,
     return(partitioned_data)
 }
 
+#' Perform VDJ sequence annotation and clonal partitioning
+#'
+#' @inheritParams annotateSequences
+#' @return A data.table object containing merged output from sequential partis
+#'   annotate and partis partition calls
 annotateAndPartitionSequences <- function(input_filename, 
                                           output_filename="partis_output.csv", 
                                           partis_path=Sys.getenv("PARTIS_PATH"),

@@ -8,8 +8,8 @@ created by partis}
 preventOutputOverwrite(output_path, cleanup)
 }
 \arguments{
-\item{output_path}{Desired partis output directory, which is \code{_output}
-by default}
+\item{output_path}{Desired output directory, which will contain 
+\code{output_filename}}
 
 \item{cleanup}{Flag to delete all interim files created by partis}
 }

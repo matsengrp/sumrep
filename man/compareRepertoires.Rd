@@ -14,5 +14,9 @@ compareRepertoires(repertoire_1, repertoire_2)
 \description{
 \code{compareRepertoires} iterates through the various comparison functions
   in \code{sumrep}, printing the distance or divergence value of each one.
-  Both repertoires are assumed to be both annotated and partitioned.
+  Both repertoires are assumed to be both annotated.
+  Partition-based comparisons are available if the repertoires are 
+  partitioned.
+  Comparisons based on per-gene and per-gene-per-position mutation rates are 
+  also available given mutation rate information.
 }
