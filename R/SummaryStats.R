@@ -284,19 +284,46 @@ compareGCContents <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getMotifCount <- function(motif, subject) {
-    dna_strings <- subject %>% unlist %>% Biostrings::DNAStringSet()
+#' Get number of times a motif occurs in a set of one or more reference 
+#'   sequences
+#'
+#' @param motif String representing the motif pattern 
+#' @param dna_sequences List, vector of reference sequences
+#' @return The number of occurrences of \code{motif} in \code{dna_sequences}
+getMotifCount <- function(motif, dna_sequences) {
+    dna_strings <- dna_sequences %>% unlist %>% Biostrings::DNAStringSet()
     count <- motif %>% Biostrings::vcountPattern(dna_strings, fixed=FALSE) %>% 
         sum
     return(count)
 }
 
-getHotspotCount <- function(dna_sequence) {
-    hotspots <- c("WRC", "WA")
-    count <- hotspots %>% sapply(getMotifCount, subject=dna_sequence) %>% sum
+#' Get number of times a set of motif (hot/cold)spots occur in a set of 
+#'   reference sequences
+#'
+#' @inheritParams dna_sequences getMotifCount
+#' @param spots Vector of hot or cold spots of interest
+#' @return The total number of occurrences of each motif in \code{spots}, in
+#'   \code{dna_sequences}
+getSpotCount <- function(dna_sequences, spots) {
+    count <- spots %>% sapply(getMotifCount, dna_sequences=dna_sequences) %>% sum
     return(count)
 }
 
+#' Get the number of occurrences of AID hotspots in a set of reference 
+#'   sequences
+#' 
+#' @inheritParams dna_sequences getMotifCount
+#' @return The number of AID hotspot occurrences in \code{dna_sequences}
+getHotspotCount <- function(dna_sequences, hotspots=c("WRC", "WA")) {
+    return(getSpotCount(dna_sequences, hotspots))
+}
+
+#' Compare hotspot count distributions of two sets of mature BCR sequences
+#'
+#' @param dat_a First dataset
+#' @param dat_b Second dataset
+#' @return The JS divergence of the hotspot count distributions inferred from
+#'   \code{dat_a$mature_seq} and \code{dat_b$mature_seq}, respectively
 compareHotspotCounts <- function(dat_a, dat_b) {
     counts_a <- dat_a$mature_seq %>% sapply(getHotspotCount)
     counts_b <- dat_b$mature_seq %>% sapply(getHotspotCount)
@@ -304,12 +331,21 @@ compareHotspotCounts <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getColdspotCount <- function(dna_sequence) {
-    coldspot <- "SYC"
-    count <- coldspot %>% getMotifCount(dna_sequence)
-    return(count)
+#' Get the number of occurrences of AID coldspots in a set of reference 
+#'   sequences
+#' 
+#' @inheritParams dna_sequences getMotifCount
+#' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
+getColdspotCount <- function(dna_sequences, coldspots=c("SYC")) {
+    return(getSpotCount(dna_sequences, coldspots))
 }
 
+#' Compare coldspot count distributions of two sets of mature BCR sequences
+#'
+#' @param dat_a First dataset
+#' @param dat_b Second dataset
+#' @return The JS divergence of the coldspot count distributions inferred from
+#'   \code{dat_a$mature_seq} and \code{dat_b$mature_seq}, respectively
 compareColdspotCounts <- function(dat_a, dat_b) {
     counts_a <- dat_a$mature_seq %>% sapply(getColdspotCount)
     counts_b <- dat_b$mature_seq %>% sapply(getColdspotCount)
