@@ -4,19 +4,26 @@
 \alias{comparePairwiseDistanceDistributions}
 \title{Compare pairwise distance distributions of two lists of sequences}
 \usage{
-comparePairwiseDistanceDistributions(list_a, list_b)
+comparePairwiseDistanceDistributions(dat_a, dat_b, subsample_count = 100,
+  trial_count = 10)
 }
 \arguments{
-\item{list_a}{First list of sequences}
+\item{dat_a}{First dataset, containing mature sequences}
 
-\item{list_b}{Second list of sequences}
+\item{dat_b}{Second dataset, containing mature sequences}
+
+\item{subsample_count}{Number of samples to extract on each trial}
+
+\item{trial_count}{Number of trials to average over}
 }
 \value{
-JS divergence of the distributions inferred from list_a
+Estimated JS divergence of the distributions inferred from list_a
   and list_b
 }
 \description{
 \code{comparePairwiseDistanceDistributions} computes the JS
   divergence of the pairwise distance distribution of two lists of
-  DNA sequences
+  DNA sequences. This function iterates through a number of trials (given
+  by \code{trial_count}, subsampling the full datasets by the amount given
+  by \code{subsample_count}, and returns the mean divergence.
 }

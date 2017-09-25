@@ -236,6 +236,23 @@ subsample <- function(dataset, sample_count) {
     return(new_dataset)
 }
 
+#' Estimate JS divergence by subsampling and averaging over the comparison
+#'   function output
+#'
+#' Arguemnts to \code{func} may be supplied after the other required 
+#'   parameters.
+#' @param sequence_a First sequence input to \code{func}
+#' @param sequence_b Second sequence input to \code{func}
+#' @param func Comparison function for which to calculate the JS divergence
+#' @param subsample_count Number of samples to extract on each trial
+#' @param trial_count Number of trials to average over
+#' @return The average computed JS divergence across trials, used as an
+#'   estimate of the true JS divergence
+#' @examples
+#' seq_1 <- c("AAAAA", "AATTT", "TTATT", "ACATG", "GGGAA")
+#' seq_2 <- c("AAAAC", "ACATG", "CGGGA", "ACATG", "GGACA")
+#' getAverageJSDivergence(seq_1, seq_2, getNearestNeighborDistances, 
+#'   subsample_count=3, trial_count=20, k=2)
 getAverageJSDivergence <- function(sequence_a, sequence_b, func, 
                                    subsample_count, 
                                    trial_count, 
@@ -262,6 +279,7 @@ getAverageJSDivergence <- function(sequence_a, sequence_b, func,
 #'   by \code{subsample_count}, and returns the mean divergence.
 #' @param dat_a First dataset, containing mature sequences
 #' @param dat_b Second dataset, containing mature sequences
+#' @inheritParams getAverageJSDivergence 
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
 comparePairwiseDistanceDistributions <- function(dat_a, dat_b,
@@ -300,12 +318,13 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
 #' \code{compareNNDistanceDistribution} computes the JS divergence of
 #'   the kth nearest neighbor distance distribution of two lists of
 #'   DNA sequences
-#' @param list_a First list of sequences
-#' @param list_b Second list of sequences
+#' @inheritParams getAverageJSDivergence
+#' @param dat_a First dataset, containing mature sequences
+#' @param dat_b Second dataset, containing mature sequences
 #' @param k The separation depth for the nearest neighbor distances.
 #'   k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 #'   the second-nearest neighbor, etc.
-#' @return JS divergence of the distributions inferred from list_a
+#' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
 compareNNDistanceDistributions <- function(dat_a, dat_b, k=1,
                                            subsample_count=100,
