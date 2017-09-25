@@ -236,6 +236,23 @@ subsample <- function(dataset, sample_count) {
     return(new_dataset)
 }
 
+getAverageJSDivergence <- function(sequence_a, sequence_b, func, 
+                                   subsample_count, 
+                                   trial_count, 
+                                   ...) {
+    divergences <- {}
+    for(trial in 1:trial_count) {
+        distances_a <- sequence_a %>% 
+            subsample(sample_count=subsample_count) %>%
+            func
+        distances_b <- sequence_b %>% 
+            subsample(sample_count=subsample_count) %>%
+            func
+        divergences[trial] <- getJSDivergence(distances_a, distances_b)
+    }
+    return(divergences %>% mean)
+}
+
 #' Compare pairwise distance distributions of two lists of sequences
 #'
 #' \code{comparePairwiseDistanceDistributions} computes the JS
@@ -243,24 +260,19 @@ subsample <- function(dataset, sample_count) {
 #'   DNA sequences. This function iterates through a number of trials (given
 #'   by \code{trial_count}, subsampling the full datasets by the amount given
 #'   by \code{subsample_count}, and returns the mean divergence.
-#' @param list_a First list of sequences
-#' @param list_b Second list of sequences
+#' @param dat_a First dataset, containing mature sequences
+#' @param dat_b Second dataset, containing mature sequences
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
 comparePairwiseDistanceDistributions <- function(dat_a, dat_b,
                                                  subsample_count=100,
                                                  trial_count=10) {
-    divergences <- rep(NA, trial_count)
-    for(trial in 1:trial_count) {
-        distances_a <- dat_a %$% mature_seq %>% 
-            subsample(sample_count=subsample_count) %>% 
-            getDistanceVector
-        distances_b <- dat_b %$% mature_seq %>% 
-            subsample(sample_count=subsample_count) %>% 
-            getDistanceVector
-        divergences[trial] <- getJSDivergence(distances_a, distances_b)
-    }
-    return(divergences %>% mean)
+    average_divergence <- getAverageJSDivergence(dat_a %$% mature_seq,
+                                                dat_b %$% mature_seq,
+                                                getDistanceVector,
+                                                subsample_count,
+                                                trial_count)
+    return(average_divergence)
 }
 
 #' Get sorted list of nearest neighbor distances
