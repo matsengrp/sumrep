@@ -45,6 +45,7 @@ compareRepertoires <- function(repertoire_1, repertoire_2) {
 
     sig_digs <- 4
     function_strings <- list("comparePairwiseDistanceDistributions",
+                             "compareNNDistanceDistributions",
                              "compareGCContents",
                              "compareHotspotCounts",
                              "compareColdspotCounts",

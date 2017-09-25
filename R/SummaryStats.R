@@ -211,7 +211,7 @@ getDistanceVector <- function(sequence_list) {
 subsampleVector <- function(v, sample_count) {
     new_vector <- {}
     if(length(v) > sample_count) {
-        new_vector <- v[sample(sample_count)]
+        new_vector <- sample(v, sample_count)
     } else {
         new_vector <- v
     }
@@ -229,7 +229,7 @@ subsample <- function(dataset, sample_count) {
     if(is.null(dim(dataset))) {
         new_dataset <- subsampleVector(dataset, sample_count)
     } else if(nrow(dataset) > sample_count) {
-        new_dataset <- dataset[sample(sample_count), ]
+        new_dataset <- dataset[sample(nrow(sample_count)), ]
     } else {
         new_dataset <- dataset
     }
@@ -291,6 +291,7 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
     for(i in 1:n) {
         distances[i] <- sort(mat[i, -i], partial=k)[k]
     }
+
     return(distances)
 }
 
@@ -306,11 +307,16 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
 #'   the second-nearest neighbor, etc.
 #' @return JS divergence of the distributions inferred from list_a
 #'   and list_b
-compareNNDistanceDistribution <- function(list_a, list_b, k=1) {
-    distances_a <- list_a %>% getNearestNeighborDistances(k=k)
-    distances_b <- list_b %>% getNearestNeighborDistances(k=k)
-    divergence <- getJSDivergence(distances_a, distances_b)
-    return(divergence)
+compareNNDistanceDistributions <- function(dat_a, dat_b, k=1,
+                                           subsample_count=100,
+                                           trial_count=10) {
+    average_divergence <- getAverageJSDivergence(dat_a %$% mature_seq,
+                                                 dat_b %$% mature_seq,
+                                                 getNearestNeighborDistances,
+                                                 subsample_count,
+                                                 trial_count,
+                                                 k=k)
+    return(average_divergence)
 }
 
 #' Get the GC content distribution of a list of DNA sequences
