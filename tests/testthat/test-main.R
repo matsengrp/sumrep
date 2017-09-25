@@ -42,10 +42,10 @@ test_that("test.compareGCContents", {
 })
 
 test_that("test.comparePairwiseDistanceDistributions", {
-    s1 <- c("AAA", "AAT", "ATT")
-    s2 <- c("ATT", "AAA", "AAT")
-    s3 <- c("AAA", "AAT", "TTT")
-    s4 <- c("AAA", "ATC", "GGG")
+    s1 <- data.table(mature_seq=c("AAA", "AAT", "ATT"))
+    s2 <- data.table(mature_seq=c("ATT", "AAA", "AAT"))
+    s3 <- data.table(mature_seq=c("AAA", "AAT", "TTT"))
+    s4 <- data.table(mature_seq=c("AAA", "ATC", "GGG"))
     expect_equal(0, comparePairwiseDistanceDistributions(s1, 
         s2))
     c1 <- comparePairwiseDistanceDistributions(s1, s3)

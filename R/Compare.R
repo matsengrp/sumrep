@@ -6,7 +6,7 @@
 #' @param dat data.table or data.frame object to be resampled
 #' @return A new, resampled data.table or data.frame object, depending on 
 #'   the type of \code{dat}
-resample_data <- function(dat) {
+resampleData <- function(dat) {
     return( dat[sample(nrow(dat), replace=TRUE), ] )
 }
 
@@ -44,7 +44,7 @@ compareRepertoires <- function(repertoire_1, repertoire_2) {
     annotations_2 <- repertoire_2$annotations
 
     sig_digs <- 4
-    function_strings <- list(
+    function_strings <- list("comparePairwiseDistanceDistributions",
                              "compareGCContents",
                              "compareHotspotCounts",
                              "compareColdspotCounts",

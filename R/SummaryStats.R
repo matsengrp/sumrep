@@ -203,20 +203,64 @@ getDistanceVector <- function(sequence_list) {
     return(vec)
 }
 
+#' Subsample a vector
+#' 
+#' @inheritParams subsample
+#' @param v Vector to subsample
+#' @return A subsampled vector 
+subsampleVector <- function(v, sample_count) {
+    new_vector <- {}
+    if(length(v) > sample_count) {
+        new_vector <- v[sample(sample_count)]
+    } else {
+        new_vector <- v
+    }
+    return(new_vector)
+}
+
+#' Subsample a dataset
+#'
+#' @param dataset A data.table, data.frame, or vector object
+#' @param sample_count Number of samples to retain in the subsampled data.
+#'   Samples refers to elements in a vector or rows in a data.table/data.frame
+#' @return A subsampled dataset of the same type given by \code{dataset}
+subsample <- function(dataset, sample_count) {
+    new_dataset <- {}
+    if(is.null(dim(dataset))) {
+        new_dataset <- subsampleVector(dataset, sample_count)
+    } else if(nrow(dataset) > sample_count) {
+        new_dataset <- dataset[sample(sample_count), ]
+    } else {
+        new_dataset <- dataset
+    }
+    return(new_dataset)
+}
+
 #' Compare pairwise distance distributions of two lists of sequences
 #'
 #' \code{comparePairwiseDistanceDistributions} computes the JS
 #'   divergence of the pairwise distance distribution of two lists of
-#'   DNA sequences
+#'   DNA sequences. This function iterates through a number of trials (given
+#'   by \code{trial_count}, subsampling the full datasets by the amount given
+#'   by \code{subsample_count}, and returns the mean divergence.
 #' @param list_a First list of sequences
 #' @param list_b Second list of sequences
-#' @return JS divergence of the distributions inferred from list_a
+#' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
-comparePairwiseDistanceDistributions <- function(list_a, list_b) {
-    distances_a <- list_a %>% getDistanceVector
-    distances_b <- list_b %>% getDistanceVector
-    divergence <- getJSDivergence(distances_a, distances_b)
-    return(divergence)
+comparePairwiseDistanceDistributions <- function(dat_a, dat_b,
+                                                 subsample_count=100,
+                                                 trial_count=10) {
+    divergences <- rep(NA, trial_count)
+    for(trial in 1:trial_count) {
+        distances_a <- dat_a %$% mature_seq %>% 
+            subsample(sample_count=subsample_count) %>% 
+            getDistanceVector
+        distances_b <- dat_b %$% mature_seq %>% 
+            subsample(sample_count=subsample_count) %>% 
+            getDistanceVector
+        divergences[trial] <- getJSDivergence(distances_a, distances_b)
+    }
+    return(divergences %>% mean)
 }
 
 #' Get sorted list of nearest neighbor distances
