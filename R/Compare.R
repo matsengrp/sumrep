@@ -57,6 +57,7 @@ compareRepertoires <- function(repertoire_1, repertoire_2) {
                              "compareVDJDistributions",
                              "compareHydrophobicityDistributions",
                              "compareAtchleyFactorDistributions",
+                             "compareGRAVYDistributions",
                              "compareCDR3Distributions",
                              "compareDistanceBetweenMutationsDistributions",
                              "compareSubstitutionModels",

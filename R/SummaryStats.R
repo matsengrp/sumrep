@@ -642,21 +642,36 @@ compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
+#' Get the distribution of GRAVY values from a list or vector of sequences
+#'
+#' @param List or vector of DNA sequence strings
+#' @return Vector of GRAVY values for \code{sequence_list}
 getGRAVYDistribution <- function(sequence_list) {
-    dist <- sequence_list %>% removeEmptyStrings %>% 
+    dist <- sequence_list %>% 
+            removeEmptyStrings %>% 
             standardizeList %>%
-            sapply(alakazam::gravy) %>% unname
+            toupper %>%
+            sapply(alakazam::gravy) %>% 
+            unname
     return(dist)
 }
 
-compareGRAVYDistributions <- function(list_a, list_b) {
-    dist_a <- getGRAVYDistribution(list_a)
-    dist_b <- getGRAVYDistribution(list_b)
-    divergence <- getJSDivergence(list_a, list_b,
-                                    continuous=TRUE)
+#' Compare the GRAVY distributions of two datasets
+#'
+#' @param dat_a First dataset, a data.table or data.frame object
+#' @param dat_b Second dataset, a data.table or data.frame object
+#' @return The JS divergence of GRAVY distributions
+compareGRAVYDistributions <- function(dat_a, dat_b) {
+    dist_a <- dat_a %$% naive_seq %>% getGRAVYDistribution
+    dist_b <- dat_b %$% naive_seq %>% getGRAVYDistribution
+    divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
 
+#' Parse a python dictionary string into an R list
+#'
+#' @param dictionary String that represents a dictionary in Python's syntax
+#' @return An R list containing the same information as \code{dictionary}
 parsePythonDictionary <- function(dictionary) {
     parsed <- dictionary %>% gsub(pattern="'", replacement='"') %>% 
         gsub(pattern="\\(", replacement="\\[") %>% 
