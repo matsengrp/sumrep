@@ -679,9 +679,18 @@ parsePythonDictionary <- function(dictionary) {
     return(parsed)
 }
 
-extractCDR3CodonStartPositions <- function(dictionary) {
-    dict_length <- length(dictionary)
-    positions <- dictionary %>% sapply(toString) %>% 
+#' Extract CDR3 codon start positions from partis-returned dictionary strings
+#'
+#' This is a helper function to \link{getCDR3s}.
+#' Note: We add one to \code{positions} because partis returns position values
+#'   that are zero-based (an artifact) of Python, whereas R is one-based by
+#'   default.
+#' @param dictionary_list A vector of strings corresponding to a Python 
+#'   dictionary, present in the column \code{codon_positions} of a data.table 
+#'   returned by \code{annotateSequences}.
+#' @return A vector of positions of the CDR3 start codons of the BCR sequences
+extractCDR3CodonStartPositions <- function(dictionary_list) {
+    positions <- dictionary_list %>% sapply(toString) %>% 
         lapply(parsePythonDictionary) %>% sapply(extract, "v") %>% unlist %>% 
         as.numeric
 
@@ -690,6 +699,10 @@ extractCDR3CodonStartPositions <- function(dictionary) {
     return(positions)
 }
 
+#' Get a vector of CDR3 DNA strings of an annotated dataset
+#' 
+#' @param dat Dataset, either a data.table or data.frame object
+#' @return Vector of CDR3 strings
 getCDR3s <- function(dat) {
     codon_starts <- dat$codon_positions %>% extractCDR3CodonStartPositions
     codon_ends <- codon_starts + dat$cdr3_length
