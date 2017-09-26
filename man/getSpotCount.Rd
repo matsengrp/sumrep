@@ -8,6 +8,8 @@
 getSpotCount(dna_sequences, spots)
 }
 \arguments{
+\item{dna_sequences}{List, vector of reference sequences}
+
 \item{spots}{Vector of hot or cold spots of interest}
 }
 \value{

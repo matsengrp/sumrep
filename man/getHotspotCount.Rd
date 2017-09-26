@@ -7,6 +7,9 @@
 \usage{
 getHotspotCount(dna_sequences, hotspots = c("WRC", "WA"))
 }
+\arguments{
+\item{dna_sequences}{List, vector of reference sequences}
+}
 \value{
 The number of AID hotspot occurrences in \code{dna_sequences}
 }

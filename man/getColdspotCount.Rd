@@ -7,6 +7,9 @@
 \usage{
 getColdspotCount(dna_sequences, coldspots = c("SYC"))
 }
+\arguments{
+\item{dna_sequences}{List, vector of reference sequences}
+}
 \value{
 The number of AID coldhotspot occurrences in \code{dna_sequences}
 }

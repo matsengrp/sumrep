@@ -381,7 +381,7 @@ getMotifCount <- function(motif, dna_sequences) {
 #' Get number of times a set of motif (hot/cold)spots occur in a set of 
 #'   reference sequences
 #'
-#' @inheritParams dna_sequences getMotifCount
+#' @inheritParams getMotifCount
 #' @param spots Vector of hot or cold spots of interest
 #' @return The total number of occurrences of each motif in \code{spots}, in
 #'   \code{dna_sequences}
@@ -393,7 +393,7 @@ getSpotCount <- function(dna_sequences, spots) {
 #' Get the number of occurrences of AID hotspots in a set of reference 
 #'   sequences
 #' 
-#' @inheritParams dna_sequences getMotifCount
+#' @inheritParams getMotifCount
 #' @return The number of AID hotspot occurrences in \code{dna_sequences}
 getHotspotCount <- function(dna_sequences, hotspots=c("WRC", "WA")) {
     return(getSpotCount(dna_sequences, hotspots))
@@ -415,7 +415,7 @@ compareHotspotCounts <- function(dat_a, dat_b) {
 #' Get the number of occurrences of AID coldspots in a set of reference 
 #'   sequences
 #' 
-#' @inheritParams dna_sequences getMotifCount
+#' @inheritParams getMotifCount
 #' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
 getColdspotCount <- function(dna_sequences, coldspots=c("SYC")) {
     return(getSpotCount(dna_sequences, coldspots))
@@ -585,12 +585,43 @@ compareHydrophobicityDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getMeanAtchleyFactorDistribution <- function(sequence_list) {
-    atchley_factors <- sequence_list %>% sapply(convertDNAToAminoAcids) %>% 
-        HDMD::FactorTransform() %>% sapply(mean, na.rm=TRUE) %>% unname
+#' Get the mean Atchley factor of a DNA sequence
+#'
+#' TODO: Do something more clever than taking the mean. Is there
+#'   a set of factors of interest that we can isolate? Or should
+#'   we do an average pairwise comparison?
+#' @param dna_seq String of a DNA sequence
+#' @return The mean of the set of Atchley factors for 
+#'   \code{dna_seq}
+getMeanAtchleyFactorBySequence <- function(dna_seq) {
+    atchley_factors <- tryCatch(
+                           dna_seq %>%
+                               convertDNAToAminoAcids %>%
+                               HDMD::FactorTransform() %>%
+                               first %>%
+                               mean(na.rm=TRUE),
+                           warning=function(w) {}
+                        )
     return(atchley_factors)
 }
 
+#' Get the distribution of mean Atchley factors for a list of DNA seuqnces
+#'
+#' @param sequence_list List or vector of DNA sequences
+#' @return Vector of mean Atchley factors of \code{sequence_list}
+getMeanAtchleyFactorDistribution <- function(sequence_list) {
+    atchley_factors <- sequence_list %>% 
+        sapply(getMeanAtchleyFactorBySequence) %>%
+        unname %>%
+        unlist
+    return(atchley_factors)
+}
+
+#' Compare the distributions of mean Atchley factors for two datasets
+#'
+#' @param dat_a First dataset, a data.table or data.frame
+#' @param dat_b Second dataset, a data.table or data.frame
+#' @return JS divergence of Atchley factor distributions
 compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
     dist_a <- dat_a$mature_seq %>% getMeanAtchleyFactorDistribution
     dist_b <- dat_b$mature_seq %>% getMeanAtchleyFactorDistribution
