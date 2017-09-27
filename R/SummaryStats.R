@@ -629,12 +629,37 @@ compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
+#' Get the aliphatic index of a DNA sequence
+#'
+#' @param dna_sequence String of DNA characters
+#' @return The aliphatic index of \code{dna_sequence}, if applicable
+getAliphaticIndex <- function(dna_sequence) {
+    aliphatic_index <- tryCatch(
+                           dna_sequence %>% 
+                           convertDNAToAminoAcids %>%
+                           Peptides::aIndex(),
+                           warning=function(w) {}
+                       )
+    return(aliphatic_index)
+}
+
+#' Get the distribution of aliphatic indices of a list of sequences
+#'
+#' @param sequence_list List or vector of DNA sequences
+#' @return Vector of aliphatic indices
 getAliphaticIndexDistribution <- function(sequence_list) {
-    a_indices <- sequence_list %>% sapply(convertDNAToAminoAcids) %>% 
-        sapply(Peptides::aIndex)
+    a_indices <- sequence_list %>% 
+        sapply(getAliphaticIndex) %>%
+        unname %>%
+        unlist
     return(a_indices)
 }
 
+#' Compare the distributions of aliphatic indices of two datasets
+#'
+#' @param dat_a First dataset, a data.table or data.frame
+#' @param dat_b Second datset, a data.table or data.frame
+#' @return The JS divergence of the two distributions
 compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
     dist_a <- dat_a$mature_seq %>% getAliphaticIndexDistribution
     dist_b <- dat_b$mature_seq %>% getAliphaticIndexDistribution
