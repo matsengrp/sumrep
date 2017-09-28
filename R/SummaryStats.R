@@ -726,13 +726,17 @@ extractCDR3CodonStartPositions <- function(dictionary_list) {
 
 #' Get a vector of CDR3 DNA strings of an annotated dataset
 #' 
+#' Warning: This function is called on the raw dataset from 
+#'   \code{doFullAnnotation} before \code{input_seqs} is changed to
+#'   \code{mature_seq}.
 #' @param dat Dataset, either a data.table or data.frame object
 #' @return Vector of CDR3 strings
 getCDR3s <- function(dat) {
     codon_starts <- dat$codon_positions %>% extractCDR3CodonStartPositions
     codon_ends <- codon_starts + dat$cdr3_length
-    collapsed_seqs <- dat$mature_seq %>% sapply(paste, collapse='')
-    cdr3s <- collapsed_seqs %>% substr(codon_starts, codon_ends - 1)
+    cdr3s <- dat %$% input_seqs %>% 
+        substr(codon_starts, codon_ends - 1) %>% 
+        unname
     return(cdr3s)
 }
 

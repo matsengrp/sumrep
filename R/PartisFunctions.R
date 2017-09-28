@@ -129,7 +129,6 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
     annotated_data <- callPartis("annotate", input_filename, output_file, 
                                  output_path, partis_path, num_procs, cleanup)
 
-
     hmm_yaml_filepath <- file.path(output_path, "params/hmm/hmms")
     yaml_files <- hmm_yaml_filepath %>% list.files
     yaml_filepath_and_files <- sapply(yaml_files, 
@@ -146,14 +145,15 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
 
     if(do_full_annotation) {
         annotated_data <- doFullAnnotation(output_path, output_file, partis_path)
+        annotated_data$cdr3s <- annotated_data %>% getCDR3s
     }
 
     if(cleanup) {
         output_path %>% unlink(recursive=TRUE)
     }
 
-    raw_sequences <- input_filename %>% getSequenceListFromFasta
-    annotated_data$mature_seq <- raw_sequences[annotated_data$unique_ids]
+    names(annotated_data)[which(names(annotated_data) == "input_seqs")] <- 
+        "mature_seq"
 
     annotation_object <- {}
     annotation_object$annotations <- annotated_data
