@@ -579,8 +579,8 @@ getHydrophobicityDistribution <- function(sequence_list) {
 }
 
 compareHydrophobicityDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a %$% naive_seq %>% getHydrophobicityDistribution
-    dist_b <- dat_b %$% naive_seq %>% getHydrophobicityDistribution
+    dist_a <- dat_a %$% cdr3s %>% getHydrophobicityDistribution
+    dist_b <- dat_b %$% cdr3s %>% getHydrophobicityDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
@@ -623,8 +623,8 @@ getMeanAtchleyFactorDistribution <- function(sequence_list) {
 #' @param dat_b Second dataset, a data.table or data.frame
 #' @return JS divergence of Atchley factor distributions
 compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a$mature_seq %>% getMeanAtchleyFactorDistribution
-    dist_b <- dat_b$mature_seq %>% getMeanAtchleyFactorDistribution
+    dist_a <- dat_a$cdr3s %>% getMeanAtchleyFactorDistribution
+    dist_b <- dat_b$cdr3s %>% getMeanAtchleyFactorDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
@@ -661,8 +661,8 @@ getAliphaticIndexDistribution <- function(sequence_list) {
 #' @param dat_b Second datset, a data.table or data.frame
 #' @return The JS divergence of the two distributions
 compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a$mature_seq %>% getAliphaticIndexDistribution
-    dist_b <- dat_b$mature_seq %>% getAliphaticIndexDistribution
+    dist_a <- dat_a$cdr3s %>% getAliphaticIndexDistribution
+    dist_b <- dat_b$cdr3s %>% getAliphaticIndexDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
@@ -687,8 +687,8 @@ getGRAVYDistribution <- function(sequence_list) {
 #' @param dat_b Second dataset, a data.table or data.frame object
 #' @return The JS divergence of GRAVY distributions
 compareGRAVYDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a %$% naive_seq %>% getGRAVYDistribution
-    dist_b <- dat_b %$% naive_seq %>% getGRAVYDistribution
+    dist_a <- dat_a %$% cdr3s %>% getGRAVYDistribution
+    dist_b <- dat_b %$% cdr3s %>% getGRAVYDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
