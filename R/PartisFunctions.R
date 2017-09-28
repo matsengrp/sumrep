@@ -113,6 +113,15 @@ doFullAnnotation <- function(output_path, output_file, partis_path) {
     return(annotated_data)
 }
 
+processMatureSequences <- function(dat) {
+    names(dat)[which(names(dat) == "input_seqs")] <- 
+        "mature_seq"
+    dat$mature_seq <- dat$mature_seq %>%
+        sapply(toString) %>%
+        sapply(tolower) 
+    return(dat)
+}
+
 #' Perform sequence annotation with partis
 #'
 #' @inheritParams callPartis
@@ -152,8 +161,7 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
         output_path %>% unlink(recursive=TRUE)
     }
 
-    names(annotated_data)[which(names(annotated_data) == "input_seqs")] <- 
-        "mature_seq"
+    annotated_data <- annotated_data %>% processMatureSequences
 
     annotation_object <- {}
     annotation_object$annotations <- annotated_data
@@ -225,16 +233,15 @@ simulateDataset <- function(parameter_dir,
         sim_annotations <- doFullAnnotation(output_file,
                                             output_path=".",
                                             partis_path)
+        sim_annotations$cdr3s <- sim_annotations %>% getCDR3s
     }
 
     if(cleanup) {
         output_file %>% unlink
     }
 
-    names(sim_annotations)[which(names(sim_annotations) == "input_seqs")] <- 
-        "mature_seq"
-    sim_annotations$mature_seq <- sim_annotations$mature_seq %>% 
-        sapply(toString) %>% sapply(tolower)
+    sim_annotations <- sim_annotations %>% processMatureSequences
+
     sim_data <- list(annotations=sim_annotations)
     return(sim_data)
 }

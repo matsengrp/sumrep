@@ -32,7 +32,7 @@ doComparison <- function(function_string, input_1, input_2) {
 #'
 #' \code{compareRepertoires} iterates through the various comparison functions
 #'   in \code{sumrep}, printing the distance or divergence value of each one.
-#'   Both repertoires are assumed to be both annotated.
+#'   Both repertoires are assumed to be annotated.
 #'   Partition-based comparisons are available if the repertoires are 
 #'   partitioned.
 #'   Comparisons based on per-gene and per-gene-per-position mutation rates are 

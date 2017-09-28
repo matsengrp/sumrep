@@ -740,14 +740,21 @@ getCDR3s <- function(dat) {
     return(cdr3s)
 }
 
+#' Compare levenshtein distance distributions of two CDR3 repertoires
+#'
+#' @param dat_a First dataset, a data.table or data.frame object
+#' @param dat_b Second dataset, a data.table or data.frame object
+#' @return The JS divergence of the levenshtein distance distributions of the
+#'   CDR3s of the two repertoires
 compareCDR3Distributions <- function(dat_a, dat_b, subsample=TRUE, 
                                      subsample_count=10000) {
     subsample_count <- min(nrow(dat_a), nrow(dat_b), subsample_count)
-    dist_a <- dat_a[sample(nrow(dat_a), subsample_count), ] %>% getCDR3s %>% 
+    dist_a <- dat_a[sample(nrow(dat_a), subsample_count), ] %$% cdr3s %>% 
         getDistanceVector
-    dist_b <- dat_b[sample(nrow(dat_b), subsample_count), ] %>% getCDR3s %>%
+    dist_b <- dat_b[sample(nrow(dat_b), subsample_count), ] %$% cdr3s %>%
         getDistanceVector
     divergence <- getJSDivergence(dist_a, dist_b)
+    return(divergence)
 }
 
 getDistancesBetweenMutationsBySequence <- function(naive, mature) {
