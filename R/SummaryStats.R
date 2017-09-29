@@ -487,31 +487,37 @@ compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
     full_gene_list <- union(gene_list_a, gene_list_b)
     table_a <- gene_list_a %>% getGeneUsageTableFromFullList(full_gene_list)
     table_b <- gene_list_b %>% getGeneUsageTableFromFullList(full_gene_list)
-
     divergence <- full_gene_list %>% 
         sapply(function(x) { abs(table_a[x] - table_b[x]) }) %>% mean
     return(divergence)
 }
 
 compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type,
-                                             collapse_alleles=TRUE) {
-    gene_list_a <- dat_a[, gene_type, with=FALSE] %>% first
-    gene_list_b <- dat_b[, gene_type, with=FALSE] %>% first
+                                             collapse_alleles) {
+    if(gene_type %>% missing) {
+        stop("gene_type needs to be supplied.")
+    }
+
+    gene_list_a <- dat_a[, gene_type, with=FALSE] 
+    gene_list_b <- dat_b[, gene_type, with=FALSE]
     divergence <- compareGeneUsage(gene_list_a, gene_list_b, 
                                    collapse_alleles) 
     return(divergence)
 }
 
 compareVGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, "v_gene"))
+    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="v_gene",
+                                            collapse_alleles=TRUE))
 }
 
 compareDGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, "d_gene"))
+    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="d_gene",
+                                            collapse_alleles=TRUE))
 }
 
 compareJGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, "j_gene"))
+    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="j_gene",
+                                            collapse_alleles=TRUE))
 }
 
 compareVDJDistributions <- function(dat_a, dat_b) {
@@ -568,7 +574,7 @@ getKideraFactorsBySequence <- function(sequence) {
 
 getKideraFactors <- function(sequence_list) {
     kidera_factors <- sequence_list %>%
-        sapply(getKideraFactorsBySequence) %>% do.call(what=rbind)
+        lapply(getKideraFactorsBySequence) %>% do.call(what=rbind)
     return(kidera_factors)
 }
 

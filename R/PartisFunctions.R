@@ -118,7 +118,7 @@ processMatureSequences <- function(dat) {
         "mature_seq"
     dat$mature_seq <- dat$mature_seq %>%
         sapply(toString) %>%
-        sapply(tolower) 
+        tolower
     return(dat)
 }
 
