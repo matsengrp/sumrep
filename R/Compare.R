@@ -36,17 +36,37 @@ bootstrapFasta <- function(fasta_file, output_filename) {
 #'
 #' @param function_string The name of the function to apply. Must be a 
 #'   comparison that takes two inputs
-#' @param input_1 First input to \code{function_string}
-#' @param input_2 Second input to \code{function_string}
-doComparison <- function(function_string, input_1, input_2) {
+#' @param input_list List of inputs on which to do comparisons. If 
+#'   \code{length(input_list) == 2}, do a usual comparison on the two 
+#'   repertoire inputs. If \code{length(input_list) == 3}, a comparison of
+#'   the first input with a bootstrapped version will be included.
+doComparison <- function(function_string, input_list) {
     f <- eval(parse(text=function_string)) 
+    input_1 <- input_list[[1]]
+    input_2 <- input_list[[2]]
     pt <- proc.time()
     comparison <- f(input_1, input_2)
     elapsed <- (proc.time() - pt)[3]
-    cat("Result of ", function_string, ": ", 
+    cat("Result of ", 
+        function_string, 
+        ": ", 
         crayon::green(comparison %>% signif(4) %>% toString),
-        ' (', elapsed, 's)', '\n', 
-        sep='')
+        ' (', 
+        elapsed, 
+        's)',
+        '\n', sep='')
+    if(length(input_list) == 3) {
+        input_1_boot <- input_list[[3]]
+        pt <- proc.time()
+        boot_comparison <- f(input_1, input_1_boot)
+        elapsed_boot <- (proc.time() - pt)[3]
+        cat("   Bootstrap result: ",
+            crayon::yellow(boot_comparison %>% signif(4) %>% toString),
+            ' (',
+            elapsed_boot,
+            's)',
+            '\n', sep='')
+    }
 }
 
 #' Run through a full repertoire comparison
@@ -60,9 +80,22 @@ doComparison <- function(function_string, input_1, input_2) {
 #'   also available given mutation rate information.
 #' @param repertoire_1 First repertoire
 #' @param repertoire_2 Second repertoire
-compareRepertoires <- function(repertoire_1, repertoire_2) {
+#' @param rep_1_bootstrap Annotated repertoire based on bootstrapping the DNA
+#'   sequences from the first repertoire
+compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
     annotations_1 <- repertoire_1$annotations
     annotations_2 <- repertoire_2$annotations
+    annotations_list <- list(annotations_1, annotations_2)
+
+    if(hasArg(rep_1_bootstrap)) {
+        annotations_1_boot <- rep_1_bootstrap$annotations
+
+        if(!identical(names(annotations_1), names(annotations_1_boot))) {
+            stop("Bootstrapped repertoire annotations do not match the original's.")
+        }
+
+        annotations_list[[3]] <- annotations_1_boot
+    }
 
     sig_digs <- 4
     function_strings <- list("comparePairwiseDistanceDistributions",
@@ -99,7 +132,7 @@ compareRepertoires <- function(repertoire_1, repertoire_2) {
     }
 
     for(f_string in function_strings) {
-        doComparison(f_string, annotations_1, annotations_2)
+        doComparison(f_string, annotations_list)
     }
 
     mutation_rates_1 <- repertoire_1$mutation_rates
