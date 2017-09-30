@@ -562,24 +562,38 @@ convertDNAToAminoAcids <- function(sequence) {
     return(aa_list)
 }
 
+hasUnrecognizedAminoAcids <- function(aa_sequence) {
+    return(grepl("X", aa_sequence))  
+}
+
+hasStopCodon <- function(aa_sequence) {
+    return(grepl("\\*", aa_sequence))
+}
+
+removeBadAminoAcidSequences <- function(aa_sequences) {
+    return(aa_sequences[!hasUnrecognizedAminoAcids(aa_sequences) &
+                        !hasStopCodon(aa_sequences)])
+}
+
 getKideraFactorsBySequence <- function(sequence) {
-    kidera_factors <- tryCatch( 
-             sequence %>% 
-                 convertDNAToAminoAcids %>% 
-                 Peptides::kideraFactors() %>% first,
-                  warning=function(w) {} 
-          )
+    kidera_factors <- sequence %>% 
+        Peptides::kideraFactors() %>% 
+        first
     return(kidera_factors)
 }
 
 getKideraFactors <- function(sequence_list) {
     kidera_factors <- sequence_list %>%
-        lapply(getKideraFactorsBySequence) %>% do.call(what=rbind)
+        sapply(convertDNAToAminoAcids) %>%
+        removeBadAminoAcidSequences %>%
+        lapply(getKideraFactorsBySequence) %>% 
+        do.call(what=rbind)
     return(kidera_factors)
 }
 
 getHydrophobicityDistribution <- function(sequence_list) {
-    hydrophobicity_list <- sequence_list %>% getKideraFactors %>%
+    hydrophobicity_list <- sequence_list %>% 
+        getKideraFactors %>%
         data.table %>% select_("KF4") %>% unlist
     return(hydrophobicity_list)
 }
@@ -600,14 +614,10 @@ compareHydrophobicityDistributions <- function(dat_a, dat_b) {
 #' @return The mean of the set of Atchley factors for 
 #'   \code{dna_seq}
 getMeanAtchleyFactorBySequence <- function(dna_seq) {
-    atchley_factors <- tryCatch(
-                           dna_seq %>%
-                               convertDNAToAminoAcids %>%
-                               HDMD::FactorTransform() %>%
-                               first %>%
-                               mean(na.rm=TRUE),
-                           warning=function(w) {}
-                        )
+    atchley_factors <- dna_seq %>%
+        HDMD::FactorTransform() %>%
+        first %>%
+        mean
     return(atchley_factors)
 }
 
@@ -617,6 +627,8 @@ getMeanAtchleyFactorBySequence <- function(dna_seq) {
 #' @return Vector of mean Atchley factors of \code{sequence_list}
 getMeanAtchleyFactorDistribution <- function(sequence_list) {
     atchley_factors <- sequence_list %>% 
+        sapply(convertDNAToAminoAcids) %>%
+        removeBadAminoAcidSequences %>%
         sapply(getMeanAtchleyFactorBySequence) %>%
         unname %>%
         unlist
@@ -640,12 +652,8 @@ compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
 #' @param dna_sequence String of DNA characters
 #' @return The aliphatic index of \code{dna_sequence}, if applicable
 getAliphaticIndex <- function(dna_sequence) {
-    aliphatic_index <- tryCatch(
-                           dna_sequence %>% 
-                           convertDNAToAminoAcids %>%
-                           Peptides::aIndex(),
-                           warning=function(w) {}
-                       )
+    aliphatic_index <- dna_sequence %>% 
+        Peptides::aIndex()
     return(aliphatic_index)
 }
 
@@ -655,6 +663,8 @@ getAliphaticIndex <- function(dna_sequence) {
 #' @return Vector of aliphatic indices
 getAliphaticIndexDistribution <- function(sequence_list) {
     a_indices <- sequence_list %>% 
+        sapply(convertDNAToAminoAcids) %>%
+        removeBadAminoAcidSequences %>%
         sapply(getAliphaticIndex) %>%
         unname %>%
         unlist
