@@ -10,6 +10,27 @@ resampleData <- function(dat) {
     return( dat[sample(nrow(dat), replace=TRUE), ] )
 }
 
+#' Resample DNA sequences from a fasta file with replacement, and save the
+#'   resultant sequences to a new fasta file
+#'
+#' This acts as a bootstrap on a DNA sequence dataset as an attempt to get 
+#'   a benchmark 'control' for assessing similarity in comparison functions.
+#'   See \code{compareRepertoires} for more details.
+#' @param fasta_file Fasta file from which to resample sequences
+#' @param output_filename Desired output_filename
+bootstrapFasta <- function(fasta_file, output_filename) {
+    if(output_filename %>% file.exists) {
+        stop(paste("File", output_filename, "already exists.",
+                   "Please choose a different output filename."))
+    }
+
+    sequences <- fasta_file %>% 
+        seqinr::read.fasta(as.string=TRUE) %>%
+        sample(replace=TRUE) %>%
+        seqinr::write.fasta(names=seq(1, length(.)), 
+                    file.out=output_filename)
+}
+
 #' Apply \code{function_string} to inputs \code{input_1} and \code{input_2},
 #'   and print the results
 #'
