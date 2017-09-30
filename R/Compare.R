@@ -31,6 +31,26 @@ bootstrapFasta <- function(fasta_file, output_filename) {
                     file.out=output_filename)
 }
 
+#' Print the result and elapsed time of a comparison
+#'
+#' @param f Comparison function 
+#' @param input_1 First input to \code{f}
+#' @param input_2 Second input to \code{f}
+#' @param string_header Text to precede the comparison value and elapsed time
+#' @param color Color for text. Green for usual comparison, yellow for 
+#'   bootstrap
+printComparison <- function(f, input_1, input_2, string_header, color) {
+    pt <- proc.time()
+    comparison <- f(input_1, input_2)
+    elapsed_time <- (proc.time() - pt)[3]
+    cat(string_header,
+        color(comparison %>% signif(4) %>% toString),
+        ' (',
+        elapsed_time,
+        's)',
+        '\n', sep='')
+}
+
 #' Apply \code{function_string} to inputs \code{input_1} and \code{input_2},
 #'   and print the results
 #'
@@ -44,28 +64,14 @@ doComparison <- function(function_string, input_list) {
     f <- eval(parse(text=function_string)) 
     input_1 <- input_list[[1]]
     input_2 <- input_list[[2]]
-    pt <- proc.time()
-    comparison <- f(input_1, input_2)
-    elapsed <- (proc.time() - pt)[3]
-    cat("Result of ", 
-        function_string, 
-        ": ", 
-        crayon::green(comparison %>% signif(4) %>% toString),
-        ' (', 
-        elapsed, 
-        's)',
-        '\n', sep='')
+    printComparison(f, input_1, input_2, 
+                    string_header=paste0("Result of ", function_string, ": "),
+                    color=crayon::green)
     if(length(input_list) == 3) {
         input_1_boot <- input_list[[3]]
-        pt <- proc.time()
-        boot_comparison <- f(input_1, input_1_boot)
-        elapsed_boot <- (proc.time() - pt)[3]
-        cat("   Bootstrap result: ",
-            crayon::yellow(boot_comparison %>% signif(4) %>% toString),
-            ' (',
-            elapsed_boot,
-            's)',
-            '\n', sep='')
+        printComparison(f, input_1, input_1_boot, 
+                        string_header="    Bootstrapped result: ",
+                        color=crayon::yellow)
     }
 }
 
