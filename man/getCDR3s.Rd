@@ -13,5 +13,7 @@ getCDR3s(dat)
 Vector of CDR3 strings
 }
 \description{
-Get a vector of CDR3 DNA strings of an annotated dataset
+Warning: This function is called on the raw dataset from 
+  \code{doFullAnnotation} before \code{input_seqs} is changed to
+  \code{mature_seq}.
 }

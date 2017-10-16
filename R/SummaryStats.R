@@ -434,6 +434,11 @@ compareColdspotCounts <- function(dat_a, dat_b) {
     return(divergence)
 }
 
+#' Get distribution of Levenshtein distances from the inferred naive sequences
+#' to the observed mature ones, sequence by sequence
+#'
+#' @param dat Annotated dataset
+#' @return Vector of Levenshtein distances from naive to mature
 getDistancesFromNaiveToMature <- function(dat) {
     distances <- dat$mature_seq %>% 
         mapply(FUN=stringdist::stringdist, b=dat$naive_seq, method="lv") %>% 
@@ -441,6 +446,11 @@ getDistancesFromNaiveToMature <- function(dat) {
     return(distances)
 }
 
+#' Compare Levenshtein distance distributions from naive sequences to 
+#  their corresponding mature ones for two repertoires
+#' @param dat_a First dataset
+#' @param dat_b Second dataset
+#' @return JS divergence of the two distance distributions
 compareDistancesFromNaiveToMature <- function(dat_a, dat_b) {
     distances_a <- getDistancesFromNaiveToMature(dat_a)
     distances_b <- getDistancesFromNaiveToMature(dat_b)
@@ -448,18 +458,30 @@ compareDistancesFromNaiveToMature <- function(dat_a, dat_b) {
     return(divergence)
 }
 
+#' Import a vector of DNA sequence strings from a fasta file
+#' 
+#' @param filename Name of fasta file including the sequences
+#' @return A vector of DNA sequence strings
 getSequenceListFromFasta <- function(filename) {
     sequences <- filename %>% seqinr::read.fasta() %>% 
         lapply(paste, collapse="") %>% unlist %>% unname
     return(sequences)
 }
 
-
+#' Get the distribution of inferred length of CDR3 regions of each sequence
+#' 
+#' @param Annotated dataset
+#' @return Vector of CDR3 lengths (in nt units)
 getCDR3Lengths <- function(dat) {
     CDR3_lengths <- dat$cdr3_length %>% na.omit
     return(CDR3_lengths)
 }
 
+#' Compare the distribution of CDR3 lengths for two datasets
+#'
+#' @param dat_a First dataset
+#' @param dat_b Second dataset
+#' @return The JS divergence of the two CDR3 length distributions
 compareCDR3Lengths <- function(dat_a, dat_b) {
     a_lengths <- getCDR3Lengths(dat_a)
     b_lengths <- getCDR3Lengths(dat_b)

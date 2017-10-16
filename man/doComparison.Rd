@@ -5,15 +5,16 @@
 \title{Apply \code{function_string} to inputs \code{input_1} and \code{input_2},
   and print the results}
 \usage{
-doComparison(function_string, input_1, input_2)
+doComparison(function_string, input_list)
 }
 \arguments{
 \item{function_string}{The name of the function to apply. Must be a 
 comparison that takes two inputs}
 
-\item{input_1}{First input to \code{function_string}}
-
-\item{input_2}{Second input to \code{function_string}}
+\item{input_list}{List of inputs on which to do comparisons. If 
+\code{length(input_list) == 2}, do a usual comparison on the two 
+repertoire inputs. If \code{length(input_list) == 3}, a comparison of
+the first input with a bootstrapped version will be included.}
 }
 \description{
 Apply \code{function_string} to inputs \code{input_1} and \code{input_2},
