@@ -635,20 +635,39 @@ compareVDJDistributions <- function(dat_a, dat_b, collapseAlleles=TRUE) {
     return(divergence)
 }
 
+#' Convert a DNA string to a string of single-letter amino acid codes
+#'
+#' @param sequence String of DNA bases
+#' @return String of single-letter amino acid codes
 convertDNAToAminoAcids <- function(sequence) {
-    aa_list <- sequence %>% sapply(strsplit, '') %>% 
+    aa_sequence <- sequence %>% sapply(strsplit, '') %>% 
         sapply(seqinr::translate) %>% paste0(collapse='')
-    return(aa_list)
+    return(aa_sequence)
 }
 
+#' Check if an amino acid sequence has unrecognized codons
+#' 
+#' @param aa_sequence String of single-letter amino acid codons
+#' @return A boolean stating whether any unrecognized AA codons are present 
+#'   in \code{aa_sequence}
 hasUnrecognizedAminoAcids <- function(aa_sequence) {
     return(grepl("X", aa_sequence))  
 }
 
+#' Check if an amino acid sequence has a stop codon
+#' 
+#' @param aa_sequence String of single-letter amino acid codes
+#' @return A boolean stating whether any stop codons are present 
+#'   in \code{aa_sequence}
 hasStopCodon <- function(aa_sequence) {
     return(grepl("\\*", aa_sequence))
 }
 
+#' Remove strings in a list of amino acid sequences which contain at least one
+#'   unrecognized amino acid or stop codon
+#'
+#' @param aa_sequences Vector or list of amino acid sequences
+#' @return Filtered list with "bad" sequences removed
 removeBadAminoAcidSequences <- function(aa_sequences) {
     return(aa_sequences[!hasUnrecognizedAminoAcids(aa_sequences) &
                         !hasStopCodon(aa_sequences)])
