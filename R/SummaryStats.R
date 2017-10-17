@@ -489,18 +489,39 @@ compareCDR3Lengths <- function(dat_a, dat_b) {
     return(divergence)
 }
 
+#' Get gene usage table from full list of genes, setting zero to unused ones
+#' 
+#' @param gene_list List of genes being used in a given repertoire
+#' @param gene_list List of all available genes present in at least one
+#'   repertoire under consideration
 getGeneUsageTableFromFullList <- function(gene_list, full_gene_list) {
     usage_table <- gene_list %>% table
     usage_table[full_gene_list %>% setdiff(gene_list) %>% unlist] <- 0
     return(usage_table)
 }
 
+#' Ignore allelic differences of common genes
+#' 
+#' This function is used when reporting gene usage, so that two alleles of a
+#' common gene are both treated as the one gene, and not separately.
+#' For example, IGHV3-13*01 and IGHV3-13*02 both become IGHV3-13.
+#' @param gene_list Vector of genes possibly broken down by allele
+#' @return Vector of genes with allelic variant information discarded
 collapseAlleles <- function(gene_list) {
-    collapsed_gene_list <- gene_list %>% sapply(gsub, pattern="\\*\\d+",
-                                                replace="")
+    collapsed_gene_list <- gene_list %>% 
+        sapply(gsub, pattern="\\*\\d+", replace="") %>%
+        unname %>%
+        sapply(as.factor)
     return(collapsed_gene_list)
 }
 
+#' Compare gene usage counts for two lists of genes
+#'
+#' @param gene_list_a First vector of genes 
+#' @param gene_list_b Second vector of genes
+#' @param collapse_alleles Should allelic variants be ignored?
+#' @return Mean absolute difference of gene counts between \code{gene_list_a}
+#'   and \code{gene_list_b}
 compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
     if(collapse_alleles) {
         gene_list_a <- gene_list_a %>% collapseAlleles
@@ -514,6 +535,14 @@ compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
     return(divergence)
 }
 
+#' Compare germline V, D, or J gene usage for two repertoires
+#' @param dat_a First annotated dataset
+#' @param dat_b Second annotated dataset
+#' @param gene_type String for gene type, taken as a column name of the 
+#'   annotated datasets. Must be "v_gene", "d_gene", or "j_gene"
+#' @inheritParams compareGeneUsage
+#' @return Mean absolute difference of gene counts between the two
+#'   repertoires
 compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type,
                                              collapse_alleles) {
     if(gene_type %>% missing) {
@@ -527,51 +556,75 @@ compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type,
     return(divergence)
 }
 
+#' Compare V gene distribution between two repertoires
+#'
+#' @inheritParams compareGermlineGeneDistributions
+#' @return Mean absolute difference of V gene counts between the two
+#'   repertoires
 compareVGeneDistributions <- function(dat_a, dat_b) {
     return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="v_gene",
                                             collapse_alleles=TRUE))
 }
 
+#' Compare D gene distribution between two repertoires
+#'
+#' @inheritParams compareGermlineGeneDistributions
+#' @return Mean absolute difference of D gene counts between the two
+#'   repertoires
 compareDGeneDistributions <- function(dat_a, dat_b) {
     return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="d_gene",
                                             collapse_alleles=TRUE))
 }
 
+#' Compare J gene distribution between two repertoires
+#'
+#' @inheritParams compareGermlineGeneDistributions
+#' @return Mean absolute difference of J gene counts between the two
+#'   repertoires
 compareJGeneDistributions <- function(dat_a, dat_b) {
     return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="j_gene",
                                             collapse_alleles=TRUE))
 }
 
-compareVDJDistributions <- function(dat_a, dat_b) {
-    full_v_gene_list <- union(dat_a$v_gene, dat_b$v_gene)
-    full_d_gene_list <- union(dat_a$d_gene, dat_b$d_gene)
-    full_j_gene_list <- union(dat_a$j_gene, dat_b$j_gene)
+#' Compare joint V, D, and J gene usage between two annotated repertoires
+#' @inheritParams compareGermlineGeneDistributions
+#' @return Mean absolute difference between joint gene usage, over all
+#'   observed genes between the two repertoires
+compareVDJDistributions <- function(dat_a, dat_b, collapseAlleles=FALSE) {
+    if(collapseAlleles) {
+        a_v_genes <- dat_a %$% v_gene %>% collapseAlleles
+        b_v_genes <- dat_b %$% v_gene %>% collapseAlleles
+        a_d_genes <- dat_a %$% d_gene %>% collapseAlleles
+        b_d_genes <- dat_b %$% d_gene %>% collapseAlleles
+        a_j_genes <- dat_a %$% j_gene %>% collapseAlleles
+        b_j_genes <- dat_b %$% j_gene %>% collapseAlleles
+        new_dat_a <- data.table(v_gene=a_v_genes, d_gene=a_d_genes, 
+                                      j_gene=a_j_genes)
+        new_dat_b <- data.table(v_gene=b_v_genes, d_gene=b_d_genes, 
+                                      j_gene=b_j_genes)
+    } else {
+        new_dat_a <- dat_a
+        new_dat_b <- dat_b
+    }
 
-    table_a <- dat_a %>% plyr::count(c("v_gene", "d_gene", "j_gene"))
-    table_b <- dat_b %>% plyr::count(c("v_gene", "d_gene", "j_gene"))
+    gene_type_list <- c("v_gene", "d_gene", "j_gene")
+    table_a <- new_dat_a %>% plyr::count(gene_type_list)
+    table_b <- new_dat_b %>% plyr::count(gene_type_list)
 
-    summands <- {}
-    for(v in full_v_gene_list) {
-        for(d in full_d_gene_list) {
-            for(j in full_j_gene_list) {
-                a_count <- table_a[table_a$v_gene == v &
-                                   table_a$d_gene == d &
-                                   table_a$j_gene == j, ]$freq
-                b_count <- table_b[table_b$v_gene == v &
-                                   table_b$d_gene == d &
-                                   table_b$j_gene == j, ]$freq
-                a_nonzero <- length(a_count) == 1
-                b_nonzero <- length(b_count) == 1
-                if(a_nonzero || b_nonzero) {
-                    summand <- ifelse(length(a_count) == 1, 
-                                  ifelse(length(b_count) == 1,
-                                         abs(a_count - b_count),
-                                         a_count),
-                                  b_count)
-                    summands <- c(summands, summand)
-                }
-            }
-        }
+    table_a$concat <- do.call(paste0, table_a[gene_type_list])
+    table_b$concat <- do.call(paste0, table_b[gene_type_list])
+
+    full_triple_list <- union(table_a$concat, table_b$concat)
+
+    summands <- rep(NA, length(full_triple_list))
+    i <- 1
+    for(triple in full_triple_list) {
+        a_count <- table_a[table_a$concat == triple, ]$freq
+        b_count <- table_b[table_b$concat == triple, ]$freq
+        a_count <- ifelse(length(a_count) == 0, 0, a_count)
+        b_count <- ifelse(length(b_count) == 0, 0, b_count)
+        summands[i] <- abs(a_count - b_count)
+        i <- i + 1
     }
     
     divergence <- summands %>% mean
