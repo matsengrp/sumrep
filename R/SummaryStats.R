@@ -586,33 +586,37 @@ compareJGeneDistributions <- function(dat_a, dat_b) {
                                             collapse_alleles=TRUE))
 }
 
+#' Get table of combined V, D, and J usage frequencies
+#'
+#' @param dat Annotated dataset
+#' @inheritParams compareGermlineGeneDistributions
+#' @return A table of joint gene IDs and usage counts
+getJointGeneTable <- function(dat, collapseAlleles) {
+    if(collapseAlleles) {
+        v_genes <- dat %$% v_gene %>% collapseAlleles
+        d_genes <- dat %$% d_gene %>% collapseAlleles
+        j_genes <- dat %$% j_gene %>% collapseAlleles
+        gene_dat <- data.table(v_gene=v_genes,
+                                d_gene=d_genes,
+                                j_gene=j_genes)
+    } else {
+        gene_dat <- dat
+    }
+
+    gene_type_list <- c("v_gene", "d_gene", "j_gene")
+    gene_table <- gene_dat %>% plyr::count(gene_type_list)
+    gene_table$concat <- do.call(paste0, gene_table[gene_type_list])
+
+    return(gene_table[, c("concat", "freq")])
+}
+
 #' Compare joint V, D, and J gene usage between two annotated repertoires
 #' @inheritParams compareGermlineGeneDistributions
 #' @return Mean absolute difference between joint gene usage, over all
 #'   observed genes between the two repertoires
-compareVDJDistributions <- function(dat_a, dat_b, collapseAlleles=FALSE) {
-    if(collapseAlleles) {
-        a_v_genes <- dat_a %$% v_gene %>% collapseAlleles
-        b_v_genes <- dat_b %$% v_gene %>% collapseAlleles
-        a_d_genes <- dat_a %$% d_gene %>% collapseAlleles
-        b_d_genes <- dat_b %$% d_gene %>% collapseAlleles
-        a_j_genes <- dat_a %$% j_gene %>% collapseAlleles
-        b_j_genes <- dat_b %$% j_gene %>% collapseAlleles
-        new_dat_a <- data.table(v_gene=a_v_genes, d_gene=a_d_genes, 
-                                      j_gene=a_j_genes)
-        new_dat_b <- data.table(v_gene=b_v_genes, d_gene=b_d_genes, 
-                                      j_gene=b_j_genes)
-    } else {
-        new_dat_a <- dat_a
-        new_dat_b <- dat_b
-    }
-
-    gene_type_list <- c("v_gene", "d_gene", "j_gene")
-    table_a <- new_dat_a %>% plyr::count(gene_type_list)
-    table_b <- new_dat_b %>% plyr::count(gene_type_list)
-
-    table_a$concat <- do.call(paste0, table_a[gene_type_list])
-    table_b$concat <- do.call(paste0, table_b[gene_type_list])
+compareVDJDistributions <- function(dat_a, dat_b, collapseAlleles=TRUE) {
+    table_a <- getJointGeneTable(dat_a, collapseAlleles)
+    table_b <- getJointGeneTable(dat_b, collapseAlleles)
 
     full_triple_list <- union(table_a$concat, table_b$concat)
 
