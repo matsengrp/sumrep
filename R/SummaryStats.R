@@ -745,9 +745,17 @@ getKideraFactors <- function(sequence_list) {
     return(kidera_factors)
 }
 
+filterStringsForAAFunctions <- function(sequence_list) {
+    hasLessThanThreeBases <- function(x) {
+        return(nchar(x) < 3) 
+    }
+    filtered_list <- sequence_list[!hasLessThanThreeBases(sequence_list)]
+    return(filtered_list)
+}
+
 getHydrophobicityDistribution <- function(sequence_list) {
     hydrophobicity_list <- sequence_list %>% 
-        removeEmptyStrings %>%
+        filterStringsForAAFunctions %>%
         getKideraFactors %>%
         data.table %>% select_("KF4") %>% unlist
     return(hydrophobicity_list)
@@ -782,7 +790,7 @@ getMeanAtchleyFactorBySequence <- function(dna_seq) {
 #' @return Vector of mean Atchley factors of \code{sequence_list}
 getMeanAtchleyFactorDistribution <- function(sequence_list) {
     atchley_factors <- sequence_list %>% 
-        removeEmptyStrings %>%
+        filterStringsForAAFunctions %>%
         sapply(convertDNAToAminoAcids) %>%
         removeBadAminoAcidSequences %>%
         sapply(getMeanAtchleyFactorBySequence) %>%
@@ -819,7 +827,7 @@ getAliphaticIndex <- function(dna_sequence) {
 #' @return Vector of aliphatic indices
 getAliphaticIndexDistribution <- function(sequence_list) {
     a_indices <- sequence_list %>% 
-        removeEmptyStrings %>%
+        filterStringsForAAFunctions %>%
         sapply(convertDNAToAminoAcids) %>%
         removeBadAminoAcidSequences %>%
         sapply(getAliphaticIndex) %>%
