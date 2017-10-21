@@ -399,16 +399,53 @@ getHotspotCount <- function(dna_sequences, hotspots=c("WRC", "WA")) {
     return(getSpotCount(dna_sequences, hotspots))
 }
 
-#' Compare hotspot count distributions of two sets of mature BCR sequences
+#' Get the number of occurrences of AID coldspots in a set of reference 
+#'   sequences
+#' 
+#' @inheritParams getMotifCount
+#' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
+getColdspotCount <- function(dna_sequences, coldspots=c("SYC")) {
+    return(getSpotCount(dna_sequences, coldspots))
+}
+
+#' Compare hot or coldspot count distributions of two sets of mature BCR sequences
 #'
 #' @param dat_a First dataset
 #' @param dat_b Second dataset
+#' @param count_function The comparison function corresponding to hotspot or 
+#'   coldspot counts. Must be either getHotspotCount or getColdspotCount
+#' @param subsample_count Number of subsamples for averaging
+#' @param trial_count Number of subsample trials
+#' @return The average JS divergence of the count distributions inferred from
+#'   \code{dat_a$mature_seq} and \code{dat_b$mature_seq}, respectively
+compareCounts <- function(dat_a,
+                          dat_b,
+                          count_function,
+                          subsample_count,
+                          trial_count) {
+
+    divergence <- getAverageJSDivergence(dat_a %$% mature_seq,
+                                         dat_b %$% mature_seq,
+                                         count_function,
+                                         subsample_count,
+                                         trial_count)
+    return(divergence)
+}
+
+#' Compare hotspot count distributions of two sets of mature BCR sequences
+#'
+#' @inheritParams compareCounts
 #' @return The JS divergence of the hotspot count distributions inferred from
 #'   \code{dat_a$mature_seq} and \code{dat_b$mature_seq}, respectively
-compareHotspotCounts <- function(dat_a, dat_b) {
-    counts_a <- dat_a$mature_seq %>% sapply(getHotspotCount)
-    counts_b <- dat_b$mature_seq %>% sapply(getHotspotCount)
-    divergence <- getJSDivergence(counts_a, counts_b)
+compareHotspotCounts <- function(dat_a, 
+                                 dat_b,
+                                 subsample_count=1000,
+                                 trial_count=10) {
+    divergence <- compareCounts(dat_a,
+                                dat_b,
+                                getHotspotCount,
+                                subsample_count,
+                                trial_count)
     return(divergence)
 }
 
@@ -423,14 +460,18 @@ getColdspotCount <- function(dna_sequences, coldspots=c("SYC")) {
 
 #' Compare coldspot count distributions of two sets of mature BCR sequences
 #'
-#' @param dat_a First dataset
-#' @param dat_b Second dataset
+#' @inheritParams compareCounts
 #' @return The JS divergence of the coldspot count distributions inferred from
 #'   \code{dat_a$mature_seq} and \code{dat_b$mature_seq}, respectively
-compareColdspotCounts <- function(dat_a, dat_b) {
-    counts_a <- dat_a$mature_seq %>% sapply(getColdspotCount)
-    counts_b <- dat_b$mature_seq %>% sapply(getColdspotCount)
-    divergence <- getJSDivergence(counts_a, counts_b)
+compareColdspotCounts <- function(dat_a, 
+                                  dat_b,
+                                  subsample_count=1000,
+                                  trial_count=10) {
+    divergence <- compareCounts(dat_a,
+                                dat_b,
+                                getColdspotCount,
+                                subsample_count,
+                                trial_count)
     return(divergence)
 }
 
