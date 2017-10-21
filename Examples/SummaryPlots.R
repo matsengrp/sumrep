@@ -25,23 +25,35 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, rows=1, layout=NULL) {
 }
 
 if(!exists("c1")) {
-    c1 <- compareRepertoires(dat, simu)
-    c2 <- compareRepertoires(dat, boot)
-    c3 <- compareRepertoires(simu, boot)
+    c1 <- compareRepertoires(obs_1, sim_1)
+    c2 <- compareRepertoires(obs_2, sim_2)
+    c3 <- compareRepertoires(obs_3, sim_3)
+    c4 <- compareRepertoires(obs_1, obs_2)
+    c5 <- compareRepertoires(obs_1, obs_3)
+    c6 <- compareRepertoires(obs_2, obs_3)
 }
 
 if(!("Type1" %in% names(c1))) {
-    c1$Type1 <- "Obs"
-    c1$Type2 <- "Sim"
+    c1$Type1 <- "FV-1h"
+    c1$Type2 <- "FV-1h-sim"
 
-    c2$Type1 <- "Obs"
-    c2$Type2 <- "Boot"
+    c2$Type1 <- "FV-8d"
+    c2$Type2 <- "FV-8d-sim"
 
-    c3$Type1 <- "Sim"
-    c3$Type2 <- "Boot"
+    c3$Type1 <- "GMC-1h"
+    c3$Type2 <- "GMC-1h-sim"
+
+    c4$Type1 <- "FV-1h"
+    c4$Type2 <- "FV-8d"
+
+    c5$Type1 <- "FV-1h"
+    c5$Type2 <- "GMC-1h"
+
+    c6$Type1 <- "FV-8d"
+    c6$Type2 <- "GMC-1h"
 }
 
-cfull <- rbind(c1, c2, c3)
+cfull <- rbind(c1, c2, c3, c4, c5, c6)
 
 comparison_types <- c1$Comparison
 
@@ -60,4 +72,4 @@ for(c_type in comparison_types) {
               )
 }
 
-multiplot(plotlist=plot_list, cols=4, rows=6)
+multiplot(plotlist=plot_list, cols=6, rows=4)
