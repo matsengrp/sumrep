@@ -39,7 +39,7 @@ bootstrapFasta <- function(fasta_file, output_filename) {
 #' @param string_header Text to precede the comparison value and elapsed time
 #' @param color Color for text. Green for usual comparison, yellow for 
 #'   bootstrap
-printComparison <- function(f, input_1, input_2, string_header, color) {
+getAndPrintComparison <- function(f, input_1, input_2, string_header, color) {
     pt <- proc.time()
     comparison <- f(input_1, input_2)
     elapsed_time <- (proc.time() - pt)[3]
@@ -49,6 +49,7 @@ printComparison <- function(f, input_1, input_2, string_header, color) {
         elapsed_time,
         's)',
         '\n', sep='')
+    return(comparison)
 }
 
 #' Apply \code{function_string} to inputs \code{input_1} and \code{input_2},
@@ -64,15 +65,16 @@ doComparison <- function(function_string, input_list) {
     f <- eval(parse(text=function_string)) 
     input_1 <- input_list[[1]]
     input_2 <- input_list[[2]]
-    printComparison(f, input_1, input_2, 
+    comparisons <- getAndPrintComparison(f, input_1, input_2, 
                     string_header=paste0("Result of ", function_string, ": "),
                     color=crayon::green)
     if(length(input_list) == 3) {
         input_1_boot <- input_list[[3]]
-        printComparison(f, input_1, input_1_boot, 
+        comparisons[2] <- getAndPrintComparison(f, input_1, input_1_boot, 
                         string_header="    Bootstrapped result: ",
                         color=crayon::yellow)
     }
+    return(comparisons)
 }
 
 #' Run through a full repertoire comparison
@@ -137,8 +139,15 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
         function_strings <- c(function_strings, partition_function_strings)
     }
 
+    comparison_dat <- matrix(NA, nrow=0, ncol=2) %>% data.table %>%
+        setNames(c("Comparison", "Value"))
+    boot_comparisons <- {}
+
     for(f_string in function_strings) {
-        doComparison(f_string, annotations_list)
+        comparisons <- doComparison(f_string, annotations_list)
+        comparison_dat <- rbind(comparison_dat,
+                                data.table(Comparison=f_string,
+                                Value=comparisons[1]))
     }
 
     mutation_rates_1 <- repertoire_1$mutation_rates
@@ -148,7 +157,14 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
             list("comparePerGeneMutationRates",
                  "comparePerGenePerPositionMutationRates")
         for(f_string in mutation_function_strings) {
-            doComparison(f_string, mutation_rates_1, mutation_rates_2)
+            comparisons <- doComparison(f_string, 
+                                        list(mutation_rates_1, 
+                                             mutation_rates_2))
+            comparison_dat <- rbind(comparison_dat,
+                                data.table(Comparison=f_string,
+                                Value=comparisons[1]))
         }
     }
+
+    return(comparison_dat)
 }
