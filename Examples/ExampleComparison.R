@@ -20,4 +20,4 @@ test_dat_boot <- annotateAndPartitionSequences("boot.fa")
 
 # Run repertoire comparison for the observed and simulated data,
 # and also compare the observed to bootstrapped data for refernce
-compareRepertoires(test_dat, test_simu, test_dat_boot)
+comparison <- compareRepertoires(test_dat, test_simu, test_dat_boot)
