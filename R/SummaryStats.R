@@ -732,6 +732,7 @@ getKideraFactors <- function(sequence_list) {
 
 getHydrophobicityDistribution <- function(sequence_list) {
     hydrophobicity_list <- sequence_list %>% 
+        removeEmptyStrings %>%
         getKideraFactors %>%
         data.table %>% select_("KF4") %>% unlist
     return(hydrophobicity_list)
