@@ -919,14 +919,16 @@ getCDR3s <- function(dat) {
 #' @param dat_b Second dataset, a data.table or data.frame object
 #' @return The JS divergence of the levenshtein distance distributions of the
 #'   CDR3s of the two repertoires
-compareCDR3Distributions <- function(dat_a, dat_b, subsample=TRUE, 
-                                     subsample_count=10000) {
-    subsample_count <- min(nrow(dat_a), nrow(dat_b), subsample_count)
-    dist_a <- dat_a[sample(nrow(dat_a), subsample_count), ] %$% cdr3s %>% 
-        getDistanceVector
-    dist_b <- dat_b[sample(nrow(dat_b), subsample_count), ] %$% cdr3s %>%
-        getDistanceVector
-    divergence <- getJSDivergence(dist_a, dist_b)
+compareCDR3Distributions <- function(dat_a, 
+                                     dat_b, 
+                                     subsample=TRUE, 
+                                     subsample_count=100,
+                                     trial_count=10) {
+    divergence <- getAverageDivergence(dat_a %$% cdr3s,
+                                         dat_b %$% cdr3s,
+                                         getDistanceVector,
+                                         subsample_count,
+                                         trial_count)
     return(divergence)
 }
 
@@ -1021,14 +1023,17 @@ getSubstitutionModel <- function(dat) {
     sub_mat <- dat %>% removeSequencesWithDifferentNaiveAndMatureLengths %>%
         shazam::createSubstitutionMatrix(sequenceColumn="mature_seq",
                                          germlineColumn="naive_seq",
-                                         vCallColumn="v_gene")
+                                         vCallColumn="v_gene") 
     return(sub_mat)
 }
 
 compareSubstitutionModels <- function(dat_a, dat_b) {
-    model_a <- dat_a %>% getSubstitutionModel %>% c %>% subset(!is.na(.))
-    model_b <- dat_b %>% getSubstitutionModel %>% c %>% subset(!is.na(.))
-    divergence <- (model_a - model_b) %>% abs %>% mean
+    divergence <- getAverageDivergence(dataset_a=dat_a,
+                                       dataset_b=dat_b,
+                                       func=getSubstitutionModel,
+                                       subsample_count=100,
+                                       trial_count=5,
+                                       divergenceFunction=getMeanAbsoluteDifference)
     return(divergence)
 }
 
