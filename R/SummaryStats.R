@@ -782,6 +782,7 @@ getMeanAtchleyFactorBySequence <- function(dna_seq) {
 #' @return Vector of mean Atchley factors of \code{sequence_list}
 getMeanAtchleyFactorDistribution <- function(sequence_list) {
     atchley_factors <- sequence_list %>% 
+        removeEmptyStrings %>%
         sapply(convertDNAToAminoAcids) %>%
         removeBadAminoAcidSequences %>%
         sapply(getMeanAtchleyFactorBySequence) %>%
@@ -818,6 +819,7 @@ getAliphaticIndex <- function(dna_sequence) {
 #' @return Vector of aliphatic indices
 getAliphaticIndexDistribution <- function(sequence_list) {
     a_indices <- sequence_list %>% 
+        removeEmptyStrings %>%
         sapply(convertDNAToAminoAcids) %>%
         removeBadAminoAcidSequences %>%
         sapply(getAliphaticIndex) %>%
