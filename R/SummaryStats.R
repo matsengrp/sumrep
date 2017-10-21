@@ -142,6 +142,10 @@ getJSDivergence <- function(list_a, list_b, continuous=FALSE) {
     return(divergence)
 }
 
+getContinuousJSDivergence <- function(list_a, list_b) {
+    return(getJSDivergence(list_a, list_b, continuous=TRUE))
+}
+
 #' Remove empty strings from a list or vector
 #'
 #' @param l List or vector of strings
@@ -241,7 +245,7 @@ subsample <- function(dataset, sample_count) {
 #' @param sequence_a First sequence, either a vector or matrix
 #' @param sequence_b Second sequence
 #' @param ignore_na Should we ignore na values when computing the mean?
-getMeanAbsoluteDifference <- function(sequence_a, sequence_b, na_rm=TRUE) {
+getMeanAbsoluteDifference <- function(sequence_a, sequence_b, ignore_na=TRUE) {
     difference <- (sequence_a - sequence_b) %>% abs %>% mean(na.rm=ignore_na)
     return(difference)
 }
@@ -508,9 +512,11 @@ getDistancesFromNaiveToMature <- function(dat) {
 #' @param dat_b Second dataset
 #' @return JS divergence of the two distance distributions
 compareDistancesFromNaiveToMature <- function(dat_a, dat_b) {
-    distances_a <- getDistancesFromNaiveToMature(dat_a)
-    distances_b <- getDistancesFromNaiveToMature(dat_b)
-    divergence <- getJSDivergence(distances_a, distances_b)
+    divergence <- getAverageDivergence(dat_a,
+                                       dat_b,
+                                       getDistancesFromNaiveToMature,
+                                       subsample_count=100,
+                                       trial_count=10)
     return(divergence)
 }
 
@@ -762,9 +768,12 @@ getHydrophobicityDistribution <- function(sequence_list) {
 }
 
 compareHydrophobicityDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a %$% cdr3s %>% getHydrophobicityDistribution
-    dist_b <- dat_b %$% cdr3s %>% getHydrophobicityDistribution
-    divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
+    divergence <- getAverageDivergence(dat_a %$% cdr3s,
+                                       dat_b %$% cdr3s,
+                                       getHydrophobicityDistribution,
+                                       subsample_count=100,
+                                       trial_count=10,
+                                       divergenceFunction=getContinuousJSDivergence)
     return(divergence)
 }
 
@@ -805,9 +814,12 @@ getMeanAtchleyFactorDistribution <- function(sequence_list) {
 #' @param dat_b Second dataset, a data.table or data.frame
 #' @return JS divergence of Atchley factor distributions
 compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a$cdr3s %>% getMeanAtchleyFactorDistribution
-    dist_b <- dat_b$cdr3s %>% getMeanAtchleyFactorDistribution
-    divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
+    divergence <- getAverageDivergence(dat_a %$% cdr3s,
+                                       dat_b %$% cdr3s,
+                                       getMeanAtchleyFactorDistribution,
+                                       subsample_count=100,
+                                       trial_count=10,
+                                       divergenceFunction=getContinuousJSDivergence)
     return(divergence)
 }
 
@@ -842,9 +854,12 @@ getAliphaticIndexDistribution <- function(sequence_list) {
 #' @param dat_b Second datset, a data.table or data.frame
 #' @return The JS divergence of the two distributions
 compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a$cdr3s %>% getAliphaticIndexDistribution
-    dist_b <- dat_b$cdr3s %>% getAliphaticIndexDistribution
-    divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
+    divergence <- getAverageDivergence(dat_a %$% cdr3s,
+                                       dat_b %$% cdr3s,
+                                       getAliphaticIndexDistribution,
+                                       subsample_count=100,
+                                       trial_count=10,
+                                       divergenceFunction=getContinuousJSDivergence)
     return(divergence)
 }
 
