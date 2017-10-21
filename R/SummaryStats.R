@@ -229,43 +229,58 @@ subsample <- function(dataset, sample_count) {
     if(is.null(dim(dataset))) {
         new_dataset <- subsampleVector(dataset, sample_count)
     } else if(nrow(dataset) > sample_count) {
-        new_dataset <- dataset[sample(nrow(sample_count)), ]
+        new_dataset <- dataset[sample(1:nrow(dataset), sample_count), ]
     } else {
         new_dataset <- dataset
     }
     return(new_dataset)
 }
 
-#' Estimate JS divergence by subsampling and averaging over the comparison
+#' Get the mean absolute difference of two sequences 
+#' 
+#' @param sequence_a First sequence, either a vector or matrix
+#' @param sequence_b Second sequence
+#' @param ignore_na Should we ignore na values when computing the mean?
+getMeanAbsoluteDifference <- function(sequence_a, sequence_b, na_rm=TRUE) {
+    difference <- (sequence_a - sequence_b) %>% abs %>% mean(na.rm=ignore_na)
+    return(difference)
+}
+
+#' Estimate a divergence by subsampling and averaging over the comparison
 #'   function output
 #'
 #' Arguemnts to \code{func} may be supplied after the other required 
 #'   parameters.
-#' @param sequence_a First sequence input to \code{func}
-#' @param sequence_b Second sequence input to \code{func}
+#' @param dataset_a First dataset (vector, matrix, or data.table) input to 
+#'   \code{func}
+#' @param dataset_b Second dataset input to \code{func}
 #' @param func Comparison function for which to calculate the JS divergence
 #' @param subsample_count Number of samples to extract on each trial
 #' @param trial_count Number of trials to average over
+#' @param divergenceFunction The divergence function to apply to the two 
+#'   datasets. JS divergence by default, although this only makes sense for
+#'   vectors corresponding to empirical distributions
 #' @return The average computed JS divergence across trials, used as an
 #'   estimate of the true JS divergence
 #' @examples
 #' seq_1 <- c("AAAAA", "AATTT", "TTATT", "ACATG", "GGGAA")
 #' seq_2 <- c("AAAAC", "ACATG", "CGGGA", "ACATG", "GGACA")
-#' getAverageJSDivergence(seq_1, seq_2, getNearestNeighborDistances, 
+#' getAverageDivergence(seq_1, seq_2, getNearestNeighborDistances, 
 #'   subsample_count=3, trial_count=20, k=2)
-getAverageJSDivergence <- function(sequence_a, sequence_b, func, 
+getAverageDivergence <- function(dataset_a, dataset_b, func, 
                                    subsample_count, 
                                    trial_count, 
+                                   divergenceFunction=getJSDivergence,
                                    ...) {
     divergences <- {}
     for(trial in 1:trial_count) {
-        distances_a <- sequence_a %>% 
+        distances_a <- dataset_a %>% 
             subsample(sample_count=subsample_count) %>%
             func
-        distances_b <- sequence_b %>% 
+        distances_b <- dataset_b %>% 
             subsample(sample_count=subsample_count) %>%
             func
-        divergences[trial] <- getJSDivergence(distances_a, distances_b)
+        divergences[trial] <- divergenceFunction(distances_a, distances_b)
     }
     return(divergences %>% mean)
 }
@@ -279,13 +294,13 @@ getAverageJSDivergence <- function(sequence_a, sequence_b, func,
 #'   by \code{subsample_count}, and returns the mean divergence.
 #' @param dat_a First dataset, containing mature sequences
 #' @param dat_b Second dataset, containing mature sequences
-#' @inheritParams getAverageJSDivergence 
+#' @inheritParams getAverageDivergence 
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
 comparePairwiseDistanceDistributions <- function(dat_a, dat_b,
                                                  subsample_count=100,
                                                  trial_count=10) {
-    average_divergence <- getAverageJSDivergence(dat_a %$% mature_seq,
+    average_divergence <- getAverageDivergence(dat_a %$% mature_seq,
                                                 dat_b %$% mature_seq,
                                                 getDistanceVector,
                                                 subsample_count,
@@ -318,7 +333,7 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
 #' \code{compareNNDistanceDistribution} computes the JS divergence of
 #'   the kth nearest neighbor distance distribution of two lists of
 #'   DNA sequences
-#' @inheritParams getAverageJSDivergence
+#' @inheritParams getAverageDivergence
 #' @param dat_a First dataset, containing mature sequences
 #' @param dat_b Second dataset, containing mature sequences
 #' @param k The separation depth for the nearest neighbor distances.
@@ -329,7 +344,7 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
 compareNNDistanceDistributions <- function(dat_a, dat_b, k=1,
                                            subsample_count=100,
                                            trial_count=10) {
-    average_divergence <- getAverageJSDivergence(dat_a %$% mature_seq,
+    average_divergence <- getAverageDivergence(dat_a %$% mature_seq,
                                                  dat_b %$% mature_seq,
                                                  getNearestNeighborDistances,
                                                  subsample_count,
@@ -424,7 +439,7 @@ compareCounts <- function(dat_a,
                           subsample_count,
                           trial_count) {
 
-    divergence <- getAverageJSDivergence(dat_a %$% mature_seq,
+    divergence <- getAverageDivergence(dat_a %$% mature_seq,
                                          dat_b %$% mature_seq,
                                          count_function,
                                          subsample_count,
