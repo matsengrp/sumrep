@@ -55,6 +55,15 @@ if(!("Type1" %in% names(c1))) {
 
 cfull <- rbind(c1, c2, c3, c4, c5, c6)
 
+# Reorder the levels for plotting 
+cfull$Type2 <- factor(cfull$Type2, 
+                      levels=c("FV-1h-sim",
+                               "FV-8d-sim",
+                               "GMC-1h-sim",
+                               "FV-1h",
+                               "FV-8d",
+                               "GMC-1h"))
+
 comparison_types <- c1$Comparison
 
 plot_list <- list()
