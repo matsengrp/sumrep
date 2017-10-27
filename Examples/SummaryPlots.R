@@ -1,3 +1,5 @@
+library(viridis)
+
 multiplot <- function(..., plotlist=NULL, file, cols=1, rows=1, layout=NULL) {
   library(grid)
 
@@ -74,11 +76,12 @@ for(c_type in comparison_types) {
         ggtitle(c_type %>% gsub(pattern="compare", replace="")
             %>% gsub(pattern="Distribution", replace="")) +
         theme(
-              legend.key.size=unit(0.3, "cm"),
+              legend.key.size=unit(1, "cm"),
               axis.title.x=element_blank(),
               axis.title.y=element_blank(),
               plot.title=element_text(size=10)
-              )
+              ) +
+        scale_fill_viridis(direction=-1)
 }
 
 multiplot(plotlist=plot_list, cols=6, rows=4)
