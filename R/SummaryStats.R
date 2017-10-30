@@ -777,49 +777,58 @@ compareHydrophobicityDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-#' Get the mean Atchley factor of a DNA sequence
+#' Get the mean Atchley factor of an amino acid sequence
 #'
-#' TODO: Do something more clever than taking the mean. Is there
-#'   a set of factors of interest that we can isolate? Or should
-#'   we do an average pairwise comparison?
-#' @param dna_seq String of a DNA sequence
+#' @param aa_seq String of an amino acid sequence
+#' @param factor_number The Atchley factor to be applied to \code{aa_seq}. 
+#'  Must be 1, 2, 3, 4, or 5.
 #' @return The mean of the set of Atchley factors for 
-#'   \code{dna_seq}
-getMeanAtchleyFactorBySequence <- function(dna_seq) {
-    atchley_factors <- dna_seq %>%
-        HDMD::FactorTransform() %>%
-        first %>%
-        mean
-    return(atchley_factors)
+#'   \code{aa_seq}
+getAtchleyFactorList <- function(aa_seq, factor_number) {
+    factor_list <- aa_seq %>% 
+        HDMD::FactorTransform(Factor=factor_number)
+    return(factor_list)
 }
 
-#' Get the distribution of mean Atchley factors for a list of DNA seuqnces
+#' Get the distribution of the mean of each of the five Atchley factors for 
+#'   a list of DNA seuqnces
 #'
+#' Since Atchley factors map amino acids to numerical values, we concatenate 
+#' the filtered list of valid amino acids into one string, and pass it to 
+#'   \code{getAtchleyFactorList}
 #' @param sequence_list List or vector of DNA sequences
-#' @return Vector of mean Atchley factors of \code{sequence_list}
+#' @return Vector of means of each Atchley factor of \code{sequence_list}
 getMeanAtchleyFactorDistribution <- function(sequence_list) {
-    atchley_factors <- sequence_list %>% 
+    collapsed_sequence <- sequence_list %>% 
         filterStringsForAAFunctions %>%
         sapply(convertDNAToAminoAcids) %>%
         removeBadAminoAcidSequences %>%
-        sapply(getMeanAtchleyFactorBySequence) %>%
-        unname %>%
-        unlist
-    return(atchley_factors)
+        paste(collapse='')
+    factor_numbers <- 1:5
+    mean_atchley_factors <- rep(NA, length(factor_numbers))
+    for(factor_number in factor_numbers) {
+        mean_atchley_factors[factor_number] <- collapsed_sequence %>% 
+            getAtchleyFactorList(factor_number=factor_number) %>%
+            first %>%
+            mean
+    }
+
+    return(mean_atchley_factors)
 }
 
 #' Compare the distributions of mean Atchley factors for two datasets
 #'
 #' @param dat_a First dataset, a data.table or data.frame
 #' @param dat_b Second dataset, a data.table or data.frame
-#' @return JS divergence of Atchley factor distributions
+#' @return Estimated mean absolute difference of the mean of each Atchley factor
+#'   of \code{dat_a} and \code{dat_b}
 compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
     divergence <- getAverageDivergence(dat_a %$% cdr3s,
                                        dat_b %$% cdr3s,
                                        getMeanAtchleyFactorDistribution,
                                        subsample_count=100,
                                        trial_count=10,
-                                       divergenceFunction=getContinuousJSDivergence)
+                                       divergenceFunction=getMeanAbsoluteDifference)
     return(divergence)
 }
 
