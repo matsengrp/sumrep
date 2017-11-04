@@ -66,22 +66,76 @@ cfull$Type2 <- factor(cfull$Type2,
                                "FV-8d",
                                "GMC-1h"))
 
+cfull$Comparison <- factor(cfull$Comparison, levels=ordered_strings)
+
 comparison_types <- c1$Comparison
 
-plot_list <- list()
-for(c_type in comparison_types) {
-    csub <- cfull[cfull$Comparison == c_type, ]
-    plot_list[[c_type]] <- ggplot(csub, aes(Type1, Type2)) +
-        geom_tile(aes(fill=Value)) +
-        ggtitle(c_type %>% gsub(pattern="compare", replace="")
-            %>% gsub(pattern="Distribution", replace="")) +
-        theme(
-              legend.key.size=unit(1, "cm"),
-              axis.title.x=element_blank(),
-              axis.title.y=element_blank(),
-              plot.title=element_text(size=10)
-              ) +
-        scale_fill_viridis(direction=-1)
+
+getComparisonValue <- function(dat, comparison) {
+    value <- dat %>% 
+        filter(Comparison == comparison) %$%
+        Value
+    return(value)
 }
 
-multiplot(plotlist=plot_list, cols=6, rows=4)
+scoreStatistics <- function(sim_dats, obs_dats) {
+    score_dat <- matrix(NA, nrow=0, ncol=2) %>% 
+        data.table %>%
+        setNames(c("Comparison", "Score"))
+    for(c_type in comparison_types) {
+            sim_score <- sim_dats %>% 
+                sapply(getComparisonValue, c_type) %>% 
+                mean
+            obs_score <- obs_dats %>%
+                sapply(getComparisonValue, c_type) %>%
+                mean
+            c_score <- sim_score/obs_score
+            score_dat <- rbind(score_dat,
+                               data.table(Comparison=shortenName(c_type),
+                                          Score=c_score))
+    }
+    return(score_dat)
+}
+
+shortenName <- function(string) {
+    shortened_name <- string %>% 
+        gsub(pattern="compare", replace="") %>%
+        gsub(pattern="Distribution", replace="")
+    return(shortened_name)
+}
+
+sim_dats <- list(c1, c2, c3)
+obs_dats <- list(c4, c5, c6)
+
+score_dat <- scoreStatistics(sim_dats, obs_dats)
+score_dat <- score_dat[order(score_dat$Score)]
+score_plot <- score_dat %>% ggplot(aes(x=reorder(Comparison, Score), 
+                                       y=Score)) +
+                                       # fill=reorder(Comparison, Score))) +
+    geom_bar(stat="identity") +
+    xlab("Comparison") + ylab("Relative deviance") +
+    ggtitle(paste0("Comparison scores of observations-to-simulations with ",
+                   "respect to comparisons of observations-to-observations")) +
+    theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
+          plot.margin=unit(c(1, 1, 1, 1.5), "cm"))
+
+# Multi-plots
+do.multiplot <- FALSE
+if(do.multiplot) {
+    plot_list <- list()
+    for(c_type in comparison_types) {
+        csub <- cfull[cfull$Comparison == c_type, ]
+        plot_list[[c_type]] <- ggplot(csub, aes(Type1, Type2)) +
+            geom_tile(aes(fill=Value)) +
+            ggtitle(c_type %>% shortenName) +
+            theme(
+                  legend.key.size=unit(0.8, "cm"),
+                  axis.title.x=element_blank(),
+                  axis.title.y=element_blank(),
+                  plot.title=element_text(size=10)
+                  ) +
+            scale_fill_viridis(direction=-1)
+    }
+    
+    multiplot(plotlist=plot_list, cols=6, rows=4)
+}

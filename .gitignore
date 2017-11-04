@@ -3,7 +3,7 @@
 .nfs*
 .Rproj.user
 Dev/*
-*output/*
+*output*
 tests/testthat/_output*
 *.rds
 .RData

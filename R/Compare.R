@@ -106,24 +106,29 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
     }
 
     sig_digs <- 4
-    function_strings <- list("comparePairwiseDistanceDistributions",
+    function_strings <- list(
+                             # Distance-based metrics
+                             "comparePairwiseDistanceDistributions",
                              "compareNNDistanceDistributions",
+                             "compareCDR3Distributions",
+                             "compareDistancesFromNaiveToMature",
+                             # SHM metrics
+                             "compareDistanceBetweenMutationsDistributions",
+                             "compareSubstitutionModels",
+                             # Sequence-based metrics
                              "compareGCContents",
                              "compareHotspotCounts",
                              "compareColdspotCounts",
-                             "compareDistancesFromNaiveToMature",
+                             "compareHydrophobicityDistributions",
+                             "compareAtchleyFactorDistributions",
+                             "compareAliphaticIndexDistributions",
+                             "compareGRAVYDistributions",
+                             # Recombination metrics
                              "compareCDR3Lengths",
                              "compareVGeneDistributions",
                              "compareDGeneDistributions",
                              "compareJGeneDistributions",
                              "compareVDJDistributions",
-                             "compareHydrophobicityDistributions",
-                             "compareAtchleyFactorDistributions",
-                             "compareAliphaticIndexDistributions",
-                             "compareGRAVYDistributions",
-                             "compareCDR3Distributions",
-                             "compareDistanceBetweenMutationsDistributions",
-                             "compareSubstitutionModels",
                              "compareVGene3PrimeDeletionLengths",
                              "compareDGene3PrimeDeletionLengths",
                              "compareDGene5PrimeDeletionLengths",
@@ -131,14 +136,7 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
                              "compareVDInsertionLengths",
                              "compareDJInsertionLengths"
                              )
-
-    partition_function_strings <- list("compareClusterSizes",
-                                       "compareHillNumbers")
-    if("clone" %in% intersect(names(annotations_1),
-                              names(annotations_2))) {
-        function_strings <- c(function_strings, partition_function_strings)
-    }
-
+    
     comparison_dat <- matrix(NA, nrow=0, ncol=2) %>% data.table %>%
         setNames(c("Comparison", "Value"))
     boot_comparisons <- {}
@@ -154,8 +152,11 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
     mutation_rates_2 <- repertoire_2$mutation_rates
     if(!is.null(mutation_rates_1) && !is.null(mutation_rates_2)) {
         mutation_function_strings <- 
-            list("comparePerGeneMutationRates",
-                 "comparePerGenePerPositionMutationRates")
+            list(
+                 # More SHM metrics
+                 "comparePerGeneMutationRates",
+                 "comparePerGenePerPositionMutationRates"
+                 )
         for(f_string in mutation_function_strings) {
             comparisons <- doComparison(f_string, 
                                         list(mutation_rates_1, 
@@ -165,6 +166,19 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
                                 Value=comparisons[1]))
         }
     }
+
+
+    partition_function_strings <- list(
+                                       # Clonal family metrics
+                                       "compareClusterSizes",
+                                       "compareHillNumbers"
+                                       )
+    if("clone" %in% intersect(names(annotations_1),
+                              names(annotations_2))) {
+        function_strings <- c(function_strings, partition_function_strings)
+    }
+
+
 
     return(comparison_dat)
 }
