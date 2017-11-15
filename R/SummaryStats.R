@@ -1052,7 +1052,8 @@ removeSequencesWithDifferentNaiveAndMatureLengths <- function(dat) {
 }
 
 getSubstitutionModel <- function(dat) {
-    sub_mat <- dat %>% removeSequencesWithDifferentNaiveAndMatureLengths %>%
+    sub_mat <- dat %>% 
+        removeSequencesWithDifferentNaiveAndMatureLengths %>%
         shazam::createSubstitutionMatrix(sequenceColumn="mature_seq",
                                          germlineColumn="naive_seq",
                                          vCallColumn="v_gene") 
@@ -1070,8 +1071,9 @@ compareSubstitutionModels <- function(dat_a, dat_b) {
 }
 
 getMutabilityModel <- function(dat, 
-                               substitution_model=getSubstitutionModel(dat)) {
-    mut_mat <- dat %>% removeSequencesWithDifferentNaiveAndMatureLengths %>%
+                               substitution_model) {
+    mut_mat <- dat %>% 
+        removeSequencesWithDifferentNaiveAndMatureLengths %>%
         shazam::createMutabilityMatrix(substitutionModel=substitution_model,
                                        sequenceColumn="mature_seq",
                                        germlineColumn="naive_seq",
