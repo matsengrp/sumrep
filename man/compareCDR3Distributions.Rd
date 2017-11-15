@@ -5,7 +5,7 @@
 \title{Compare levenshtein distance distributions of two CDR3 repertoires}
 \usage{
 compareCDR3Distributions(dat_a, dat_b, subsample = TRUE,
-  subsample_count = 10000)
+  subsample_count = 100, trial_count = 10)
 }
 \arguments{
 \item{dat_a}{First dataset, a data.table or data.frame object}

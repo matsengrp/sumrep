@@ -4,12 +4,16 @@
 \alias{compareHotspotCounts}
 \title{Compare hotspot count distributions of two sets of mature BCR sequences}
 \usage{
-compareHotspotCounts(dat_a, dat_b)
+compareHotspotCounts(dat_a, dat_b, subsample_count = 1000, trial_count = 10)
 }
 \arguments{
 \item{dat_a}{First dataset}
 
 \item{dat_b}{Second dataset}
+
+\item{subsample_count}{Number of subsamples for averaging}
+
+\item{trial_count}{Number of subsample trials}
 }
 \value{
 The JS divergence of the hotspot count distributions inferred from

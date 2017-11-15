@@ -4,12 +4,17 @@
 \alias{compareColdspotCounts}
 \title{Compare coldspot count distributions of two sets of mature BCR sequences}
 \usage{
-compareColdspotCounts(dat_a, dat_b)
+compareColdspotCounts(dat_a, dat_b, subsample_count = 1000,
+  trial_count = 10)
 }
 \arguments{
 \item{dat_a}{First dataset}
 
 \item{dat_b}{Second dataset}
+
+\item{subsample_count}{Number of subsamples for averaging}
+
+\item{trial_count}{Number of subsample trials}
 }
 \value{
 The JS divergence of the coldspot count distributions inferred from

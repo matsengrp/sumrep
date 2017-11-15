@@ -2,9 +2,12 @@
 % Please edit documentation in R/SummaryStats.R
 \name{getColdspotCount}
 \alias{getColdspotCount}
+\alias{getColdspotCount}
 \title{Get the number of occurrences of AID coldspots in a set of reference 
   sequences}
 \usage{
+getColdspotCount(dna_sequences, coldspots = c("SYC"))
+
 getColdspotCount(dna_sequences, coldspots = c("SYC"))
 }
 \arguments{
@@ -12,8 +15,13 @@ getColdspotCount(dna_sequences, coldspots = c("SYC"))
 }
 \value{
 The number of AID coldhotspot occurrences in \code{dna_sequences}
+
+The number of AID coldhotspot occurrences in \code{dna_sequences}
 }
 \description{
+Get the number of occurrences of AID coldspots in a set of reference 
+  sequences
+
 Get the number of occurrences of AID coldspots in a set of reference 
   sequences
 }

@@ -12,7 +12,8 @@ compareAtchleyFactorDistributions(dat_a, dat_b)
 \item{dat_b}{Second dataset, a data.table or data.frame}
 }
 \value{
-JS divergence of Atchley factor distributions
+Estimated mean absolute difference of the mean of each Atchley factor
+  of \code{dat_a} and \code{dat_b}
 }
 \description{
 Compare the distributions of mean Atchley factors for two datasets

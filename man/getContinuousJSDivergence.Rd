@@ -4,7 +4,7 @@
 \alias{getContinuousJSDivergence}
 \title{Compute JS divergence for continuous samples}
 \usage{
-getContinuousJSDivergence(sample_1, sample_2)
+getContinuousJSDivergence(list_a, list_b)
 }
 \arguments{
 \item{sample_1}{First data sample}
