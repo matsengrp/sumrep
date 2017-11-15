@@ -1175,6 +1175,46 @@ compareDJInsertionLengths <- function(dat_a, dat_b) {
     return(compareInsertionLengths(dat_a, dat_b, "DJ"))
 }
 
+getMarkovMatrix <- function(seq_list) {
+    counts <- matrix(0, 4, 4)
+    dna_chars <- c('a', 'c', 'g', 't')
+    rownames(counts) <- dna_chars
+    colnames(counts) <- dna_chars
+    for(seq in seq_list) {
+        char_vector <- seq %>% 
+            toString %>% 
+            strsplit('') %>% 
+            unlist
+        vec_length <- length(char_vector)
+        for(i in 1:vec_length) {
+            char <- char_vector[i]
+            next_char <- char_vector[i + 1]
+            if(char %in% dna_chars && next_char %in% dna_chars) {
+                counts[char, next_char] <- counts[char, next_char] + 1
+            }
+        }
+    }
+    probs <- counts/sum(counts)
+    return(probs)
+}
+
+getInsertionMatrix <- function(dat, column) {
+    mat <- dat %>%
+        dplyr::select_(column) %>%
+        sapply(tolower) %>%
+        getMarkovMatrix
+    return(mat)
+}
+
+getVDInsertionMatrix <- function(dat) {
+    return(getInsertionMatrix(dat, "vd_insertion"))
+}
+
+getDJInsertionMatrix <- function(dat) {
+    return(getInsertionMatrix(dat, "dj_insertion"))
+}
+
+# Partition functions
 getCloneList <- function(dat) {
     clone_list <- dat$partition %>% first %>% toString %>% strsplit(";") %>% 
         lapply(strsplit, ":") %>% first %>% lapply(as.numeric)

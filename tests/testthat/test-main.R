@@ -152,3 +152,27 @@ test_that("getClusterSizes returns the correct cluster size distribution", {
 
     expect_equal(getHillNumbers(dat, c(0, 2)), c(5, 3.571429), tolerance=0.001)
 })
+
+test_that("getInsertionMatrix functions return correct transition matrices", {
+    dat <- data.frame(vd_insertion=c("aa", "CC", "xttx", "gga", "xyz"),
+                      dj_insertion=c("aAa", "cc", "hello", "yo", "sup"))
+
+    vd_truth <- matrix(0, 4, 4)
+    rownames(vd_truth) <- c('a', 'c', 'g', 't')
+    colnames(vd_truth) <- c('a', 'c', 'g', 't')
+    vd_truth['a', 'a'] <- 0.2
+    vd_truth['c', 'c'] <- 0.2
+    vd_truth['t', 't'] <- 0.2
+    vd_truth['g', 'g'] <- 0.2
+    vd_truth['g', 'a'] <- 0.2
+    vd_mat <- dat %>% getVDInsertionMatrix
+    expect_equal(vd_truth, vd_mat)
+
+    dj_truth <- matrix(0, 4, 4)
+    rownames(dj_truth) <- c('a', 'c', 'g', 't')
+    colnames(dj_truth) <- c('a', 'c', 'g', 't')
+    dj_truth['a', 'a'] <- 2/3
+    dj_truth['c', 'c'] <- 1/3
+    dj_mat <- dat %>% getDJInsertionMatrix
+    expect_equal(dj_truth, dj_mat)
+})
