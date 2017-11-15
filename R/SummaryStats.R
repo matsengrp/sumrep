@@ -1175,6 +1175,15 @@ compareDJInsertionLengths <- function(dat_a, dat_b) {
     return(compareInsertionLengths(dat_a, dat_b, "DJ"))
 }
 
+#' Constructs a Markov matrix for a vector of DNA sequences
+#'
+#' Here, a transition is simply the next character in a sequence, so that
+#' the sequence ACGT represents the transitions A -> C -> G -> T. The function
+#' would record 1 A -> C transition, 1 C -> G transition, and 1 G -> T 
+#' transition. Each sequence is assumed to follow the same transition matrix.
+#' Any transition to or from a character other than a, c, g, or t is ignored.
+#' @param seq_list Vector of DNA sequence strings
+#' @return The empirical transition matrix for each (base, base) pair. 
 getMarkovMatrix <- function(seq_list) {
     counts <- matrix(0, 4, 4)
     dna_chars <- c('a', 'c', 'g', 't')
@@ -1198,6 +1207,11 @@ getMarkovMatrix <- function(seq_list) {
     return(probs)
 }
 
+#' Get the Markov transition matrix for either VD or DJ insertions
+#'
+#' @param dat Data.table with inferred insertion sequences
+#' @param column The name of the column corresponding to the inserted sequences
+#' @return The empirical transition matrix for each (base, base) pair.
 getInsertionMatrix <- function(dat, column) {
     mat <- dat %>%
         dplyr::select_(column) %>%
@@ -1206,15 +1220,48 @@ getInsertionMatrix <- function(dat, column) {
     return(mat)
 }
 
+#' Get the Markov transition matrix for VD insertions
+#'
+#' @inheritParams getInsertionMatrix
+#' @return The empirical transition matrix for each (base, base) pair.
 getVDInsertionMatrix <- function(dat) {
     return(getInsertionMatrix(dat, "vd_insertion"))
 }
 
+#' Get the Markov transition matrix for DJ insertions
+#'
+#' @inheritParams getInsertionMatrix
+#' @return The empirical transition matrix for each (base, base) pair.
 getDJInsertionMatrix <- function(dat) {
     return(getInsertionMatrix(dat, "dj_insertion"))
 }
 
+#' Compare the transition matrices for VD insertions for two datasets
+#'
+#' @param dat_a First data.table with insertion annotations
+#' @param dat_b First data.table with insertion annotations
+#' @return The mean absolute difference of matrix entries, taken elementwise
+compareVDInsertionMatrices <- function(dat_a, dat_b) {
+    matrix_a <- dat_a %>% getVDInsertionMatrix
+    matrix_b <- dat_b %>% getVDInsertionMatrix
+    divergence <- getMeanAbsoluteDifference(matrix_a, matrix_b)
+    return(divergence)
+}
+
+#' Compare the transition matrices for DJ insertions for two datasets
+#'
+#' @param dat_a First data.table with insertion annotations
+#' @param dat_b First data.table with insertion annotations
+#' @return The mean absolute difference of matrix entries, taken elementwise
+compareDJInsertionMatrices <- function(dat_a, dat_b) {
+    matrix_a <- dat_a %>% getDJInsertionMatrix
+    matrix_b <- dat_b %>% getDJInsertionMatrix
+    divergence <- getMeanAbsoluteDifference(matrix_a, matrix_b)
+    return(divergence)
+}
+
 # Partition functions
+
 getCloneList <- function(dat) {
     clone_list <- dat$partition %>% first %>% toString %>% strsplit(";") %>% 
         lapply(strsplit, ":") %>% first %>% lapply(as.numeric)

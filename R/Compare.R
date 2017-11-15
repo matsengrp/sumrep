@@ -134,7 +134,9 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
                              "compareDGene5PrimeDeletionLengths",
                              "compareJGene5PrimeDeletionLengths", 
                              "compareVDInsertionLengths",
-                             "compareDJInsertionLengths"
+                             "compareDJInsertionLengths",
+                             "compareVDInsertionMatrices",
+                             "compareDJInsertionMatrices"
                              )
     
     comparison_dat <- matrix(NA, nrow=0, ncol=2) %>% data.table %>%

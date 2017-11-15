@@ -137,5 +137,5 @@ if(do.multiplot) {
             scale_fill_viridis(direction=-1)
     }
     
-    multiplot(plotlist=plot_list, cols=6, rows=4)
+    multiplot(plotlist=plot_list, cols=7, rows=4)
 }
