@@ -118,7 +118,7 @@ getMeanAbsoluteDifference <- function(sequence_a, sequence_b, ignore_na=TRUE) {
 #' @param divergenceFunction The divergence function to apply to the two 
 #'   datasets. JS divergence by default, although this only makes sense for
 #'   vectors corresponding to empirical distributions
-#' @return The average computed JS divergence across trials, used as an
+#' @return The average computed divergence across trials, used as an
 #'   estimate of the true JS divergence
 #' @examples
 #' seq_1 <- c("AAAAA", "AATTT", "TTATT", "ACATG", "GGGAA")
@@ -143,4 +143,45 @@ getAverageDivergence <- function(dataset_a,
         divergences[trial] <- divergenceFunction(summary_a, summary_b)
     }
     return(divergences %>% mean)
+}
+
+#' Estimate the divergence by subsampling and averaging until a stable estimate
+#' is attained
+#'
+#' @inheritParams getAverageDivergence
+#' @param tolerance The criterion to determine convergence based on relative
+#'   difference between iterates
+#' @return The average computed divergence across trials, used as an
+#'   estimate of the true JS divergence
+getAutomaticAverageDivergence <- function(dataset_a,
+                                          dataset_b,
+                                          summary_function,
+                                          subsample_count,
+                                          divergenceFunction=getJSDivergence,
+                                          tolerance=1e-2) {
+
+    rollingAverage <- function(old_average, n, new_value) {
+        new_average <- (old_average*(n - 1) + new_value)/n
+        return(new_average)
+    }
+
+    n <- 0
+    error <- Inf
+    average_divergence <- 0
+    divergences <- {}
+    while(error >= tolerance) {
+        old_average <- average_divergence
+        n <- n + 1
+        summary_a <- dataset_a %>%
+            subsample(sample_count=subsample_count) %>%
+            summary_function
+        summary_b <- dataset_b %>%
+            subsample(sample_count=subsample_count) %>%
+            summary_function
+        divergence <- divergenceFunction(summary_a, summary_b)
+        average_divergence <- rollingAverage(old_average, n, divergence)
+        error <- abs(average_divergence - old_average)/average_divergence
+        print(error)
+    }
+    return(average_divergence)
 }
