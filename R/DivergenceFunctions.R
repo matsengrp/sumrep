@@ -146,7 +146,7 @@ getAverageDivergence <- function(dataset_a,
 }
 
 #' Estimate the divergence by subsampling and averaging until a stable estimate
-#' is attained
+#'   is attained
 #'
 #' @inheritParams getAverageDivergence
 #' @param tolerance The criterion to determine convergence based on relative

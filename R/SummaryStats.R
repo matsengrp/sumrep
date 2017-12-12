@@ -1014,3 +1014,30 @@ compareHillNumbers <- function(dat_a, dat_b, diversity_orders=c(0, 1, 2)) {
     distance <- (hill_numbers_a - hill_numbers_b) %>% abs %>% mean
     return(distance)
 }
+
+#' Get the percentage of sequences in a dataset which, after VDJ recombination 
+#'   and SHM, have the start of the CDR3 in line with the start of the germline 
+#'   V sequence
+#'
+#' @param dat Annotated dataset
+#' @return The percentage of in-frame sequences in \code{dat}
+getInFramePercentage <- function(dat) {
+    percentage <- 100*(dat %$%
+                       in_frames %>% 
+                       mean)
+    return(percentage)
+}
+
+#' Compare the percentage of in-frame sequences of two datasets
+#'
+#' @param dat_a First dataset to compare
+#' @param dat_b Second dataset to compare
+#' @return Absolute differences of in-frame percentages
+compareInFramePercentages <- function(dat_a, dat_b) {
+    percent_a <- dat_a %>%
+        getInFramePercentage
+    percent_b <- dat_b %>%
+        getInFramePercentage
+    divergence <- abs(percent_a - percent_b)
+    return(divergence)
+}

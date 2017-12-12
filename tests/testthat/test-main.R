@@ -176,3 +176,11 @@ test_that("getInsertionMatrix functions return correct transition matrices", {
     dj_mat <- dat %>% getDJInsertionMatrix
     expect_equal(dj_truth, dj_mat)
 })
+
+test_that("getInFramePercentage returns the correct percentage of in-frame sequences", {
+    dat_a <- data.frame(in_frames=c(TRUE, FALSE, TRUE, FALSE))
+    dat_b <- data.frame(in_frames=c(TRUE, FALSE, TRUE, TRUE))
+    expect_equal(getInFramePercentage(dat_a), 50)
+    expect_equal(getInFramePercentage(dat_b), 75)
+    expect_equal(compareInFramePercentages(dat_a, dat_b), 25)
+})
