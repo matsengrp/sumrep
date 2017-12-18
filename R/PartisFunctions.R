@@ -251,11 +251,20 @@ simulateDataset <- function(parameter_dir,
 #'
 #' @param sequences List or vector of mature BCR sequences for annotation
 annotateSequencesFromStrings <- function(sequences, ...) {
-    filename <- Sys.time() %>% 
-        gsub(pattern=' |:|-', replace='') %>%
-        paste0('tmp', ., '.fasta')
-    write.fasta(sequences, names="tmp", file.out=filename)
-    annotations <- annotateSequences(filename, ...)
-    filename %>% unlink
+    annotations <- tryCatch({
+        filename <- Sys.time() %>%
+            gsub(pattern=' |:|-', replace='') %>%
+            paste0('tmp', ., '.fasta')
+        write.fasta(sequences, names="tmp", file.out=filename)
+        annotateSequences(filename, ...)
+    }, warning = function(warning_condition) {
+        message(error_condition)
+        return(NA)
+    }, error = function(error_condition) {
+        message(error_condition)
+        return(NULL)
+    }, finally={
+        filename %>% unlink
+    })
     return(annotations)
 }
