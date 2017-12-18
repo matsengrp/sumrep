@@ -246,3 +246,16 @@ simulateDataset <- function(parameter_dir,
     return(sim_data)
 }
 
+#' Run partis annotate on vector or list of sequences directly (i.e. without
+#'   saving as a fasta file)
+#'
+#' @param sequences List or vector of mature BCR sequences for annotation
+annotateSequencesFromStrings <- function(sequences, ...) {
+    filename <- Sys.time() %>% 
+        gsub(pattern=' |:|-', replace='') %>%
+        paste0('tmp', ., '.fasta')
+    write.fasta(sequences, names="tmp", file.out=filename)
+    annotations <- annotateSequences(filename, ...)
+    filename %>% unlink
+    return(annotations)
+}
