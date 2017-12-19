@@ -1053,3 +1053,35 @@ compareInFramePercentages <- function(dat_a, dat_b) {
     divergence <- abs(percent_a - percent_b)
     return(divergence)
 }
+
+#' Get selection estimates via the shazam Baseline models
+#'
+#' shazam::summarizeBaseline appends mutliple columns to \code{dat}, including
+#'   BASELINE_SIGMA, which is the estimated selection strength of the 
+#'   repertoire
+#' @param dat Annotated dataset
+#' @return Distribution of baseline values, which are measures of selection 
+#'   strength. Thus, Sigma = 0 corresponds to no selection, Sigma > 0 
+#'   corresponds to positive selection, and Sigma < 0 corresponds to negative
+#'   selection
+getSelectionEstimate <- function(dat) {
+    baseline <- shazam::calcBaseline(dat,
+                                     sequenceColumn="mature_seq",
+                                     germlineColumn="naive_seq"
+                                     ) %>%
+        shazam::summarizeBaseline(returnType="df") %$%
+        BASELINE_SIGMA 
+    return(baseline)
+}
+
+#' Compare selection estimates for two datasets
+#'
+#' @param dat_a First dataset
+#' @param dat_b Second datset
+#' @return The estimated JS divergence of selection strength distributions
+compareSelectionEstimates <- function(dat_a, dat_b) {
+    baseline_a <- dat_a %>% getSelectionEstimate
+    baseline_b <- dat_b %>% getSelectionEstimate
+    divergence <- getJSDivergence(baseline_a, baseline_b, continuous=TRUE)
+    return(divergence)
+}
