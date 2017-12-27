@@ -840,6 +840,10 @@ comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
     return(divergence/length(common_genes)) 
 }
 
+#' Get the inferred substitution model of a repertoire
+#'
+#' @param dat Annotated dataset
+#' @return The default shazam substitution model 
 getSubstitutionModel <- function(dat) {
     sub_mat <- dat %>% 
         removeSequencesWithDifferentNaiveAndMatureLengths %>%
@@ -849,16 +853,13 @@ getSubstitutionModel <- function(dat) {
     return(sub_mat)
 }
 
-compareSubstitutionModels <- function(dat_a, dat_b) {
-    divergence <- getAverageDivergence(dataset_a=dat_a,
-                                       dataset_b=dat_b,
-                                       func=getSubstitutionModel,
-                                       subsample_count=100,
-                                       trial_count=5,
-                                       divergenceFunction=getMeanAbsoluteDifference)
-    return(divergence)
-}
-
+#' Get the inferred mutability model of a repetoire
+#'
+#' This requires the inferred substitution model of \code{dat} as input
+#' @param dat Annotated dataset
+#' @param substitution_model The inferred substitution model, which can be
+#'   obtained via \code{getSubstitutionModel}
+#' @return The default shazam mutability model
 getMutabilityModel <- function(dat, 
                                substitution_model) {
     mut_mat <- dat %>% 
@@ -870,6 +871,7 @@ getMutabilityModel <- function(dat,
     return(mut_mat)
 }
 
+<<<<<<< HEAD
 compareMutabilityModels <- function(dat_a, dat_b, 
                                     sub_mod_a=getSubstitutionModel(dat_a),
                                     sub_mod_b=getSubstitutionModel(dat_b)) {
@@ -881,6 +883,26 @@ compareMutabilityModels <- function(dat_a, dat_b,
         abs %>% 
         mean
     return(divergence)
+=======
+#' Compare the substitution and mutability models of two datasets
+#'
+#' @param dat_a First dataset
+#' @param dat_b Second dataset
+#' @return List of two divergences: one for the substitution models and 
+#'   another for the mutability models
+compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
+    sub_model_a <- dat_a %>% getSubstitutionModel
+    sub_model_b <- dat_b %>% getSubstitutionModel
+    sub_divergence <- getMeanAbsoluteDifference(sub_model_a, sub_model_b)
+
+    mut_model_a <- dat_a %>% getMutabilityModel(substitution_model=sub_model_a)
+    mut_model_b <- dat_b %>% getMutabilityModel(substitution_model=sub_model_b)
+    mut_divergence <- getMeanAbsoluteDifference(mut_model_a, mut_model_b)
+
+    divergences <- list(sub_divergence=sub_divergence,
+                        mut_divergence=mut_divergence)
+    return(divergences)
+>>>>>>> 6190fa11f9e58d604c3410f2c2f2fe9c889864d1
 }
 
 getDeletionLengths <- function(dat, column) {
@@ -1160,5 +1182,39 @@ compareInFramePercentages <- function(dat_a, dat_b) {
     percent_b <- dat_b %>%
         getInFramePercentage
     divergence <- abs(percent_a - percent_b)
+    return(divergence)
+}
+
+#' Get selection estimates via the shazam Baseline models
+#'
+#' shazam::summarizeBaseline appends mutliple columns to \code{dat}, including
+#'   BASELINE_SIGMA, which is the estimated selection strength of the 
+#'   repertoire
+#' @param dat Annotated dataset
+#' @return Distribution of baseline values, which are measures of selection 
+#'   strength. Thus, Sigma = 0 corresponds to no selection, Sigma > 0 
+#'   corresponds to positive selection, and Sigma < 0 corresponds to negative
+#'   selection
+getSelectionEstimate <- function(dat) {
+    baseline <- shazam::calcBaseline(dat,
+                                     sequenceColumn="mature_seq",
+                                     germlineColumn="naive_seq"
+                                     ) %>%
+        shazam::summarizeBaseline(returnType="df") %$%
+        BASELINE_SIGMA 
+    return(baseline)
+}
+
+#' Compare selection estimates for two datasets
+#'
+#' @param dat_a First dataset
+#' @param dat_b Second datset
+#' @return The estimated JS divergence of selection strength distributions
+compareSelectionEstimates <- function(dat_a, dat_b) {
+    baseline_a <- dat_a %>% 
+        getSelectionEstimate
+    baseline_b <- dat_b %>% 
+        getSelectionEstimate
+    divergence <- getJSDivergence(baseline_a, baseline_b, continuous=TRUE)
     return(divergence)
 }

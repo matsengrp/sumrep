@@ -116,7 +116,8 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
                              "compareDistancesFromNaiveToMature",
                              # SHM metrics
                              "compareDistanceBetweenMutationsDistributions",
-                             "compareSubstitutionModels",
+                             "compareSubstitutionAndMutabilityModels",
+                             "compareSelectionStrengths",
                              # Sequence-based metrics
                              "compareGCContents",
                              "compareHotspotCounts",
@@ -125,6 +126,7 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
                              "compareAtchleyFactorDistributions",
                              "compareAliphaticIndexDistributions",
                              "compareGRAVYDistributions",
+                             "compareInFramePercentages",
                              # Recombination metrics
                              "compareCDR3Lengths",
                              "compareVGeneDistributions",

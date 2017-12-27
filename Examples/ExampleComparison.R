@@ -1,3 +1,5 @@
+devtools::load_all()
+
 # Get annnotation and clonal partition dataset
 test_dat <- annotateAndPartitionSequences("data/compare_data.fa", 
                                           cleanup=FALSE)
