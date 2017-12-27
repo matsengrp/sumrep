@@ -871,7 +871,6 @@ getMutabilityModel <- function(dat,
     return(mut_mat)
 }
 
-<<<<<<< HEAD
 compareMutabilityModels <- function(dat_a, dat_b, 
                                     sub_mod_a=getSubstitutionModel(dat_a),
                                     sub_mod_b=getSubstitutionModel(dat_b)) {
@@ -883,7 +882,8 @@ compareMutabilityModels <- function(dat_a, dat_b,
         abs %>% 
         mean
     return(divergence)
-=======
+}
+
 #' Compare the substitution and mutability models of two datasets
 #'
 #' @param dat_a First dataset
@@ -891,18 +891,21 @@ compareMutabilityModels <- function(dat_a, dat_b,
 #' @return List of two divergences: one for the substitution models and 
 #'   another for the mutability models
 compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
-    sub_model_a <- dat_a %>% getSubstitutionModel
-    sub_model_b <- dat_b %>% getSubstitutionModel
+    sub_model_a <- dat_a %>% 
+        getSubstitutionModel
+    sub_model_b <- dat_b %>% 
+        getSubstitutionModel
     sub_divergence <- getMeanAbsoluteDifference(sub_model_a, sub_model_b)
 
-    mut_model_a <- dat_a %>% getMutabilityModel(substitution_model=sub_model_a)
-    mut_model_b <- dat_b %>% getMutabilityModel(substitution_model=sub_model_b)
+    mut_model_a <- dat_a %>% 
+        getMutabilityModel(substitution_model=sub_model_a)
+    mut_model_b <- dat_b %>% 
+        getMutabilityModel(substitution_model=sub_model_b)
     mut_divergence <- getMeanAbsoluteDifference(mut_model_a, mut_model_b)
 
     divergences <- list(sub_divergence=sub_divergence,
                         mut_divergence=mut_divergence)
     return(divergences)
->>>>>>> 6190fa11f9e58d604c3410f2c2f2fe9c889864d1
 }
 
 getDeletionLengths <- function(dat, column) {
