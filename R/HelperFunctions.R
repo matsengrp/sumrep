@@ -12,9 +12,10 @@ removeEmptyStrings <- function(l) {
 #' @return Vector of strings of DNA sequences
 standardizeList <- function(l) {
     new_list <- l %>% 
-                sapply(toString) %>%
-                gsub(pattern=", *", replace="") %>%
-                sapply(paste, collapse='') %>% unname
+        sapply(toString) %>%
+        gsub(pattern=", *", replace="") %>%
+        sapply(paste, collapse='') %>% 
+        unname
     return(new_list)
 }
 #' Subsample a vector
@@ -55,8 +56,11 @@ subsample <- function(dataset, sample_count) {
 #' @param filename Name of fasta file including the sequences
 #' @return A vector of DNA sequence strings
 getSequenceListFromFasta <- function(filename) {
-    sequences <- filename %>% seqinr::read.fasta() %>% 
-        lapply(paste, collapse="") %>% unlist %>% unname
+    sequences <- filename %>% 
+        seqinr::read.fasta() %>% 
+        lapply(paste, collapse="") %>% 
+        unlist %>% 
+        unname
     return(sequences)
 }
 
@@ -65,8 +69,10 @@ getSequenceListFromFasta <- function(filename) {
 #' @param sequence String of DNA bases
 #' @return String of single-letter amino acid codes
 convertDNAToAminoAcids <- function(sequence) {
-    aa_sequence <- sequence %>% sapply(strsplit, '') %>% 
-        sapply(seqinr::translate) %>% paste0(collapse='')
+    aa_sequence <- sequence %>% 
+        sapply(strsplit, '') %>% 
+        sapply(seqinr::translate) %>% 
+        paste0(collapse='')
     return(aa_sequence)
 }
 
@@ -105,7 +111,8 @@ removeBadAminoAcidSequences <- function(aa_sequences) {
 parsePythonDictionary <- function(dictionary) {
     parsed <- dictionary %>% gsub(pattern="'", replacement='"') %>% 
         gsub(pattern="\\(", replacement="\\[") %>% 
-        gsub(pattern="\\)", replacement="\\]") %>% jsonlite::fromJSON()
+        gsub(pattern="\\)", replacement="\\]") %>% 
+        jsonlite::fromJSON()
     return(parsed)
 }
 

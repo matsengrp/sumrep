@@ -25,7 +25,8 @@ callPartis <- function(action, input_filename, output_filename, output_path,
                      "-o", output_filename, 
                      "-n", num_procs,
                      "-h", file.path(output_path, "params"))
-    command %>% system
+    command %>% 
+        system
     partis_dataset <- output_filename %>% 
         data.table::fread(stringsAsFactors=TRUE)
     return(partis_dataset)
@@ -41,7 +42,11 @@ callPartis <- function(action, input_filename, output_filename, output_path,
 #'   vector of positional mutation rates
 getMutationInfo <- function(filename) {
     getSubstitutionRate <- function(state) {
-        position <- state$name %>% strsplit("_") %>% unlist %>% last
+        position <- state %$% 
+            name %>% 
+            strsplit("_") %>% 
+            unlist %>% 
+            last
         if(!grepl("[0-9]+", gsub("[^0-9]+", "", position))) {
             # The state in question does not represent an allele-position entry
             # (partis returns various metadata as 'states')
@@ -49,9 +54,14 @@ getMutationInfo <- function(filename) {
         } else {
             # Partis returns zero-based position values, so add one
             position <- as.numeric(position) + 1
-            germline_base <- state$extras$germline
+            germline_base <- state %$%
+                extras %$%
+                germline
             pos_emissions <- state$emissions
-            highest_base_sub <- pos_emissions$probs %>% which.max %>% names
+            highest_base_sub <- pos_emissions %$%
+                probs %>% 
+                which.max %>% 
+                names
 
             # If the germline is not the most frequent base, the rate is 
             # unreliable, so treat as missing info
@@ -65,13 +75,19 @@ getMutationInfo <- function(filename) {
 
     result <- list()
     yaml_object <- yaml.load_file(filename)
-    gene_info <- yaml_object$name %>% strsplit("_star_") %>% unlist
+    gene_info <- yaml_object %$%
+        name %>% 
+        strsplit("_star_") %>% 
+        unlist
     result$gene <- gene_info[1]
     result$allele <- gene_info[2]
     states <- yaml_object$states[-(1:2)]
 
-    overall_substitution_rate <- yaml_object$extras$per_gene_mute_freq
-    position_substitution_rates <- states %>% sapply(getSubstitutionRate) %>% 
+    overall_substitution_rate <- yaml_object %$%
+        extras %$%
+        per_gene_mute_freq
+    position_substitution_rates <- states %>% 
+        sapply(getSubstitutionRate) %>% 
         subset(!is.na(.))
     substitution_rates <- {}
     substitution_rates$overall_mut_rate <- overall_substitution_rate
@@ -101,22 +117,27 @@ doFullAnnotation <- function(output_path, output_file, partis_path) {
     script_file <- system.file("process_output.py", package="sumrep")
     script_command <-  paste("python", script_file, output_file, 
                              extended_output_filepath, 
-                             partis_path %>% dirname %>% dirname,
+                             partis_path %>% 
+                                 dirname %>% 
+                                 dirname,
                              sep=' ')
     script_command %>% system
     annotated_data <- extended_output_filepath %>% 
         data.table::fread(stringsAsFactors=TRUE) %>% 
         subset(select=which(!duplicated(names(.))))
     annotated_data$naive_seq <- annotated_data$naive_seq %>% 
-        sapply(toString) %>% tolower
-    extended_output_filepath %>% file.remove
+        sapply(toString) %>% 
+        tolower
+    extended_output_filepath %>% 
+        file.remove
     return(annotated_data)
 }
 
 processMatureSequences <- function(dat) {
     names(dat)[which(names(dat) == "input_seqs")] <- 
         "mature_seq"
-    dat$mature_seq <- dat$mature_seq %>%
+    dat$mature_seq <- dat %$%
+        mature_seq %>%
         sapply(toString) %>%
         tolower
     return(dat)
@@ -139,7 +160,8 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
                                  output_path, partis_path, num_procs, cleanup)
 
     hmm_yaml_filepath <- file.path(output_path, "params/hmm/hmms")
-    yaml_files <- hmm_yaml_filepath %>% list.files
+    yaml_files <- hmm_yaml_filepath %>% 
+        list.files
     yaml_filepath_and_files <- sapply(yaml_files, 
                                       function(x) { file.path(hmm_yaml_filepath,
                                                               x) }) 
@@ -149,19 +171,23 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
         allele <- yaml_file %>% gsub(pattern=".yaml", replace='') %>%
             gsub(pattern="_star_", replace="\\*")
         mutation_rates[[allele]] <- hmm_yaml_filepath %>% 
-            file.path(yaml_file) %>% getMutationInfo
+            file.path(yaml_file) %>% 
+            getMutationInfo
     }
 
     if(do_full_annotation) {
         annotated_data <- doFullAnnotation(output_path, output_file, partis_path)
-        annotated_data$cdr3s <- annotated_data %>% getCDR3s
+        annotated_data$cdr3s <- annotated_data %>% 
+            getCDR3s
     }
 
     if(cleanup) {
-        output_path %>% unlink(recursive=TRUE)
+        output_path %>% 
+            unlink(recursive=TRUE)
     }
 
-    annotated_data <- annotated_data %>% processMatureSequences
+    annotated_data <- annotated_data %>% 
+        processMatureSequences
 
     annotation_object <- {}
     annotation_object$annotations <- annotated_data
@@ -187,7 +213,8 @@ partitionSequences <- function(input_filename,
                                     cleanup)
 
     if(cleanup) {
-        output_path %>% unlink(recursive=TRUE)
+        output_path %>% 
+            unlink(recursive=TRUE)
     }
 
     return(partitioned_data)
@@ -227,20 +254,25 @@ simulateDataset <- function(parameter_dir,
                             "--parameter-dir", parameter_dir,
                             "--outfname", output_file,
                             "--n-sim-events", num_events)
-    partis_command %>% system
-    sim_annotations <- output_file %>% fread(stringsAsFactors=FALSE)
+    partis_command %>% 
+        system
+    sim_annotations <- output_file %>% 
+        fread(stringsAsFactors=FALSE)
     if(do_full_annotation) {
         sim_annotations <- doFullAnnotation(output_file,
                                             output_path=".",
                                             partis_path)
-        sim_annotations$cdr3s <- sim_annotations %>% getCDR3s
+        sim_annotations$cdr3s <- sim_annotations %>% 
+            getCDR3s
     }
 
     if(cleanup) {
-        output_file %>% unlink
+        output_file %>% 
+            unlink
     }
 
-    sim_annotations <- sim_annotations %>% processMatureSequences
+    sim_annotations <- sim_annotations %>% 
+        processMatureSequences
 
     sim_data <- list(annotations=sim_annotations)
     return(sim_data)

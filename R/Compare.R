@@ -44,7 +44,9 @@ getAndPrintComparison <- function(f, input_1, input_2, string_header, color) {
     comparison <- f(input_1, input_2)
     elapsed_time <- (proc.time() - pt)[3]
     cat(string_header,
-        color(comparison %>% signif(4) %>% toString),
+        color(comparison %>% 
+                  signif(4) %>% 
+                  toString),
         ' (',
         elapsed_time,
         's)',
@@ -139,7 +141,8 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
                              "compareDJInsertionMatrices"
                              )
     
-    comparison_dat <- matrix(NA, nrow=0, ncol=2) %>% data.table %>%
+    comparison_dat <- matrix(NA, nrow=0, ncol=2) %>% 
+        data.table %>%
         setNames(c("Comparison", "Value"))
     boot_comparisons <- {}
 
@@ -169,7 +172,6 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
         }
     }
 
-
     partition_function_strings <- list(
                                        # Clonal family metrics
                                        "compareClusterSizes",
@@ -179,8 +181,6 @@ compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
                               names(annotations_2))) {
         function_strings <- c(function_strings, partition_function_strings)
     }
-
-
 
     return(comparison_dat)
 }

@@ -14,13 +14,24 @@
 #'     geom_bar(stat="identity", position="dodge")
 
 binContinuousListsAsDiscrete <- function(list_a, list_b) {
-    a_length <- list_a %>% length
-    b_length <- list_b %>% length
-    bin_count <- min(a_length, b_length) %>% sqrt %>% ceiling
+    a_length <- list_a %>% 
+        length
+    b_length <- list_b %>% 
+        length
+    bin_count <- min(a_length, b_length) %>% 
+        sqrt %>% 
+        ceiling
     bin_count <- ifelse(bin_count < 2, 2, bin_count)
-    bins <- c(list_a, list_b) %>% cut(breaks=bin_count, labels=1:bin_count)
-    table_a <- bins[1:a_length] %>% table %>% unname %>% as.vector
-    table_b <- bins[-(1:a_length)] %>% table %>% unname %>% as.vector
+    bins <- c(list_a, list_b) %>% 
+        cut(breaks=bin_count, labels=1:bin_count)
+    table_a <- bins[1:a_length] %>% 
+        table %>% 
+        unname %>% 
+        as.vector
+    table_b <- bins[-(1:a_length)] %>% 
+        table %>% 
+        unname %>% 
+        as.vector
     return(list(table_a, table_b))
 }
 
@@ -48,8 +59,12 @@ getContinuousJSDivergence <- function(sample_1, sample_2) {
         return(func)
     }
 
-    p <- sample_1 %>% density %>% approxfun
-    q <- sample_2 %>% density %>% approxfun
+    p <- sample_1 %>% 
+        density %>% 
+        approxfun
+    q <- sample_2 %>% 
+        density %>% 
+        approxfun
     lower <- max(min(sample_1), min(sample_2))
     upper <- min(max(sample_1), max(sample_2))
     KL_div_1 <- integrate(integrand(p, m), lower, upper)$value
@@ -82,8 +97,14 @@ getJSDivergence <- function(list_a, list_b, continuous=FALSE) {
         divergence <- textmineR::CalcJSDivergence(binned[[1]], binned[[2]])
     } else {
         max_val <- max(list_a, list_b)
-        table_a <- list_a %>% factor(levels=0:max_val) %>% table %>% as.vector
-        table_b <- list_b %>% factor(levels=0:max_val) %>% table %>% as.vector
+        table_a <- list_a %>% 
+            factor(levels=0:max_val) %>% 
+            table %>% 
+            as.vector
+        table_b <- list_b %>% 
+            factor(levels=0:max_val) %>% 
+            table %>% 
+            as.vector
         divergence <- textmineR::CalcJSDivergence(table_a, table_b)
     }
     return(divergence)
@@ -99,7 +120,9 @@ getContinuousJSDivergence <- function(list_a, list_b) {
 #' @param sequence_b Second sequence
 #' @param ignore_na Should we ignore na values when computing the mean?
 getMeanAbsoluteDifference <- function(sequence_a, sequence_b, ignore_na=TRUE) {
-    difference <- (sequence_a - sequence_b) %>% abs %>% mean(na.rm=ignore_na)
+    difference <- (sequence_a - sequence_b) %>% 
+        abs %>% 
+        mean(na.rm=ignore_na)
     return(difference)
 }
 

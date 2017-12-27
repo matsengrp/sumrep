@@ -26,8 +26,11 @@ source("R/PartisFunctions.R")
 #' @return String-valued comparison method for use in stringdistmatrix within 
 #'   the getDistanceMatrix function
 determineComparisonMethod <- function(sequence_list) {
-    length_count <- sequence_list %>% standardizeList %>% sapply(nchar) %>% 
-        table %>% length 
+    length_count <- sequence_list %>% 
+        standardizeList %>% 
+        sapply(nchar) %>% 
+        table %>% 
+        length 
     comparison_method <- ifelse(length_count > 1, "lv", "hamming")
     return(comparison_method)
 }
@@ -39,10 +42,13 @@ determineComparisonMethod <- function(sequence_list) {
 #' @return Distance matrix of the sequences, using hamming distances if all
 #'   sequences are the same length, and levenshtein otherwise
 getDistanceMatrix <- function(raw_sequences) {
-    sequence_list <- raw_sequences %>% standardizeList
-    comparison_method <- sequence_list %>% determineComparisonMethod
+    sequence_list <- raw_sequences %>% 
+        standardizeList
+    comparison_method <- sequence_list %>% 
+        determineComparisonMethod
     mat <- sequence_list %>% 
-        stringdist::stringdistmatrix(method=comparison_method) %>% as.matrix
+        stringdist::stringdistmatrix(method=comparison_method) %>% 
+        as.matrix
     return(mat)
 }
 
@@ -54,7 +60,9 @@ getDistanceMatrix <- function(raw_sequences) {
 #' @return Vector of pairwise distances
 getDistanceVector <- function(sequence_list) {
     mat <- sequence_list %>% getDistanceMatrix
-    vec <- mat[mat %>% lower.tri] %>% as.vector %>% sort
+    vec <- mat[mat %>% lower.tri] %>% 
+        as.vector %>% 
+        sort
     return(vec)
 }
 
@@ -91,8 +99,10 @@ comparePairwiseDistanceDistributions <- function(dat_a, dat_b,
 #'   the second-nearest neighbor, etc.
 #' @return Vector of kth nearest neighbor distances
 getNearestNeighborDistances <- function(sequence_list, k=1) {
-    mat <- sequence_list %>% getDistanceMatrix
-    n <- sequence_list %>% length
+    mat <- sequence_list %>% 
+        getDistanceMatrix
+    n <- sequence_list %>% 
+        length
     distances <- rep(NA, n)
     for(i in 1:n) {
         distances[i] <- sort(mat[i, -i], partial=k)[k]
@@ -134,9 +144,14 @@ compareNNDistanceDistributions <- function(dat_a, dat_b, k=1,
 #'   corresponding to DNA sequences
 #' @return A vector of GC content values
 getGCContentDistribution <- function(raw_sequences) {
-    sequence_list <- raw_sequences %>% sapply(paste, collapse='') %>% unname
-    dna_list <- sequence_list %>% strsplit(split='') %>% lapply(ape::as.DNAbin)
-    gc_dist <- dna_list %>% sapply(ape::GC.content)
+    sequence_list <- raw_sequences %>% 
+        sapply(paste, collapse='') %>% 
+        unname
+    dna_list <- sequence_list %>% 
+        strsplit(split='') %>% 
+        lapply(ape::as.DNAbin)
+    gc_dist <- dna_list %>% 
+        sapply(ape::GC.content)
     return(gc_dist)
 }
 
@@ -147,8 +162,12 @@ getGCContentDistribution <- function(raw_sequences) {
 #' @return JS divergence of the GC content distributions inferred from list_a
 #'   and list_b
 compareGCContents <- function(dat_a, dat_b) {
-    density_a <- dat_a %$% mature_seq %>% getGCContentDistribution
-    density_b <- dat_b %$% mature_seq %>% getGCContentDistribution
+    density_a <- dat_a %$% 
+        mature_seq %>% 
+        getGCContentDistribution
+    density_b <- dat_b %$% 
+        mature_seq %>% 
+        getGCContentDistribution
     divergence <- getJSDivergence(density_a, density_b, continuous=TRUE)
     return(divergence)
 }
@@ -160,8 +179,11 @@ compareGCContents <- function(dat_a, dat_b) {
 #' @param dna_sequences List, vector of reference sequences
 #' @return The number of occurrences of \code{motif} in \code{dna_sequences}
 getMotifCount <- function(motif, dna_sequences) {
-    dna_strings <- dna_sequences %>% unlist %>% Biostrings::DNAStringSet()
-    count <- motif %>% Biostrings::vcountPattern(dna_strings, fixed=FALSE) %>% 
+    dna_strings <- dna_sequences %>% 
+        unlist %>% 
+        Biostrings::DNAStringSet()
+    count <- motif %>% 
+        Biostrings::vcountPattern(dna_strings, fixed=FALSE) %>% 
         sum
     return(count)
 }
@@ -174,7 +196,9 @@ getMotifCount <- function(motif, dna_sequences) {
 #' @return The total number of occurrences of each motif in \code{spots}, in
 #'   \code{dna_sequences}
 getSpotCount <- function(dna_sequences, spots) {
-    count <- spots %>% sapply(getMotifCount, dna_sequences=dna_sequences) %>% sum
+    count <- spots %>% 
+        sapply(getMotifCount, dna_sequences=dna_sequences) %>% 
+        sum
     return(count)
 }
 
@@ -271,7 +295,8 @@ compareColdspotCounts <- function(dat_a,
 getDistancesFromNaiveToMature <- function(dat) {
     distances <- dat$mature_seq %>% 
         mapply(FUN=stringdist::stringdist, b=dat$naive_seq, method="lv") %>% 
-        sort %>% unname
+        sort %>% 
+        unname
     return(distances)
 }
 
@@ -294,7 +319,8 @@ compareDistancesFromNaiveToMature <- function(dat_a, dat_b) {
 #' @param Annotated dataset
 #' @return Vector of CDR3 lengths (in nt units)
 getCDR3Lengths <- function(dat) {
-    CDR3_lengths <- dat$cdr3_length %>% na.omit
+    CDR3_lengths <- dat$cdr3_length %>% 
+        na.omit
     return(CDR3_lengths)
 }
 
@@ -304,8 +330,10 @@ getCDR3Lengths <- function(dat) {
 #' @param dat_b Second dataset
 #' @return The JS divergence of the two CDR3 length distributions
 compareCDR3Lengths <- function(dat_a, dat_b) {
-    a_lengths <- getCDR3Lengths(dat_a)
-    b_lengths <- getCDR3Lengths(dat_b)
+    a_lengths <- dat_a %>% 
+        getCDR3Lengths
+    b_lengths <- dat_b %>% 
+        getCDR3Lengths
     divergence <- getJSDivergence(a_lengths, b_lengths)
     return(divergence)
 }
@@ -316,8 +344,11 @@ compareCDR3Lengths <- function(dat_a, dat_b) {
 #' @param gene_list List of all available genes present in at least one
 #'   repertoire under consideration
 getGeneUsageTableFromFullList <- function(gene_list, full_gene_list) {
-    usage_table <- gene_list %>% table
-    usage_table[full_gene_list %>% setdiff(gene_list) %>% unlist] <- 0
+    usage_table <- gene_list %>% 
+        table
+    usage_table[full_gene_list %>% 
+                setdiff(gene_list) %>% 
+                unlist] <- 0
     return(usage_table)
 }
 
@@ -345,14 +376,19 @@ collapseAlleles <- function(gene_list) {
 #'   and \code{gene_list_b}
 compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
     if(collapse_alleles) {
-        gene_list_a <- gene_list_a %>% collapseAlleles
-        gene_list_b <- gene_list_b %>% collapseAlleles
+        gene_list_a <- gene_list_a %>% 
+            collapseAlleles
+        gene_list_b <- gene_list_b %>% 
+            collapseAlleles
     }
     full_gene_list <- union(gene_list_a, gene_list_b)
-    table_a <- gene_list_a %>% getGeneUsageTableFromFullList(full_gene_list)
-    table_b <- gene_list_b %>% getGeneUsageTableFromFullList(full_gene_list)
+    table_a <- gene_list_a %>% 
+        getGeneUsageTableFromFullList(full_gene_list)
+    table_b <- gene_list_b %>% 
+        getGeneUsageTableFromFullList(full_gene_list)
     divergence <- full_gene_list %>% 
-        sapply(function(x) { abs(table_a[x] - table_b[x]) }) %>% mean
+        sapply(function(x) { abs(table_a[x] - table_b[x]) }) %>% 
+        mean
     return(divergence)
 }
 
@@ -414,18 +450,25 @@ compareJGeneDistributions <- function(dat_a, dat_b) {
 #' @return A table of joint gene IDs and usage counts
 getJointGeneTable <- function(dat, collapseAlleles) {
     if(collapseAlleles) {
-        v_genes <- dat %$% v_gene %>% collapseAlleles
-        d_genes <- dat %$% d_gene %>% collapseAlleles
-        j_genes <- dat %$% j_gene %>% collapseAlleles
+        v_genes <- dat %$% 
+            v_gene %>% 
+            collapseAlleles
+        d_genes <- dat %$% 
+            d_gene %>% 
+            collapseAlleles
+        j_genes <- dat %$% 
+            j_gene %>% 
+            collapseAlleles
         gene_dat <- data.table(v_gene=v_genes,
-                                d_gene=d_genes,
-                                j_gene=j_genes)
+                               d_gene=d_genes,
+                               j_gene=j_genes)
     } else {
         gene_dat <- dat
     }
 
     gene_type_list <- c("v_gene", "d_gene", "j_gene")
-    gene_table <- gene_dat %>% plyr::count(gene_type_list)
+    gene_table <- gene_dat %>% 
+        plyr::count(gene_type_list)
     gene_table$concat <- do.call(paste0, gene_table[gene_type_list])
 
     return(gene_table[, c("concat", "freq")])
@@ -452,7 +495,8 @@ compareVDJDistributions <- function(dat_a, dat_b, collapseAlleles=TRUE) {
         i <- i + 1
     }
     
-    divergence <- summands %>% mean
+    divergence <- summands %>% 
+        mean
     return(divergence)
 }
 
@@ -484,7 +528,9 @@ getHydrophobicityDistribution <- function(sequence_list) {
     hydrophobicity_list <- sequence_list %>% 
         filterStringsForAAFunctions %>%
         getKideraFactors %>%
-        data.table %>% select_("KF4") %>% unlist
+        data.table %>% 
+        select_("KF4") %>% 
+        unlist
     return(hydrophobicity_list)
 }
 
@@ -613,8 +659,12 @@ getGRAVYDistribution <- function(sequence_list) {
 #' @param dat_b Second dataset, a data.table or data.frame object
 #' @return The JS divergence of GRAVY distributions
 compareGRAVYDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a %$% cdr3s %>% getGRAVYDistribution
-    dist_b <- dat_b %$% cdr3s %>% getGRAVYDistribution
+    dist_a <- dat_a %$% 
+        cdr3s %>% 
+        getGRAVYDistribution
+    dist_b <- dat_b %$% 
+        cdr3s %>% 
+        getGRAVYDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
 }
@@ -630,8 +680,11 @@ compareGRAVYDistributions <- function(dat_a, dat_b) {
 #'   returned by \code{annotateSequences}.
 #' @return A vector of positions of the CDR3 start codons of the BCR sequences
 extractCDR3CodonStartPositions <- function(dictionary_list) {
-    positions <- dictionary_list %>% sapply(toString) %>% 
-        lapply(parsePythonDictionary) %>% sapply(extract, "v") %>% unlist %>% 
+    positions <- dictionary_list %>% 
+        sapply(toString) %>% 
+        lapply(parsePythonDictionary) %>% 
+        sapply(extract, "v") %>% 
+        unlist %>% 
         as.numeric
 
     # partis returns zero-based positions, so add one. 
@@ -647,9 +700,12 @@ extractCDR3CodonStartPositions <- function(dictionary_list) {
 #' @param dat Dataset, either a data.table or data.frame object
 #' @return Vector of CDR3 strings
 getCDR3s <- function(dat) {
-    codon_starts <- dat$codon_positions %>% extractCDR3CodonStartPositions
+    codon_starts <- dat %$%
+        codon_positions %>% 
+        extractCDR3CodonStartPositions
     codon_ends <- codon_starts + dat$cdr3_length
-    cdr3s <- dat %$% input_seqs %>% 
+    cdr3s <- dat %$% 
+        input_seqs %>% 
         substr(codon_starts, codon_ends - 1) %>% 
         unname
     return(cdr3s)
@@ -679,8 +735,12 @@ getDistancesBetweenMutationsBySequence <- function(naive, mature) {
         stop(paste0("nchar(naive) [", nchar(naive), "] != ", "nchar(mature) [", 
                     nchar(mature), "]"))
     }
-    naive_char_list <- naive %>% strsplit(split='') %>% unlist
-    mature_char_list <- mature %>% strsplit(split='') %>% unlist
+    naive_char_list <- naive %>% 
+        strsplit(split='') %>% 
+        unlist
+    mature_char_list <- mature %>% 
+        strsplit(split='') %>% 
+        unlist
     mut_indices_list <- which(naive_char_list != mature_char_list)
     if(length(mut_indices_list) > 1) {
         distances <- (mut_indices_list %>% diff - 1) %>% list
@@ -701,7 +761,10 @@ getDistancesBetweenMutations <- function(naive_list, mature_list) {
                         }
                     },
                     naive_list,
-                    mature_list) %>% unname %>% unlist %>% subset(!is.na(.))
+                    mature_list) %>% 
+        unname %>% 
+        unlist %>% 
+        subset(!is.na(.))
     return(dists)
 }
 
@@ -713,37 +776,55 @@ compareDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
 }
 
 getPerGeneMutationRates <- function(rate_dat) {
-    rates <- rate_dat %>% sapply( function(gene) { 
-                                      gene$overall_mut_rate } )
+    rates <- rate_dat %>% 
+        sapply( function(gene) { 
+                    gene$overall_mut_rate 
+                }
+        )
     return(rates)
 }
 
 comparePerGeneMutationRates <- function(dat_a, dat_b) {
-    rates_a <- dat_a %>% getPerGeneMutationRates
-    rates_b <- dat_b %>% getPerGeneMutationRates
-    common_genes <- intersect(rates_a %>% names, rates_b %>% names)
+    rates_a <- dat_a %>% 
+        getPerGeneMutationRates
+    rates_b <- dat_b %>% 
+        getPerGeneMutationRates
+    common_genes <- intersect(rates_a %>% names, 
+                              rates_b %>% names)
     rates_a_common <- rates_a[names(rates_a) %in% 
-                              common_genes][common_genes] %>% unname
+                              common_genes][common_genes] %>% 
+        unname
     rates_b_common <- rates_b[names(rates_b) %in% 
-                              common_genes][common_genes] %>% unname
-    divergence <- (rates_a_common - rates_b_common) %>% abs %>% mean
+                              common_genes][common_genes] %>% 
+        unname
+    divergence <- (rates_a_common - rates_b_common) %>% 
+        abs %>% 
+        mean
     return(divergence/length(common_genes)) 
 }
 
 getPerGenePerPositionMutationRates <- function(rate_dat) {
-    rates <- rate_dat %>% sapply( function(gene) {
-                                      gene$mut_rate_by_position } )
+    rates <- rate_dat %>% 
+        sapply( function(gene) {
+                    gene$mut_rate_by_position 
+                } 
+        )
     return(rates)
 }
 
 comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
-    rates_a <- dat_a %>% getPerGenePerPositionMutationRates
-    rates_b <- dat_b %>% getPerGenePerPositionMutationRates
-    common_genes <- intersect(rates_a %>% names, rates_b %>% names)
+    rates_a <- dat_a %>% 
+        getPerGenePerPositionMutationRates
+    rates_b <- dat_b %>% 
+        getPerGenePerPositionMutationRates
+    common_genes <- intersect(rates_a %>% names, 
+                              rates_b %>% names)
     rates_a_common <- rates_a[names(rates_a) %in% 
-                              common_genes][common_genes] %>% unname
+                              common_genes][common_genes] %>% 
+        unname
     rates_b_common <- rates_b[names(rates_b) %in% 
-                              common_genes][common_genes] %>% unname
+                              common_genes][common_genes] %>% 
+        unname
     divergence <- mapply(function(positions_a, positions_b) { 
                             common_positions <- intersect(positions_a %>% names, 
                                                           positions_b %>% names)
@@ -753,7 +834,9 @@ comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
                                             common_positions][common_positions]
                             abs(a_common - b_common)/length(common_positions)
                          }, 
-                         rates_a_common, rates_b_common) %>% unlist %>% mean
+                         rates_a_common, rates_b_common) %>% 
+        unlist %>% 
+        mean
     return(divergence/length(common_genes)) 
 }
 
@@ -790,14 +873,20 @@ getMutabilityModel <- function(dat,
 compareMutabilityModels <- function(dat_a, dat_b, 
                                     sub_mod_a=getSubstitutionModel(dat_a),
                                     sub_mod_b=getSubstitutionModel(dat_b)) {
-    model_a <- dat_a %>% getMutabilityModel(substitution_model=sub_mod_a)
-    model_b <- dat_b %>% getMutabilityModel(substitution_model=sub_mod_b)
-    divergence <- (model_a - model_b) %>% abs %>% mean
+    model_a <- dat_a %>% 
+        getMutabilityModel(substitution_model=sub_mod_a)
+    model_b <- dat_b %>% 
+        getMutabilityModel(substitution_model=sub_mod_b)
+    divergence <- (model_a - model_b) %>% 
+        abs %>% 
+        mean
     return(divergence)
 }
 
 getDeletionLengths <- function(dat, column) {
-    lengths <- dat %>% dplyr::select_(column) %>% unlist(use.names=FALSE)
+    lengths <- dat %>% 
+        dplyr::select_(column) %>% 
+        unlist(use.names=FALSE)
     return(lengths)
 }
 
@@ -828,8 +917,10 @@ getJGene5PrimeDeletionLengths <- function(dat) {
 compareDeletionLengths <- function(dat_a, dat_b, gene, end) {
     deletion_length_function <- paste0("get", gene, end, "DeletionLengths") %>%
         get
-    dist_a <- dat_a %>% deletion_length_function
-    dist_b <- dat_b %>% deletion_length_function
+    dist_a <- dat_a %>% 
+        deletion_length_function
+    dist_b <- dat_b %>% 
+        deletion_length_function
     divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
@@ -851,8 +942,12 @@ compareJGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
 }
 
 getInsertionLengths <- function(dat, column) {
-    lengths <- dat %>% dplyr::select_(column) %>% unlist %>% 
-        sapply(toString) %>% sapply(nchar) %>% unname
+    lengths <- dat %>% 
+        dplyr::select_(column) %>% 
+        unlist %>% 
+        sapply(toString) %>% 
+        sapply(nchar) %>% 
+        unname
     return(lengths)
 }
 
@@ -867,8 +962,10 @@ getDJInsertionLengths <- function(dat) {
 compareInsertionLengths <- function(dat_a, dat_b, genes) {
     insertion_length_function <- paste0("get", genes, "InsertionLengths") %>% 
         get
-    dist_a <- dat_a %>% insertion_length_function
-    dist_b <- dat_b %>% insertion_length_function
+    dist_a <- dat_a %>% 
+        insertion_length_function
+    dist_b <- dat_b %>% 
+        insertion_length_function
     divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
@@ -948,8 +1045,10 @@ getDJInsertionMatrix <- function(dat) {
 #' @param dat_b First data.table with insertion annotations
 #' @return The mean absolute difference of matrix entries, taken elementwise
 compareVDInsertionMatrices <- function(dat_a, dat_b) {
-    matrix_a <- dat_a %>% getVDInsertionMatrix
-    matrix_b <- dat_b %>% getVDInsertionMatrix
+    matrix_a <- dat_a %>% 
+        getVDInsertionMatrix
+    matrix_b <- dat_b %>% 
+        getVDInsertionMatrix
     divergence <- getMeanAbsoluteDifference(matrix_a, matrix_b)
     return(divergence)
 }
@@ -960,8 +1059,10 @@ compareVDInsertionMatrices <- function(dat_a, dat_b) {
 #' @param dat_b First data.table with insertion annotations
 #' @return The mean absolute difference of matrix entries, taken elementwise
 compareDJInsertionMatrices <- function(dat_a, dat_b) {
-    matrix_a <- dat_a %>% getDJInsertionMatrix
-    matrix_b <- dat_b %>% getDJInsertionMatrix
+    matrix_a <- dat_a %>% 
+        getDJInsertionMatrix
+    matrix_b <- dat_b %>% 
+        getDJInsertionMatrix
     divergence <- getMeanAbsoluteDifference(matrix_a, matrix_b)
     return(divergence)
 }
@@ -969,33 +1070,49 @@ compareDJInsertionMatrices <- function(dat_a, dat_b) {
 # Partition functions
 
 getCloneList <- function(dat) {
-    clone_list <- dat$partition %>% first %>% toString %>% strsplit(";") %>% 
-        lapply(strsplit, ":") %>% first %>% lapply(as.numeric)
+    clone_list <- dat %$%
+        partition %>% 
+        first %>% 
+        toString %>% 
+        strsplit(";") %>% 
+        lapply(strsplit, ":") %>% 
+        first %>% 
+        lapply(as.numeric)
     return(clone_list)
 }
 
 includeClonalMemberships <- function(annotations, partitions) {
-    clone_list <- partitions %>% getCloneList
-    clone_df <- clone_list %>% data.table::melt()
+    clone_list <- partitions %>% 
+        getCloneList
+    clone_df <- clone_list %>% 
+        data.table::melt()
     names(clone_df) <- c("unique_ids", "clone")
     new_df <- merge(annotations, clone_df, by="unique_ids")
     return(new_df)
 }
 
 getClusterSizes <- function(dat) {
-    sizes <- dat$clone %>% table %>% unname %>% c %>% sort
+    sizes <- dat %$%
+        clone %>% 
+        table %>% 
+        unname %>% 
+        c %>% 
+        sort
     return(sizes)
 }
 
 compareClusterSizes <- function(dat_a, dat_b) {
-    dist_a <- dat_a %>% getClusterSizes
-    dist_b <- dat_b %>% getClusterSizes
+    dist_a <- dat_a %>% 
+        getClusterSizes
+    dist_b <- dat_b %>% 
+        getClusterSizes
     divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
 
 getHillNumbers <- function(dat, diversity_orders=c(0, 1, 2)) {
-    counts <- dat %>% getClusterSizes
+    counts <- dat %>% 
+        getClusterSizes
     diversity <- alakazam::calcDiversity(counts, diversity_orders)
     return(diversity)
 }
@@ -1009,9 +1126,13 @@ getHillNumbers <- function(dat, diversity_orders=c(0, 1, 2)) {
 #' Hill diversity index. Can be any real value although nonnegative values are
 #' recommended as biologically meaningful.
 compareHillNumbers <- function(dat_a, dat_b, diversity_orders=c(0, 1, 2)) {
-    hill_numbers_a <- dat_a %>% getHillNumbers(diversity_orders)
-    hill_numbers_b <- dat_b %>% getHillNumbers(diversity_orders)
-    distance <- (hill_numbers_a - hill_numbers_b) %>% abs %>% mean
+    hill_numbers_a <- dat_a %>% 
+        getHillNumbers(diversity_orders)
+    hill_numbers_b <- dat_b %>% 
+        getHillNumbers(diversity_orders)
+    distance <- (hill_numbers_a - hill_numbers_b) %>% 
+        abs %>% 
+        mean
     return(distance)
 }
 
