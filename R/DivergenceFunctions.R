@@ -44,7 +44,7 @@ binContinuousListsAsDiscrete <- function(list_a, list_b) {
 #' @param sample_2 Second data sample
 #' @return Approximate JS divergence of the distributions induced from sample_1
 #'   and sample_2
-getContinuousJSDivergence <- function(sample_1, sample_2) {
+getContinuousJSDivergenceByIntegration <- function(sample_1, sample_2) {
     m <- function(x) {
         result <- 0.5*(p(x) + q(x))
         return(result)
