@@ -878,9 +878,7 @@ compareMutabilityModels <- function(dat_a, dat_b,
         getMutabilityModel(substitution_model=sub_mod_a)
     model_b <- dat_b %>% 
         getMutabilityModel(substitution_model=sub_mod_b)
-    divergence <- (model_a - model_b) %>% 
-        abs %>% 
-        mean
+    divergence <- getMeanAbsoluteDifference(model_a, model_b) 
     return(divergence)
 }
 
