@@ -14,6 +14,14 @@
 #'     geom_bar(stat="identity", position="dodge")
 
 binContinuousListsAsDiscrete <- function(list_a, list_b) {
+    tabulateData <- function(data_list) {
+        result <- data_list %>%
+            table %>%
+            unname %>%
+            as.vector
+        return(result)
+    }
+
     a_length <- list_a %>% 
         length
     b_length <- list_b %>% 
@@ -24,14 +32,10 @@ binContinuousListsAsDiscrete <- function(list_a, list_b) {
     bin_count <- ifelse(bin_count < 2, 2, bin_count)
     bins <- c(list_a, list_b) %>% 
         cut(breaks=bin_count, labels=1:bin_count)
-    table_a <- bins[1:a_length] %>% 
-        table %>% 
-        unname %>% 
-        as.vector
-    table_b <- bins[-(1:a_length)] %>% 
-        table %>% 
-        unname %>% 
-        as.vector
+    table_a <- bins[1:a_length] %>%
+        tabulateData
+    table_b <- bins[-(1:a_length)] %>%
+        tabulateData
     return(list(table_a, table_b))
 }
 
@@ -92,19 +96,25 @@ getContinuousJSDivergenceByIntegration <- function(sample_1, sample_2) {
 #' getJSDivergence(l2, l1)
 #' getJSDivergence(l1, l1)
 getJSDivergence <- function(list_a, list_b, continuous=FALSE) {
+    tabulateDiscreteData <- function(data_list, factor_levels) {
+        result <- data_list %>%
+            factor(levels=factor_levels) %>%
+            table %>%
+            as.vector
+        return(result)
+    }
+
     if(continuous) {
         binned <- binContinuousListsAsDiscrete(list_a, list_b)
         divergence <- textmineR::CalcJSDivergence(binned[[1]], binned[[2]])
     } else {
-        max_val <- max(list_a, list_b)
-        table_a <- list_a %>% 
-            factor(levels=0:max_val) %>% 
-            table %>% 
-            as.vector
-        table_b <- list_b %>% 
-            factor(levels=0:max_val) %>% 
-            table %>% 
-            as.vector
+        factor_levels <- c(list_a, list_b) %>%
+            unique %>%
+            as.factor
+        table_a <- list_a %>%
+            tabulateDiscreteData(factor_levels=factor_levels)
+        table_b <- list_b %>%
+            tabulateDiscreteData(factor_levels=factor_levels)
         divergence <- textmineR::CalcJSDivergence(table_a, table_b)
     }
     return(divergence)
