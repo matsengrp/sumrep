@@ -92,7 +92,10 @@ doComparison <- function(function_string, input_list) {
 #' @param repertoire_2 Second repertoire
 #' @param rep_1_bootstrap Annotated repertoire based on bootstrapping the DNA
 #'   sequences from the first repertoire
-compareRepertoires <- function(repertoire_1, repertoire_2, rep_1_bootstrap) {
+compareRepertoires <- function(repertoire_1, 
+                               repertoire_2, 
+                               rep_1_bootstrap
+                               ) {
     annotations_1 <- repertoire_1$annotations
     annotations_2 <- repertoire_2$annotations
     annotations_list <- list(annotations_1, annotations_2)

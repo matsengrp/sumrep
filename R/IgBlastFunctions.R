@@ -1,4 +1,5 @@
 library(data.table)
+library(shazam)
 
 #' Get IgBLAST annotations from an input fasta file
 #'
@@ -19,7 +20,8 @@ getIgBlastAnnotations <- function(input_filename,
                                   locus="igh",
                                   organism="human",
                                   domain_system="imgt",
-                                  ig_seqtype="Ig"
+                                  ig_seqtype="Ig",
+                                  num_threads=8
                                   ) {
 
     input_filename <- input_filename %>% 
@@ -72,13 +74,27 @@ getIgBlastAnnotations <- function(input_filename,
                    # input file, since we have changed directories
                    input_filename %>% normalizePath, 
                    "-out",
-                   full_output_filename
+                   full_output_filename,
+                   "-num_threads",
+                   num_threads
                    )
     
     command <- arguments %>%
         paste(collapse=' ')
 
     command %>% system
+
+     germline_sequences <- regions %>%
+                               sapply(tolower) %>%
+                               sapply(function(x) {
+                                          paste0(locus,
+                                                 '/',
+                                                 locus,
+                                                 x,
+                                                 '.fasta')
+                                   }
+                               ) %>%
+                               paste(collapse=' ')
 
     changeo_command <- paste(file.path(changeo_dir,
                                        "MakeDb.py"),
@@ -88,27 +104,81 @@ getIgBlastAnnotations <- function(input_filename,
                              "-s",
                              input_filename,
                              "-r",
-                             regions %>%
-                                 sapply(tolower) %>%
-                                 sapply(function(x) {
-                                         paste0(locus,
-                                                '/',
-                                                locus,
-                                                x,
-                                                '.fasta')
-                                        }
-                                 ) %>%
-                                 paste(collapse=' ')
+                             germline_sequences
                              )
 
     changeo_command %>% system
     changeo_filename <- output_filename %>%
         paste0("_db-pass.tab")
-    annotations <- changeo_filename %>%
+
+    annotations_without_naive <- changeo_filename %>%
         data.table::fread(stringsAsFactors=TRUE)
+
+    # Need to do clustering with some help from shazam and changeo
+    #   before getting naive sequences
+    cluster_threshold <- annotations_without_naive %>%
+        shazam::distToNearest() %$%
+        DIST_NEAREST %>%
+        shazam::findThreshold() %>%
+        slot(name="threshold")
+
+    cluster_command <- paste(file.path(changeo_dir,
+                                       "DefineClones.py"),
+                             "bygroup",
+                             "-d",
+                             changeo_filename,
+                             "--act",
+                             "set",
+                             "--model",
+                             "ham",
+                             "--sym",
+                             "min",
+                             "--norm",
+                             "len",
+                             "--dist",
+                             cluster_threshold
+                             )
+
+    cluster_command %>% system
+
+    changeo_clone_filename <- changeo_filename %>%
+        gsub(pattern=".tab", replace="_clone-pass.tab")
+
+    germline_command <- paste(file.path(changeo_dir,
+                                        "CreateGermlines.py"),
+                              "-d",
+                              changeo_clone_filename,
+                              "-r",
+                              germline_sequences,
+                              "-g",
+                              "full",
+                              "--cloned"
+                              )
+
+    germline_command %>% system
+
+    germline_filename <- changeo_clone_filename %>%
+        gsub(pattern=".tab", replace="_germ-pass.tab")
+
+    annotations <- germline_filename %>%
+        data.table::fread(stringsAsFactors=TRUE) 
+
+    names(annotations)[which(names(annotations) == "V_CALL")] <- "v_gene"
+    names(annotations)[which(names(annotations) == "D_CALL")] <- "d_gene"
+    names(annotations)[which(names(annotations) == "J_CALL")] <- "j_gene"
+    names(annotations)[which(names(annotations) == "SEQUENCE_INPUT")] <- "mature_seq"
+    names(annotations)[which(names(annotations) == "SEQUENCE_VDJ")] <- "naive_seq"
+    names(annotations)[which(names(annotations) == "JUNCTION")] <- "cdr3s"
+    names(annotations)[which(names(annotations) == "JUNCTION_LENGTH")] <- "cdr3_length"
+
+    annotations$mature_seq <- annotations$mature_seq %>%
+        sapply(toString)
+    annotations$naive_seq <- annotations$naive_seq %>%
+        sapply(toString)
 
     # Go back to initial working directory
     initial_wd %>% setwd
 
-    return(annotations)
+    annotation_object <- list(annotations=annotations)
+    return(annotation_object)
 }
