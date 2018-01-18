@@ -1,3 +1,5 @@
+library(stringr)
+
 #' Call partis
 #'
 #' \code{callPartis} calls partis from within the sumrep package.
@@ -15,7 +17,7 @@
 #' @param cleanup Flag to delete all interim files created by partis
 #' @return A data.table object containing the output of the partis call
 callPartis <- function(action, input_filename, output_filename, output_path, 
-                       partis_path, num_procs, cleanup) {
+                       partis_path, num_procs) {
     shell <- Sys.getenv("SHELL")
     script.file <- system.file("run_partis.sh", package="sumrep")
     command <- paste(shell, script.file, 
@@ -143,6 +145,72 @@ processMatureSequences <- function(dat) {
     return(dat)
 }
 
+#' Here we use stringr::str_split to get empty strings after a ':', if necessary.
+#' For example, with strsplit, '::' would yield c('', ''), whereas
+#' stringr::str_split would yield c('', '', '')
+collapseColonedList <- function(coloned_list,
+                                type_conversion=as.numeric) {
+    collapsed_vector <- coloned_list %>% 
+        toString %>%
+        stringr::str_split(':') %>%
+        unlist %>%
+        unname
+
+    return(collapsed_vector)
+}
+
+
+collapseClones <- function(partition_dataset) {
+    coloned_columns <- c("unique_ids",
+                         "mut_freqs",
+                         "n_mutations",
+                         "mature_seq",
+                         "indel_reversed_seqs",
+                         "mutated_invariants",
+                         "in_frames",
+                         "stops",
+                         "aligned_j_seqs",
+                         "aligned_v_seqs")
+    partition_dataset$clone <- 0
+    all_columns <- partition_dataset %>% names
+
+    clone_count <- partition_dataset %>% nrow
+    column_count <- partition_dataset %>% ncol
+    collapsed_dat <- matrix(nrow=0, ncol=column_count) %>%
+        data.table::data.table() %>%
+        setNames(all_columns)
+
+    for(clone in 1:clone_count) {
+        print(clone)
+        clone_annotations <- partition_dataset[clone, ]
+        unique_ids <- clone_annotations$unique_ids %>% 
+            collapseColonedList
+
+        if(length(unique_ids) > 1) {
+            clone_list <- {} 
+            for(column in all_columns) {
+                if(column %in% coloned_columns) {
+                    clone_list[[column]] <- clone_annotations[[column]] %>%
+                        collapseColonedList
+                } else {
+                    clone_list[[column]] <- clone_annotations[[column]]
+                }
+            }
+
+            clone_dat <- clone_list %>% as.data.table
+            clone_dat$clone <- clone
+            print(clone_dat %>% names %>% length)
+        }  else {
+            clone_dat <- clone_annotations
+            clone_dat$clone <- clone
+        }
+        collapsed_dat <- rbind(collapsed_dat, clone_dat)
+    }
+
+    return(collapsed_dat)
+
+}
+
 #' Perform sequence annotation with partis
 #'
 #' @inheritParams callPartis
@@ -151,13 +219,36 @@ processMatureSequences <- function(dat) {
 #' @return A data.table object containing the output of the partis annotate call
 annotateSequences <- function(input_filename, output_filename="partis_output.csv", 
                               partis_path=Sys.getenv("PARTIS_PATH"), num_procs=4, 
+                              partition=TRUE,
                               cleanup=TRUE, 
                               do_full_annotation=TRUE, output_path="_output") {
     preventOutputOverwrite(output_path, cleanup)
 
     output_file <- file.path(output_path, output_filename)
-    annotated_data <- callPartis("annotate", input_filename, output_file, 
-                                 output_path, partis_path, num_procs, cleanup)
+    if(partition) {
+        annotated_data <- {}
+        partition_data <- partitionSequences(input_filename,
+                                             output_filename,
+                                             partis_path,
+                                             num_procs,
+                                             cleanup=FALSE,
+                                             output_path)
+        annotation_filename <- output_filename %>%
+            gsub(pattern='.csv',
+                 replace='-cluster-annotations.csv')
+        annotation_file <- file.path(output_path,
+                                     annotation_filename)
+                                        
+        annotated_data <- 
+            data.table::fread(
+                              annotation_file,
+                              stringsAsFactors=TRUE
+                             )   
+    } else {
+        annotated_data <- callPartis("annotate", input_filename, output_file, 
+                                     output_path, partis_path, num_procs)
+        annotation_file <- output_file
+    }
 
     hmm_yaml_filepath <- file.path(output_path, "params/hmm/hmms")
     yaml_files <- hmm_yaml_filepath %>% 
@@ -176,7 +267,9 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
     }
 
     if(do_full_annotation) {
-        annotated_data <- doFullAnnotation(output_path, output_file, partis_path)
+        annotated_data <- doFullAnnotation(output_path, 
+                                           annotation_file, 
+                                           partis_path)
         annotated_data$cdr3s <- annotated_data %>% 
             getCDR3s
     }
@@ -209,8 +302,7 @@ partitionSequences <- function(input_filename,
 
     output_file <- file.path(output_path, output_filename)
     partitioned_data <- callPartis("partition", input_filename, output_file, 
-                                    output_path, partis_path, num_procs, 
-                                    cleanup)
+                                    output_path, partis_path, num_procs)
 
     if(cleanup) {
         output_path %>% 
