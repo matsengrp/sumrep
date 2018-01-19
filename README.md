@@ -18,6 +18,7 @@
   If you only want to use the partis functionality, the following `R` command will suffice:
   ```
    install.packages(c("data.table", "dplyr", "magrittr", "stringr"))
+  ```
   Once installed, you will need to either set an environmental variable `'PARTIS_PATH'` to the path of the partis executable,
   or supply this path into any function which calls partis.
   To set the variable, add the following line to your `~/.bash_profile`:
