@@ -165,6 +165,7 @@ collapseClones <- function(partition_dataset) {
                          "mut_freqs",
                          "n_mutations",
                          "mature_seq",
+                         "input_seqs",
                          "indel_reversed_seqs",
                          "mutated_invariants",
                          "in_frames",
@@ -181,7 +182,6 @@ collapseClones <- function(partition_dataset) {
         setNames(all_columns)
 
     for(clone in 1:clone_count) {
-        print(clone)
         clone_annotations <- partition_dataset[clone, ]
         unique_ids <- clone_annotations$unique_ids %>% 
             collapseColonedList
@@ -199,7 +199,6 @@ collapseClones <- function(partition_dataset) {
 
             clone_dat <- clone_list %>% as.data.table
             clone_dat$clone <- clone
-            print(clone_dat %>% names %>% length)
         }  else {
             clone_dat <- clone_annotations
             clone_dat$clone <- clone
@@ -217,16 +216,19 @@ collapseClones <- function(partition_dataset) {
 #' @param do_full_annotation Include per-gene and per-gene-per-position mutation
 #'   rate information
 #' @return A data.table object containing the output of the partis annotate call
-annotateSequences <- function(input_filename, output_filename="partis_output.csv", 
-                              partis_path=Sys.getenv("PARTIS_PATH"), num_procs=4, 
+annotateSequences <- function(input_filename, 
+                              output_filename="partis_output.csv", 
+                              partis_path=Sys.getenv("PARTIS_PATH"), 
+                              num_procs=4, 
                               partition=TRUE,
+                              collapse_clones=TRUE,
                               cleanup=TRUE, 
-                              do_full_annotation=TRUE, output_path="_output") {
+                              do_full_annotation=TRUE, 
+                              output_path="_output") {
     preventOutputOverwrite(output_path, cleanup)
 
     output_file <- file.path(output_path, output_filename)
     if(partition) {
-        annotated_data <- {}
         partition_data <- partitionSequences(input_filename,
                                              output_filename,
                                              partis_path,
@@ -238,16 +240,39 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
                  replace='-cluster-annotations.csv')
         annotation_file <- file.path(output_path,
                                      annotation_filename)
+
+        if(do_full_annotation) {
+            annotated_data <- doFullAnnotation(output_path, 
+                                               annotation_file, 
+                                               partis_path)
+            annotated_data$cdr3s <- annotated_data %>% 
+                getCDR3s
+        }
                                         
-        annotated_data <- 
-            data.table::fread(
-                              annotation_file,
-                              stringsAsFactors=TRUE
-                             )   
+        if(collapse_clones) {
+            annotated_data <- annotated_data %>%
+                collapseClones
+            collapsed_filename <- annotation_filename %>%
+                gsub(pattern='.csv',
+                     replace='-collapsed.csv')
+            collapsed_file=file.path(output_path,
+                                     collapsed_filename)
+            write.csv(annotated_data,
+                      file=collapsed_file)
+        }
+
     } else {
         annotated_data <- callPartis("annotate", input_filename, output_file, 
                                      output_path, partis_path, num_procs)
         annotation_file <- output_file
+
+        if(do_full_annotation) {
+            annotated_data <- doFullAnnotation(output_path, 
+                                               annotation_file, 
+                                               partis_path)
+            annotated_data$cdr3s <- annotated_data %>% 
+                getCDR3s
+        }
     }
 
     hmm_yaml_filepath <- file.path(output_path, "params/hmm/hmms")
@@ -266,13 +291,6 @@ annotateSequences <- function(input_filename, output_filename="partis_output.csv
             getMutationInfo
     }
 
-    if(do_full_annotation) {
-        annotated_data <- doFullAnnotation(output_path, 
-                                           annotation_file, 
-                                           partis_path)
-        annotated_data$cdr3s <- annotated_data %>% 
-            getCDR3s
-    }
 
     if(cleanup) {
         output_path %>% 
