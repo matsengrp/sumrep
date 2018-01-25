@@ -32,6 +32,9 @@ bootstrapFasta <- function(fasta_file, output_filename) {
 }
 
 #' Print the result and elapsed time of a comparison
+#' Some functions such as compareSubstitutionAndMutabilityModels return more than
+#'   one divergence value for convenience. Thus, loop over comparisons when
+#'   necessary
 #'
 #' @param f Comparison function 
 #' @param input_1 First input to \code{f}
@@ -41,17 +44,25 @@ bootstrapFasta <- function(fasta_file, output_filename) {
 #'   bootstrap
 getAndPrintComparison <- function(f, input_1, input_2, string_header, color) {
     pt <- proc.time()
-    comparison <- f(input_1, input_2)
+    comparisons <- NA
+    tryCatch({
+    comparisons <- f(input_1, input_2)
+    comparison_names <- comparisons %>% names
     elapsed_time <- (proc.time() - pt)[3]
-    cat(string_header,
-        color(comparison %>% 
-                  signif(4) %>% 
-                  toString),
-        ' (',
-        elapsed_time,
-        's)',
-        '\n', sep='')
-    return(comparison)
+    for(comparison in comparisons) {
+        cat(string_header,
+            color(comparison %>% 
+                      signif(4) %>% 
+                      toString),
+            comparison_names[comparison],
+            ' (',
+            elapsed_time,
+            's)',
+            '\n', sep='')
+    }
+    }, error = function(e) {
+    })
+    return(comparisons)
 }
 
 #' Apply \code{function_string} to inputs \code{input_1} and \code{input_2},
@@ -120,7 +131,7 @@ compareRepertoires <- function(repertoire_1,
                              # SHM metrics
                              "compareDistanceBetweenMutationsDistributions",
                              "compareSubstitutionAndMutabilityModels",
-                             "compareSelectionStrengths",
+                             "compareSelectionEstimates",
                              # Sequence-based metrics
                              "compareGCContents",
                              "compareHotspotCounts",
