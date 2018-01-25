@@ -2,6 +2,8 @@
 import csv
 import sys
 
+csv.field_size_limit(sys.maxsize)
+
 partis_path = sys.argv[3]
 sys.path.insert(1, partis_path + '/python')
 
