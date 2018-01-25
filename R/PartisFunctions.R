@@ -291,7 +291,6 @@ annotateSequences <- function(input_filename,
             getMutationInfo
     }
 
-
     if(cleanup) {
         output_path %>% 
             unlink(recursive=TRUE)
@@ -299,6 +298,9 @@ annotateSequences <- function(input_filename,
 
     annotated_data <- annotated_data %>% 
         processMatureSequences
+
+    annotated_data$in_frames <- annotated_data$in_frames %>% 
+        as.logical
 
     annotation_object <- {}
     annotation_object$annotations <- annotated_data
