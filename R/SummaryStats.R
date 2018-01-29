@@ -75,17 +75,16 @@ getDistanceVector <- function(sequence_list) {
 #'   by \code{subsample_count}, and returns the mean divergence.
 #' @param dat_a First dataset, containing mature sequences
 #' @param dat_b Second dataset, containing mature sequences
-#' @inheritParams getAverageDivergence 
+#' @inheritParams getAutomaticAverageDivergence 
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
 comparePairwiseDistanceDistributions <- function(dat_a, dat_b,
                                                  subsample_count=100,
                                                  trial_count=10) {
-    average_divergence <- getAverageDivergence(dat_a %$% mature_seq,
+    average_divergence <- getAutomaticAverageDivergence(dat_a %$% mature_seq,
                                                 dat_b %$% mature_seq,
                                                 getDistanceVector,
-                                                subsample_count,
-                                                trial_count)
+                                                subsample_count)
     return(average_divergence)
 }
 
@@ -116,7 +115,7 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
 #' \code{compareNNDistanceDistribution} computes the JS divergence of
 #'   the kth nearest neighbor distance distribution of two lists of
 #'   DNA sequences
-#' @inheritParams getAverageDivergence
+#' @inheritParams getAutomaticAverageDivergence
 #' @param dat_a First dataset, containing mature sequences
 #' @param dat_b Second dataset, containing mature sequences
 #' @param k The separation depth for the nearest neighbor distances.
@@ -127,12 +126,12 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
 compareNNDistanceDistributions <- function(dat_a, dat_b, k=1,
                                            subsample_count=100,
                                            trial_count=10) {
-    average_divergence <- getAverageDivergence(dat_a %$% mature_seq,
-                                                 dat_b %$% mature_seq,
-                                                 getNearestNeighborDistances,
-                                                 subsample_count,
-                                                 trial_count,
-                                                 k=k)
+    average_divergence <- 
+        getAutomaticAverageDivergence(dat_a %$% mature_seq,
+                                      dat_b %$% mature_seq,
+                                      getNearestNeighborDistances,
+                                      subsample_count,
+                                      k=k)
     return(average_divergence)
 }
 
@@ -236,11 +235,12 @@ compareCounts <- function(dat_a,
                           subsample_count,
                           trial_count) {
 
-    divergence <- getAverageDivergence(dat_a %$% mature_seq,
-                                         dat_b %$% mature_seq,
-                                         count_function,
-                                         subsample_count,
-                                         trial_count)
+    divergence <- getAutomaticAverageDivergence(dat_a %$% mature_seq,
+                                                dat_b %$% mature_seq,
+                                                count_function,
+                                                subsample_count,
+                                                getMeanAbsoluteDifference,
+                                                tolerance=1e-4)
     return(divergence)
 }
 
@@ -306,11 +306,11 @@ getDistancesFromNaiveToMature <- function(dat) {
 #' @param dat_b Second dataset
 #' @return JS divergence of the two distance distributions
 compareDistancesFromNaiveToMature <- function(dat_a, dat_b) {
-    divergence <- getAverageDivergence(dat_a,
-                                       dat_b,
-                                       getDistancesFromNaiveToMature,
-                                       subsample_count=100,
-                                       trial_count=10)
+    divergence <- getAutomaticAverageDivergence(dat_a,
+                                                dat_b,
+                                                getDistancesFromNaiveToMature,
+                                                subsample_count=100,
+                                                tolerance=1e-3)
     return(divergence)
 }
 
@@ -535,12 +535,15 @@ getHydrophobicityDistribution <- function(sequence_list) {
 }
 
 compareHydrophobicityDistributions <- function(dat_a, dat_b) {
-    divergence <- getAverageDivergence(dat_a %$% cdr3s,
-                                       dat_b %$% cdr3s,
-                                       getHydrophobicityDistribution,
-                                       subsample_count=100,
-                                       trial_count=10,
-                                       divergenceFunction=getContinuousJSDivergence)
+    divergence <- 
+        getAutomaticAverageDivergence(
+            dat_a %$% cdr3s,
+            dat_b %$% cdr3s,
+            getHydrophobicityDistribution,
+            subsample_count=100,
+            divergenceFunction=getContinuousJSDivergence,
+            tolerance=1e-3
+        )
     return(divergence)
 }
 
@@ -590,12 +593,12 @@ getMeanAtchleyFactorDistribution <- function(sequence_list) {
 #' @return Estimated mean absolute difference of the mean of each Atchley factor
 #'   of \code{dat_a} and \code{dat_b}
 compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
-    divergence <- getAverageDivergence(dat_a %$% cdr3s,
-                                       dat_b %$% cdr3s,
-                                       getMeanAtchleyFactorDistribution,
-                                       subsample_count=100,
-                                       trial_count=10,
-                                       divergenceFunction=getMeanAbsoluteDifference)
+    divergence <- getAutomaticAverageDivergence(
+        dat_a %$% cdr3s,
+        dat_b %$% cdr3s,
+        getMeanAtchleyFactorDistribution,
+        subsample_count=100,
+        divergenceFunction=getMeanAbsoluteDifference)
     return(divergence)
 }
 
@@ -630,12 +633,12 @@ getAliphaticIndexDistribution <- function(sequence_list) {
 #' @param dat_b Second datset, a data.table or data.frame
 #' @return The JS divergence of the two distributions
 compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
-    divergence <- getAverageDivergence(dat_a %$% cdr3s,
-                                       dat_b %$% cdr3s,
-                                       getAliphaticIndexDistribution,
-                                       subsample_count=100,
-                                       trial_count=10,
-                                       divergenceFunction=getContinuousJSDivergence)
+    divergence <- getAutomaticAverageDivergence(
+        dat_a %$% cdr3s,
+        dat_b %$% cdr3s,
+        getAliphaticIndexDistribution,
+        subsample_count=100,
+        divergenceFunction=getContinuousJSDivergence)
     return(divergence)
 }
 
@@ -722,11 +725,10 @@ compareCDR3Distributions <- function(dat_a,
                                      subsample=TRUE, 
                                      subsample_count=100,
                                      trial_count=10) {
-    divergence <- getAverageDivergence(dat_a %$% cdr3s,
-                                         dat_b %$% cdr3s,
-                                         getDistanceVector,
-                                         subsample_count,
-                                         trial_count)
+    divergence <- getAutomaticAverageDivergence(dat_a %$% cdr3s,
+                                                dat_b %$% cdr3s,
+                                                getDistanceVector,
+                                                subsample_count)
     return(divergence)
 }
 
