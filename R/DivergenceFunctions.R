@@ -191,7 +191,8 @@ getAutomaticAverageDivergence <- function(dataset_a,
                                           summary_function,
                                           subsample_count,
                                           divergenceFunction=getJSDivergence,
-                                          tolerance=1e-2) {
+                                          tolerance=1e-2,
+                                          ...) {
 
     rollingAverage <- function(old_average, n, new_value) {
         new_average <- (old_average*(n - 1) + new_value)/n
@@ -214,7 +215,6 @@ getAutomaticAverageDivergence <- function(dataset_a,
         divergence <- divergenceFunction(summary_a, summary_b)
         average_divergence <- rollingAverage(old_average, n, divergence)
         error <- abs(average_divergence - old_average)/average_divergence
-        print(error)
     }
     return(average_divergence)
 }
