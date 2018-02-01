@@ -13,20 +13,38 @@
     biocLite("Biostrings")
     ```
   (try `http://` if `https://` URLs are not supported)
-
-* [`partis`](https://github.com/psathyrella/partis) is used for default annotation and clonal family partitioning. 
-  If you only want to use the partis functionality, the following `R` command will suffice:
+  
+* If you only want to use the partis functionality, only the following `R` packages need to be installed:
   ```
    install.packages(c("data.table", "dplyr", "magrittr", "stringr"))
   ```
-  Once installed, you will need to either set an environmental variable `'PARTIS_PATH'` to the path of the partis executable,
-  or supply this path into any function which calls partis.
+  The section below discusses installing `partis` in more detail.
+
+### Installing partis
+* [`partis`](https://github.com/psathyrella/partis) is used for default annotation and clonal family partitioning;
+  follow the link to its respository for specific installation directions. 
+* We adivse to run the following command after the regular `partis` install:
+  ```
+  conda update -y -c bioconda pysam
+  ```
+  Otherwise, you might encounter the following (or similar) error:
+  ```
+  AttributeError: 'csamtools.AlignedRead' object has no attribute 'cigarstring'
+  ```
+  This issue arises because `conda pysam` doesn't have a recent enough verion of `pysam`.
+
+* Once `partis` is installed, you will need to either set an environmental variable `'PARTIS_PATH'` to the path of the partis   executable,
+  or supply this path to any function which calls partis (via the `partis_path` argument).
   To set the variable, add the following line to your `~/.bash_profile`:
   ```
   export PARTIS_PATH='/path/to/partis/bin/partis'
   ```
-  Note 1: this needs to be the path to the actual partis executable, and *not* the parent folder, which is also named `partis`.
+  and make sure to either restart your terminal session or re-source the profile script, e.g. via the command
+  ```
+  . ~/.bash_profile
+  ```
   
-  Note 2: In order for `PARTIS_PATH` to be seen in `.bash_profile`, you will need to either restart your terminal session or re-source the profile script, e.g. via the command `. ~/.bash_profile`.
+  NOTE: this needs to be the path to the actual partis executable, and *not* the parent folder, which is also named `partis`.
+  
   
 * Please let us know if you run into any other installation issues not addressed above!
