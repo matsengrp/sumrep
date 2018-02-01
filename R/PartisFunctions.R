@@ -356,14 +356,18 @@ annotateAndPartitionSequences <- function(input_filename,
     return(annotation_object)
 }
 
+#' Simulate a dataset based on parameters from partis annotations
+#'
+#' @param parameter_dir The parent output folder for partis (which is '_output'
+#'    by default. The function cd's into the params directory
 simulateDataset <- function(parameter_dir,
                             partis_path=Sys.getenv("PARTIS_PATH"),
                             output_file="simu.csv",
-                            num_events=100,
+                            num_events=5000,
                             cleanup=TRUE,
                             do_full_annotation=TRUE) {
     partis_command <- paste(partis_path, "simulate", 
-                            "--parameter-dir", parameter_dir,
+                            "--parameter-dir", file.path(parameter_dir, "params"),
                             "--outfname", output_file,
                             "--n-sim-events", num_events)
     partis_command %>% 
