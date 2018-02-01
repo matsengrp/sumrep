@@ -173,10 +173,9 @@ getIgBlastAnnotations <- function(input_filename,
         names(annotations)[which(names(annotations) == "D_CALL")] <- "d_gene"
         names(annotations)[which(names(annotations) == "J_CALL")] <- "j_gene"
         names(annotations)[which(names(annotations) == "JUNCTION")] <- "cdr3s"
-        names(annotations)[which(names(annotations) == "JUNCTION_LENGTH")] <- "cdr3_length"
-
-        annotations$mature_seq <- annotations$SEQUENCE_INPUT %>%
-            sapply(toString)
+        names(annotations)[which(names(annotations) == "JUNCTION_LENGTH")] <- 
+            "cdr3_length"
+        names(annotations)[which(names(annotations) == "IN_FRAME")] <- "in_frames"
 
         annotations$naive_seq <- annotations$GERMLINE_IMGT %>%
             sapply(toString) %>%
