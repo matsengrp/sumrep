@@ -388,7 +388,7 @@ compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
         getGeneUsageTableFromFullList(full_gene_list)
     divergence <- full_gene_list %>% 
         sapply(function(x) { abs(table_a[x] - table_b[x]) }) %>% 
-        mean
+        sum
     return(divergence)
 }
 
