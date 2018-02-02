@@ -332,30 +332,6 @@ partitionSequences <- function(input_filename,
     return(partitioned_data)
 }
 
-#' Perform VDJ sequence annotation and clonal partitioning
-#'
-#' @inheritParams annotateSequences
-#' @return A data.table object containing merged output from sequential partis
-#'   annotate and partis partition calls
-annotateAndPartitionSequences <- function(input_filename, 
-                                          output_filename="partis_output.csv", 
-                                          partis_path=Sys.getenv("PARTIS_PATH"),
-                                          num_procs=4, 
-                                          cleanup=TRUE, 
-                                          do_full_annotation=TRUE, 
-                                          output_path="_output") {
-    annotation_object <- annotateSequences(input_filename, output_filename, 
-                                           partis_path, num_procs, cleanup, 
-                                           do_full_annotation,
-                                     output_path)
-    partitions <- partitionSequences(input_filename, output_filename, 
-                                     partis_path, num_procs, cleanup, 
-                                     output_path)
-    annotation_object$annotations <- 
-        includeClonalMemberships(annotation_object$annotations, partitions)
-    return(annotation_object)
-}
-
 #' Simulate a dataset based on parameters from partis annotations
 #'
 #' @param parameter_dir The parent output folder for partis (which is '_output'

@@ -1093,29 +1093,6 @@ compareDJInsertionMatrices <- function(dat_a, dat_b) {
 }
 
 # Partition functions
-
-getCloneList <- function(dat) {
-    clone_list <- dat %$%
-        partition %>% 
-        first %>% 
-        toString %>% 
-        strsplit(";") %>% 
-        lapply(strsplit, ":") %>% 
-        first %>% 
-        lapply(as.numeric)
-    return(clone_list)
-}
-
-includeClonalMemberships <- function(annotations, partitions) {
-    clone_list <- partitions %>% 
-        getCloneList
-    clone_df <- clone_list %>% 
-        data.table::melt()
-    names(clone_df) <- c("unique_ids", "clone")
-    new_df <- merge(annotations, clone_df, by="unique_ids")
-    return(new_df)
-}
-
 getClusterSizes <- function(dat) {
     sizes <- dat %$%
         clone %>% 
