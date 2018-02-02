@@ -48,7 +48,8 @@ bootstrapFasta <- function(fasta_file, output_filename) {
 getAndPrintComparison <- function(f, input_1, input_2, string_header, color,
                                   function_string) {
     pt <- proc.time()
-    comparison_object <- NA
+    comparison_object <- list(Comparison=function_string,
+                              Divergence=NA)
     tryCatch(
         {
             comparisons <- f(input_1, input_2)
@@ -75,7 +76,7 @@ getAndPrintComparison <- function(f, input_1, input_2, string_header, color,
             comparison_object <- list(
                                       Comparison=comparison_names,
                                       Divergence=comparisons
-                                      )
+                                     )
         }, 
         error = function(e) { }
     )
