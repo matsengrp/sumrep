@@ -48,7 +48,7 @@ bootstrapFasta <- function(fasta_file, output_filename) {
 getAndPrintComparison <- function(f, input_1, input_2, string_header, color,
                                   function_string) {
     pt <- proc.time()
-    comparisons <- NA
+    comparison_object <- NA
     tryCatch(
         {
             comparisons <- f(input_1, input_2)
