@@ -27,46 +27,39 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, rows=1, layout=NULL) {
 }
 
 if(!exists("c1")) {
-    c1 <- compareRepertoires(obs_1, sim_1)
-    c2 <- compareRepertoires(obs_2, sim_2)
-    c3 <- compareRepertoires(obs_3, sim_3)
-    c4 <- compareRepertoires(obs_1, obs_2)
-    c5 <- compareRepertoires(obs_1, obs_3)
-    c6 <- compareRepertoires(obs_2, obs_3)
+    c1 <- compare_partis_fv1_partis_fv1_sim
+    c2 <- compare_partis_fv2_partis_fv2_sim
+    c3 <- compare_partis_gmc1_partis_gmc1_sim
+    c4 <- compare_igb_fv1_partis_fv1_sim
+    c5 <- compare_igb_fv2_partis_fv2_sim
+    c6 <- compare_igb_gmc1_partis_gmc1_sim
 }
 
 if(!("Type1" %in% names(c1))) {
-    c1$Type1 <- "FV-1h"
-    c1$Type2 <- "FV-1h-sim"
+    c1$Type1 <- "FV-1h-p"
+    c1$Type2 <- "FV-1h-p-sim"
 
-    c2$Type1 <- "FV-8d"
-    c2$Type2 <- "FV-8d-sim"
+    c2$Type1 <- "FV-8d-p"
+    c2$Type2 <- "FV-8d-p-sim"
 
-    c3$Type1 <- "GMC-1h"
-    c3$Type2 <- "GMC-1h-sim"
+    c3$Type1 <- "GMC-1h-p"
+    c3$Type2 <- "GMC-1h-p-sim"
 
-    c4$Type1 <- "FV-1h"
-    c4$Type2 <- "FV-8d"
+    c4$Type1 <- "FV-1h-i"
+    c4$Type2 <- "FV-1h-p-sim"
 
-    c5$Type1 <- "FV-1h"
-    c5$Type2 <- "GMC-1h"
+    c5$Type1 <- "FV-8d-i"
+    c5$Type2 <- "FV-8d-p-sim"
 
-    c6$Type1 <- "FV-8d"
-    c6$Type2 <- "GMC-1h"
+    c6$Type1 <- "GMC-1h-i"
+    c6$Type2 <- "GMC-1h-p-sim"
 }
 
 cfull <- rbind(c1, c2, c3, c4, c5, c6)
+cfull$Divergence <- cfull$Divergence %>% unlist
 
-# Reorder the levels for plotting 
-cfull$Type2 <- factor(cfull$Type2, 
-                      levels=c("FV-1h-sim",
-                               "FV-8d-sim",
-                               "GMC-1h-sim",
-                               "FV-1h",
-                               "FV-8d",
-                               "GMC-1h"))
 
-cfull$Comparison <- factor(cfull$Comparison, levels=ordered_strings)
+# cfull$Comparison <- factor(cfull$Comparison, levels=ordered_strings)
 
 comparison_types <- c1$Comparison
 
@@ -85,10 +78,13 @@ scoreStatistics <- function(sim_dats, obs_dats) {
     for(c_type in comparison_types) {
             sim_score <- sim_dats %>% 
                 sapply(getComparisonValue, c_type) %>% 
+                unlist %>%
                 mean
             obs_score <- obs_dats %>%
                 sapply(getComparisonValue, c_type) %>%
+                unlist %>%
                 mean
+            cat(sim_score, obs_score, '\n')
             c_score <- sim_score/obs_score
             score_dat <- rbind(score_dat,
                                data.table(Comparison=shortenName(c_type),
@@ -104,10 +100,10 @@ shortenName <- function(string) {
     return(shortened_name)
 }
 
-sim_dats <- list(c1, c2, c3)
-obs_dats <- list(c4, c5, c6)
+partis_dats <- list(c1, c2, c3)
+igb_dats <- list(c4, c5, c6)
 
-score_dat <- scoreStatistics(sim_dats, obs_dats)
+#score_dat <- scoreStatistics(partis_dats, igb_dats)
 score_dat <- score_dat[order(score_dat$Score)]
 score_plot <- score_dat %>% ggplot(aes(x=reorder(Comparison, Score), 
                                        y=Score)) +
@@ -120,16 +116,18 @@ score_plot <- score_dat %>% ggplot(aes(x=reorder(Comparison, Score),
           plot.margin=unit(c(1, 1, 1, 1.5), "cm"))
 
 # Multi-plots
-do.multiplot <- FALSE
+do.multiplot <- TRUE
 if(do.multiplot) {
     plot_list <- list()
     for(c_type in comparison_types) {
         csub <- cfull[cfull$Comparison == c_type, ]
         plot_list[[c_type]] <- ggplot(csub, aes(Type1, Type2)) +
-            geom_tile(aes(fill=Value)) +
+            geom_tile(aes(fill=Divergence)) +
             ggtitle(c_type %>% shortenName) +
             theme(
-                  legend.key.size=unit(0.8, "cm"),
+                  legend.key.size=unit(0.5, "cm"),
+                  axis.text.x=element_text(size=8),
+                  axis.text.y=element_text(size=8),
                   axis.title.x=element_blank(),
                   axis.title.y=element_blank(),
                   plot.title=element_text(size=10)
@@ -137,5 +135,5 @@ if(do.multiplot) {
             scale_fill_viridis(direction=-1)
     }
     
-    multiplot(plotlist=plot_list, cols=7, rows=4)
+    multiplot(plotlist=plot_list, cols=4, rows=7)
 }

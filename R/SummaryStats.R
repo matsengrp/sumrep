@@ -496,7 +496,7 @@ compareVDJDistributions <- function(dat_a, dat_b, collapseAlleles=TRUE) {
     }
     
     divergence <- summands %>% 
-        mean
+        sum
     return(divergence)
 }
 
@@ -903,8 +903,8 @@ compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
         getMutabilityModel(substitution_model=sub_model_b)
     mut_divergence <- getMeanAbsoluteDifference(mut_model_a, mut_model_b)
 
-    divergences <- list(sub_divergence=sub_divergence,
-                        mut_divergence=mut_divergence)
+    divergences <- list(SubstitutionModel=sub_divergence,
+                        MutabilityModel=mut_divergence)
     return(divergences)
 }
 

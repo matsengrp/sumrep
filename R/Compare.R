@@ -31,9 +31,11 @@ bootstrapFasta <- function(fasta_file, output_filename) {
                     file.out=output_filename)
 }
 
-#' Print the result and elapsed time of a comparison
-#' Some functions such as compareSubstitutionAndMutabilityModels return more than
-#'   one divergence value for convenience. Thus, loop over comparisons when
+#' Print the result and elapsed time of a set of comparisons, and return list
+#'   containing the comparison names and values.
+#'
+#' Some functions, such as compareSubstitutionAndMutabilityModels, return more 
+#' than one divergence value for convenience. Thus, loop over comparisons when
 #'   necessary
 #'
 #' @param f Comparison function 
@@ -42,27 +44,42 @@ bootstrapFasta <- function(fasta_file, output_filename) {
 #' @param string_header Text to precede the comparison value and elapsed time
 #' @param color Color for text. Green for usual comparison, yellow for 
 #'   bootstrap
-getAndPrintComparison <- function(f, input_1, input_2, string_header, color) {
+#' @param function_string Name of comparison function
+getAndPrintComparison <- function(f, input_1, input_2, string_header, color,
+                                  function_string) {
     pt <- proc.time()
     comparisons <- NA
-    tryCatch({
-    comparisons <- f(input_1, input_2)
-    comparison_names <- comparisons %>% names
-    elapsed_time <- (proc.time() - pt)[3]
-    for(comparison in comparisons) {
-        cat(string_header,
-            color(comparison %>% 
-                      signif(4) %>% 
-                      toString),
-            comparison_names[comparison],
-            ' (',
-            elapsed_time,
-            's)',
-            '\n', sep='')
-    }
-    }, error = function(e) {
-    })
-    return(comparisons)
+    tryCatch(
+        {
+            comparisons <- f(input_1, input_2)
+            comparison_names <- comparisons %>% names
+            if(is.null(comparison_names)) {
+                comparison_names <- function_string
+            }
+            comparisons <- comparisons %>%
+                unlist %>%
+                unname
+
+            elapsed_time <- (proc.time() - pt)[3]
+            for(comparison in comparisons) {
+                cat(string_header,
+                    color(comparison %>% 
+                              signif(4) %>% 
+                              toString),
+                    comparison_names[comparison],
+                    ' (',
+                    elapsed_time,
+                    's)',
+                    '\n', sep='')
+            }
+            comparison_object <- list(
+                                      Comparison=comparison_names,
+                                      Divergence=comparisons
+                                      )
+        }, 
+        error = function(e) { }
+    )
+    return(comparison_object)
 }
 
 #' Apply \code{function_string} to inputs \code{input_1} and \code{input_2},
@@ -78,16 +95,23 @@ doComparison <- function(function_string, input_list) {
     f <- eval(parse(text=function_string)) 
     input_1 <- input_list[[1]]
     input_2 <- input_list[[2]]
-    comparisons <- getAndPrintComparison(f, input_1, input_2, 
-                    string_header=paste0("Result of ", function_string, ": "),
-                    color=crayon::green)
+    comparison_object <- getAndPrintComparison(
+                             f, 
+                             input_1, 
+                             input_2, 
+                             string_header=paste0("Result of ", 
+                                                  function_string, ": "),
+                             color=crayon::green,
+                             function_string)
     if(length(input_list) == 3) {
         input_1_boot <- input_list[[3]]
-        comparisons[2] <- getAndPrintComparison(f, input_1, input_1_boot, 
-                        string_header="    Bootstrapped result: ",
-                        color=crayon::yellow)
+        comparison_object$boostrap <- 
+            getAndPrintComparison(f, input_1, input_1_boot, 
+                                  string_header="    Bootstrapped result: ",
+                                  color=crayon::yellow,
+                                  function_string)
     }
-    return(comparisons)
+    return(comparison_object)
 }
 
 #' Run through a full repertoire comparison
@@ -159,14 +183,13 @@ compareRepertoires <- function(repertoire_1,
     
     comparison_dat <- matrix(NA, nrow=0, ncol=2) %>% 
         data.table %>%
-        setNames(c("Comparison", "Value"))
+        setNames(c("Comparison", "Divergence"))
     boot_comparisons <- {}
 
     for(f_string in function_strings) {
-        comparisons <- doComparison(f_string, annotations_list)
+        comparison_object <- doComparison(f_string, annotations_list)
         comparison_dat <- rbind(comparison_dat,
-                                data.table(Comparison=f_string,
-                                Value=comparisons[1]))
+                                as.data.table(comparison_object))
     }
 
     mutation_rates_1 <- repertoire_1$mutation_rates
