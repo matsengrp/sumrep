@@ -179,7 +179,12 @@ getIgBlastAnnotations <- function(input_filename,
 
         annotations$naive_seq <- annotations$GERMLINE_IMGT %>%
             sapply(toString) %>%
-            gsub(pattern='\\.', replace='')
+            sapply(gsub, pattern="\\.", replace='') %>%
+            tolower
+
+        annotations$mature_seq <- mapply(getMatureSequences,
+                                         annotations$GERMLINE_IMGT,
+                                         annotations$SEQUENCE_IMGT)
 
         annotations$cdr3s <- annotations$cdr3s %>%
             sapply(toString)
@@ -198,6 +203,59 @@ getIgBlastAnnotations <- function(input_filename,
     annotation_object <- list(annotations=annotations)
     return(annotation_object)
 }
+
+#' Add n's to positions for which the input (mature) sequence did not contain
+#'   a base, but for which the inferred naive (germline) sequence does contain
+#'   a base. IgBlast/Change-O by default place '.'s in these positions, which
+#'   is also the symbol to denote IMGT gaps. Thus, manual processing to account
+#'   for this is required.
+getMatureSequences <- function(germline_imgt,
+                              sequence_imgt) {
+    naive_sequence <- germline_imgt %>%
+        toString %>%
+        tolower
+
+    mature_sequence <- sequence_imgt %>%
+        toString %>%
+        tolower
+
+    missing_indices <- getMissingDataIndices(naive_sequence,
+                                             mature_sequence)
+
+    mature_seq_split <- mature_sequence %>%
+        strsplit('') %>%
+        first 
+
+    mature_seq_split[missing_indices] <- "n"
+
+    mature_sequence <- mature_seq_split %>%
+        paste(collapse='') %>%
+        gsub(pattern='\\.', replace='')
+
+    return(mature_sequence) 
+}
+
+getMissingDataIndices <- function(germline, mature) {
+    germline_dots <- germline %>%
+        getDotIndices
+
+    mature_dots <- mature %>%
+        getDotIndices
+
+    missing_indices <- setdiff(mature_dots,
+                               germline_dots)
+    return(missing_indices)
+}
+
+getDotIndices <- function(seq) {
+    indices <- seq %>%
+        strsplit('') %>%
+        first %>%
+        grep(pattern='\\.')
+    
+    return(indices)
+}
+
 processGenes <- function(genes) {
     genes <- genes %>%
         sapply(toString) %>%
