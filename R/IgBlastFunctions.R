@@ -184,11 +184,28 @@ getIgBlastAnnotations <- function(input_filename,
         annotations$cdr3s <- annotations$cdr3s %>%
             sapply(toString)
 
-        # Go back to initial working directory
+        # For now, keep only the first gene if given in a per-sequence list 
+        annotations$v_gene <- annotations$v_gene %>%
+            processGenes
+        annotations$j_gene <- annotations$j_gene %>%
+            processGenes
+
     })
 
+    # Go back to initial working directory
     initial_wd %>% setwd
 
     annotation_object <- list(annotations=annotations)
     return(annotation_object)
+}
+processGenes <- function(genes) {
+    genes <- genes %>%
+        sapply(toString) %>%
+        # Remove all but first gene
+        sapply(gsub, pattern=',.*', replace='') %>%
+        # Remove gene after OR, e.g. IGHV3/OR12-1*01 should be IGHV3-1*01
+        sapply(gsub, pattern='\\/OR.*-', replace='-') %>% 
+        as.factor %>%
+        unname
+    return(genes)
 }
