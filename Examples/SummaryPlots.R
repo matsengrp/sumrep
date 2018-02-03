@@ -36,23 +36,23 @@ if(!exists("c1")) {
 }
 
 if(!("Type1" %in% names(c1))) {
-    c1$Type1 <- "FV-1h-p"
-    c1$Type2 <- "FV-1h-p-sim"
+    c1$Type1 <- "F1h-p"
+    c1$Type2 <- "F1h-p-sim"
 
-    c2$Type1 <- "FV-8d-p"
-    c2$Type2 <- "FV-8d-p-sim"
+    c2$Type1 <- "F8d-p"
+    c2$Type2 <- "F8d-p-sim"
 
-    c3$Type1 <- "GMC-1h-p"
-    c3$Type2 <- "GMC-1h-p-sim"
+    c3$Type1 <- "G1h-p"
+    c3$Type2 <- "G1h-p-sim"
 
-    c4$Type1 <- "FV-1h-i"
-    c4$Type2 <- "FV-1h-p-sim"
+    c4$Type1 <- "F1h-i"
+    c4$Type2 <- "F1h-p-sim"
 
-    c5$Type1 <- "FV-8d-i"
-    c5$Type2 <- "FV-8d-p-sim"
+    c5$Type1 <- "F8d-i"
+    c5$Type2 <- "F8d-p-sim"
 
-    c6$Type1 <- "GMC-1h-i"
-    c6$Type2 <- "GMC-1h-p-sim"
+    c6$Type1 <- "G1h-i"
+    c6$Type2 <- "G1h-p-sim"
 }
 
 cfull <- rbind(c1, c2, c3, c4, c5, c6)
@@ -125,15 +125,19 @@ if(do.multiplot) {
             geom_tile(aes(fill=Divergence)) +
             ggtitle(c_type %>% shortenName) +
             theme(
-                  legend.key.size=unit(0.5, "cm"),
-                  axis.text.x=element_text(size=8),
-                  axis.text.y=element_text(size=8),
+                  legend.key.size=unit(0.8, "cm"),
+                  legend.title=element_text(size=16),
+                  legend.text=element_text(size=14),
+                  axis.text.x=element_text(size=14),
+                  axis.text.y=element_text(size=14),
                   axis.title.x=element_blank(),
                   axis.title.y=element_blank(),
-                  plot.title=element_text(size=10)
+                  plot.title=element_text(size=18)
                   ) +
             scale_fill_viridis(direction=-1)
     }
     
-    multiplot(plotlist=plot_list, cols=4, rows=7)
+    pdf("multiplot.pdf", width=34, height=16)
+    multiplot(plotlist=plot_list, cols=5, rows=6)
+    dev.off()
 }
