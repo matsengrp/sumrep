@@ -6,7 +6,6 @@
   install.packages(c("alakazam", "ape", "data.table", "dplyr", "HDMD", "jsonlite", "magrittr", "pegas", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "textmineR", "yaml"))
   ```
 
-
 * `Biostrings` needs to be installed in a special way:
     ```
     source("https://bioconductor.org/biocLite.R")
@@ -45,6 +44,16 @@
   ```
   
   NOTE: this needs to be the path to the actual partis executable, and *not* the parent folder, which is also named `partis`.
-  
-  
-* Please let us know if you run into any other installation issues not addressed above!
+
+## Running sumrep
+* `sumrep` is still in development and is not yet a complete R package. However, you can use the `devtools` library to load it   as if it were a package.
+* Follow the instructions from the [`devtools` repo](https://github.com/hadley/devtools) for installation instructions.
+* Once installed, you can use the following lines will load `sumrep` into your workspace:
+  ```
+  library(devtools)
+  devtools::load_all("/path/to/sumrep/")
+  ```
+  where `/path/to/sumrep/` is the directory of sumrep from `git clone`.
+
+##
+Please let us know if you run into any other installation issues not addressed above!
