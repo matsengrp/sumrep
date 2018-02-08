@@ -106,7 +106,7 @@ doComparison <- function(function_string, input_list) {
                              function_string)
     if(length(input_list) == 3) {
         input_1_boot <- input_list[[3]]
-        comparison_object$boostrap <- 
+        comparison_object$BootstrapDivergence <- 
             getAndPrintComparison(f, input_1, input_1_boot, 
                                   string_header="    Bootstrapped result: ",
                                   color=crayon::yellow,
@@ -182,10 +182,14 @@ compareRepertoires <- function(repertoire_1,
                              "compareDJInsertionMatrices"
                              )
     
-    comparison_dat <- matrix(NA, nrow=0, ncol=2) %>% 
+    comparison_dat_names <- c("Comparison", "Divergence")
+    if(length(annotations_list) == 3) {
+        comparison_dat_names <- c(comparison_dat_names,
+                                  "BootstrapDivergence")
+    }
+    comparison_dat <- matrix(NA, nrow=0, ncol=length(comparison_dat_names)) %>% 
         data.table %>%
-        setNames(c("Comparison", "Divergence"))
-    boot_comparisons <- {}
+        setNames(comparison_dat_names)
 
     for(f_string in function_strings) {
         comparison_object <- doComparison(f_string, annotations_list)
