@@ -207,12 +207,11 @@ compareRepertoires <- function(repertoire_1,
                  "comparePerGenePerPositionMutationRates"
                  )
         for(f_string in mutation_function_strings) {
-            comparisons <- doComparison(f_string, 
+            comparison_object <- doComparison(f_string, 
                                         list(mutation_rates_1, 
                                              mutation_rates_2))
             comparison_dat <- rbind(comparison_dat,
-                                data.table(Comparison=f_string,
-                                Value=comparisons[1]))
+                                    as.data.table(comparison_object))
         }
     }
 
