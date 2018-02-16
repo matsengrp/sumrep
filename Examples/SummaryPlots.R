@@ -35,6 +35,14 @@ shortenName <- function(string) {
     return(shortened_name)
 }
 
+#' Handy automatic dimension retrieval given number of grid cells 
+#'
+getGridDims <- function(n) {
+    cols <- n %>% sqrt %>% floor 
+    rows <- ceiling(n/cols) %>% floor 
+    return(c(cols, rows))
+}
+
 multiplot <- function(..., plotlist=NULL, file, cols=1, rows=1, layout=NULL) {
   library(grid)
 
@@ -61,7 +69,8 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, rows=1, layout=NULL) {
   }
 }
 
-plotComparisons <- function(dat, filename) {
+plotComparisons <- function(dat, filename, cols=1, rows=1) {
+    comparison_types <- dat$Comparison %>% unique
     plot_list <- list()
     for(c_type in comparison_types) {
         dat_sub <- dat[dat$Comparison == c_type, ]
@@ -80,12 +89,17 @@ plotComparisons <- function(dat, filename) {
                   ) +
             scale_fill_viridis(direction=-1)
     }
+
+    grid_dims <- comparison_types %>% 
+        length %>%
+        getGridDims
     
-    pdf(filename, width=34, height=16)
-    multiplot(plotlist=plot_list, cols=5, rows=6)
+    pdf(filename, width=28, height=16)
+    multiplot(plotlist=plot_list, cols=grid_dims[1], rows=grid_dims[2])
     dev.off()
 
 }
+
 
 if(!exists("c1")) {
     c1 <- compare_partis_fv1_partis_fv1_sim
@@ -107,34 +121,25 @@ if(!exists("c1_obs")) {
 
 # Set up comparisons of partis annotations and simulations
 if(!("Type1" %in% names(c1_obs))) {
-    c1_obs$Type1 <- "FV-1h"
-    c1_obs$Type2 <- "FV-1h-sim"
+    c1_obs$Type1 <- "F1h-p"
+    c1_obs$Type2 <- "F8d-p"
 
-    c2_obs$Type1 <- "FV-8d"
-    c2_obs$Type2 <- "FV-8d-sim"
+    c2_obs$Type1 <- "F1h-p"
+    c2_obs$Type2 <- "G1h-p"
 
-    c3_obs$Type1 <- "GMC-1h"
-    c3_obs$Type2 <- "GMC-1h-sim"
+    c3_obs$Type1 <- "F8d-p"
+    c3_obs$Type2 <- "G1h-p"
 
-    c4_obs$Type1 <- "FV-1h"
-    c4_obs$Type2 <- "FV-8d"
+    c4_obs$Type1 <- "F1h-i"
+    c4_obs$Type2 <- "F8d-i"
 
-    c5_obs$Type1 <- "FV-1h"
-    c5_obs$Type2 <- "GMC-1h"
+    c5_obs$Type1 <- "F1h-i"
+    c5_obs$Type2 <- "G1h-i"
 
-    c6_obs$Type1 <- "FV-8d"
-    c6_obs$Type2 <- "GMC-1h"
-
-
+    c6_obs$Type1 <- "F8d-i"
+    c6_obs$Type2 <- "G1h-i"
 }
-    cfull_obs <- rbind(c1_obs, c2_obs, c3_obs, c4_obs, c5_obs, c6_obs)
-    cfull_obs$Type2 <- factor(cfull_obs$Type2, 
-                      levels=c("FV-1h-sim",
-                               "FV-8d-sim",
-                               "GMC-1h-sim",
-                               "FV-1h",
-                               "FV-8d",
-                               "GMC-1h"))
+
 
 # Set up comparisons of igblast and partis
 if(!("Type1" %in% names(c1))) {
@@ -156,20 +161,20 @@ if(!("Type1" %in% names(c1))) {
     c6$Type1 <- "G1h-i"
     c6$Type2 <- "G1h-p-sim"
 
-    cfull <- rbind(c1, c2, c3, c4, c5, c6)
-    cfull$Divergence <- cfull$Divergence %>% unlist
 }
 
+part_igb_dat <- rbind(c1, c2, c3, c4, c5, c6)
+obs_sim_dat <- rbind(c1, c2, c3, c1_obs, c2_obs, c3_obs)
+obs_sim_dat$Type2 <- factor(obs_sim_dat$Type2, 
+                      levels=c("F1h-p-sim",
+                               "F8d-p-sim",
+                               "G1h-p-sim",
+                               "F1h-p",
+                               "F8d-p",
+                               "G1h-p"))
 
-
-# cfull$Comparison <- factor(cfull$Comparison, levels=ordered_strings)
-
-comparison_types <- c1$Comparison
-
-
-
-sim_dats <- list(c1_obs, c2_obs, c3_obs)
-obs_dats <- list(c4_obs, c5_obs, c6_obs)
+sim_dats <- list(c1, c2, c3)
+obs_dats <- list(c1_obs, c2_obs, c3_obs)
 
 score_dat <- scoreStatistics(sim_dats, obs_dats)
 score_dat <- score_dat[order(score_dat$Score)]
@@ -182,6 +187,7 @@ score_plot <- score_dat %>% ggplot(aes(x=reorder(Comparison, Score),
                    "respect to comparisons of observations-to-observations")) +
     theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
           plot.margin=unit(c(1, 1, 1, 1.5), "cm"))
+ggsave("Images/score_plot.pdf", width=10, height=6)
 
-plotComparisons(cfull_obs, "Images/sim_obs.pdf")
-plotComparisons(cfull, "Images/partis_igb.pdf")
+plotComparisons(obs_sim_dat, "Images/sim_obs.pdf")
+plotComparisons(part_igb_dat, "Images/partis_igb.pdf", cols=)
