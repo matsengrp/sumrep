@@ -179,10 +179,10 @@ obs_dats <- list(c1_obs, c2_obs, c3_obs)
 score_dat <- scoreStatistics(sim_dats, obs_dats)
 score_dat <- score_dat[order(score_dat$Score)]
 score_plot <- score_dat %>% ggplot(aes(x=reorder(Comparison, Score), 
-                                       y=Score)) +
+                                       y=log(Score))) +
                                        # fill=reorder(Comparison, Score))) +
     geom_bar(stat="identity") +
-    xlab("Comparison") + ylab("Relative deviance") +
+    xlab("Comparison") + ylab("log(Relative deviance)") +
     ggtitle(paste0("Comparison scores of observations-to-simulations with ",
                    "respect to comparisons of observations-to-observations")) +
     theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
