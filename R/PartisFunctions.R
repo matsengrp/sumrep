@@ -336,6 +336,8 @@ partitionSequences <- function(input_filename,
 #'
 #' @param parameter_dir The parent output folder for partis (which is '_output'
 #'    by default. The function cd's into the params directory
+#' @param num_events The desired number of VDJ rearragement events for the
+#'    simulation
 simulateDataset <- function(parameter_dir,
                             partis_path=Sys.getenv("PARTIS_PATH"),
                             output_file="simu.csv",
