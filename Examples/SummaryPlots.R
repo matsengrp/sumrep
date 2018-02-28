@@ -190,4 +190,4 @@ score_plot <- score_dat %>% ggplot(aes(x=reorder(Comparison, Score),
 ggsave("Images/score_plot.pdf", width=10, height=6)
 
 plotComparisons(obs_sim_dat, "Images/sim_obs.pdf")
-plotComparisons(part_igb_dat, "Images/partis_igb.pdf", cols=)
+plotComparisons(part_igb_dat, "Images/partis_igb.pdf")
