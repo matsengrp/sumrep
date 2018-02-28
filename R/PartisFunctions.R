@@ -16,8 +16,13 @@ library(stringr)
 #' @param num_procs The number of processors to use in parallel
 #' @param cleanup Flag to delete all interim files created by partis
 #' @return A data.table object containing the output of the partis call
-callPartis <- function(action, input_filename, output_filename, output_path, 
-                       partis_path, num_procs) {
+callPartis <- function(action, 
+                       input_filename, 
+                       output_filename, 
+                       output_path, 
+                       partis_path, 
+                       num_procs, 
+                       germline_dir) {
     shell <- Sys.getenv("SHELL")
     script.file <- system.file("run_partis.sh", package="sumrep")
     command <- paste(shell, script.file, 
@@ -27,6 +32,11 @@ callPartis <- function(action, input_filename, output_filename, output_path,
                      "-o", output_filename, 
                      "-n", num_procs,
                      "-h", file.path(output_path, "params"))
+    if(!missing(germline_dir)) {
+        command <- paste(command,
+                         "-g",
+                         germline_dir)
+    }
     command %>% 
         system
     partis_dataset <- output_filename %>% 
@@ -224,7 +234,8 @@ annotateSequences <- function(input_filename,
                               collapse_clones=TRUE,
                               cleanup=TRUE, 
                               do_full_annotation=TRUE, 
-                              output_path="_output") {
+                              output_path="_output",
+                              germline_dir=NULL) {
     preventOutputOverwrite(output_path, cleanup)
 
     output_file <- file.path(output_path, output_filename)
@@ -234,7 +245,8 @@ annotateSequences <- function(input_filename,
                                              partis_path,
                                              num_procs,
                                              cleanup=FALSE,
-                                             output_path)
+                                             output_path,
+                                             germline_dir)
         annotation_filename <- output_filename %>%
             gsub(pattern='.csv',
                  replace='-cluster-annotations.csv')
@@ -317,12 +329,19 @@ partitionSequences <- function(input_filename,
                                output_filename="partis_output.csv", 
                                partis_path=Sys.getenv("PARTIS_PATH"), 
                                num_procs=4, 
-                               cleanup=TRUE, output_path="_output") {
+                               cleanup=TRUE, 
+                               output_path="_output",
+                               germline_dir=NULL) {
     preventOutputOverwrite(output_path, cleanup)
 
     output_file <- file.path(output_path, output_filename)
-    partitioned_data <- callPartis("partition", input_filename, output_file, 
-                                    output_path, partis_path, num_procs)
+    partitioned_data <- callPartis("partition", 
+                                   input_filename, 
+                                   output_file, 
+                                   output_path, 
+                                   partis_path, 
+                                   num_procs,
+                                   germline_dir)
 
     if(cleanup) {
         output_path %>% 
