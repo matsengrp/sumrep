@@ -12,11 +12,11 @@ for(data_file in list.files(data_dir)) {
 }
 
 data_to_compare <- list(
-                        c("partis_fv1", "partis_fv1_sim"),
+                        c("partis_igb_fv1", "partis_fv1_sim"),
                         c("igb_fv1", "partis_fv1_sim"),
-                        c("partis_fv2", "partis_fv2_sim"),
+                        c("partis_igb_fv2", "partis_fv2_sim"),
                         c("igb_fv2", "partis_fv2_sim"),
-                        c("partis_gmc1", "partis_gmc1_sim"),
+                        c("partis_igb_gmc1", "partis_gmc1_sim"),
                         c("igb_gmc1", "partis_gmc1_sim")
                         )
 for(dats in data_to_compare) {

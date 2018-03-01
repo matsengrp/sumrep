@@ -100,71 +100,66 @@ plotComparisons <- function(dat, filename, cols=1, rows=1) {
 
 }
 
-
-if(!exists("c1")) {
-    c1 <- compare_partis_fv1_partis_fv1_sim
-    c2 <- compare_partis_fv2_partis_fv2_sim
-    c3 <- compare_partis_gmc1_partis_gmc1_sim
-    c4 <- compare_igb_fv1_partis_fv1_sim
-    c5 <- compare_igb_fv2_partis_fv2_sim
-    c6 <- compare_igb_gmc1_partis_gmc1_sim
-}
-
-if(!exists("c1_obs")) {
-    c1_obs <- compareRepertoires(partis_fv1, partis_fv2)
-    c2_obs <- compareRepertoires(partis_fv1, partis_gmc1)
-    c3_obs <- compareRepertoires(partis_fv2, partis_gmc1)
-    c4_obs <- compareRepertoires(igb_fv1, igb_fv2)
-    c5_obs <- compareRepertoires(igb_fv1, igb_gmc1)
-    c6_obs <- compareRepertoires(igb_fv2, igb_gmc1)
-}
-
 # Set up comparisons of partis annotations and simulations
-if(!("Type1" %in% names(c1_obs))) {
-    c1_obs$Type1 <- "F1h-p"
-    c1_obs$Type2 <- "F8d-p"
+compare_partis_fv1_partis_fv2$Type1 <- "F1h-p"
+compare_partis_fv1_partis_fv2$Type2 <- "F8d-p"
 
-    c2_obs$Type1 <- "F1h-p"
-    c2_obs$Type2 <- "G1h-p"
+compare_partis_fv1_partis_gmc1$Type1 <- "F1h-p"
+compare_partis_fv1_partis_gmc1$Type2 <- "G1h-p"
 
-    c3_obs$Type1 <- "F8d-p"
-    c3_obs$Type2 <- "G1h-p"
+compare_partis_fv2_partis_gmc1$Type1 <- "F8d-p"
+compare_partis_fv2_partis_gmc1$Type2 <- "G1h-p"
 
-    c4_obs$Type1 <- "F1h-i"
-    c4_obs$Type2 <- "F8d-i"
+compare_igb_fv1_igb_fv2$Type1 <- "F1h-i"
+compare_igb_fv1_igb_fv2$Type2 <- "F8d-i"
 
-    c5_obs$Type1 <- "F1h-i"
-    c5_obs$Type2 <- "G1h-i"
+compare_igb_fv1_igb_gmc1$Type1 <- "F1h-i"
+compare_igb_fv1_igb_gmc1$Type2 <- "G1h-i"
 
-    c6_obs$Type1 <- "F8d-i"
-    c6_obs$Type2 <- "G1h-i"
-}
+compare_igb_fv2_igb_gmc1$Type1 <- "F8d-i"
+compare_igb_fv2_igb_gmc1$Type2 <- "G1h-i"
 
+compare_partis_fv1_partis_fv1_sim$Type1 <- "F1h-p"
+compare_partis_fv1_partis_fv1_sim$Type2 <- "F1h-p-sim"
 
-# Set up comparisons of igblast and partis
-if(!("Type1" %in% names(c1))) {
-    c1$Type1 <- "F1h-p"
-    c1$Type2 <- "F1h-p-sim"
+compare_partis_fv2_partis_fv2_sim$Type1 <- "F8d-p"
+compare_partis_fv2_partis_fv2_sim$Type2 <- "F8d-p-sim"
 
-    c2$Type1 <- "F8d-p"
-    c2$Type2 <- "F8d-p-sim"
+compare_partis_gmc1_partis_gmc1_sim$Type1 <- "G1h-p"
+compare_partis_gmc1_partis_gmc1_sim$Type2 <- "G1h-p-sim"
 
-    c3$Type1 <- "G1h-p"
-    c3$Type2 <- "G1h-p-sim"
+compare_partis_igb_fv1_partis_fv1_sim$Type1 <- "F1h-p"
+compare_partis_igb_fv1_partis_fv1_sim$Type2 <- "F1h-p-sim"
 
-    c4$Type1 <- "F1h-i"
-    c4$Type2 <- "F1h-p-sim"
+compare_partis_igb_fv2_partis_fv2_sim$Type1 <- "F8d-p"
+compare_partis_igb_fv2_partis_fv2_sim$Type2 <- "F8d-p-sim"
 
-    c5$Type1 <- "F8d-i"
-    c5$Type2 <- "F8d-p-sim"
+compare_partis_igb_gmc1_partis_gmc1_sim$Type1 <- "G1h-p"
+compare_partis_igb_gmc1_partis_gmc1_sim$Type2 <- "G1h-p-sim"
 
-    c6$Type1 <- "G1h-i"
-    c6$Type2 <- "G1h-p-sim"
+compare_igb_fv1_partis_fv1_sim$Type1 <- "F1h-i"
+compare_igb_fv1_partis_fv1_sim$Type2 <- "F1h-p-sim"
 
-}
+compare_igb_fv2_partis_fv2_sim$Type1 <- "F8d-i"
+compare_igb_fv2_partis_fv2_sim$Type2 <- "F8d-p-sim"
 
-part_igb_dat <- rbind(c1, c2, c3, c4, c5, c6)
-obs_sim_dat <- rbind(c1, c2, c3, c1_obs, c2_obs, c3_obs)
+compare_igb_gmc1_partis_gmc1_sim$Type1 <- "G1h-i"
+compare_igb_gmc1_partis_gmc1_sim$Type2 <- "G1h-p-sim"
+
+part_igb_dat <- rbind(compare_partis_igb_fv1_partis_fv1_sim,
+                      compare_partis_igb_fv2_partis_fv2_sim,
+                      compare_partis_igb_gmc1_partis_gmc1_sim,
+                      compare_igb_fv1_partis_fv1_sim,
+                      compare_igb_fv2_partis_fv2_sim,
+                      compare_igb_gmc1_partis_gmc1_sim 
+                     )
+obs_sim_dat <- rbind(compare_partis_fv1_partis_fv1_sim,
+                     compare_partis_fv2_partis_fv2_sim,
+                     compare_partis_gmc1_partis_gmc1_sim,
+                     compare_partis_fv1_partis_fv2,
+                     compare_partis_fv1_partis_gmc1,
+                     compare_partis_fv2_partis_gmc1
+                    )
 obs_sim_dat$Type2 <- factor(obs_sim_dat$Type2, 
                       levels=c("F1h-p-sim",
                                "F8d-p-sim",
@@ -173,8 +168,17 @@ obs_sim_dat$Type2 <- factor(obs_sim_dat$Type2,
                                "F8d-p",
                                "G1h-p"))
 
-sim_dats <- list(c1, c2, c3)
-obs_dats <- list(c1_obs, c2_obs, c3_obs)
+sim_dats <- list(
+                 compare_partis_fv1_partis_fv1_sim,
+                 compare_partis_fv2_partis_fv2_sim,
+                 compare_partis_gmc1_partis_gmc1_sim
+                )
+
+obs_dats <- list(
+                 compare_partis_fv1_partis_fv2,
+                 compare_partis_fv1_partis_gmc1,
+                 compare_partis_fv2_partis_gmc1
+                )
 
 score_dat <- scoreStatistics(sim_dats, obs_dats)
 score_dat <- score_dat[order(score_dat$Score)]

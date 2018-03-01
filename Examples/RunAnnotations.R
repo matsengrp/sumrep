@@ -10,14 +10,21 @@
 writeAnnotations <- function(filename, 
                              outname,
                              method,
+                             germline_dir=NULL,
                              num_procs=100) {
     if(method == "partis") {
         annotations <- annotateSequences(filename, 
                                          num_procs=num_procs,
                                          output_path="tmp_output",
-                                         cleanup=FALSE)
+                                         cleanup=FALSE,
+                                         germline_dir=germline_dir)
         saveRDS(annotations, outname)
-        simulation <- simulateDataset("tmp_output")
+
+        num_clones <- annotations$annotations$clone %>% 
+            unique %>% 
+            length
+        simulation <- simulateDataset("tmp_output",
+                                      num_events=num_clones)
         saveRDS(simulation, outname %>% gsub(pattern='.rds',
                                              replace='-sim.rds'))
         "tmp_output" %>% unlink
@@ -27,12 +34,26 @@ writeAnnotations <- function(filename,
     }
 }
 
-if(FALSE) {
-writeAnnotations("~/Data/FV-igh-m1h.fa", "data/Annotations/igb_fv1.rds", "igblast")
-writeAnnotations("~/Data/FV-igh-m8d.fa", "data/Annotations/igb_fv2.rds", "igblast")
-writeAnnotations("~/Data/GMC-igh-m1h.fa", "data/Annotations/igb_gmc1.rds", "igblast")
+write_igb_annotations <- FALSE
+if(write_igb_annotations) {
+    writeAnnotations("~/Data/FV-igh-m1h.fa", "data/Annotations/igb_fv1.rds", "igblast")
+    writeAnnotations("~/Data/FV-igh-m8d.fa", "data/Annotations/igb_fv2.rds", "igblast")
+    writeAnnotations("~/Data/GMC-igh-m1h.fa", "data/Annotations/igb_gmc1.rds", "igblast")
 }
 
-writeAnnotations("~/Data/FV-igh-m1h.fa", "data/Annotations/partis_fv1.rds", "partis")
-writeAnnotations("~/Data/FV-igh-m8d.fa", "data/Annotations/partis_fv2.rds", "partis")
-writeAnnotations("~/Data/GMC-igh-m1h.fa", "data/Annotations/partis_gmc1.rds", "partis")
+igb_germline_dir <- "~/Software/igblast/partis_friendly_bin"
+write_partis_igb_annotations <- TRUE
+if(write_partis_igb_annotations) {
+    writeAnnotations("~/Data/FV-igh-m1h.fa", 
+                     "data/Annotations/partis_igb_fv1.rds", 
+                     "partis",
+                     germline_dir=igb_germline_dir)
+    writeAnnotations("~/Data/FV-igh-m8d.fa", 
+                     "data/Annotations/partis_igb_fv2.rds", 
+                     "partis",
+                     germline_dir=igb_germline_dir)
+    writeAnnotations("~/Data/GMC-igh-m1h.fa", 
+                     "data/Annotations/partis_igb_gmc1.rds", 
+                     "partis",
+                     germline_dir=igb_germline_dir)
+}
