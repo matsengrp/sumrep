@@ -8,6 +8,7 @@ getComparisonValue <- function(dat, comparison) {
 }
 
 scoreStatistics <- function(sim_dats, obs_dats) {
+    comparison_types <- sim_dats[[1]]$Comparison %>% unique
     score_dat <- matrix(NA, nrow=0, ncol=2) %>% 
         data.table %>%
         setNames(c("Comparison", "Score"))
@@ -128,30 +129,30 @@ compare_partis_fv2_partis_fv2_sim$Type2 <- "F8d-p-sim"
 compare_partis_gmc1_partis_gmc1_sim$Type1 <- "G1h-p"
 compare_partis_gmc1_partis_gmc1_sim$Type2 <- "G1h-p-sim"
 
-compare_partis_igb_fv1_partis_fv1_sim$Type1 <- "F1h-p"
-compare_partis_igb_fv1_partis_fv1_sim$Type2 <- "F1h-p-sim"
+compare_partis_igb_fv1_partis_igb_fv1_sim$Type1 <- "F1h-p"
+compare_partis_igb_fv1_partis_igb_fv1_sim$Type2 <- "F1h-p-sim"
 
-compare_partis_igb_fv2_partis_fv2_sim$Type1 <- "F8d-p"
-compare_partis_igb_fv2_partis_fv2_sim$Type2 <- "F8d-p-sim"
+compare_partis_igb_fv2_partis_igb_fv2_sim$Type1 <- "F8d-p"
+compare_partis_igb_fv2_partis_igb_fv2_sim$Type2 <- "F8d-p-sim"
 
-compare_partis_igb_gmc1_partis_gmc1_sim$Type1 <- "G1h-p"
-compare_partis_igb_gmc1_partis_gmc1_sim$Type2 <- "G1h-p-sim"
+compare_partis_igb_gmc1_partis_igb_gmc1_sim$Type1 <- "G1h-p"
+compare_partis_igb_gmc1_partis_igb_gmc1_sim$Type2 <- "G1h-p-sim"
 
-compare_igb_fv1_partis_fv1_sim$Type1 <- "F1h-i"
-compare_igb_fv1_partis_fv1_sim$Type2 <- "F1h-p-sim"
+compare_igb_fv1_partis_igb_fv1_sim$Type1 <- "F1h-i"
+compare_igb_fv1_partis_igb_fv1_sim$Type2 <- "F1h-p-sim"
 
-compare_igb_fv2_partis_fv2_sim$Type1 <- "F8d-i"
-compare_igb_fv2_partis_fv2_sim$Type2 <- "F8d-p-sim"
+compare_igb_fv2_partis_igb_fv2_sim$Type1 <- "F8d-i"
+compare_igb_fv2_partis_igb_fv2_sim$Type2 <- "F8d-p-sim"
 
-compare_igb_gmc1_partis_gmc1_sim$Type1 <- "G1h-i"
-compare_igb_gmc1_partis_gmc1_sim$Type2 <- "G1h-p-sim"
+compare_igb_gmc1_partis_igb_gmc1_sim$Type1 <- "G1h-i"
+compare_igb_gmc1_partis_igb_gmc1_sim$Type2 <- "G1h-p-sim"
 
-part_igb_dat <- rbind(compare_partis_igb_fv1_partis_fv1_sim,
-                      compare_partis_igb_fv2_partis_fv2_sim,
-                      compare_partis_igb_gmc1_partis_gmc1_sim,
-                      compare_igb_fv1_partis_fv1_sim,
-                      compare_igb_fv2_partis_fv2_sim,
-                      compare_igb_gmc1_partis_gmc1_sim 
+part_igb_dat <- rbind(compare_partis_igb_fv1_partis_igb_fv1_sim,
+                      compare_partis_igb_fv2_partis_igb_fv2_sim,
+                      compare_partis_igb_gmc1_partis_igb_gmc1_sim,
+                      compare_igb_fv1_partis_igb_fv1_sim,
+                      compare_igb_fv2_partis_igb_fv2_sim,
+                      compare_igb_gmc1_partis_igb_gmc1_sim 
                      )
 obs_sim_dat <- rbind(compare_partis_fv1_partis_fv1_sim,
                      compare_partis_fv2_partis_fv2_sim,
