@@ -360,13 +360,24 @@ partitionSequences <- function(input_filename,
 simulateDataset <- function(parameter_dir,
                             partis_path=Sys.getenv("PARTIS_PATH"),
                             output_file="simu.csv",
-                            num_events=5000,
+                            num_events=NULL,
+                            num_leaves=NULL,
                             cleanup=TRUE,
                             do_full_annotation=TRUE) {
     partis_command <- paste(partis_path, "simulate", 
                             "--parameter-dir", file.path(parameter_dir, "params"),
-                            "--outfname", output_file,
-                            "--n-sim-events", num_events)
+                            "--outfname", output_file)
+
+    if(!missing(num_events)) {
+        partis_command <- paste(partis_command,
+                                "--n-sim-events", num_events)
+    }
+    
+    if(!missing(num_leaves)) {
+        partis_command <- paste(partis_command,
+                                "--n-leaves", num_leaves)
+    }
+
     partis_command %>% 
         system
     sim_annotations <- output_file %>% 
