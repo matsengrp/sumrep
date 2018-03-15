@@ -129,10 +129,10 @@ getContinuousJSDivergence <- function(list_a, list_b) {
 #' @param sequence_a First sequence, either a vector or matrix
 #' @param sequence_b Second sequence
 #' @param ignore_na Should we ignore na values when computing the mean?
-getMeanAbsoluteDifference <- function(sequence_a, sequence_b, ignore_na=TRUE) {
+getSumOfAbsoluteDifferences <- function(sequence_a, sequence_b, ignore_na=TRUE) {
     difference <- (sequence_a - sequence_b) %>% 
         abs %>% 
-        mean(na.rm=ignore_na)
+        sum(na.rm=ignore_na)
     return(difference)
 }
 

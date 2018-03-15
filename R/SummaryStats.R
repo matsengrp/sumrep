@@ -239,7 +239,7 @@ compareCounts <- function(dat_a,
                                                 dat_b %$% mature_seq,
                                                 count_function,
                                                 subsample_count,
-                                                getMeanAbsoluteDifference,
+                                                getSumOfAbsoluteDifferences,
                                                 tolerance=1e-4)
     return(divergence)
 }
@@ -598,7 +598,7 @@ compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
         dat_b %$% cdr3s,
         getMeanAtchleyFactorDistribution,
         subsample_count=100,
-        divergenceFunction=getMeanAbsoluteDifference)
+        divergenceFunction=getSumOfAbsoluteDifferences)
     return(divergence)
 }
 
@@ -880,7 +880,7 @@ compareMutabilityModels <- function(dat_a, dat_b,
         getMutabilityModel(substitution_model=sub_mod_a)
     model_b <- dat_b %>% 
         getMutabilityModel(substitution_model=sub_mod_b)
-    divergence <- getMeanAbsoluteDifference(model_a, model_b) 
+    divergence <- getSumOfAbsoluteDifferences(model_a, model_b) 
     return(divergence)
 }
 
@@ -895,13 +895,13 @@ compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
         getSubstitutionModel
     sub_model_b <- dat_b %>% 
         getSubstitutionModel
-    sub_divergence <- getMeanAbsoluteDifference(sub_model_a, sub_model_b)
+    sub_divergence <- getSumOfAbsoluteDifferences(sub_model_a, sub_model_b)
 
     mut_model_a <- dat_a %>% 
         getMutabilityModel(substitution_model=sub_model_a)
     mut_model_b <- dat_b %>% 
         getMutabilityModel(substitution_model=sub_model_b)
-    mut_divergence <- getMeanAbsoluteDifference(mut_model_a, mut_model_b)
+    mut_divergence <- getSumOfAbsoluteDifferences(mut_model_a, mut_model_b)
 
     divergences <- list(SubstitutionModel=sub_divergence,
                         MutabilityModel=mut_divergence)
@@ -1074,7 +1074,7 @@ compareVDInsertionMatrices <- function(dat_a, dat_b) {
         getVDInsertionMatrix
     matrix_b <- dat_b %>% 
         getVDInsertionMatrix
-    divergence <- getMeanAbsoluteDifference(matrix_a, matrix_b)
+    divergence <- getSumOfAbsoluteDifferences(matrix_a, matrix_b)
     return(divergence)
 }
 
@@ -1088,7 +1088,7 @@ compareDJInsertionMatrices <- function(dat_a, dat_b) {
         getDJInsertionMatrix
     matrix_b <- dat_b %>% 
         getDJInsertionMatrix
-    divergence <- getMeanAbsoluteDifference(matrix_a, matrix_b)
+    divergence <- getSumOfAbsoluteDifferences(matrix_a, matrix_b)
     return(divergence)
 }
 
