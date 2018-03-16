@@ -23,8 +23,13 @@ writeAnnotations <- function(filename,
         num_clones <- annotations$annotations$clone %>% 
             unique %>% 
             length
+
+        num_leaves <- nrow(annotations$annotations)/num_clones
+
         simulation <- simulateDataset("tmp_output",
-                                      num_events=num_clones)
+                                      num_events=num_clones,
+                                      num_leaves=num_leaves
+                                      )
         saveRDS(simulation, outname %>% gsub(pattern='.rds',
                                              replace='-sim.rds'))
         "tmp_output" %>% unlink
@@ -34,7 +39,7 @@ writeAnnotations <- function(filename,
     }
 }
 
-write_igb_annotations <- FALSE
+write_igb_annotations <- TRUE
 if(write_igb_annotations) {
     writeAnnotations("~/Data/FV-igh-m1h.fa", "data/Annotations/igb_fv1.rds", "igblast")
     writeAnnotations("~/Data/FV-igh-m8d.fa", "data/Annotations/igb_fv2.rds", "igblast")
@@ -42,7 +47,21 @@ if(write_igb_annotations) {
 }
 
 igb_germline_dir <- "~/Software/igblast/partis_friendly_bin"
-write_partis_igb_annotations <- TRUE
+
+write_partis_annotations <- FALSE
+if(write_partis_annotations) {
+    writeAnnotations("~/Data/FV-igh-m1h.fa", 
+                     "data/Annotations/partis_fv1.rds", 
+                     "partis")
+    writeAnnotations("~/Data/FV-igh-m8d.fa", 
+                     "data/Annotations/partis_fv2.rds", 
+                     "partis")
+    writeAnnotations("~/Data/GMC-igh-m1h.fa", 
+                     "data/Annotations/partis_gmc1.rds", 
+                     "partis")
+}
+
+write_partis_igb_annotations <- FALSE
 if(write_partis_igb_annotations) {
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
                      "data/Annotations/partis_igb_fv1.rds", 
