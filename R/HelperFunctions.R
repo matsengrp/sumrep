@@ -119,3 +119,17 @@ parsePythonDictionary <- function(dictionary) {
 removeSequencesWithDifferentNaiveAndMatureLengths <- function(dat) {
     return(dat %>% subset(nchar(dat$mature_seq) == nchar(dat$naive_seq)))
 }
+
+# Load datasets that are not already in the workspace
+loadNewDatasets <- function(data_dir) {
+    for(data_file in list.files(data_dir)) {
+        var_name <- data_file %>%
+            gsub(pattern="-", replace="_") %>%
+            gsub(pattern=".rds", replace="")
+        if(!exists(var_name)) {
+            assign(var_name, 
+                readRDS(file.path(data_dir, data_file)),
+                envir=.GlobalEnv)
+        }
+    }
+}

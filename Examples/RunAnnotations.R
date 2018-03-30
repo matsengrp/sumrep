@@ -41,38 +41,38 @@ writeAnnotations <- function(filename,
 
 write_igb_annotations <- TRUE
 if(write_igb_annotations) {
-    writeAnnotations("~/Data/FV-igh-m1h.fa", "data/Annotations/igb_fv1.rds", "igblast")
-    writeAnnotations("~/Data/FV-igh-m8d.fa", "data/Annotations/igb_fv2.rds", "igblast")
-    writeAnnotations("~/Data/GMC-igh-m1h.fa", "data/Annotations/igb_gmc1.rds", "igblast")
+    writeAnnotations("~/Data/FV-igh-m1h.fa", "data/Annotations/i_f1.rds", "igblast")
+    writeAnnotations("~/Data/FV-igh-m8d.fa", "data/Annotations/i_f2.rds", "igblast")
+    writeAnnotations("~/Data/GMC-igh-m1h.fa", "data/Annotations/i_g1.rds", "igblast")
 }
 
 igb_germline_dir <- "~/Software/igblast/partis_friendly_bin"
 
-write_partis_annotations <- FALSE
+write_partis_annotations <- TRUE
 if(write_partis_annotations) {
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
-                     "data/Annotations/partis_fv1.rds", 
+                     "data/Annotations/p_f1.rds", 
                      "partis")
     writeAnnotations("~/Data/FV-igh-m8d.fa", 
-                     "data/Annotations/partis_fv2.rds", 
+                     "data/Annotations/p_f2.rds", 
                      "partis")
     writeAnnotations("~/Data/GMC-igh-m1h.fa", 
-                     "data/Annotations/partis_gmc1.rds", 
+                     "data/Annotations/p_g1.rds", 
                      "partis")
 }
 
-write_partis_igb_annotations <- FALSE
+write_partis_igb_annotations <- TRUE
 if(write_partis_igb_annotations) {
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
-                     "data/Annotations/partis_igb_fv1.rds", 
+                     "data/Annotations/pi_f1.rds", 
                      "partis",
                      germline_dir=igb_germline_dir)
     writeAnnotations("~/Data/FV-igh-m8d.fa", 
-                     "data/Annotations/partis_igb_fv2.rds", 
+                     "data/Annotations/pi_f2.rds", 
                      "partis",
                      germline_dir=igb_germline_dir)
     writeAnnotations("~/Data/GMC-igh-m1h.fa", 
-                     "data/Annotations/partis_igb_gmc1.rds", 
+                     "data/Annotations/pi_g1.rds", 
                      "partis",
                      germline_dir=igb_germline_dir)
 }
