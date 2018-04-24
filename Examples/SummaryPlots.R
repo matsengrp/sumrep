@@ -111,8 +111,34 @@ part_igb_dat <- rbind(compare_pi_f1_pi_f1_sim,
                       compare_pi_g1_pi_g1_sim,
                       compare_i_f1_pi_f1_sim,
                       compare_i_f2_pi_f2_sim,
-                      compare_i_g1_pi_g1_sim 
+                      compare_i_g1_pi_g1_sim,
+                      compare_pi_f1_pi_f2,
+                      compare_pi_f1_pi_g1,
+                      compare_pi_f2_pi_g1,
+                      compare_i_f1_i_f2,
+                      compare_i_f1_i_g1,
+                      compare_i_f2_i_g1
                      )
+
+part_igb_dat <- part_igb_dat[!(part_igb_dat$Comparison %in% 
+                               c(
+                                 "comparePerGeneMutationRates",
+                                 "comparePerGenePerPositionMutationRates"
+                                 )), ]
+
+part_igb_dat$Type2 <- factor(part_igb_dat$Type2,
+                             levels=c(
+                                      "pi_f1_sim",
+                                      "pi_f2_sim",
+                                      "pi_g1_sim",
+                                      "i_f1",
+                                      "i_f2",
+                                      "i_g1",
+                                      "pi_f1",
+                                      "pi_f2",
+                                      "pi_g1"
+                                      ))
+
 obs_sim_dat <- rbind(compare_p_f1_p_f1_sim,
                      compare_p_f2_p_f2_sim,
                      compare_p_g1_p_g1_sim,

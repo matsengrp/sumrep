@@ -26,6 +26,12 @@ data_to_compare <- list(
                         c("p_f1_sim", "p_g1_sim"),
                         c("p_f2_sim", "p_g1_sim"),
 
+                        # Compare partis annotations using imgt database
+                        # to other partis annotations using imgt database
+                        c("pi_f1", "pi_f2"),
+                        c("pi_f1", "pi_g1"),
+                        c("pi_f2", "pi_g1"),
+
                         # Compare igblast annotations to annotations
                         c("i_f1", "i_f2"),
                         c("i_f1", "i_g1"),

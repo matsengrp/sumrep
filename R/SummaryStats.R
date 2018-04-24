@@ -560,14 +560,11 @@ getAtchleyFactorList <- function(aa_seq, factor_number) {
     return(factor_list)
 }
 
-#' Get the distribution of the mean of each of the five Atchley factors for 
+#' Get a list of the means of each of the five Atchley factors for 
 #'   a list of DNA seuqnces
 #'
-#' Since Atchley factors map amino acids to numerical values, we concatenate 
-#' the filtered list of valid amino acids into one string, and pass it to 
-#'   \code{getAtchleyFactorList}
 #' @param sequence_list List or vector of DNA sequences
-#' @return Vector of means of each Atchley factor of \code{sequence_list}
+#' @return Vector of means of each of the five Atchley factors of \code{sequence_list}
 getMeanAtchleyFactorDistribution <- function(sequence_list) {
     collapsed_sequence <- sequence_list %>% 
         filterStringsForAAFunctions %>%
