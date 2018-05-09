@@ -326,7 +326,7 @@ annotateSequences <- function(input_filename,
 #' @return A data.table object containing the output of the partis partition 
 #'   call
 partitionSequences <- function(input_filename, 
-                               output_filename="partis_output.csv", 
+                               output_filename="partition.csv", 
                                partis_path=Sys.getenv("PARTIS_PATH"), 
                                num_procs=4, 
                                cleanup=TRUE, 
