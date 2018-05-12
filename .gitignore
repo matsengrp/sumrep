@@ -8,3 +8,4 @@ tests/testthat/_output*
 *.rds
 .RData
 .RHistory
+.Rhistory
