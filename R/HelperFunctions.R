@@ -64,14 +64,34 @@ getSequenceListFromFasta <- function(filename) {
     return(sequences)
 }
 
+correspondsToProperAASequence <- function(x) {
+    condition <- (nchar(x) >= 3) && (nchar(x) %% 3 == 0)
+    return(condition) 
+}
+
+# Convert each sequence with < 3 bases into NA
+filterStringsForAAFunctions <- function(sequence_list) {
+    filtered_list <- sequence_list %>%
+        sapply(function(x) {
+                            ifelse(correspondsToProperAASequence(x),
+                                   x,
+                                   NA)
+                            }
+                            )
+    return(filtered_list)
+}
+
 #' @param sequence String of DNA bases
 #' @return String of single-letter amino acid codes
 convertNucleobasesToAminoAcidsBySequence <- function(sequence) {
-    aa <- sequence %>%
+    aa <- ifelse(!is.na(sequence),
+                 sequence %>%
         strsplit(split='') %>%
         unlist %>%
         seqinr::translate() %>%
-        paste0(collapse='')
+        unname %>%
+        paste0(collapse=''),
+        NA)
     
     return(aa)
 }

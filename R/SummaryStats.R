@@ -507,18 +507,6 @@ getKideraFactorsBySequence <- function(sequence) {
     return(kidera_factors)
 }
 
-hasLessThanThreeBases <- function(x) {
-    return(nchar(x) < 3) 
-}
-
-# Convert each sequence with < 3 bases into NA
-filterStringsForAAFunctions <- function(sequence_list) {
-    filtered_list <- ifelse(!hasLessThanThreeBases(sequence_list),
-                            sequence_list,
-                            NA)
-    return(filtered_list)
-}
-
 #' Get hydrophobicity from amino acid sequence, corresponding to
 #' the fourth kidera factor
 #'
@@ -526,11 +514,15 @@ filterStringsForAAFunctions <- function(sequence_list) {
 #' @return real-valued hydrophobicity estimate, computed as the average
 #'   hydrophobicity of each amino acid in the sequence
 getHydrophobicityFromAASequence <- function(sequence) {
-    hydrophobicity <- sequence %>%
-        getKideraFactorsBySequence %>%
-        t %>%
-        as.data.table %$%
-        KF4
+    if(!is.na(sequence)) {
+        hydrophobicity <- sequence %>%
+            getKideraFactorsBySequence %>%
+            t %>%
+            as.data.table %$%
+            KF4
+    } else {
+        hydrophobicity <- NA
+    }
 
     return(hydrophobicity)
 }
@@ -541,9 +533,7 @@ getHydrophobicityDistribution <- function(sequence_list,
     hydrophobicity_list <- sequence_list %>% 
         convertNucleobasesToAminoAcids %>%
         filterAminoAcidSequences %>%
-        sapply(function(x) {
-                   ifelse(is.na(x), NA, getHydrophobicityFromAASequence(x))
-                   })
+        sapply(getHydrophobicityFromAASequence)
 
     return(hydrophobicity_list)
 }
@@ -613,21 +603,14 @@ compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getAliphaticIndexFromDNASequence <- function(dna_sequence) {
-
-}
-
 #' Get the aliphatic index of a DNA sequence
 #'
 #' @param dna_sequence String of DNA characters
 #' @return The aliphatic index of \code{dna_sequence}, if applicable
-getAliphaticIndex <- function(dna_sequence) {
-    aliphatic_index <- dna_sequence %>% 
-        ifelse(is.na(.),
-               NA,
-               getAliphaticIndexFromDNASequence
-               )
-        Peptides::aIndex()
+getAliphaticIndex <- function(aa_sequence) {
+    aliphatic_index <- aa_sequence %>% 
+               Peptides::aIndex()
+
     return(aliphatic_index)
 }
 
@@ -637,14 +620,15 @@ getAliphaticIndex <- function(dna_sequence) {
 #' @return Vector of aliphatic indices
 getAliphaticIndexDistribution <- function(sequence_list) {
     a_indices <- sequence_list %>% 
-        filterStringsForAAFunctions %>%
-        sapply(getAliphaticIndex)
+        convertNucleobasesToAminoAcids %>%
+        filterAminoAcidSequences %>%
+        sapply(function(x) {
+                   ifelse(!is.na(x),
+                          getAliphaticIndex(x),
+                          NA)
+        }
+        )
 
-        sapply(convertNucleobasesToAminoAcids) %>%
-        removeBadAminoAcidSequences %>%
-        sapply(getAliphaticIndex) %>%
-        unname %>%
-        unlist
     return(a_indices)
 }
 
