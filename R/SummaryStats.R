@@ -516,21 +516,60 @@ getKideraFactors <- function(sequence_list) {
     return(kidera_factors)
 }
 
+hasLessThanThreeBases <- function(x) {
+    return(nchar(x) < 3) 
+}
+
+# Convert each sequence with < 3 bases into NA
 filterStringsForAAFunctions <- function(sequence_list) {
-    hasLessThanThreeBases <- function(x) {
-        return(nchar(x) < 3) 
-    }
-    filtered_list <- sequence_list[!hasLessThanThreeBases(sequence_list)]
+    filtered_list <- ifelse(!hasLessThanThreeBases(sequence_list),
+                            sequence_list,
+                            NA)
     return(filtered_list)
 }
 
-getHydrophobicityDistribution <- function(sequence_list) {
+# Get hydrophobicity from amino acid sequence, corresponding to
+# the fourth kidera factor
+#
+# @param sequence Amino acid sequence string
+# @return real-valued hydrophobicity estimate, computed as the average
+#   hydrophobicity of each amino acid in the sequence
+getHydrophobicityFromAASequence <- function(sequence) {
+    hydrophobicity <- sequence %>%
+        getKideraFactorsBySequence %>%
+        t %>%
+        as.data.table %$%
+        KF4
+
+    return(hydrophobicity)
+}
+
+getHydrophobicityFromDNASequence <- function(sequence) {
+    hydrophobicity <- sequence %>%
+        convertDNAToAminoAcids %>%
+        filterAminoAcidSequences %>%
+        {ifelse(is.na(.),
+                NA,
+                getHydrophobicityFromAASequence(.))}
+
+    return(hydrophobicity)
+}
+
+getHydrophobicity <- function(sequence) {
+    hydrophobicity <- ifelse(is.na(sequence),
+                             NA,
+                             sequence %>% getHydrophobicityFromDNASequence
+                            )
+    return(hydrophobicity)
+}
+
+getHydrophobicityDistribution <- function(sequence_list,
+                                          include_NA=FALSE
+                                          ) {
     hydrophobicity_list <- sequence_list %>% 
         filterStringsForAAFunctions %>%
-        getKideraFactors %>%
-        data.table %>% 
-        select_("KF4") %>% 
-        unlist
+        sapply(getHydrophobicity)
+
     return(hydrophobicity_list)
 }
 

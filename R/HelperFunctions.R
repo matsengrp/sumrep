@@ -94,14 +94,18 @@ hasStopCodon <- function(aa_sequence) {
     return(grepl("\\*", aa_sequence))
 }
 
-#' Remove strings in a list of amino acid sequences which contain at least one
-#'   unrecognized amino acid or stop codon
+#' Filter amino acid sequences by removing any 'X' (unrecognized) values,
+#' as well as converting sequences with stop codons to NA
 #'
 #' @param aa_sequences Vector or list of amino acid sequences
 #' @return Filtered list with "bad" sequences removed
-removeBadAminoAcidSequences <- function(aa_sequences) {
-    return(aa_sequences[!hasUnrecognizedAminoAcids(aa_sequences) &
-                        !hasStopCodon(aa_sequences)])
+filterAminoAcidSequences <- function(aa_sequences) {
+    filtered_seqs <- ifelse(hasStopCodon(aa_sequences),
+                            NA,
+                            aa_sequences
+                            ) %>%
+        gsub(pattern="X", replace="")
+    return(filtered_seqs)
 }
 
 #' Parse a python dictionary string into an R list
