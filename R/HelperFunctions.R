@@ -64,16 +64,28 @@ getSequenceListFromFasta <- function(filename) {
     return(sequences)
 }
 
-#' Convert a DNA string to a string of single-letter amino acid codes
-#'
 #' @param sequence String of DNA bases
 #' @return String of single-letter amino acid codes
-convertDNAToAminoAcids <- function(sequence) {
-    aa_sequence <- sequence %>% 
-        sapply(strsplit, '') %>% 
-        sapply(seqinr::translate) %>% 
+convertNucleobasesToAminoAcidsBySequence <- function(sequence) {
+    aa <- sequence %>%
+        strsplit(split='') %>%
+        unlist %>%
+        seqinr::translate() %>%
         paste0(collapse='')
-    return(aa_sequence)
+    
+    return(aa)
+}
+
+#' Convert a vector of DNA strings to a strings of single-letter amino acid codes.
+#' If the string does not correspond to a valid amino acid, convert it to NA.
+#'
+#' @param sequence_list Vector of string of DNA bases
+#' @return Vector of strings of single-letter amino acid codes
+convertNucleobasesToAminoAcids <- function(sequence_list) {
+    aa_sequences <- sequence_list %>% 
+        filterStringsForAAFunctions %>%
+        sapply(convertNucleobasesToAminoAcidsBySequence)
+    return(aa_sequences)
 }
 
 #' Check if an amino acid sequence has unrecognized codons

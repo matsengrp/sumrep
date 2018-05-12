@@ -507,15 +507,6 @@ getKideraFactorsBySequence <- function(sequence) {
     return(kidera_factors)
 }
 
-getKideraFactors <- function(sequence_list) {
-    kidera_factors <- sequence_list %>%
-        sapply(convertDNAToAminoAcids) %>%
-        removeBadAminoAcidSequences %>%
-        lapply(getKideraFactorsBySequence) %>% 
-        do.call(what=rbind)
-    return(kidera_factors)
-}
-
 hasLessThanThreeBases <- function(x) {
     return(nchar(x) < 3) 
 }
@@ -528,12 +519,12 @@ filterStringsForAAFunctions <- function(sequence_list) {
     return(filtered_list)
 }
 
-# Get hydrophobicity from amino acid sequence, corresponding to
-# the fourth kidera factor
-#
-# @param sequence Amino acid sequence string
-# @return real-valued hydrophobicity estimate, computed as the average
-#   hydrophobicity of each amino acid in the sequence
+#' Get hydrophobicity from amino acid sequence, corresponding to
+#' the fourth kidera factor
+#'
+#' @param sequence Amino acid sequence string
+#' @return real-valued hydrophobicity estimate, computed as the average
+#'   hydrophobicity of each amino acid in the sequence
 getHydrophobicityFromAASequence <- function(sequence) {
     hydrophobicity <- sequence %>%
         getKideraFactorsBySequence %>%
@@ -544,31 +535,15 @@ getHydrophobicityFromAASequence <- function(sequence) {
     return(hydrophobicity)
 }
 
-getHydrophobicityFromDNASequence <- function(sequence) {
-    hydrophobicity <- sequence %>%
-        convertDNAToAminoAcids %>%
-        filterAminoAcidSequences %>%
-        {ifelse(is.na(.),
-                NA,
-                getHydrophobicityFromAASequence(.))}
-
-    return(hydrophobicity)
-}
-
-getHydrophobicity <- function(sequence) {
-    hydrophobicity <- ifelse(is.na(sequence),
-                             NA,
-                             sequence %>% getHydrophobicityFromDNASequence
-                            )
-    return(hydrophobicity)
-}
-
 getHydrophobicityDistribution <- function(sequence_list,
                                           include_NA=FALSE
                                           ) {
     hydrophobicity_list <- sequence_list %>% 
-        filterStringsForAAFunctions %>%
-        sapply(getHydrophobicity)
+        convertNucleobasesToAminoAcids %>%
+        filterAminoAcidSequences %>%
+        sapply(function(x) {
+                   ifelse(is.na(x), NA, getHydrophobicityFromAASequence(x))
+                   })
 
     return(hydrophobicity_list)
 }
@@ -607,7 +582,7 @@ getAtchleyFactorList <- function(aa_seq, factor_number) {
 getMeanAtchleyFactorDistribution <- function(sequence_list) {
     collapsed_sequence <- sequence_list %>% 
         filterStringsForAAFunctions %>%
-        sapply(convertDNAToAminoAcids) %>%
+        sapply(convertNucleobasesToAminoAcids) %>%
         removeBadAminoAcidSequences %>%
         paste(collapse='')
     factor_numbers <- 1:5
@@ -638,12 +613,20 @@ compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
+getAliphaticIndexFromDNASequence <- function(dna_sequence) {
+
+}
+
 #' Get the aliphatic index of a DNA sequence
 #'
 #' @param dna_sequence String of DNA characters
 #' @return The aliphatic index of \code{dna_sequence}, if applicable
 getAliphaticIndex <- function(dna_sequence) {
     aliphatic_index <- dna_sequence %>% 
+        ifelse(is.na(.),
+               NA,
+               getAliphaticIndexFromDNASequence
+               )
         Peptides::aIndex()
     return(aliphatic_index)
 }
@@ -655,7 +638,9 @@ getAliphaticIndex <- function(dna_sequence) {
 getAliphaticIndexDistribution <- function(sequence_list) {
     a_indices <- sequence_list %>% 
         filterStringsForAAFunctions %>%
-        sapply(convertDNAToAminoAcids) %>%
+        sapply(getAliphaticIndex)
+
+        sapply(convertNucleobasesToAminoAcids) %>%
         removeBadAminoAcidSequences %>%
         sapply(getAliphaticIndex) %>%
         unname %>%
