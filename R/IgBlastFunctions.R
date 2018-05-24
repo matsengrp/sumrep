@@ -21,13 +21,13 @@ getIgBlastAnnotations <- function(input_filename,
                                   organism="human",
                                   domain_system="imgt",
                                   ig_seqtype="Ig",
-                                  num_threads=8
-                                  ) {
+                                  num_threads=8,
+                                  igblast_dir,
+                                  changeo_dir
+                                 ) {
 
     input_filename <- input_filename %>% 
         normalizePath
-    igblast_dir <- "~/Software/igblast/bin"
-    changeo_dir <- "~/.local/bin"
 
     # IgBlast needs to be in its own directory to find the germline databases
     # easily, so let's remember where we are currently and chnage directories

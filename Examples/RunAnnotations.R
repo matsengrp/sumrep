@@ -34,12 +34,15 @@ writeAnnotations <- function(filename,
                                              replace='-sim.rds'))
         "tmp_output" %>% unlink
     } else if(method == "igblast") {
-        annotations <- getIgBlastAnnotations(filename, num_threads=num_procs)
+        annotations <- getIgBlastAnnotations(filename, 
+                                             num_threads=num_procs,
+                                             igblast_dir="~/Software/igblast/bin",
+                                             changeo_dir="~/.local/bin")
         saveRDS(annotations, outname)
     }
 }
 
-write_igb_annotations <- TRUE
+write_igb_annotations <- FALSE
 if(write_igb_annotations) {
     writeAnnotations("~/Data/FV-igh-m1h.fa", "data/Annotations/i_f1.rds", "igblast")
     writeAnnotations("~/Data/FV-igh-m8d.fa", "data/Annotations/i_f2.rds", "igblast")
