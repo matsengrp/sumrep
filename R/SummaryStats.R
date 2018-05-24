@@ -653,10 +653,14 @@ compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
 #' @return Vector of GRAVY values for \code{sequence_list}
 getGRAVYDistribution <- function(sequence_list) {
     dist <- sequence_list %>% 
-            removeEmptyStrings %>% 
-            standardizeList %>%
-            toupper %>%
-            sapply(alakazam::gravy) %>% 
+            convertNucleobasesToAminoAcids %>%
+            filterAminoAcidSequences %>%
+            sapply(function(x) {
+                   ifelse(!is.na(x),
+                          alakazam::gravy(x),
+                          NA)
+                   }
+            ) %>% 
             unname
     return(dist)
 }

@@ -6,6 +6,10 @@ removeEmptyStrings <- function(l) {
     return(l[l != ""])
 }
 
+maskEmptyStringWithNA <- function(s) {
+    return(ifelse(s != "", s, NA))
+}
+
 #' Convert lists of factors or vectors of characters into a vector of strings
 #' 
 #' @param List or vector of either strings or char vectors of DNA sequences
@@ -156,7 +160,11 @@ removeSequencesWithDifferentNaiveAndMatureLengths <- function(dat) {
     return(dat %>% subset(nchar(dat$mature_seq) == nchar(dat$naive_seq)))
 }
 
-# Load datasets that are not already in the workspace
+#' Load datasets that are not already in the workspace.
+#'   The variable names are taken to be exactly the name of the corresponding
+#'   .rds files
+#' 
+#' @param data_dir The directory which contains .rds files to be loaded
 loadNewDatasets <- function(data_dir) {
     for(data_file in list.files(data_dir)) {
         var_name <- data_file %>%
