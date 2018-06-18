@@ -78,14 +78,25 @@ getDistanceVector <- function(sequence_list) {
 #' @inheritParams getAutomaticAverageDivergence 
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
-comparePairwiseDistanceDistributions <- function(dat_a, dat_b,
+comparePairwiseDistanceDistributions <- function(dat_a, 
+                                                 dat_b,
+                                                 do_automatic=TRUE,
                                                  subsample_count=100,
                                                  trial_count=10) {
-    average_divergence <- getAutomaticAverageDivergence(dat_a %$% mature_seq,
-                                                dat_b %$% mature_seq,
-                                                getDistanceVector,
-                                                subsample_count)
-    return(average_divergence)
+    mature_a <- dat_a %$% mature_seq
+    mature_b <- dat_b %$% mature_seq
+    if(do_automatic) {
+        divergence <- getAutomaticAverageDivergence(mature_a,
+                                                    mature_b,
+                                                    getDistanceVector,
+                                                    subsample_count)
+    } else {
+        dist_a <- mature_a %>% getDistanceVector
+        dist_b <- mature_b %>% getDistanceVector
+        divergence <- getJSDivergence(dist_a, dist_b)
+
+    }
+    return(divergence)
 }
 
 #' Get sorted list of nearest neighbor distances
@@ -305,12 +316,19 @@ getDistancesFromNaiveToMature <- function(dat) {
 #' @param dat_a First dataset
 #' @param dat_b Second dataset
 #' @return JS divergence of the two distance distributions
-compareDistancesFromNaiveToMature <- function(dat_a, dat_b) {
-    divergence <- getAutomaticAverageDivergence(dat_a,
+compareDistancesFromNaiveToMature <- function(dat_a, dat_b, do_automatic=TRUE) {
+    if(do_automatic) {
+        divergence <- getAutomaticAverageDivergence(dat_a,
                                                 dat_b,
                                                 getDistancesFromNaiveToMature,
                                                 subsample_count=100,
                                                 tolerance=1e-3)
+    } else {
+        dist_a <- dat_a %>% getDistancesFromNaiveToMature
+        dist_b <- dat_b %>% getDistancesFromNaiveToMature
+        divergence <- getJSDivergence(dist_a, dist_b)
+    }
+
     return(divergence)
 }
 
