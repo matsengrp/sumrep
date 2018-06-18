@@ -21,9 +21,9 @@ test_that("test.compareDistancesFromNaiveToMature", {
     m5 <- c("GGGG")
     dat_a <- data.table(naive_seq=naive_a, mature_seq=list(m1, m2, m3))
     dat_b <- data.table(naive_seq=naive_b, mature_seq=list(m2, m3, m4))
-    c1 <- compareDistancesFromNaiveToMature(dat_a, dat_a)
-    c2 <- compareDistancesFromNaiveToMature(dat_a, dat_b)
-    c3 <- compareDistancesFromNaiveToMature(dat_b, dat_a)
+    c1 <- compareDistancesFromNaiveToMature(dat_a, dat_a, do_automatic=FALSE)
+    c2 <- compareDistancesFromNaiveToMature(dat_a, dat_b, do_automatic=FALSE)
+    c3 <- compareDistancesFromNaiveToMature(dat_b, dat_a, do_automatic=FALSE)
     expect_equal(0, c1)
     expect_equal(c3, c2)
     expect_true(c2 > 0)
@@ -46,12 +46,15 @@ test_that("test.comparePairwiseDistanceDistributions", {
     s2 <- data.table(mature_seq=c("ATT", "AAA", "AAT"))
     s3 <- data.table(mature_seq=c("AAA", "AAT", "TTT"))
     s4 <- data.table(mature_seq=c("AAA", "ATC", "GGG"))
-    expect_equal(0, comparePairwiseDistanceDistributions(s1, 
-        s2))
-    c1 <- comparePairwiseDistanceDistributions(s1, s3)
-    c2 <- comparePairwiseDistanceDistributions(s1, s4)
+    expect_equal(0, 
+                 comparePairwiseDistanceDistributions(s1,
+                                                      s2,
+                                                      do_automatic=FALSE
+                                                      ))
+    c1 <- comparePairwiseDistanceDistributions(s1, s3, do_automatic=FALSE)
+    c2 <- comparePairwiseDistanceDistributions(s1, s4, do_automatic=FALSE)
     expect_true(c1 < c2)
-    c3 <- comparePairwiseDistanceDistributions(s4, s1)
+    c3 <- comparePairwiseDistanceDistributions(s4, s1, do_automatic=FALSE)
     expect_equal(c3, c2)
 })
 
@@ -103,9 +106,15 @@ test_that("test.getGCContentDistribution", {
 })
 
 test_that("test.getGRAVYDistribution", {
-    s <- c("AAA", "GGG", "ACGTACGTACGT")
-    expect_equal(c(-0.4, 0.8, 1.8), getGRAVYDistribution(s) %>% 
-        sort)
+    # Sample GRAVY values for a few particular amino acids obtained from 
+    # https://github.com/PRIDE-Utilities/pride-utilities/wiki/1.2-GRAVY-Calculations 
+    alanine <- c("GCC")
+    glutamine <- c("CAA")
+    isoleucine <- c("ATT")
+    expect_equal(1.8, getGRAVYDistribution(alanine))
+    expect_equal(-3.5, getGRAVYDistribution(glutamine))
+    expect_equal(4.5, getGRAVYDistribution(isoleucine))
+    expect_equal(c(1.8, -3.5, 4.5), getGRAVYDistribution(c(alanine, glutamine, isoleucine)))
 })
 
 test_that("test.getHotspotCount", {
