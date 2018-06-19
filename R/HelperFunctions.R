@@ -177,3 +177,40 @@ loadNewDatasets <- function(data_dir) {
         }
     }
 }
+
+#' Approximate the distribution of \code{summary_function} for \code{dat} by 
+#    iteratively sampling from \code{dat}, computing the distribution of 
+#'   \code{summary_function} for the subsample, and accumulating a representative
+#'   distribution. The function stops when \code{divergence_function} between two
+#'   distribution iterates is sufficiently small.
+#'
+#' @param dat The dataset for which the distribution is desired
+#' @param summary_function A function which computes a summary statistic of \code{dat},
+#'   which yields a distribution
+#' @param sample_count The size of the subsample for each iteration
+#' @param tol The threshold for \code{divergence_function} to be considered converged
+#' @param divergence_function The divergence computed between successive iterates.
+#'   This should probably be the JS divergence, specified for discrete or continuous data
+#'   depending on the nature of \code{summary_function}
+getApproximateDistribution <- function(dat,
+                                       summary_function,
+                                       sample_count=100,
+                                       tol=0.001,
+                                       divergence_function=getContinuousJSDivergence
+                                       ) {
+    dist <- sample(dat, sample_count) %>%
+        summary_function
+
+    error <- Inf
+    while(error > tol) {
+        dist_prev <- dist
+        sample_dat <- sample(dat, sample_count)
+        sample_dist <- sample_dat %>% 
+            summary_function
+        dist <- c(dist_prev, sample_dist)
+        error <- divergence_function(dist, dist_prev)
+        print(error)
+    }
+
+    return(dist)
+}
