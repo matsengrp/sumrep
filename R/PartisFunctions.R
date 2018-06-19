@@ -323,8 +323,14 @@ annotateSequences <- function(input_filename,
                                              output_path,
                                              germline_dir)
     } else {
-        annotated_data <- callPartis("annotate", input_filename, output_file, 
-                                     output_path, partis_path, num_procs)
+        output_file <- file.path(output_path, output_filename)
+        annotated_data <- callPartis("annotate", 
+                                     input_filename, 
+                                     output_file, 
+                                     output_path, 
+                                     partis_path, 
+                                     num_procs
+                                     )
     }
 
     annotation_object <- getPartisAnnotations(output_path,
