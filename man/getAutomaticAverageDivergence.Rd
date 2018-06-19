@@ -6,7 +6,8 @@
   is attained}
 \usage{
 getAutomaticAverageDivergence(dataset_a, dataset_b, summary_function,
-  subsample_count, divergenceFunction = getJSDivergence, tolerance = 0.01)
+  subsample_count, divergenceFunction = getJSDivergence, tolerance = 0.01,
+  ...)
 }
 \arguments{
 \item{dataset_a}{First dataset (vector, matrix, or data.table) input to 

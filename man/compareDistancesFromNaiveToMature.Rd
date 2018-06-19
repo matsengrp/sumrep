@@ -4,7 +4,7 @@
 \alias{compareDistancesFromNaiveToMature}
 \title{Compare Levenshtein distance distributions from naive sequences to}
 \usage{
-compareDistancesFromNaiveToMature(dat_a, dat_b)
+compareDistancesFromNaiveToMature(dat_a, dat_b, do_automatic = TRUE)
 }
 \arguments{
 \item{dat_a}{First dataset}

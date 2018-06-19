@@ -5,7 +5,7 @@
 \title{Call partis}
 \usage{
 callPartis(action, input_filename, output_filename, output_path, partis_path,
-  num_procs, cleanup)
+  num_procs, germline_dir)
 }
 \arguments{
 \item{action}{The desired partis command}

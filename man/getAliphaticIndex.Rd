@@ -4,7 +4,7 @@
 \alias{getAliphaticIndex}
 \title{Get the aliphatic index of a DNA sequence}
 \usage{
-getAliphaticIndex(dna_sequence)
+getAliphaticIndex(aa_sequence)
 }
 \arguments{
 \item{dna_sequence}{String of DNA characters}

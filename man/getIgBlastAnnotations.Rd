@@ -2,11 +2,11 @@
 % Please edit documentation in R/IgBlastFunctions.R
 \name{getIgBlastAnnotations}
 \alias{getIgBlastAnnotations}
-\title{Run IgBLAST on an input fasta file}
+\title{Get IgBLAST annotations from an input fasta file}
 \usage{
 getIgBlastAnnotations(input_filename, output_filename = "igblast_out",
   locus = "igh", organism = "human", domain_system = "imgt",
-  ig_seqtype = "Ig")
+  ig_seqtype = "Ig", num_threads = 8, igblast_dir, changeo_dir)
 }
 \arguments{
 \item{input_filename}{The path to the input fasta file}
@@ -23,6 +23,8 @@ getIgBlastAnnotations(input_filename, output_filename = "igblast_out",
 }
 \description{
 Currently kind of hacky, as it changes directories to the location of
-  igblast and its germline databases, runs the command, and changes back
-  to the initial directory
+  igblast and its germline databases, runs some commands, and changes back
+  to the initial directory.
+  Change-O is used to parse the raw output of igblastn.
+  TODO: Delete interim files, try-catch the success of changeo
 }

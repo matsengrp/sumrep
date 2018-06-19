@@ -21,8 +21,6 @@ k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 the second-nearest neighbor, etc.}
 
 \item{subsample_count}{Number of samples to extract on each trial}
-
-\item{trial_count}{Number of trials to average over}
 }
 \value{
 Estimated JS divergence of the distributions inferred from list_a

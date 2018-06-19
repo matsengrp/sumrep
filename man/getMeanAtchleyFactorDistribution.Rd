@@ -2,7 +2,7 @@
 % Please edit documentation in R/SummaryStats.R
 \name{getMeanAtchleyFactorDistribution}
 \alias{getMeanAtchleyFactorDistribution}
-\title{Get the distribution of the mean of each of the five Atchley factors for 
+\title{Get a list of the means of each of the five Atchley factors for 
   a list of DNA seuqnces}
 \usage{
 getMeanAtchleyFactorDistribution(sequence_list)
@@ -11,10 +11,9 @@ getMeanAtchleyFactorDistribution(sequence_list)
 \item{sequence_list}{List or vector of DNA sequences}
 }
 \value{
-Vector of means of each Atchley factor of \code{sequence_list}
+Vector of means of each of the five Atchley factors of \code{sequence_list}
 }
 \description{
-Since Atchley factors map amino acids to numerical values, we concatenate 
-the filtered list of valid amino acids into one string, and pass it to 
-  \code{getAtchleyFactorList}
+Get a list of the means of each of the five Atchley factors for 
+  a list of DNA seuqnces
 }

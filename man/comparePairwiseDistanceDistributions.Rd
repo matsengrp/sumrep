@@ -4,8 +4,8 @@
 \alias{comparePairwiseDistanceDistributions}
 \title{Compare pairwise distance distributions of two lists of sequences}
 \usage{
-comparePairwiseDistanceDistributions(dat_a, dat_b, subsample_count = 100,
-  trial_count = 10)
+comparePairwiseDistanceDistributions(dat_a, dat_b, do_automatic = TRUE,
+  subsample_count = 100, trial_count = 10)
 }
 \arguments{
 \item{dat_a}{First dataset, containing mature sequences}
@@ -13,8 +13,6 @@ comparePairwiseDistanceDistributions(dat_a, dat_b, subsample_count = 100,
 \item{dat_b}{Second dataset, containing mature sequences}
 
 \item{subsample_count}{Number of samples to extract on each trial}
-
-\item{trial_count}{Number of trials to average over}
 }
 \value{
 Estimated JS divergence of the distributions inferred from list_a

@@ -2,11 +2,14 @@
 % Please edit documentation in R/PartisFunctions.R
 \name{annotateSequences}
 \alias{annotateSequences}
-\title{Perform sequence annotation with partis}
+\title{Perform sequence annotation with partis.
+This function does call partis.}
 \usage{
 annotateSequences(input_filename, output_filename = "partis_output.csv",
-  partis_path = Sys.getenv("PARTIS_PATH"), num_procs = 4, cleanup = TRUE,
-  do_full_annotation = TRUE, output_path = "_output")
+  partis_path = Sys.getenv("PARTIS_PATH"), num_procs = 4,
+  partition = TRUE, collapse_clones = TRUE, cleanup = TRUE,
+  do_full_annotation = TRUE, output_path = "_output", run_partis = TRUE,
+  germline_dir = NULL)
 }
 \arguments{
 \item{input_filename}{The input (fasta) file, i.e. --infname argument}
@@ -20,9 +23,6 @@ argument}
 
 \item{cleanup}{Flag to delete all interim files created by partis}
 
-\item{do_full_annotation}{Include per-gene and per-gene-per-position mutation
-rate information}
-
 \item{output_path}{Desired output directory, which will contain 
 \code{output_filename}}
 }
@@ -30,5 +30,6 @@ rate information}
 A data.table object containing the output of the partis annotate call
 }
 \description{
-Perform sequence annotation with partis
+Perform sequence annotation with partis.
+This function does call partis.
 }

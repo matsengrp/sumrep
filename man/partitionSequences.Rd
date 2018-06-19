@@ -4,9 +4,9 @@
 \alias{partitionSequences}
 \title{Perform clonal partitioning with partis}
 \usage{
-partitionSequences(input_filename, output_filename = "partis_output.csv",
+partitionSequences(input_filename, output_filename = "partition.csv",
   partis_path = Sys.getenv("PARTIS_PATH"), num_procs = 4, cleanup = TRUE,
-  output_path = "_output")
+  output_path = "_output", germline_dir = NULL)
 }
 \arguments{
 \item{input_filename}{The input (fasta) file, i.e. --infname argument}

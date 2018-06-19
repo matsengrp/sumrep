@@ -2,9 +2,11 @@
 % Please edit documentation in R/Compare.R
 \name{getAndPrintComparison}
 \alias{getAndPrintComparison}
-\title{Print the result and elapsed time of a comparison}
+\title{Print the result and elapsed time of a set of comparisons, and return list
+  containing the comparison names and values.}
 \usage{
-getAndPrintComparison(f, input_1, input_2, string_header, color)
+getAndPrintComparison(f, input_1, input_2, string_header, color,
+  function_string)
 }
 \arguments{
 \item{f}{Comparison function}
@@ -17,7 +19,11 @@ getAndPrintComparison(f, input_1, input_2, string_header, color)
 
 \item{color}{Color for text. Green for usual comparison, yellow for 
 bootstrap}
+
+\item{function_string}{Name of comparison function}
 }
 \description{
-Print the result and elapsed time of a comparison
+Some functions, such as compareSubstitutionAndMutabilityModels, return more 
+than one divergence value for convenience. Thus, loop over comparisons when
+  necessary
 }
