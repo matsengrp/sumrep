@@ -49,12 +49,22 @@ test_that("test.comparePairwiseDistanceDistributions", {
     expect_equal(0, 
                  comparePairwiseDistanceDistributions(s1,
                                                       s2,
-                                                      do_automatic=FALSE
+                                                      do_automatic=FALSE,
+                                                      approximate=FALSE
                                                       ))
-    c1 <- comparePairwiseDistanceDistributions(s1, s3, do_automatic=FALSE)
-    c2 <- comparePairwiseDistanceDistributions(s1, s4, do_automatic=FALSE)
+    c1 <- comparePairwiseDistanceDistributions(s1, 
+                                               s3, 
+                                               do_automatic=FALSE, 
+                                               approximate=FALSE)
+    c2 <- comparePairwiseDistanceDistributions(s1, 
+                                               s4, 
+                                               do_automatic=FALSE, 
+                                               approximate=FALSE)
     expect_true(c1 < c2)
-    c3 <- comparePairwiseDistanceDistributions(s4, s1, do_automatic=FALSE)
+    c3 <- comparePairwiseDistanceDistributions(s4, 
+                                               s1, 
+                                               do_automatic=FALSE, 
+                                               approximate=FALSE)
     expect_equal(c3, c2)
 })
 
