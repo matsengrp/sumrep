@@ -85,6 +85,8 @@ filterStringsForAAFunctions <- function(sequence_list) {
     return(filtered_list)
 }
 
+#' Convert a single DNA sequence string to an amino acid sequence string
+#' 
 #' @param sequence String of DNA bases
 #' @return String of single-letter amino acid codes
 convertNucleobasesToAminoAcidsBySequence <- function(sequence) {
@@ -209,7 +211,6 @@ getApproximateDistribution <- function(dat,
             summary_function
         dist <- c(dist_prev, sample_dist)
         error <- divergence_function(dist, dist_prev)
-        print(error)
     }
 
     return(dist)

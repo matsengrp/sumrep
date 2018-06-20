@@ -5,7 +5,7 @@
 \title{Compare pairwise distance distributions of two lists of sequences}
 \usage{
 comparePairwiseDistanceDistributions(dat_a, dat_b, do_automatic = TRUE,
-  subsample_count = 100, trial_count = 10)
+  approximate = TRUE, subsample_count = 100, trial_count = 10)
 }
 \arguments{
 \item{dat_a}{First dataset, containing mature sequences}

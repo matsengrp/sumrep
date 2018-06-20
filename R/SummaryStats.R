@@ -8,6 +8,7 @@ library(jsonlite)
 library(magrittr)
 library(pegas)
 library(Peptides)
+library(phytools)
 library(RecordLinkage)
 library(shazam)
 library(seqinr)
@@ -66,6 +67,23 @@ getDistanceVector <- function(sequence_list) {
     return(vec)
 }
 
+getPairwiseDistanceDistribution <- function(sequence_list,
+                                    approximate=TRUE
+                                    ) {
+    if(approximate) {
+        distribution <- sequence_list %>%
+            getApproximateDistribution(summary_function=getDistanceVector,
+                                       divergence_function=getJSDivergence
+                                       )
+
+    } else {
+        distribution <- sequence_list %>%
+            getDistanceVector
+    }
+
+    return(distribution)
+}
+
 #' Compare pairwise distance distributions of two lists of sequences
 #'
 #' \code{comparePairwiseDistanceDistributions} computes the JS
@@ -81,6 +99,7 @@ getDistanceVector <- function(sequence_list) {
 comparePairwiseDistanceDistributions <- function(dat_a, 
                                                  dat_b,
                                                  do_automatic=TRUE,
+                                                 approximate=TRUE,
                                                  subsample_count=100,
                                                  trial_count=10) {
     mature_a <- dat_a %$% mature_seq
@@ -91,8 +110,10 @@ comparePairwiseDistanceDistributions <- function(dat_a,
                                                     getDistanceVector,
                                                     subsample_count)
     } else {
-        dist_a <- mature_a %>% getDistanceVector
-        dist_b <- mature_b %>% getDistanceVector
+        dist_a <- mature_a %>% 
+            getPairwiseDistanceDistribution(approximate=approximate)
+        dist_b <- mature_b %>% 
+            getPairwiseDistanceDistribution(approximate=approximate)
         divergence <- getJSDivergence(dist_a, dist_b)
 
     }
@@ -1225,3 +1246,9 @@ compareSelectionEstimates <- function(dat_a, dat_b) {
     divergence <- getJSDivergence(baseline_a, baseline_b, continuous=TRUE)
     return(divergence)
 }
+
+getTreeBalance <- function(dat) {
+
+}
+
+
