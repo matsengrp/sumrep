@@ -153,7 +153,7 @@ processMatureSequences <- function(dat) {
 }
 
 #' Here we use stringr::str_split to get empty strings after a ':', if necessary.
-#' For example, with strsplit, '::' would yield c('', ''), whereas
+#' E.g., with strsplit, '::' would yield c('', ''), whereas
 #' stringr::str_split would yield c('', '', '')
 collapseColonedList <- function(coloned_list,
                                 type_conversion=as.numeric) {
