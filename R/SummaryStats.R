@@ -68,12 +68,14 @@ getDistanceVector <- function(sequence_list) {
 }
 
 getPairwiseDistanceDistribution <- function(sequence_list,
-                                    approximate=TRUE
-                                    ) {
+                                            approximate=TRUE,
+                                            ...
+                                            ) {
     if(approximate) {
         distribution <- sequence_list %>%
             getApproximateDistribution(summary_function=getDistanceVector,
-                                       divergence_function=getJSDivergence
+                                       divergence_function=getJSDivergence,
+                                       ...
                                        )
 
     } else {
@@ -140,6 +142,25 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
     }
 
     return(distances)
+}
+
+getNearestNeighborDistribution <- function(sequence_list, 
+                                           k=1,
+                                           approximate=TRUE,
+                                           ...
+                                           ) {
+    if(approximate) {
+        distribution <- sequence_list %>%
+            getApproximateDistribution(summary_function=getNearestNeighborDistances,
+                                       divergence_function=getJSDivergence,
+                                       k=k,
+                                       ...
+                                       )
+    } else {
+        distribution <- sequence_list %>%
+            getNearestNeighborDistances(k=k)
+    }
+    return(distribution)
 }
 
 #' Compare kth nearest neighbor distance distributions of two lists of
@@ -332,21 +353,54 @@ getDistancesFromNaiveToMature <- function(dat) {
     return(distances)
 }
 
+getDistanceFromNaiveToMatureDistribution <- function(dat,
+                                                     approximate=TRUE,
+                                                     ...
+                                                     ) {
+    if(approximate) {
+        distribution <- dat %>%
+            getApproximateDistribution(summary_function=getDistancesFromNaiveToMature,
+                                       divergence_function=getJSDivergence,
+                                       ...
+                                       )
+    } else {
+        distribution <- dat %>%
+            getDistancesFromNaiveToMature
+    }
+}
+
 #' Compare Levenshtein distance distributions from naive sequences to 
 #  their corresponding mature ones for two repertoires
 #' @param dat_a First dataset
 #' @param dat_b Second dataset
 #' @return JS divergence of the two distance distributions
-compareDistancesFromNaiveToMature <- function(dat_a, dat_b, do_automatic=TRUE) {
+compareDistancesFromNaiveToMature <- function(dat_a, 
+                                              dat_b, 
+                                              do_automatic=TRUE,
+                                              approximate=TRUE,
+                                              ...
+                                              ) {
     if(do_automatic) {
-        divergence <- getAutomaticAverageDivergence(dat_a,
-                                                dat_b,
-                                                getDistancesFromNaiveToMature,
-                                                subsample_count=100,
-                                                tolerance=1e-3)
+        divergence <- 
+            getAutomaticAverageDivergence(
+                dat_a,
+                dat_b,
+                getDistanceFromNaiveToMatureDistribution(
+                    approximate=approximate,
+                    ...
+                ),
+                subsample_count=100,
+                tolerance=1e-3
+            )
     } else {
-        dist_a <- dat_a %>% getDistancesFromNaiveToMature
-        dist_b <- dat_b %>% getDistancesFromNaiveToMature
+        dist_a <- dat_a %>% 
+            getDistanceFromNaiveToMatureDistribution(approximate=approximate,
+                                                     ...
+                                                     )
+        dist_b <- dat_b %>% 
+            getDistanceFromNaiveToMatureDistribution(approximate=approximate,
+                                                     ...
+                                                     )
         divergence <- getJSDivergence(dist_a, dist_b)
     }
 

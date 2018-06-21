@@ -198,15 +198,16 @@ getApproximateDistribution <- function(dat,
                                        summary_function,
                                        sample_count=100,
                                        tol=0.001,
-                                       divergence_function=getContinuousJSDivergence
+                                       divergence_function=getContinuousJSDivergence,
+                                       ...
                                        ) {
-    dist <- sample(dat, sample_count) %>%
-        summary_function
+    dist <- subsample(dat, sample_count) %>%
+        summary_function(...)
 
     error <- Inf
     while(error > tol) {
         dist_prev <- dist
-        sample_dat <- sample(dat, sample_count)
+        sample_dat <- subsample(dat, sample_count)
         sample_dist <- sample_dat %>% 
             summary_function
         dist <- c(dist_prev, sample_dist)
