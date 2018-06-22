@@ -1307,9 +1307,9 @@ compareSelectionEstimates <- function(dat_a, dat_b) {
 #' @param tree A phylo object corresponding to a phylogeny
 #' @return Sackin's index of tree balance
 getSackinIndex <- function(tree) {
-    sackin <- tree %>% 
+    index <- tree %>% 
         CollessLike::sackin.index(norm=TRUE)
-    return(sackin)
+    return(index)
 }
 
 #' Compare Sackin's indices for two phylogenetic trees
@@ -1318,11 +1318,34 @@ getSackinIndex <- function(tree) {
 #' @param tree_2 The second phylo object
 #' @return The absolute difference of the respective Sackin's indices
 compareSackinIndices <- function(tree_1, tree_2) {
-    sackin_1 <- tree_1 %>%
+    index_1 <- tree_1 %>%
         getSackinIndex
-    sackin_2 <- tree_2 %>%
+    index_2 <- tree_2 %>%
         getSackinIndex
-    difference <- abs(sackin_1 - sackin_2)
+    difference <- abs(index_1 - index_2)
     return(difference)
 }
 
+#' Compute Colless-like index for the given tree
+#'
+#' @param tree A phylo object corresponding to a phylogeny
+#' @return Colless-like index of tree balance
+getCollessLikeIndex <- function(tree) {
+    index <- tree %>%
+        CollessLike::colless.like.index(norm=TRUE)
+    return(index)
+}
+
+#' Compare Colless-like indices for two phylogenetic trees
+#'
+#' @param tree_1 The first phylo object
+#' @param tree_2 The second phylo object
+#' @return The absolute difference of the respective Colless-like indices
+compareCollessLikeIndices <- function(tree_1, tree_2) {
+    index_1 <- tree_1 %>%
+        getCollessLikeIndex
+    index_2 <- tree_2 %>%
+        getCollessLikeIndex
+    difference <- abs(index_1 - index_2)
+    return(difference)
+}
