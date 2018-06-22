@@ -8,7 +8,7 @@
   distribution iterates is sufficiently small.}
 \usage{
 getApproximateDistribution(dat, summary_function, sample_count = 100,
-  tol = 0.001, divergence_function = getContinuousJSDivergence)
+  tol = 0.001, divergence_function = getContinuousJSDivergence, ...)
 }
 \arguments{
 \item{dat}{The dataset for which the distribution is desired}
