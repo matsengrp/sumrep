@@ -1,6 +1,7 @@
 library(alakazam)
 library(ape)
 library(Biostrings)
+library(CollessLike)
 library(data.table)
 library(dplyr)
 library(HDMD)
@@ -1301,8 +1302,27 @@ compareSelectionEstimates <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getTreeBalance <- function(dat) {
-
+#' Compute Sackin's index for the given tree
+#'
+#' @param tree A phylo object corresponding to a phylogeny
+#' @return Sackin's index of tree balance
+getSackinIndex <- function(tree) {
+    sackin <- tree %>% 
+        CollessLike::sackin.index(norm=TRUE)
+    return(sackin)
 }
 
+#' Compare Sackin's indices for two phylogenetic trees
+#'
+#' @param tree_1 The first phylo object
+#' @param tree_2 The second phylo object
+#' @return The absolute difference of the respective Sackin's indices
+compareSackinIndices <- function(tree_1, tree_2) {
+    sackin_1 <- tree_1 %>%
+        getSackinIndex
+    sackin_2 <- tree_2 %>%
+        getSackinIndex
+    difference <- abs(sackin_1 - sackin_2)
+    return(difference)
+}
 
