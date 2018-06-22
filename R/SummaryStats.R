@@ -1349,3 +1349,27 @@ compareCollessLikeIndices <- function(tree_1, tree_2) {
     difference <- abs(index_1 - index_2)
     return(difference)
 }
+
+#' Compute cophenetic index for the given tree
+#'
+#' @param tree A phylo object corresponding to a phylogeny
+#' @return cophenetic index of tree balance
+getCopheneticIndex <- function(tree) {
+    index <- tree %>%
+        CollessLike::cophen.index(norm=TRUE) 
+    return(index)
+}
+
+#' Compare cophenetic indices for two phylogenetic trees
+#'
+#' @param tree_1 The first phylo object
+#' @param tree_2 The second phylo object
+#' @return The absolute difference of the respective cophenetic indices
+compareCopheneticIndices <- function(tree_1, tree_2) {
+    index_1 <- tree_1 %>%
+        getCopheneticIndex
+    index_2 <- tree_2 %>%
+        getCopheneticIndex
+    difference <- abs(index_1 - index_2)
+    return(difference)
+}
