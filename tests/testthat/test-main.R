@@ -21,9 +21,23 @@ test_that("test.compareDistancesFromNaiveToMature", {
     m5 <- c("GGGG")
     dat_a <- data.table(naive_seq=naive_a, mature_seq=list(m1, m2, m3))
     dat_b <- data.table(naive_seq=naive_b, mature_seq=list(m2, m3, m4))
-    c1 <- compareDistancesFromNaiveToMature(dat_a, dat_a, do_automatic=FALSE)
-    c2 <- compareDistancesFromNaiveToMature(dat_a, dat_b, do_automatic=FALSE)
-    c3 <- compareDistancesFromNaiveToMature(dat_b, dat_a, do_automatic=FALSE)
+    c1 <- compareDistancesFromNaiveToMature(dat_a, 
+                                            dat_a, 
+                                            do_automatic=FALSE, 
+                                            approximate=FALSE,
+                                            v_gene_only=FALSE
+                                            )
+    c2 <- compareDistancesFromNaiveToMature(dat_a, 
+                                            dat_b, 
+                                            do_automatic=FALSE, 
+                                            approximate=FALSE,
+                                            v_gene_only=FALSE
+                                            )
+    c3 <- compareDistancesFromNaiveToMature(dat_b, 
+                                            dat_a, 
+                                            do_automatic=FALSE, 
+                                            approximate=FALSE,
+                                            v_gene_only=FALSE)
     expect_equal(0, c1)
     expect_equal(c3, c2)
     expect_true(c2 > 0)
@@ -97,7 +111,14 @@ test_that("test.getDistancesFromNaiveToMature", {
     m3 <- c("GGGGGG")
     m4 <- c("AAAAAA")
     dat <- data.table(naive_seq=naives, mature_seq=c(m1, m2, m3, m4))
-    expect_equal(c(0, 1, 3, 6), getDistancesFromNaiveToMature(dat))
+    expect_equal(c(0, 1, 3, 6), getDistancesFromNaiveToMature(dat,
+                                                              v_gene_only=FALSE
+                                                              ))
+    dat$v_gl_seq <- c("AAA", "CGC", "GGG", "AAA")
+    dat$v_qr_seqs <- rep("AAA", 4)
+    expect_equal(c(0, 0, 3, 3), 
+                 getDistancesFromNaiveToMature(dat)
+                 )
 })
 
 test_that("test.getDistanceVector", {

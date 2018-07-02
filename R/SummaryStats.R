@@ -346,9 +346,15 @@ compareColdspotCounts <- function(dat_a,
 #'
 #' @param dat Annotated dataset
 #' @return Vector of Levenshtein distances from naive to mature
-getDistancesFromNaiveToMature <- function(dat) {
-    distances <- dat$mature_seq %>% 
-        mapply(FUN=stringdist::stringdist, b=dat$naive_seq, method="lv") %>% 
+getDistancesFromNaiveToMature <- function(dat,
+                                          v_gene_only=TRUE
+                                          ) {
+    mature_column <- ifelse(v_gene_only, "v_qr_seqs", "mature_seq")
+    naive_column <- ifelse(v_gene_only, "v_gl_seq", "naive_seq")
+    distances <- dat[[mature_column]] %>% 
+        mapply(FUN=stringdist::stringdist, 
+               b=dat[[naive_column]], 
+               method="lv") %>% 
         sort %>% 
         unname
     return(distances)
@@ -356,6 +362,7 @@ getDistancesFromNaiveToMature <- function(dat) {
 
 getDistanceFromNaiveToMatureDistribution <- function(dat,
                                                      approximate=TRUE,
+                                                     v_gene_only=TRUE,
                                                      ...
                                                      ) {
     if(approximate) {
@@ -366,7 +373,7 @@ getDistanceFromNaiveToMatureDistribution <- function(dat,
                                        )
     } else {
         distribution <- dat %>%
-            getDistancesFromNaiveToMature
+            getDistancesFromNaiveToMature(v_gene_only=v_gene_only)
     }
 }
 

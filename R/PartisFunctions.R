@@ -178,7 +178,9 @@ collapseClones <- function(partition_dataset) {
                          "in_frames",
                          "stops",
                          "aligned_j_seqs",
-                         "aligned_v_seqs")
+                         "aligned_v_seqs",
+                         "v_qr_seqs"
+                         )
     partition_dataset$clone <- 0
     all_columns <- partition_dataset %>% names
 
@@ -250,6 +252,13 @@ getPartisAnnotations <- function(output_path,
     }
 
     if(collapse_clones) {
+        # v_qr_seqs by default contains Python lists of strings
+        # need to convert to colon-separated list before collapsing
+        annotated_data$v_qr_seqs <-
+            annotated_data$v_qr_seqs %>%
+            lapply(parsePythonDictionary) %>%
+            sapply(paste, collapse=":")
+
         annotated_data <- annotated_data %>%
             collapseClones
         collapsed_filename <- annotation_filename %>%
@@ -281,6 +290,14 @@ getPartisAnnotations <- function(output_path,
     }
 
     annotated_data$naive_seq <- annotated_data$naive_seq %>% 
+        sapply(toString) %>% 
+        tolower
+
+    annotated_data$v_qr_seqs <- annotated_data$v_qr_seqs %>%
+        sapply(toString) %>% 
+        tolower
+
+    annotated_data$v_gl_seq <- annotated_data$v_gl_seq %>%
         sapply(toString) %>% 
         tolower
 

@@ -11,7 +11,12 @@ do
     esac
 done
 
-COMMAND="$PARTISPATH $ACTION --infname $INFNAME --outfname $OUTFNAME --n-procs $NPROCS --parameter-dir $PARAMPATH"
+COMMAND="$PARTISPATH $ACTION \
+    --infname $INFNAME \
+    --outfname $OUTFNAME \
+    --n-procs $NPROCS \
+    --parameter-dir $PARAMPATH \
+    --extra-annotation-columns  v_gl_seq:v_qr_seqs"
 
 # Add the germline directory to the command only if passed
 if [ ! -z $GERMLINE_DIR ]
