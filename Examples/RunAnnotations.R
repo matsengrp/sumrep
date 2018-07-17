@@ -13,7 +13,7 @@ writeAnnotations <- function(filename,
                              germline_dir=NULL,
                              num_procs=100) {
     if(method == "partis") {
-        annotations <- annotateSequences(filename, 
+        annotations <- annotateSequences(input_filename=filename, 
                                          num_procs=num_procs,
                                          output_path="tmp_output",
                                          cleanup=FALSE,
@@ -42,25 +42,33 @@ writeAnnotations <- function(filename,
     }
 }
 
+igb_germline_dir <- "~/Software/igblast/partis_friendly_bin"
+
 write_igb_annotations <- FALSE
 if(write_igb_annotations) {
-    writeAnnotations("~/Data/FV-igh-m1h.fa", "data/Annotations/i_f1.rds", "igblast")
-    writeAnnotations("~/Data/FV-igh-m8d.fa", "data/Annotations/i_f2.rds", "igblast")
-    writeAnnotations("~/Data/GMC-igh-m1h.fa", "data/Annotations/i_g1.rds", "igblast")
+    writeAnnotations("~/Data/FV-igh-m1h.fa", 
+                     "data/Annotations/i_f1.rds", 
+                     "igblast")
+    writeAnnotations("~/Data/FV-igh-m8d.fa", 
+                     "data/Annotations/i_f2.rds", 
+                     "igblast")
+    writeAnnotations("~/Data/GMC-igh-m1h.fa", 
+                     "data/Annotations/i_g1.rds", 
+                     "igblast")
 }
 
-igb_germline_dir <- "~/Software/igblast/partis_friendly_bin"
 
 write_partis_annotations <- TRUE
 if(write_partis_annotations) {
+    writeAnnotations("~/Data/GMC-igh-m1h.fa", 
+                     "data/Annotations/p_g1.rds", 
+                     "partis")
+    stop()
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
                      "data/Annotations/p_f1.rds", 
                      "partis")
     writeAnnotations("~/Data/FV-igh-m8d.fa", 
                      "data/Annotations/p_f2.rds", 
-                     "partis")
-    writeAnnotations("~/Data/GMC-igh-m1h.fa", 
-                     "data/Annotations/p_g1.rds", 
                      "partis")
 }
 

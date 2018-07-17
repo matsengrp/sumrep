@@ -1,4 +1,5 @@
 library(viridis)
+ggplot2::theme_set(theme_gray(base_size = 14))
 
 getComparisonValue <- function(dat, comparison) {
     value <- dat %>% 
@@ -95,7 +96,7 @@ plotComparisons <- function(dat, filename, cols=1, rows=1) {
         length %>%
         getGridDims
     
-    pdf(filename, width=28, height=16)
+    pdf(filename, width=24, height=18)
     multiplot(plotlist=plot_list, cols=grid_dims[1], rows=grid_dims[2])
     dev.off()
 
@@ -178,7 +179,16 @@ score_plot <- score_dat %>% ggplot(aes(x=reorder(Comparison, Score),
                    "respect to comparisons of observations-to-observations")) +
     theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
           plot.margin=unit(c(1, 1, 1, 1.5), "cm"))
-ggsave("Images/score_plot.pdf", width=10, height=6)
+ggsave("Images/score_plot.pdf", width=20, height=12)
 
 plotComparisons(obs_sim_dat, "Images/sim_obs.pdf")
 plotComparisons(part_igb_dat, "Images/partis_igb.pdf")
+
+# Save plots to sumrep ms
+sumrep_ms_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures"
+ggsave(filename=file.path(sumrep_ms_dir, "score_plot.pdf"), 
+       plot=score_plot,
+       width=10, height=6)
+plotComparisons(obs_sim_dat, file.path(sumrep_ms_dir, "sim_obs.pdf"))
+plotComparisons(part_igb_dat, file.path(sumrep_ms_dir, "partis_igb.pdf"))
+
