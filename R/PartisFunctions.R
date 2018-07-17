@@ -22,7 +22,9 @@ callPartis <- function(action,
                        output_path, 
                        partis_path, 
                        num_procs, 
-                       germline_dir) {
+                       germline_dir,
+                       extra_columns
+                       ) {
     shell <- Sys.getenv("SHELL")
     script.file <- system.file("run_partis.sh", package="sumrep")
     command <- paste(shell, script.file, 
@@ -32,11 +34,19 @@ callPartis <- function(action,
                      "-o", output_filename, 
                      "-n", num_procs,
                      "-h", file.path(output_path, "params"))
-    if(!missing(germline_dir)) {
+    if(!missing(germline_dir) && !is.null(germline_dir)) {
+        print(germline_dir)
         command <- paste(command,
                          "-g",
                          germline_dir)
     }
+
+    if(!missing(extra_columns) && !is.null(extra_columns)) {
+        command <- paste(command,
+                         "-e",
+                         extra_columns)
+    }
+
     command %>% 
         system
     partis_dataset <- output_filename %>% 
@@ -231,7 +241,7 @@ collapseClones <- function(partition_dataset) {
 getPartisAnnotations <- function(output_path,
                                  output_filename,
                                  partis_path=Sys.getenv("PARTIS_PATH"),
-                                 do_full_annotation=TRUE,
+                                 do_full_annotation=FALSE,
                                  collapse_clones=TRUE
                                 ) {
     annotation_filename <- output_filename %>%
@@ -252,15 +262,9 @@ getPartisAnnotations <- function(output_path,
     }
 
     if(collapse_clones) {
-        # v_qr_seqs by default contains Python lists of strings
-        # need to convert to colon-separated list before collapsing
-        annotated_data$v_qr_seqs <-
-            annotated_data$v_qr_seqs %>%
-            lapply(parsePythonDictionary) %>%
-            sapply(paste, collapse=":")
-
         annotated_data <- annotated_data %>%
             collapseClones
+
         collapsed_filename <- annotation_filename %>%
             gsub(pattern='.csv',
                  replace='-collapsed.csv')
@@ -321,14 +325,15 @@ getPartisAnnotations <- function(output_path,
 annotateSequences <- function(input_filename, 
                               output_filename="partis_output.csv", 
                               partis_path=Sys.getenv("PARTIS_PATH"), 
-                              num_procs=4, 
+                              num_procs=16, 
                               partition=TRUE,
                               collapse_clones=TRUE,
                               cleanup=TRUE, 
-                              do_full_annotation=TRUE, 
+                              do_full_annotation=FALSE, 
                               output_path="_output",
                               run_partis=TRUE,
-                              germline_dir=NULL
+                              germline_dir=NULL,
+                              extra_columns="v_gl_seq:v_qr_seqs"
                               ) {
     preventOutputOverwrite(output_path, cleanup)
     if(partition) {
@@ -338,7 +343,9 @@ annotateSequences <- function(input_filename,
                                              num_procs,
                                              cleanup=FALSE,
                                              output_path,
-                                             germline_dir)
+                                             germline_dir=germline_dir,
+                                             extra_columns=extra_columns
+                                             )
     } else {
         output_file <- file.path(output_path, output_filename)
         annotated_data <- callPartis("annotate", 
@@ -376,7 +383,9 @@ partitionSequences <- function(input_filename,
                                num_procs=4, 
                                cleanup=TRUE, 
                                output_path="_output",
-                               germline_dir=NULL) {
+                               germline_dir=NULL,
+                               extra_columns
+                               ) {
     preventOutputOverwrite(output_path, cleanup)
 
     output_file <- file.path(output_path, output_filename)
@@ -386,7 +395,9 @@ partitionSequences <- function(input_filename,
                                    output_path, 
                                    partis_path, 
                                    num_procs,
-                                   germline_dir)
+                                   germline_dir=germline_dir,
+                                   extra_columns=extra_columns
+                                   )
 
     if(cleanup) {
         output_path %>% 
@@ -408,7 +419,9 @@ simulateDataset <- function(parameter_dir,
                             num_events=NULL,
                             num_leaves=NULL,
                             cleanup=TRUE,
-                            do_full_annotation=TRUE) {
+                            do_full_annotation=FALSE,
+                            extra_columns="v_gl_seq:v_qr_seqs"
+                            ) {
     partis_command <- paste(partis_path, "simulate", 
                             "--parameter-dir", file.path(parameter_dir, "params"),
                             "--outfname", output_file)
@@ -422,6 +435,13 @@ simulateDataset <- function(parameter_dir,
         partis_command <- paste(partis_command,
                                 "--n-leaves", num_leaves)
     }
+
+    if(!is.null(extra_columns)) {
+        partis_command <- paste(partis_command,
+                                "--extra-annotation-columns", extra_columns)
+    }
+
+    print(partis_command)
 
     partis_command %>% 
         system
