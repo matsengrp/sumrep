@@ -189,7 +189,8 @@ collapseClones <- function(partition_dataset) {
                          "stops",
                          "aligned_j_seqs",
                          "aligned_v_seqs",
-                         "v_qr_seqs"
+                         "v_qr_seqs",
+                         "cdr3_seqs"
                          )
     partition_dataset$clone <- 0
     all_columns <- partition_dataset %>% names
@@ -305,6 +306,10 @@ getPartisAnnotations <- function(output_path,
         sapply(toString) %>% 
         tolower
 
+    annotated_data$cdr3s <- annotated_data$cdr3_seqs %>%
+        sapply(toString) %>%
+        tolower
+
     annotated_data <- annotated_data %>% 
         processMatureSequences
 
@@ -333,7 +338,7 @@ annotateSequences <- function(input_filename,
                               output_path="_output",
                               run_partis=TRUE,
                               germline_dir=NULL,
-                              extra_columns="v_gl_seq:v_qr_seqs"
+                              extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs"
                               ) {
     preventOutputOverwrite(output_path, cleanup)
     if(partition) {
