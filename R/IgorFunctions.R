@@ -10,6 +10,7 @@ runIgor <- function(input_filename,
                     ) {
     igor_command <- paste("sh inst/run_igor.sh",
                           "-w", dir_name,
+                          "-i", input_filename,
                           "-n", num_scenarios,
                           "-g", num_gen_sequences,
                           "-e", eval_batch_name,
@@ -17,12 +18,13 @@ runIgor <- function(input_filename,
                           "-c", chain,
                           "-s", species
                           )
+    cat(igor_command, '\n')
     igor_command %>% system
 }
 
 getIgorAnnotations <- function(input_filename,
                                dir_name="tmp",
-                               num_scenarios=10,
+                               num_scenarios=1,
                                species="human",
                                chain="beta",
                                cleanup=TRUE
