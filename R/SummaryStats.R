@@ -675,7 +675,6 @@ getHydrophobicityDistribution <- function(sequence_list,
                                           include_NA=FALSE
                                           ) {
     hydrophobicity_list <- sequence_list %>% 
-        convertNucleobasesToAminoAcids %>%
         filterAminoAcidSequences %>%
         sapply(getHydrophobicityFromAASequence)
 
@@ -685,8 +684,8 @@ getHydrophobicityDistribution <- function(sequence_list,
 compareHydrophobicityDistributions <- function(dat_a, dat_b) {
     divergence <- 
         getAutomaticAverageDivergence(
-            dat_a %$% cdr3s,
-            dat_b %$% cdr3s,
+            dat_a %$% cdr3_aa,
+            dat_b %$% cdr3_aa,
             getHydrophobicityDistribution,
             subsample_count=100,
             divergenceFunction=getContinuousJSDivergence,
@@ -765,7 +764,6 @@ getAliphaticIndex <- function(aa_sequence) {
 #' @return Vector of aliphatic indices
 getAliphaticIndexDistribution <- function(sequence_list) {
     a_indices <- sequence_list %>% 
-        convertNucleobasesToAminoAcids %>%
         filterAminoAcidSequences %>%
         sapply(function(x) {
                    ifelse(!is.na(x),
@@ -784,8 +782,8 @@ getAliphaticIndexDistribution <- function(sequence_list) {
 #' @return The JS divergence of the two distributions
 compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
     divergence <- getAutomaticAverageDivergence(
-        dat_a %$% cdr3s,
-        dat_b %$% cdr3s,
+        dat_a %$% cdr3_aa,
+        dat_b %$% cdr3_aa,
         getAliphaticIndexDistribution,
         subsample_count=100,
         divergenceFunction=getContinuousJSDivergence)
@@ -798,7 +796,6 @@ compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
 #' @return Vector of GRAVY values for \code{sequence_list}
 getGRAVYDistribution <- function(sequence_list) {
     dist <- sequence_list %>% 
-            convertNucleobasesToAminoAcids %>%
             filterAminoAcidSequences %>%
             sapply(function(x) {
                    ifelse(!is.na(x),
@@ -817,10 +814,10 @@ getGRAVYDistribution <- function(sequence_list) {
 #' @return The JS divergence of GRAVY distributions
 compareGRAVYDistributions <- function(dat_a, dat_b) {
     dist_a <- dat_a %$% 
-        cdr3s %>% 
+        cdr3_aa %>% 
         getGRAVYDistribution
     dist_b <- dat_b %$% 
-        cdr3s %>% 
+        cdr3_aa %>% 
         getGRAVYDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
