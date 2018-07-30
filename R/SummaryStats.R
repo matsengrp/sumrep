@@ -24,7 +24,7 @@ source("R/PartisFunctions.R")
 #' The comparison method is determined based on whether 
 #' all sequences are of the same length. If so, use hamming distance; 
 #' else use Levenshtein.
-#' @param List/vector of DNA sequences
+#' @param sequence_list List/vector of DNA sequences
 #' @return String-valued comparison method for use in stringdistmatrix within 
 #'   the getDistanceMatrix function
 determineComparisonMethod <- function(sequence_list) {
@@ -68,6 +68,12 @@ getDistanceVector <- function(sequence_list) {
     return(vec)
 }
 
+#' Get an exact or approximate distribution of pairwise distances
+#'
+#' @param sequence_list vector of DNA sequence strings
+#' @param approximate if TRUE, approximate the distribution by subsampling
+#'   and averaging
+#' @return vector of integer-valued distances
 getPairwiseDistanceDistribution <- function(sequence_list,
                                             approximate=TRUE,
                                             ...
@@ -96,6 +102,8 @@ getPairwiseDistanceDistribution <- function(sequence_list,
 #'   by \code{subsample_count}, and returns the mean divergence.
 #' @param dat_a First dataset, containing mature sequences
 #' @param dat_b Second dataset, containing mature sequences
+#' @param approximate If TRUE, uses approximate pairwise distance distributions
+#' @param do_automatic If TRUE, approximate divergence using subsampling
 #' @inheritParams getAutomaticAverageDivergence 
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
@@ -104,7 +112,8 @@ comparePairwiseDistanceDistributions <- function(dat_a,
                                                  do_automatic=TRUE,
                                                  approximate=TRUE,
                                                  subsample_count=100,
-                                                 trial_count=10) {
+                                                 trial_count=10
+                                                 ) {
     mature_a <- dat_a %$% mature_seq
     mature_b <- dat_b %$% mature_seq
     if(do_automatic) {
@@ -132,7 +141,9 @@ comparePairwiseDistanceDistributions <- function(dat_a,
 #'   k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 #'   the second-nearest neighbor, etc.
 #' @return Vector of kth nearest neighbor distances
-getNearestNeighborDistances <- function(sequence_list, k=1) {
+getNearestNeighborDistances <- function(sequence_list, 
+                                        k=1
+                                        ) {
     mat <- sequence_list %>% 
         getDistanceMatrix
     n <- sequence_list %>% 
@@ -145,6 +156,14 @@ getNearestNeighborDistances <- function(sequence_list, k=1) {
     return(distances)
 }
 
+#' Get exact or approximate nearest neighbor distribution
+#'
+#' @param sequence_list vector of DNA sequence strings
+#' @param approximate If TRUE, approximate distribution by subsampling.
+#'   Note: this inhibits interpretability since any subsample will have a 
+#'   different definition of a "nearest neighbor"
+#' @inheritParams getNearestNeighborDistances
+#' @return vector of integer-value distances
 getNearestNeighborDistribution <- function(sequence_list, 
                                            k=1,
                                            approximate=TRUE,
@@ -175,11 +194,15 @@ getNearestNeighborDistribution <- function(sequence_list,
 #' @param k The separation depth for the nearest neighbor distances.
 #'   k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 #'   the second-nearest neighbor, etc.
+#' @inheritParams getAutomaticAverageDivergence
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
-compareNNDistanceDistributions <- function(dat_a, dat_b, k=1,
+compareNNDistanceDistributions <- function(dat_a, 
+                                           dat_b, 
+                                           k=1,
                                            subsample_count=100,
-                                           trial_count=10) {
+                                           trial_count=10
+                                           ) {
     average_divergence <- 
         getAutomaticAverageDivergence(dat_a %$% mature_seq,
                                       dat_b %$% mature_seq,
@@ -189,14 +212,7 @@ compareNNDistanceDistributions <- function(dat_a, dat_b, k=1,
     return(average_divergence)
 }
 
-#' Get the GC content distribution of a list of DNA sequences
-#'
-#' \code{getGCContentDistribution} returns a list of the GC content of each DNA
-#'   sequence in \code{raw_sequences}, given by the \code{ape} library
-#' @param raw_sequences List or vector of strings or character sequences
-#'   corresponding to DNA sequences
-#' @return A vector of GC content values
-getGCContentDistribution <- function(raw_sequences) {
+getGCContent <- function(raw_sequences) {
     sequence_list <- raw_sequences %>% 
         sapply(paste, collapse='') %>% 
         unname
@@ -206,6 +222,30 @@ getGCContentDistribution <- function(raw_sequences) {
     gc_dist <- dna_list %>% 
         sapply(ape::GC.content)
     return(gc_dist)
+}
+
+#' Get the GC content distribution of a list of DNA sequences
+#'
+#' \code{getGCContentDistribution} returns a list of the GC content of each DNA
+#'   sequence in \code{raw_sequences}, given by the \code{ape} library
+#' @param sequence_list List or vector of strings or character sequences
+#'   corresponding to DNA sequences
+#' @return A vector of GC content values
+getGCContentDistribution <- function(sequence_list,
+                                     approximate=TRUE
+                                     ) {
+    if(approximate) {
+        distribution <- sequence_list %>%
+            getApproximateDistribution(summary_function=getGCContent,
+                                       divergence_function=getContinuousJSDivergence
+                                       )
+
+    } else {
+        distribution <- sequence_list %>%
+            getGCContent
+    }
+
+    return(distribution)
 }
 
 #' Compare the GC distributions of two lists of DNA sequences
@@ -261,7 +301,8 @@ getSpotCount <- function(dna_sequences, spots) {
 #' @inheritParams getMotifCount
 #' @return The number of AID hotspot occurrences in \code{dna_sequences}
 getHotspotCount <- function(dna_sequences, hotspots=c("WRC", "WA")) {
-    return(getSpotCount(dna_sequences, hotspots))
+    return(getSpotCount(dna_sequences=dna_sequences, 
+                        spots=hotspots))
 }
 
 #' Get the number of occurrences of AID coldspots in a set of reference 
@@ -270,7 +311,8 @@ getHotspotCount <- function(dna_sequences, hotspots=c("WRC", "WA")) {
 #' @inheritParams getMotifCount
 #' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
 getColdspotCount <- function(dna_sequences, coldspots=c("SYC")) {
-    return(getSpotCount(dna_sequences, coldspots))
+    return(getSpotCount(dna_sequences=dna_sequences, 
+                        spots=coldspots))
 }
 
 #' Compare hot or coldspot count distributions of two sets of mature BCR sequences
@@ -439,16 +481,17 @@ compareCDR3Lengths <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-#' Get gene usage table from full list of genes, setting zero to unused ones
+#' Get usage table from full list of categorical variables, such as
+#'   genes or amino acids, setting zero to unused ones
 #' 
-#' @param gene_list List of genes being used in a given repertoire
-#' @param gene_list List of all available genes present in at least one
-#'   repertoire under consideration
-getGeneUsageTableFromFullList <- function(gene_list, full_gene_list) {
-    usage_table <- gene_list %>% 
+#' @param factor_list List of factors
+#' @param full_factor_list Full list of reference factors under consideration
+#' @return A table of usage counts of \code{factor_list}
+getUsageTableFromFullList <- function(factor_list, full_factor_list) {
+    usage_table <- factor_list %>% 
         table
-    usage_table[full_gene_list %>% 
-                setdiff(gene_list) %>% 
+    usage_table[full_factor_list %>% 
+                setdiff(factor_list) %>% 
                 unlist] <- 0
     return(usage_table)
 }
@@ -484,9 +527,9 @@ compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
     }
     full_gene_list <- union(gene_list_a, gene_list_b)
     table_a <- gene_list_a %>% 
-        getGeneUsageTableFromFullList(full_gene_list)
+        getUsageTableFromFullList(full_gene_list)
     table_b <- gene_list_b %>% 
-        getGeneUsageTableFromFullList(full_gene_list)
+        getUsageTableFromFullList(full_gene_list)
     divergence <- full_gene_list %>% 
         sapply(function(x) { abs(table_a[x] - table_b[x]) }) %>% 
         sum
@@ -710,7 +753,8 @@ compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
 #' @return The aliphatic index of \code{dna_sequence}, if applicable
 getAliphaticIndex <- function(aa_sequence) {
     aliphatic_index <- aa_sequence %>% 
-               Peptides::aIndex()
+               Peptides::aIndex() %>%
+               ifelse(. < 125, ., NA) # Don't bother with outliers
 
     return(aliphatic_index)
 }
