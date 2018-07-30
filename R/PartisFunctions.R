@@ -294,6 +294,16 @@ getPartisAnnotations <- function(output_path,
             getMutationInfo
     }
 
+    annotated_data <- annotated_data %>%
+        processSequences
+
+    annotation_object <- {}
+    annotation_object$annotations <- annotated_data
+    annotation_object$mutation_rates <- mutation_rates
+    return(annotation_object)
+}
+
+processSequences <- function(annotated_data) {
     annotated_data$naive_seq <- annotated_data$naive_seq %>% 
         sapply(toString) %>% 
         tolower
@@ -310,16 +320,16 @@ getPartisAnnotations <- function(output_path,
         sapply(toString) %>%
         tolower
 
+    annotated_data$cdr3_aa <- annotated_data$cdr3s %>%
+        convertNucleobasesToAminoAcids
+
     annotated_data <- annotated_data %>% 
         processMatureSequences
 
     annotated_data$in_frames <- annotated_data$in_frames %>% 
         as.logical
 
-    annotation_object <- {}
-    annotation_object$annotations <- annotated_data
-    annotation_object$mutation_rates <- mutation_rates
-    return(annotation_object)
+    return(annotated_data)
 }
 
 #' Perform sequence annotation with partis.
@@ -425,7 +435,7 @@ simulateDataset <- function(parameter_dir,
                             num_leaves=NULL,
                             cleanup=TRUE,
                             do_full_annotation=FALSE,
-                            extra_columns="v_gl_seq:v_qr_seqs"
+                            extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs"
                             ) {
     partis_command <- paste(partis_path, "simulate", 
                             "--parameter-dir", file.path(parameter_dir, "params"),
@@ -466,7 +476,7 @@ simulateDataset <- function(parameter_dir,
     }
 
     sim_annotations <- sim_annotations %>% 
-        processMatureSequences
+        processSequences
 
     sim_data <- list(annotations=sim_annotations)
     return(sim_data)
