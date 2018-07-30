@@ -435,7 +435,7 @@ simulateDataset <- function(parameter_dir,
                             num_leaves=NULL,
                             cleanup=TRUE,
                             do_full_annotation=FALSE,
-                            extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs"
+                            extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq"
                             ) {
     partis_command <- paste(partis_path, "simulate", 
                             "--parameter-dir", file.path(parameter_dir, "params"),

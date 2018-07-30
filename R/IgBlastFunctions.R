@@ -189,6 +189,9 @@ getIgBlastAnnotations <- function(input_filename,
         annotations$cdr3s <- annotations$cdr3s %>%
             sapply(toString)
 
+        annotations$cdr3_aa <- annotations$cdr3s %>%
+            sapply(convertNucleobasesToAminoAcids)
+
         # For now, keep only the first gene if given in a per-sequence list 
         annotations$v_gene <- annotations$v_gene %>%
             processGenes

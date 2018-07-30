@@ -435,12 +435,11 @@ compareDistancesFromNaiveToMature <- function(dat_a,
             getAutomaticAverageDivergence(
                 dat_a,
                 dat_b,
-                getDistanceFromNaiveToMatureDistribution(
-                    approximate=approximate,
-                    ...
-                ),
+                getDistanceFromNaiveToMatureDistribution,
+                approximate=approximate,
                 subsample_count=100,
-                tolerance=1e-3
+                tolerance=1e-3,
+                ...
             )
     } else {
         dist_a <- dat_a %>% 
@@ -714,9 +713,7 @@ getAtchleyFactorList <- function(aa_seq, factor_number) {
 #' @return Vector of means of each of the five Atchley factors of \code{sequence_list}
 getMeanAtchleyFactorDistribution <- function(sequence_list) {
     collapsed_sequence <- sequence_list %>% 
-        filterStringsForAAFunctions %>%
-        sapply(convertNucleobasesToAminoAcids) %>%
-        removeBadAminoAcidSequences %>%
+        filterAminoAcidSequences %>%
         paste(collapse='')
     factor_numbers <- 1:5
     mean_atchley_factors <- rep(NA, length(factor_numbers))
@@ -738,8 +735,8 @@ getMeanAtchleyFactorDistribution <- function(sequence_list) {
 #'   of \code{dat_a} and \code{dat_b}
 compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
     divergence <- getAutomaticAverageDivergence(
-        dat_a %$% cdr3s,
-        dat_b %$% cdr3s,
+        dat_a %$% cdr3_aa,
+        dat_b %$% cdr3_aa,
         getMeanAtchleyFactorDistribution,
         subsample_count=100,
         divergenceFunction=getSumOfAbsoluteDifferences)
@@ -1024,9 +1021,11 @@ getMutabilityModel <- function(dat,
     return(mut_mat)
 }
 
-compareMutabilityModels <- function(dat_a, dat_b, 
+compareMutabilityModels <- function(dat_a, 
+                                    dat_b, 
                                     sub_mod_a=getSubstitutionModel(dat_a),
-                                    sub_mod_b=getSubstitutionModel(dat_b)) {
+                                    sub_mod_b=getSubstitutionModel(dat_b)
+                                    ) {
     model_a <- dat_a %>% 
         getMutabilityModel(substitution_model=sub_mod_a)
     model_b <- dat_b %>% 
