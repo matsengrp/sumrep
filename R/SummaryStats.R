@@ -1425,9 +1425,10 @@ compareCopheneticIndices <- function(tree_1, tree_2) {
 #'
 #' @param sequences Vector of amino acid sequences
 #' @return table of counts for each amino acid in \code{sequences}
-getAminoAcidDistribution <- function(sequences,
+getAminoAcidDistribution <- function(dat,
                                      standardize=TRUE
-) {
+                                    ) {
+    sequences <- dat %$% cdr3_aa
     aa_dist <- paste(sequences[!is.na(sequences)], collapse="") %>%
         strsplit(split="") %>%
         unlist %>%
@@ -1453,11 +1454,13 @@ compareCategoricalDistributions <- function(d1,
 }
 
 compareAminoAcidDistributions <- 
-    function(aa_seqs_1,
-             aa_seqs_2,
-             aa_dist_1=getAminoAcidDistribution(aa_seqs_1),
-             aa_dist_2=getAminoAcidDistribution(aa_seqs_2)) 
+    function(dat_a,
+             dat_b,
+             aa_dist_1=getAminoAcidDistribution(dat_a),
+             aa_dist_2=getAminoAcidDistribution(dat_b)) 
 {
+    print(aa_dist_1)
+    print(aa_dist_2)
     divergence <- compareCategoricalDistributions(aa_dist_1, aa_dist_2)
     return(divergence)    
 }
@@ -1475,9 +1478,10 @@ getSequence2mers <- function(sequence) {
     return(seq_2mers)
 }
 
-getAminoAcid2merDistribution <- function(sequences,
+getAminoAcid2merDistribution <- function(dat,
                                          standardize=TRUE
-                                         ) {
+                                        ) {
+    sequences <- dat %$% cdr3_aa
     dist <- sequences[!is.na(sequences)] %>%
         lapply(getSequence2mers) %>%
         unlist %>%
@@ -1491,10 +1495,10 @@ getAminoAcid2merDistribution <- function(sequences,
 }
 
 compareAminoAcid2merDistributions <- 
-    function(aa_seqs_1,
-             aa_seqs_2,
-             aa_dist_1=getAminoAcid2merDistribution(aa_seqs_1),
-             aa_dist_2=getAminoAcid2merDistribution(aa_seqs_2)) 
+    function(dat_a,
+             dat_b,
+             aa_dist_1=getAminoAcid2merDistribution(dat_a),
+             aa_dist_2=getAminoAcid2merDistribution(dat_b)) 
 {
     divergence <- compareCategoricalDistributions(aa_dist_1, aa_dist_2)
     return(divergence)    
