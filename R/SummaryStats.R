@@ -1459,8 +1459,6 @@ compareAminoAcidDistributions <-
              aa_dist_1=getAminoAcidDistribution(dat_a),
              aa_dist_2=getAminoAcidDistribution(dat_b)) 
 {
-    print(aa_dist_1)
-    print(aa_dist_2)
     divergence <- compareCategoricalDistributions(aa_dist_1, aa_dist_2)
     return(divergence)    
 }
