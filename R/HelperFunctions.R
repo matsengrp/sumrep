@@ -216,3 +216,31 @@ getApproximateDistribution <- function(dat,
 
     return(dist)
 }
+
+#' Display an array of ggplots within one figure
+#' @param plotlist List of plots created with ggplot
+#' @param cols Number of columns for the figure
+#' @param rows Number of rows for the figure
+multiplot <- function(plotlist=NULL, cols=1, rows=1, layout=NULL, ...) {
+    library(grid)
+    plots <- c(list(...), plotlist)
+    numPlots = length(plots)
+
+    if(is.null(layout)) {
+        print(rows)
+        print(cols)
+        layout <- matrix(seq(1, cols * rows),
+                         ncol = cols, nrow = rows)
+    }
+    if (numPlots==1) {
+       print(plots[[1]])
+    } else {
+        grid.newpage()
+        pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+        for(i in 1:numPlots) {
+            matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+            print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                            layout.pos.col = matchidx$col))
+        }   
+    }     
+} 
