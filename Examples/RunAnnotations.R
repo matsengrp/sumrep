@@ -32,7 +32,7 @@ writeAnnotations <- function(filename,
                                       )
         saveRDS(simulation, outname %>% gsub(pattern='.rds',
                                              replace='-sim.rds'))
-        "tmp_output" %>% unlink
+        "tmp_output" %>% unlink(recursive=TRUE)
     } else if(method == "igblast") {
         annotations <- getIgBlastAnnotations(filename, 
                                              num_threads=num_procs,
@@ -44,26 +44,12 @@ writeAnnotations <- function(filename,
 
 igb_germline_dir <- "~/Software/igblast/partis_friendly_bin"
 
-write_igb_annotations <- FALSE
-if(write_igb_annotations) {
-    writeAnnotations("~/Data/FV-igh-m1h.fa", 
-                     "data/Annotations/i_f1.rds", 
-                     "igblast")
-    writeAnnotations("~/Data/FV-igh-m8d.fa", 
-                     "data/Annotations/i_f2.rds", 
-                     "igblast")
-    writeAnnotations("~/Data/GMC-igh-m1h.fa", 
-                     "data/Annotations/i_g1.rds", 
-                     "igblast")
-}
-
 
 write_partis_annotations <- TRUE
 if(write_partis_annotations) {
     writeAnnotations("~/Data/GMC-igh-m1h.fa", 
                      "data/Annotations/p_g1.rds", 
                      "partis")
-    stop()
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
                      "data/Annotations/p_f1.rds", 
                      "partis")
@@ -86,4 +72,17 @@ if(write_partis_igb_annotations) {
                      "data/Annotations/pi_g1.rds", 
                      "partis",
                      germline_dir=igb_germline_dir)
+}
+
+write_igb_annotations <- TRUE
+if(write_igb_annotations) {
+    writeAnnotations("~/Data/FV-igh-m1h.fa", 
+                     "data/Annotations/i_f1.rds", 
+                     "igblast")
+    writeAnnotations("~/Data/FV-igh-m8d.fa", 
+                     "data/Annotations/i_f2.rds", 
+                     "igblast")
+    writeAnnotations("~/Data/GMC-igh-m1h.fa", 
+                     "data/Annotations/i_g1.rds", 
+                     "igblast")
 }
