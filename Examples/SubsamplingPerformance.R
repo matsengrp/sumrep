@@ -32,6 +32,7 @@ if(do_dists) {
     
     # Get subsampled distributions for various tolerances
     times <- {}
+    divergences <- {}
     distributions <- list()
     tols <- 10^seq(-1, -7)
     
@@ -41,6 +42,8 @@ if(do_dists) {
                                                               approximate=TRUE,
                                                               tol=tols[i])
         times[i] <- (proc.time() - pt)["elapsed"]
+        divergences[i] <- getJSDivergence(distributions[[i]], true_dat$Value,
+                                          KL=TRUE)
     }
     
     dist_dat <- distributions %>%
@@ -50,20 +53,19 @@ if(do_dists) {
         do.call(rbind, .) %>%
         rbind(., true_dat)
     
-    print("Hi")
     dist_dat$Value <- as.numeric(dist_dat$Value)
 }
     
 dist_plot <- ggplot(dist_dat,
        aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
-    geom_density(adjust=3) +
+    geom_density(adjust=4) +
     xlim(0, 60) +
     xlab("Pairwise Distance") +
     ylab("Density")
 ggsave("~/Manuscripts/sumrep-ms/Figures/dists_by_tol.pdf", width=10)
 
-time_dat <- data.frame(Time=times, Tolerance=tols)
-time_plot <- ggplot(d=time_dat, aes(x=log10(Tolerance), y=Time)) +
+metric_dat <- data.frame(Time=times, Tolerance=tols, Divergence=divergences)
+time_plot <- ggplot(d=metric_dat, aes(x=log10(Tolerance), y=Time)) +
     geom_point() +
     geom_hline(yintercept=true_time, colour="red") +
     geom_text(aes(0, true_time, label="Time for full dataset", hjust=1, 
@@ -71,6 +73,7 @@ time_plot <- ggplot(d=time_dat, aes(x=log10(Tolerance), y=Time)) +
     xlab("Log_10(tolerance)") +
     ylab("Time (seconds)") +
     ggtitle("Time complexity of distribution subsampling by tolerance")
+ggsave("~/Manuscripts/sumrep-ms/Figures/time_by_tol.pdf", width=10)
 
 log_time_plot <- ggplot(d=time_dat, aes(x=log10(Tolerance), y=log(Time))) +
     geom_point() +
@@ -82,6 +85,11 @@ log_time_plot <- ggplot(d=time_dat, aes(x=log10(Tolerance), y=log(Time))) +
     ggtitle(
      "Time complexity (in log-seconds) of distribution subsampling by tolerance"
     )
+ggsave("~/Manuscripts/sumrep-ms/Figures/log_time_by_tol.pdf", width=10)
 
-m <- multiplot(plotlist=list(time_plot, log_time_plot), cols=2)
-ggsave("~/Manuscripts/sumrep-ms/Figures/time_by_tol.pdf", width=10)
+div_plot <- ggplot(d=metric_dat, aes(x=log10(Tolerance), y=Divergence)) +
+    geom_point() +
+    xlab("Log_10(tolerance)") +
+    ylab("KL-divergence") +
+    ggtitle("KL-divergence to true distribution by tolerance")
+ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_tol.pdf", width=10)

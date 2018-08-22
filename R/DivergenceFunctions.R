@@ -1,3 +1,5 @@
+library(entropy)
+
 #' Discretize two lists of continuous data into mutual, well-defined bins.
 #' 
 #' @param list_a First list to bin
@@ -95,7 +97,7 @@ getContinuousJSDivergenceByIntegration <- function(sample_1, sample_2) {
 #' getJSDivergence(l1, l2)
 #' getJSDivergence(l2, l1)
 #' getJSDivergence(l1, l1)
-getJSDivergence <- function(list_a, list_b, continuous=FALSE) {
+getJSDivergence <- function(list_a, list_b, continuous=FALSE, KL=FALSE) {
     tabulateDiscreteData <- function(data_list, factor_levels) {
         result <- data_list %>%
             factor(levels=factor_levels) %>%
@@ -115,7 +117,11 @@ getJSDivergence <- function(list_a, list_b, continuous=FALSE) {
             tabulateDiscreteData(factor_levels=factor_levels)
         table_b <- list_b %>%
             tabulateDiscreteData(factor_levels=factor_levels)
-        divergence <- textmineR::CalcJSDivergence(table_a, table_b)
+        if(KL) {
+            divergence <- entropy::KL.empirical(table_a, table_b)
+        } else {
+            divergence <- textmineR::CalcJSDivergence(table_a, table_b)
+        }
     }
     return(divergence)
 }
