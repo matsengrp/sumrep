@@ -74,10 +74,12 @@ getDistanceVector <- function(sequence_list) {
 #' @param approximate if TRUE, approximate the distribution by subsampling
 #'   and averaging
 #' @return vector of integer-valued distances
-getPairwiseDistanceDistribution <- function(sequence_list,
+getPairwiseDistanceDistribution <- function(dat,
+                                            column="mature_seq",
                                             approximate=TRUE,
                                             ...
                                             ) {
+    sequence_list <- dat[[column]]
     if(approximate) {
         distribution <- sequence_list %>%
             getApproximateDistribution(summary_function=getDistanceVector,
@@ -404,7 +406,7 @@ getDistancesFromNaiveToMature <- function(dat,
 
 getDistanceFromNaiveToMatureDistribution <- function(dat,
                                                      approximate=TRUE,
-                                                     v_gene_only=TRUE,
+                                                     v_gene_only=FALSE,
                                                      ...
                                                      ) {
     if(approximate) {
