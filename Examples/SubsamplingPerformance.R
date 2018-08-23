@@ -31,19 +31,34 @@ if(do_dists) {
     true_time <- true_info$true_time
     
     # Get subsampled distributions for various tolerances
+    trial.count <- 10
     times <- {}
+    metric_names <- c("Tolerance", "Time", "Divergence", "Trial")
+    metric_dat <- matrix(nrow=0, ncol=4) %>%
+        data.frame %>%
+        setNames(metric_names)
     divergences <- {}
-    distributions <- list()
-    tols <- 10^seq(-1, -7)
-    
-    for(i in 1:length(tols)) { pt <- proc.time()
-        distributions[[i]] <- getPairwiseDistanceDistribution(dat,
-                                                              column="cdr3s",
-                                                              approximate=TRUE,
-                                                              tol=tols[i])
-        times[i] <- (proc.time() - pt)["elapsed"]
-        divergences[i] <- getJSDivergence(distributions[[i]], true_dat$Value,
-                                          KL=TRUE)
+    for(trial in 1:trial.count) {
+        distributions <- list()
+        tols <- 10^seq(-1, -7)
+        
+        for(i in 1:length(tols)) { pt <- proc.time()
+            distributions[[i]] <- getPairwiseDistanceDistribution(dat,
+                                                                  column="cdr3s",
+                                                                  approximate=TRUE,
+                                                                  tol=tols[i])
+            times[i] <- (proc.time() - pt)["elapsed"]
+            divergences[i] <- getJSDivergence(distributions[[i]], 
+                                                true_dat$Value,
+                                                KL=TRUE)
+
+            metric_dat <- rbind(metric_dat,
+                                data.frame(Tolerance=tols[i],
+                                           Time=times[i],
+                                           Divergence=divergences[i],
+                                           Trial=trial)
+                                )
+        }
     }
     
     dist_dat <- distributions %>%
@@ -64,9 +79,9 @@ dist_plot <- ggplot(dist_dat,
     ylab("Density")
 ggsave("~/Manuscripts/sumrep-ms/Figures/dists_by_tol.pdf", width=10)
 
-metric_dat <- data.frame(Time=times, Tolerance=tols, Divergence=divergences)
-time_plot <- ggplot(d=metric_dat, aes(x=log10(Tolerance), y=Time)) +
-    geom_point() +
+time_plot <- ggplot(d=metric_dat, 
+                    aes(x=log10(Tolerance), y=Time, group=log10(Tolerance))) +
+    geom_boxplot() +
     geom_hline(yintercept=true_time, colour="red") +
     geom_text(aes(0, true_time, label="Time for full dataset", hjust=1, 
                   vjust=-1)) +
@@ -75,8 +90,9 @@ time_plot <- ggplot(d=metric_dat, aes(x=log10(Tolerance), y=Time)) +
     ggtitle("Time complexity of distribution subsampling by tolerance")
 ggsave("~/Manuscripts/sumrep-ms/Figures/time_by_tol.pdf", width=10)
 
-log_time_plot <- ggplot(d=time_dat, aes(x=log10(Tolerance), y=log(Time))) +
-    geom_point() +
+log_time_plot <- ggplot(d=metric_dat, 
+                        aes(x=log10(Tolerance), y=log(Time), group=log10(Tolerance))) +
+    geom_boxplot() +
     geom_hline(yintercept=log(true_time), colour="red") +
     geom_text(aes(0, log(true_time), label="Log(Time) for full dataset", 
                   hjust=1, vjust=-1)) +
@@ -87,8 +103,9 @@ log_time_plot <- ggplot(d=time_dat, aes(x=log10(Tolerance), y=log(Time))) +
     )
 ggsave("~/Manuscripts/sumrep-ms/Figures/log_time_by_tol.pdf", width=10)
 
-div_plot <- ggplot(d=metric_dat, aes(x=log10(Tolerance), y=Divergence)) +
-    geom_point() +
+div_plot <- ggplot(d=metric_dat, 
+                   aes(x=log10(Tolerance), y=Divergence, group=log10(Tolerance))) +
+    geom_boxplot() +
     xlab("Log_10(tolerance)") +
     ylab("KL-divergence") +
     ggtitle("KL-divergence to true distribution by tolerance")
