@@ -217,18 +217,31 @@ getApproximateDistribution <- function(dat,
     return(dist)
 }
 
+#' Handy automatic dimension retrieval given number of grid cells 
+#'
+getGridDims <- function(n) {
+    cols <- n %>% sqrt %>% floor 
+    rows <- ceiling(n/cols) %>% floor 
+    return(c(cols, rows))
+}
+
 #' Display an array of ggplots within one figure
 #' @param plotlist List of plots created with ggplot
 #' @param cols Number of columns for the figure
 #' @param rows Number of rows for the figure
-multiplot <- function(plotlist=NULL, cols=1, rows=1, layout=NULL, ...) {
+multiplot <- function(plotlist=NULL, cols, rows, layout=NULL, ...) {
     library(grid)
     plots <- c(list(...), plotlist)
     numPlots = length(plots)
 
+    if(missing(cols) || missing(rows)) {
+        grid_dims <- numPlots %>% 
+            getGridDims
+        rows <- grid_dims[1]
+        cols <- grid_dims[2]
+    }
+
     if(is.null(layout)) {
-        print(rows)
-        print(cols)
         layout <- matrix(seq(1, cols * rows),
                          ncol = cols, nrow = rows)
     }

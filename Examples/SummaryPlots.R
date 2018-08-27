@@ -37,13 +37,6 @@ shortenName <- function(string) {
     return(shortened_name)
 }
 
-#' Handy automatic dimension retrieval given number of grid cells 
-#'
-getGridDims <- function(n) {
-    cols <- n %>% sqrt %>% floor 
-    rows <- ceiling(n/cols) %>% floor 
-    return(c(cols, rows))
-}
 
 plotComparisons <- function(dat, filename, cols=1, rows=1) {
     comparison_types <- dat$Comparison %>% unique
