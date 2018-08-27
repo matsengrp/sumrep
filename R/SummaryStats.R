@@ -315,7 +315,7 @@ plotGCContentDistribution <- function(dat,
                                       ) {
     p <- plotDistribution(values=gc_contents,
                                  do_exact=do_exact,
-                                 x_label="GC Content"
+                                 x_label="GC content"
                                  )
     return(p)
 }
@@ -552,6 +552,18 @@ getCDR3Lengths <- function(dat) {
     return(CDR3_lengths)
 }
 
+plotCDR3Lengths <- function(dat,
+                            do_exact=FALSE,
+                            ...,
+                            lengths=dat %>% getCDR3Lengths(...)
+                            ) {
+    p <- plotDistribution(values=lengths,
+                          do_exact=do_exact,
+                          x_label="CDR3 length"
+                          )
+    return(p)
+}
+
 #' Compare the distribution of CDR3 lengths for two datasets
 #'
 #' @param dat_a First dataset
@@ -756,21 +768,34 @@ getHydrophobicityFromAASequence <- function(sequence) {
     return(hydrophobicity)
 }
 
-getHydrophobicityDistribution <- function(sequence_list,
+getHydrophobicityDistribution <- function(dat,
                                           include_NA=FALSE
                                           ) {
-    hydrophobicity_list <- sequence_list %>% 
+    hydrophobicity_list <- dat %$%
+        cdr3_aa %>% 
         filterAminoAcidSequences %>%
         sapply(getHydrophobicityFromAASequence)
 
     return(hydrophobicity_list)
 }
 
+plotHydrophobicityDistribution <- function(dat,
+                                           do_exact=FALSE,
+                                           ...,
+                                           hydrophobicities=dat %>% getHydrophobicityDistribution
+                                          ) {
+    p <- plotDistribution(values=hydrophobicities,
+                          do_exact=do_exact,
+                          x_label="Hydrophobicity"
+                          )
+    return(p)
+}
+
 compareHydrophobicityDistributions <- function(dat_a, dat_b) {
     divergence <- 
         getAutomaticAverageDivergence(
-            dat_a %$% cdr3_aa,
-            dat_b %$% cdr3_aa,
+            dat_a,
+            dat_b,
             getHydrophobicityDistribution,
             subsample_count=100,
             divergenceFunction=getContinuousJSDivergence,
@@ -845,8 +870,9 @@ getAliphaticIndex <- function(aa_sequence) {
 #'
 #' @param sequence_list List or vector of DNA sequences
 #' @return Vector of aliphatic indices
-getAliphaticIndexDistribution <- function(sequence_list) {
-    a_indices <- sequence_list %>% 
+getAliphaticIndexDistribution <- function(dat) {
+    a_indices <- dat %$%
+        cdr3_aa %>% 
         filterAminoAcidSequences %>%
         sapply(function(x) {
                    ifelse(!is.na(x),
@@ -858,6 +884,18 @@ getAliphaticIndexDistribution <- function(sequence_list) {
     return(a_indices)
 }
 
+plotAliphaticIndexDistribution <- function(dat,
+                                           do_exact=FALSE,
+                                           ...,
+                                           indices=dat %>% getAliphaticIndexDistribution
+                                          ) {
+    p <- plotDistribution(values=indices,
+                          do_exact=do_exact,
+                          x_label="Aliphatic index"
+                          )
+    return(p)
+}
+
 #' Compare the distributions of aliphatic indices of two datasets
 #'
 #' @param dat_a First dataset, a data.table or data.frame
@@ -865,8 +903,8 @@ getAliphaticIndexDistribution <- function(sequence_list) {
 #' @return The JS divergence of the two distributions
 compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
     divergence <- getAutomaticAverageDivergence(
-        dat_a %$% cdr3_aa,
-        dat_b %$% cdr3_aa,
+        dat_a,
+        dat_b,
         getAliphaticIndexDistribution,
         subsample_count=100,
         divergenceFunction=getContinuousJSDivergence)
@@ -877,8 +915,9 @@ compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
 #'
 #' @param List or vector of DNA sequence strings
 #' @return Vector of GRAVY values for \code{sequence_list}
-getGRAVYDistribution <- function(sequence_list) {
-    dist <- sequence_list %>% 
+getGRAVYDistribution <- function(dat) {
+    dist <- dat %$%
+            cdr3_aa %>% 
             filterAminoAcidSequences %>%
             sapply(function(x) {
                    ifelse(!is.na(x),
@@ -890,17 +929,27 @@ getGRAVYDistribution <- function(sequence_list) {
     return(dist)
 }
 
+plotGRAVYDistribution <- function(dat,
+                                  do_exact=FALSE,
+                                  ...,
+                                  indices=dat %>% getGRAVYDistribution
+                                  ) { 
+    p <- plotDistribution(indices,
+                          do_exact=do_exact,
+                          x_label="GRAVY index")
+    return(p)
+}
+
+
 #' Compare the GRAVY distributions of two datasets
 #'
 #' @param dat_a First dataset, a data.table or data.frame object
 #' @param dat_b Second dataset, a data.table or data.frame object
 #' @return The JS divergence of GRAVY distributions
 compareGRAVYDistributions <- function(dat_a, dat_b) {
-    dist_a <- dat_a %$% 
-        cdr3_aa %>% 
+    dist_a <- dat_a %>% 
         getGRAVYDistribution
-    dist_b <- dat_b %$% 
-        cdr3_aa %>% 
+    dist_b <- dat_b %>%
         getGRAVYDistribution
     divergence <- getJSDivergence(dist_a, dist_b, continuous=TRUE)
     return(divergence)
@@ -1592,7 +1641,11 @@ plotDistributions <- function(dat) {
     plot_function_strings <- list("plotPairwiseDistanceDistribution",
                                   "plotNearestNeighborDistribution",
                                   "plotGCContentDistribution",
-                                  "plotDistanceFromNaiveToMatureDistribution"
+                                  "plotDistanceFromNaiveToMatureDistribution",
+                                  "plotCDR3Lengths",
+                                  "plotHydrophobicityDistribution",
+                                  "plotAliphaticIndexDistribution",
+                                  "plotGRAVYDistribution"
                                  )
     plots <- {}
     for(f_string in plot_function_strings) {
