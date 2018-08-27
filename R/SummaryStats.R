@@ -95,32 +95,45 @@ getPairwiseDistanceDistribution <- function(dat,
     return(distribution)
 }
 
+plotDiscreteDistribution <- function(values,
+                                     do_exact=FALSE,
+                                     x_label
+                                     ) {
+    if(do_exact) {
+        # Actually plot the frequency of each value (which can be >= 200 bars)
+        distance_table <- table(values)
+        distribution <- distance_table/sum(distance_table) 
+        d <- distribution %>%
+            data.frame %>%
+            setNames(c("Value", "Frequency"))
+        p <- ggplot(d) +
+            geom_bar(aes(x=as.numeric(Value), y=Frequency), stat="identity") 
+    } else {
+        # Just plot a histogram
+        p <- ggplot(data.frame(Value=values),
+                    aes(x=Value, y=..density..)) +
+            geom_histogram()
+    }
+    p <- p + 
+        xlab(x_label) +
+        ylab("Frequency")
+    return(p)
+}
+                                     
+
 plotPairwiseDistanceDistribution <- function(dat,
                                              do_exact=FALSE,
                                              ...,
                                              distances=dat %>% 
                                                  getPairwiseDistanceDistribution(...)
                                              ) {
-    if(do_exact) {
-        # Actually plot the frequency of each value (which can be >= 200 bars)
-        distance_table <- table(distances)
-        distribution <- distance_table/sum(distance_table) 
-        d <- distribution %>%
-            data.frame %>%
-            setNames(c("PairwiseDistance", "Frequency"))
-        p <- ggplot(d) +
-            geom_bar(aes(x=PairwiseDistance, y=Frequency), stat="identity")
-    } else {
-        # Just plot a histogram
-        p <- ggplot(data.frame(PairwiseDistance=distances),
-                    aes(x=PairwiseDistance, y=..density..)) +
-            geom_histogram()
-    }
-    p <- p + 
-            xlab("Pairwise distance") +
-            ylab("Frequency")
+    p <- plotDiscreteDistribution(values=distances,
+                                  do_exact=do_exact,
+                                  x_label="Pairwise distance"
+                                  )
     return(p)
 }
+
 
 
 #' Compare pairwise distance distributions of two lists of sequences
