@@ -1559,3 +1559,15 @@ compareAminoAcid2merDistributions <-
     divergence <- compareCategoricalDistributions(aa_dist_1, aa_dist_2)
     return(divergence)    
 }
+
+plotDistributions <- function(dat) {
+    plot_function_strings <- list("plotPairwiseDistanceDistribution",
+                           "plotNearestNeighborDistribution")
+    plots <- {}
+    for(f_string in plot_function_strings) {
+        plot_function <- eval(parse(text=f_string))
+        plots[[f_string]] <- dat %>% plot_function
+    }
+    multiplot(plotlist=plots)
+    return(plots)
+}
