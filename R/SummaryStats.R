@@ -111,7 +111,7 @@ plotDistribution <- function(values,
     } else {
         # Just plot a histogram
         p <- ggplot(data.frame(Value=values),
-                    aes(x=Value, y=..density..)) +
+                    aes(x=Value, y=..count../sum(..count..))) +
             geom_histogram()
     }
     p <- p + 
@@ -490,6 +490,19 @@ getDistanceFromNaiveToMatureDistribution <- function(dat,
         distribution <- dat %>%
             getDistancesFromNaiveToMature(v_gene_only=v_gene_only)
     }
+}
+
+plotDistanceFromNaiveToMatureDistribution <- function(dat,
+                                                      do_exact=FALSE,
+                                                      ...,
+                                                      distances=dat %>%
+                                                        getDistanceFromNaiveToMatureDistribution(...)
+                                                      ) {
+    p <- plotDistribution(values=distances,
+                                 do_exact=do_exact,
+                                 x_label="Distance from naive to mature"
+                                 )
+    return(p)
 }
 
 #' Compare Levenshtein distance distributions from naive sequences to 
@@ -1578,13 +1591,13 @@ compareAminoAcid2merDistributions <-
 plotDistributions <- function(dat) {
     plot_function_strings <- list("plotPairwiseDistanceDistribution",
                                   "plotNearestNeighborDistribution",
-                                  "plotGCContentDistribution"
-                                  )
+                                  "plotGCContentDistribution",
+                                  "plotDistanceFromNaiveToMatureDistribution"
+                                 )
     plots <- {}
     for(f_string in plot_function_strings) {
         plot_function <- eval(parse(text=f_string))
         plots[[f_string]] <- dat %>% plot_function
     }
-    multiplot(plotlist=plots)
-    return(plots)
+    multiplot <- multiplot(plotlist=plots)
 }
