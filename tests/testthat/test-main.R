@@ -139,15 +139,14 @@ test_that("test.getGCContentDistribution", {
 test_that("test.getGRAVYDistribution", {
     # Sample GRAVY values for a few particular amino acids obtained from 
     # https://github.com/PRIDE-Utilities/pride-utilities/wiki/1.2-GRAVY-Calculations 
-    alanine <- c("GCC")
-    glutamine <- c("CAA")
-    isoleucine <- c("ATT")
-    expect_equal(1.8, getGRAVYDistribution(alanine %>% convertNucleobasesToAminoAcids))
-    expect_equal(-3.5, getGRAVYDistribution(glutamine %>% convertNucleobasesToAminoAcids))
-    expect_equal(4.5, getGRAVYDistribution(isoleucine %>% convertNucleobasesToAminoAcids))
+    alanine <- data.table(cdr3_aa=convertNucleobasesToAminoAcids("GCC"))
+    glutamine <- data.table(cdr3_aa=convertNucleobasesToAminoAcids("CAA"))
+    isoleucine <- data.table(cdr3_aa=convertNucleobasesToAminoAcids("ATT"))
+    expect_equal(1.8, getGRAVYDistribution(alanine))
+    expect_equal(-3.5, getGRAVYDistribution(glutamine))
+    expect_equal(4.5, getGRAVYDistribution(isoleucine))
     expect_equal(c(1.8, -3.5, 4.5), 
-                 getGRAVYDistribution(c(alanine, glutamine, isoleucine) %>% 
-                                      convertNucleobasesToAminoAcids))
+                 getGRAVYDistribution(rbind(alanine, glutamine, isoleucine)))
 })
 
 test_that("test.getHotspotCount", {
