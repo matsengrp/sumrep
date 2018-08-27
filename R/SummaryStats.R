@@ -95,6 +95,34 @@ getPairwiseDistanceDistribution <- function(dat,
     return(distribution)
 }
 
+plotPairwiseDistanceDistribution <- function(dat,
+                                             do_exact=FALSE,
+                                             ...,
+                                             distances=dat %>% 
+                                                 getPairwiseDistanceDistribution(...)
+                                             ) {
+    if(do_exact) {
+        # Actually plot the frequency of each value (which can be >= 200 bars)
+        distance_table <- table(distances)
+        distribution <- distance_table/sum(distance_table) 
+        d <- distribution %>%
+            data.frame %>%
+            setNames(c("PairwiseDistance", "Frequency"))
+        p <- ggplot(d) +
+            geom_bar(aes(x=PairwiseDistance, y=Frequency), stat="identity")
+    } else {
+        # Just plot a histogram
+        p <- ggplot(data.frame(PairwiseDistance=distances),
+                    aes(x=PairwiseDistance, y=..density..)) +
+            geom_histogram()
+    }
+    p <- p + 
+            xlab("Pairwise distance") +
+            ylab("Frequency")
+    return(p)
+}
+
+
 #' Compare pairwise distance distributions of two lists of sequences
 #'
 #' \code{comparePairwiseDistanceDistributions} computes the JS
