@@ -95,7 +95,7 @@ getPairwiseDistanceDistribution <- function(dat,
     return(distribution)
 }
 
-plotDiscreteDistribution <- function(values,
+plotDistribution <- function(values,
                                      do_exact=FALSE,
                                      x_label
                                      ) {
@@ -127,7 +127,7 @@ plotPairwiseDistanceDistribution <- function(dat,
                                              distances=dat %>% 
                                                  getPairwiseDistanceDistribution(...)
                                              ) {
-    p <- plotDiscreteDistribution(values=distances,
+    p <- plotDistribution(values=distances,
                                   do_exact=do_exact,
                                   x_label="Pairwise distance"
                                   )
@@ -234,7 +234,7 @@ plotNearestNeighborDistribution <- function(dat,
                                              distances=dat %>% 
                                                  getNearestNeighborDistribution(...)
                                              ) {
-    p <- plotDiscreteDistribution(values=distances,
+    p <- plotDistribution(values=distances,
                                   do_exact=do_exact,
                                   x_label="Nearest neighbor distance"
                                   )
@@ -289,9 +289,11 @@ getGCContent <- function(raw_sequences) {
 #' @param sequence_list List or vector of strings or character sequences
 #'   corresponding to DNA sequences
 #' @return A vector of GC content values
-getGCContentDistribution <- function(sequence_list,
+getGCContentDistribution <- function(dat,
+                                     column="mature_seq",
                                      approximate=TRUE
                                      ) {
+    sequence_list <- dat[[column]]
     if(approximate) {
         distribution <- sequence_list %>%
             getApproximateDistribution(summary_function=getGCContent,
@@ -306,19 +308,30 @@ getGCContentDistribution <- function(sequence_list,
     return(distribution)
 }
 
+plotGCContentDistribution <- function(dat,
+                                      do_exact=FALSE,
+                                      ...,
+                                      gc_contents=dat %>%
+                                        getGCContentDistribution(...)
+                                      ) {
+    p <- plotDistribution(values=gc_contents,
+                                 do_exact=do_exact,
+                                 x_label="GC Content"
+                                 )
+    return(p)
+}
+
 #' Compare the GC distributions of two lists of DNA sequences
 #'
 #' @param list_a First list or vector of DNA sequences
 #' @param list_b Second list or vector of DNA sequences
 #' @return JS divergence of the GC content distributions inferred from list_a
 #'   and list_b
-compareGCContents <- function(dat_a, dat_b) {
-    density_a <- dat_a %$% 
-        mature_seq %>% 
-        getGCContentDistribution
-    density_b <- dat_b %$% 
-        mature_seq %>% 
-        getGCContentDistribution
+compareGCContents <- function(dat_a, dat_b, column) {
+    density_a <- dat_a %>%
+        getGCContentDistribution(column=column)
+    density_b <- dat_b %>%
+        getGCContentDistribution(column=column)
     divergence <- getJSDivergence(density_a, density_b, continuous=TRUE)
     return(divergence)
 }
@@ -1562,7 +1575,9 @@ compareAminoAcid2merDistributions <-
 
 plotDistributions <- function(dat) {
     plot_function_strings <- list("plotPairwiseDistanceDistribution",
-                           "plotNearestNeighborDistribution")
+                                  "plotNearestNeighborDistribution",
+                                  "plotGCContentDistribution"
+                                  )
     plots <- {}
     for(f_string in plot_function_strings) {
         plot_function <- eval(parse(text=f_string))
