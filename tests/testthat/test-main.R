@@ -131,9 +131,9 @@ test_that("test.getDistanceVector", {
 
 test_that("test.getGCContentDistribution", {
     d1 <- rep(0, 3)
-    expect_equal(d1, getGCContentDistribution(seq_5))
+    expect_equal(d1, getGCContentDistribution(dat_1, approximate=FALSE))
     d2 <- c(0, 0.75, 1, 0.5)
-    expect_equal(d2, getGCContentDistribution(seq_6))
+    expect_equal(d2, getGCContentDistribution(dat_2, approximate=FALSE))
 })
 
 test_that("test.getGRAVYDistribution", {
@@ -142,10 +142,12 @@ test_that("test.getGRAVYDistribution", {
     alanine <- c("GCC")
     glutamine <- c("CAA")
     isoleucine <- c("ATT")
-    expect_equal(1.8, getGRAVYDistribution(alanine))
-    expect_equal(-3.5, getGRAVYDistribution(glutamine))
-    expect_equal(4.5, getGRAVYDistribution(isoleucine))
-    expect_equal(c(1.8, -3.5, 4.5), getGRAVYDistribution(c(alanine, glutamine, isoleucine)))
+    expect_equal(1.8, getGRAVYDistribution(alanine %>% convertNucleobasesToAminoAcids))
+    expect_equal(-3.5, getGRAVYDistribution(glutamine %>% convertNucleobasesToAminoAcids))
+    expect_equal(4.5, getGRAVYDistribution(isoleucine %>% convertNucleobasesToAminoAcids))
+    expect_equal(c(1.8, -3.5, 4.5), 
+                 getGRAVYDistribution(c(alanine, glutamine, isoleucine) %>% 
+                                      convertNucleobasesToAminoAcids))
 })
 
 test_that("test.getHotspotCount", {

@@ -152,25 +152,23 @@ plotPairwiseDistanceDistribution <- function(dat,
 #'   and list_b
 comparePairwiseDistanceDistributions <- function(dat_a, 
                                                  dat_b,
+                                                 column="mature_seq",
                                                  do_automatic=TRUE,
                                                  approximate=TRUE,
                                                  subsample_count=100,
                                                  trial_count=10
                                                  ) {
-    mature_a <- dat_a %$% mature_seq
-    mature_b <- dat_b %$% mature_seq
     if(do_automatic) {
-        divergence <- getAutomaticAverageDivergence(mature_a,
-                                                    mature_b,
+        divergence <- getAutomaticAverageDivergence(sequences_a,
+                                                    sequences_b,
                                                     getDistanceVector,
                                                     subsample_count)
     } else {
-        dist_a <- mature_a %>% 
+        dist_a <- dat_a %>% 
             getPairwiseDistanceDistribution(approximate=approximate)
-        dist_b <- mature_b %>% 
+        dist_b <- dat_b %>% 
             getPairwiseDistanceDistribution(approximate=approximate)
         divergence <- getJSDivergence(dist_a, dist_b)
-
     }
     return(divergence)
 }
@@ -257,13 +255,14 @@ plotNearestNeighborDistribution <- function(dat,
 #'   and list_b
 compareNNDistanceDistributions <- function(dat_a, 
                                            dat_b, 
+                                           column="mature_seq",
                                            k=1,
                                            subsample_count=100,
                                            trial_count=10
                                            ) {
     average_divergence <- 
-        getAutomaticAverageDivergence(dat_a %$% mature_seq,
-                                      dat_b %$% mature_seq,
+        getAutomaticAverageDivergence(dat_a[[mature_seq]],
+                                      dat_b[[mature_seq]],
                                       getNearestNeighborDistances,
                                       subsample_count,
                                       k=k)
@@ -327,7 +326,10 @@ plotGCContentDistribution <- function(dat,
 #' @param list_b Second list or vector of DNA sequences
 #' @return JS divergence of the GC content distributions inferred from list_a
 #'   and list_b
-compareGCContents <- function(dat_a, dat_b, column) {
+compareGCContents <- function(dat_a, 
+                              dat_b, 
+                              column="mature_seq"
+                             ) {
     density_a <- dat_a %>%
         getGCContentDistribution(column=column)
     density_b <- dat_b %>%
