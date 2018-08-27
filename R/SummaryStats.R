@@ -207,11 +207,13 @@ getNearestNeighborDistances <- function(sequence_list,
 #'   different definition of a "nearest neighbor"
 #' @inheritParams getNearestNeighborDistances
 #' @return vector of integer-value distances
-getNearestNeighborDistribution <- function(sequence_list, 
+getNearestNeighborDistribution <- function(dat,
+                                           column="mature_seq", 
                                            k=1,
                                            approximate=TRUE,
                                            ...
                                            ) {
+    sequence_list <- dat[[column]]
     if(approximate) {
         distribution <- sequence_list %>%
             getApproximateDistribution(summary_function=getNearestNeighborDistances,
@@ -224,6 +226,19 @@ getNearestNeighborDistribution <- function(sequence_list,
             getNearestNeighborDistances(k=k)
     }
     return(distribution)
+}
+
+plotNearestNeighborDistribution <- function(dat,
+                                             do_exact=FALSE,
+                                             ...,
+                                             distances=dat %>% 
+                                                 getNearestNeighborDistribution(...)
+                                             ) {
+    p <- plotDiscreteDistribution(values=distances,
+                                  do_exact=do_exact,
+                                  x_label="Nearest neighbor distance"
+                                  )
+    return(p)
 }
 
 #' Compare kth nearest neighbor distance distributions of two lists of
