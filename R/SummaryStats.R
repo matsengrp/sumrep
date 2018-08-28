@@ -400,10 +400,23 @@ getHotspotCountDistribution <- function(dat,
         counts <- dat %>% 
             getHotspotCount(column=column,
                             hotspots=hotspots
-                            )
+                           )
     }
 
     return(counts)
+}
+
+plotHotspotCountDistribution <- function(dat,
+                                      do_exact=FALSE,
+                                      ...,
+                                      counts=dat %>%
+                                        getHotspotCountDistribution(...)
+                                      ) {
+    p <- plotDistribution(values=counts,
+                                 do_exact=do_exact,
+                                 x_label="Hotspot count"
+                                 )
+    return(p)
 }
 
 #' Get the number of occurrences of AID coldspots in a set of reference 
@@ -439,6 +452,19 @@ getColdspotCountDistribution <- function(dat,
     }
 
     return(counts)
+}
+
+plotColdspotCountDistribution <- function(dat,
+                                          do_exact=FALSE,
+                                          ...,
+                                          counts=dat %>%
+                                            getColdspotCountDistribution(...)
+                                         ) {
+    p <- plotDistribution(values=counts,
+                          do_exact=do_exact,
+                          x_label="Coldspot count"
+                         )
+    return(p)
 }
 
 #' Compare hot or coldspot count distributions of two sets of mature BCR sequences
@@ -1689,7 +1715,9 @@ plotDistributions <- function(dat) {
                                   "plotCDR3Lengths",
                                   "plotHydrophobicityDistribution",
                                   "plotAliphaticIndexDistribution",
-                                  "plotGRAVYDistribution"
+                                  "plotGRAVYDistribution",
+                                  "plotHotspotCountDistribution",
+                                  "plotColdspotCountDistribution"
                                  )
     plots <- {}
     for(f_string in plot_function_strings) {
