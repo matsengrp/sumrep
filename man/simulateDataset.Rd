@@ -6,7 +6,8 @@
 \usage{
 simulateDataset(parameter_dir, partis_path = Sys.getenv("PARTIS_PATH"),
   output_file = "simu.csv", num_events = NULL, num_leaves = NULL,
-  cleanup = TRUE, do_full_annotation = TRUE)
+  cleanup = TRUE, do_full_annotation = FALSE,
+  extra_columns = "v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq")
 }
 \arguments{
 \item{parameter_dir}{The parent output folder for partis (which is '_output'

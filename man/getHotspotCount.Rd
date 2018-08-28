@@ -5,10 +5,7 @@
 \title{Get the number of occurrences of AID hotspots in a set of reference 
   sequences}
 \usage{
-getHotspotCount(dna_sequences, hotspots = c("WRC", "WA"))
-}
-\arguments{
-\item{dna_sequences}{List, vector of reference sequences}
+getHotspotCount(dat, column, hotspots)
 }
 \value{
 The number of AID hotspot occurrences in \code{dna_sequences}

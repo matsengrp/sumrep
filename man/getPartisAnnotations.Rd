@@ -6,7 +6,7 @@
 This function does NOT run partis from R.}
 \usage{
 getPartisAnnotations(output_path, output_filename,
-  partis_path = Sys.getenv("PARTIS_PATH"), do_full_annotation = TRUE,
+  partis_path = Sys.getenv("PARTIS_PATH"), do_full_annotation = FALSE,
   collapse_clones = TRUE)
 }
 \arguments{

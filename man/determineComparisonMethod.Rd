@@ -7,7 +7,7 @@
 determineComparisonMethod(sequence_list)
 }
 \arguments{
-\item{List/vector}{of DNA sequences}
+\item{sequence_list}{List/vector of DNA sequences}
 }
 \value{
 String-valued comparison method for use in stringdistmatrix within 

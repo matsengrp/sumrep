@@ -5,7 +5,7 @@
 \title{Get distribution of Levenshtein distances from the inferred naive sequences
 to the observed mature ones, sequence by sequence}
 \usage{
-getDistancesFromNaiveToMature(dat)
+getDistancesFromNaiveToMature(dat, v_gene_only = TRUE)
 }
 \arguments{
 \item{dat}{Annotated dataset}

@@ -4,7 +4,7 @@
 \alias{compareGCContents}
 \title{Compare the GC distributions of two lists of DNA sequences}
 \usage{
-compareGCContents(dat_a, dat_b)
+compareGCContents(dat_a, dat_b, column = "mature_seq")
 }
 \arguments{
 \item{list_a}{First list or vector of DNA sequences}

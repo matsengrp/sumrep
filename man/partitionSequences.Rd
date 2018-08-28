@@ -6,7 +6,7 @@
 \usage{
 partitionSequences(input_filename, output_filename = "partition.csv",
   partis_path = Sys.getenv("PARTIS_PATH"), num_procs = 4, cleanup = TRUE,
-  output_path = "_output", germline_dir = NULL)
+  output_path = "_output", germline_dir = NULL, extra_columns)
 }
 \arguments{
 \item{input_filename}{The input (fasta) file, i.e. --infname argument}

@@ -8,8 +8,8 @@
   the kth nearest neighbor distance distribution of two lists of
   DNA sequences}
 \usage{
-compareNNDistanceDistributions(dat_a, dat_b, k = 1, subsample_count = 100,
-  trial_count = 10)
+compareNNDistanceDistributions(dat_a, dat_b, column = "mature_seq", k = 1,
+  subsample_count = 100, trial_count = 10)
 }
 \arguments{
 \item{dat_a}{First dataset, containing mature sequences}

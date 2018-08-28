@@ -4,7 +4,7 @@
 \alias{getGRAVYDistribution}
 \title{Get the distribution of GRAVY values from a list or vector of sequences}
 \usage{
-getGRAVYDistribution(sequence_list)
+getGRAVYDistribution(dat)
 }
 \arguments{
 \item{List}{or vector of DNA sequence strings}

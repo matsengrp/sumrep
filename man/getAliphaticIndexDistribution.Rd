@@ -4,7 +4,7 @@
 \alias{getAliphaticIndexDistribution}
 \title{Get the distribution of aliphatic indices of a list of sequences}
 \usage{
-getAliphaticIndexDistribution(sequence_list)
+getAliphaticIndexDistribution(dat)
 }
 \arguments{
 \item{sequence_list}{List or vector of DNA sequences}

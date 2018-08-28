@@ -4,10 +4,10 @@
 \alias{getGCContentDistribution}
 \title{Get the GC content distribution of a list of DNA sequences}
 \usage{
-getGCContentDistribution(raw_sequences)
+getGCContentDistribution(dat, column = "mature_seq", approximate = TRUE)
 }
 \arguments{
-\item{raw_sequences}{List or vector of strings or character sequences
+\item{sequence_list}{List or vector of strings or character sequences
 corresponding to DNA sequences}
 }
 \value{

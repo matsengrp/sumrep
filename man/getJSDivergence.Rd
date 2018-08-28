@@ -4,7 +4,7 @@
 \alias{getJSDivergence}
 \title{Compute the JS Divergence of two samples}
 \usage{
-getJSDivergence(list_a, list_b, continuous = FALSE)
+getJSDivergence(list_a, list_b, continuous = FALSE, KL = FALSE)
 }
 \arguments{
 \item{list_a}{First sample}

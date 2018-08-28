@@ -6,10 +6,10 @@
 This function does call partis.}
 \usage{
 annotateSequences(input_filename, output_filename = "partis_output.csv",
-  partis_path = Sys.getenv("PARTIS_PATH"), num_procs = 4,
+  partis_path = Sys.getenv("PARTIS_PATH"), num_procs = 16,
   partition = TRUE, collapse_clones = TRUE, cleanup = TRUE,
-  do_full_annotation = TRUE, output_path = "_output", run_partis = TRUE,
-  germline_dir = NULL)
+  do_full_annotation = FALSE, output_path = "_output", run_partis = TRUE,
+  germline_dir = NULL, extra_columns = "v_gl_seq:v_qr_seqs:cdr3_seqs")
 }
 \arguments{
 \item{input_filename}{The input (fasta) file, i.e. --infname argument}
