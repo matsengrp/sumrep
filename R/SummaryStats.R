@@ -349,8 +349,7 @@ getMotifCount <- function(motif, dna_sequences) {
         unlist %>% 
         Biostrings::DNAStringSet()
     count <- motif %>% 
-        Biostrings::vcountPattern(dna_strings, fixed=FALSE) %>% 
-        sum
+        Biostrings::vcountPattern(dna_strings, fixed=FALSE)
     return(count)
 }
 
@@ -363,8 +362,10 @@ getMotifCount <- function(motif, dna_sequences) {
 #'   \code{dna_sequences}
 getSpotCount <- function(dna_sequences, spots) {
     count <- spots %>% 
-        sapply(getMotifCount, dna_sequences=dna_sequences) %>% 
-        sum
+        # Get a length(dna_sequences) x length(spots) matrix of counts
+        sapply(getMotifCount, dna_sequences=dna_sequences) %>%
+        # Sum over each spot count for each sequence
+        apply(1, sum)     
     return(count)
 }
 
@@ -373,9 +374,36 @@ getSpotCount <- function(dna_sequences, spots) {
 #' 
 #' @inheritParams getMotifCount
 #' @return The number of AID hotspot occurrences in \code{dna_sequences}
-getHotspotCount <- function(dna_sequences, hotspots=c("WRC", "WA")) {
-    return(getSpotCount(dna_sequences=dna_sequences, 
+getHotspotCount <- function(dat,
+                            column,
+                            hotspots
+                           ) {
+    return(getSpotCount(dna_sequences=dat[[column]], 
                         spots=hotspots))
+}
+
+#' Get the distribution of hotspot counts of sequences in column \code{column}
+#'   of \code{dat}
+getHotspotCountDistribution <- function(dat,
+                                        column="mature_seq",
+                                        hotspots=c("WRC", "WA"),
+                                        approximate=TRUE
+                                       ) {
+    if(approximate) {
+        counts <- dat %>% 
+            getApproximateDistribution(summary_function=getHotspotCount,
+                                       divergence_function=getJSDivergence,
+                                       column=column,
+                                       hotspots=hotspots
+                                       )
+    } else {
+        counts <- dat %>% 
+            getHotspotCount(column=column,
+                            hotspots=hotspots
+                            )
+    }
+
+    return(counts)
 }
 
 #' Get the number of occurrences of AID coldspots in a set of reference 
