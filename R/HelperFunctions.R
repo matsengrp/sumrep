@@ -209,7 +209,7 @@ getApproximateDistribution <- function(dat,
         dist_prev <- dist
         sample_dat <- subsample(dat, sample_count)
         sample_dist <- sample_dat %>% 
-            summary_function
+            summary_function(...)
         dist <- c(dist_prev, sample_dist)
         error <- divergence_function(dist, dist_prev)
     }
