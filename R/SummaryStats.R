@@ -411,9 +411,34 @@ getHotspotCountDistribution <- function(dat,
 #' 
 #' @inheritParams getMotifCount
 #' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
-getColdspotCount <- function(dna_sequences, coldspots=c("SYC")) {
-    return(getSpotCount(dna_sequences=dna_sequences, 
+getColdspotCount <- function(dat,
+                             column, 
+                             coldspots
+                            ) {
+    return(getSpotCount(dna_sequences=dat[[column]], 
                         spots=coldspots))
+}
+
+getColdspotCountDistribution <- function(dat,
+                                         column="mature_seq",
+                                         coldspots="SYC",
+                                         approximate=TRUE
+                                        ) {
+    if(approximate) {
+        counts <- dat %>% 
+            getApproximateDistribution(summary_function=getColdspotCount,
+                                       divergence_function=getJSDivergence,
+                                       column=column,
+                                       coldspots=coldspots
+                                       )
+    } else {
+        counts <- dat %>% 
+            getColdspotCount(column=column,
+                             coldspots=coldspots
+                            )
+    }
+
+    return(counts)
 }
 
 #' Compare hot or coldspot count distributions of two sets of mature BCR sequences
@@ -456,15 +481,6 @@ compareHotspotCounts <- function(dat_a,
                                 subsample_count,
                                 trial_count)
     return(divergence)
-}
-
-#' Get the number of occurrences of AID coldspots in a set of reference 
-#'   sequences
-#' 
-#' @inheritParams getMotifCount
-#' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
-getColdspotCount <- function(dna_sequences, coldspots=c("SYC")) {
-    return(getSpotCount(dna_sequences, coldspots))
 }
 
 #' Compare coldspot count distributions of two sets of mature BCR sequences
