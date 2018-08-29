@@ -1107,7 +1107,7 @@ getDistancesBetweenMutationsBySequence <- function(naive, mature) {
     return(distances)
 }
 
-getDistancesBetweenMutations <- function(naive_list, mature_list) {
+getDistancesBetweenMutations <- function(dat) {
     dists <- mapply(function(x, y) {
                         if(nchar(x) == nchar(y)) {
                             res <- getDistancesBetweenMutationsBySequence(x, y)
@@ -1115,17 +1115,30 @@ getDistancesBetweenMutations <- function(naive_list, mature_list) {
                             res <- NA
                         }
                     },
-                    naive_list,
-                    mature_list) %>% 
+                    dat$naive_seq,
+                    dat$mature_seq
+                   ) %>% 
         unname %>% 
         unlist %>% 
         subset(!is.na(.))
     return(dists)
 }
 
+plotDistanceBetweenMutationsDistribution <- function(dat,
+                                                      do_exact=FALSE,
+                                                      ...,
+                                                      distances=dat %>% getDistancesBetweenMutations
+                                                      ) { 
+    p <- plotDistribution(distances,
+                          do_exact=do_exact,
+                          x_label="Positional distance between mutations")
+    return(p)
+}
+
+
 compareDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
-    dists_a <- getDistancesBetweenMutations(dat_a$naive_seq, dat_a$mature_seq)
-    dists_b <- getDistancesBetweenMutations(dat_b$naive_seq, dat_b$mature_seq)
+    dists_a <- getDistancesBetweenMutations(dat_a)
+    dists_b <- getDistancesBetweenMutations(dat_b)
     divergence <- getJSDivergence(dists_a, dists_b)
     return(divergence)
 }
@@ -1711,13 +1724,14 @@ plotDistributions <- function(dat) {
     plot_function_strings <- list("plotPairwiseDistanceDistribution",
                                   "plotNearestNeighborDistribution",
                                   "plotGCContentDistribution",
+                                  "plotHotspotCountDistribution",
+                                  "plotColdspotCountDistribution",
                                   "plotDistanceFromNaiveToMatureDistribution",
                                   "plotCDR3Lengths",
                                   "plotHydrophobicityDistribution",
                                   "plotAliphaticIndexDistribution",
                                   "plotGRAVYDistribution",
-                                  "plotHotspotCountDistribution",
-                                  "plotColdspotCountDistribution"
+                                  "plotDistanceBetweenMutationsDistribution"
                                  )
     plots <- {}
     for(f_string in plot_function_strings) {
