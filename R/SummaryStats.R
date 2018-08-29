@@ -1420,8 +1420,32 @@ getVDInsertionLengths <- function(dat) {
     return(getInsertionLengths(dat, "vd_insertion"))
 }
 
+plotVDInsertionLengths <- function(dat,
+                                   do_exact=FALSE,
+                                   ...,
+                                   lengths=dat %>% 
+                                       getVDInsertionLengths
+                                  ) { 
+    p <- plotDistribution(lengths,
+                          do_exact=do_exact,
+                          x_label="VD insertion length")
+    return(p)
+}
+
 getDJInsertionLengths <- function(dat) {
     return(getInsertionLengths(dat, "dj_insertion"))
+}
+
+plotDJInsertionLengths <- function(dat,
+                                   do_exact=FALSE,
+                                   ...,
+                                   lengths=dat %>% 
+                                       getDJInsertionLengths
+                                  ) { 
+    p <- plotDistribution(lengths,
+                          do_exact=do_exact,
+                          x_label="DJ insertion length")
+    return(p)
 }
 
 compareInsertionLengths <- function(dat_a, dat_b, genes) {
@@ -1803,7 +1827,15 @@ plotDistributions <- function(dat) {
                                   "plotHydrophobicityDistribution",
                                   "plotAliphaticIndexDistribution",
                                   "plotGRAVYDistribution",
-                                  "plotDistanceBetweenMutationsDistribution"
+                                  "plotDistanceBetweenMutationsDistribution",
+                                  "plotVGene3PrimeDeletionLengths",
+                                  "plotVGene5PrimeDeletionLengths",
+                                  "plotDGene3PrimeDeletionLengths",
+                                  "plotDGene5PrimeDeletionLengths",
+                                  "plotJGene3PrimeDeletionLengths",
+                                  "plotJGene5PrimeDeletionLengths",
+                                  "plotVDInsertionLengths",
+                                  "plotDJInsertionLengths"
                                  )
     plots <- {}
     for(f_string in plot_function_strings) {
