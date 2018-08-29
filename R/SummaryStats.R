@@ -1287,24 +1287,96 @@ getVGene3PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "v_3p_del"))
 }
 
+plotVGene3PrimeDeletionLengths <- function(dat,
+                                           do_exact=FALSE,
+                                           ...,
+                                           lengths=dat %>% 
+                                               getVGene3PrimeDeletionLengths
+                                          ) { 
+    p <- plotDistribution(lengths,
+                          do_exact=do_exact,
+                          x_label="V gene 3' deletion length")
+    return(p)
+}
+
 getVGene5PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "v_5p_del"))
+}
+
+plotVGene5PrimeDeletionLengths <- function(dat,
+                                           do_exact=FALSE,
+                                           ...,
+                                           lengths=dat %>% 
+                                               getVGene5PrimeDeletionLengths
+                                          ) { 
+    p <- plotDistribution(lengths,
+                          do_exact=do_exact,
+                          x_label="V gene 5' deletion length")
+    return(p)
 }
 
 getDGene3PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "d_3p_del"))
 }
 
+plotDGene3PrimeDeletionLengths <- function(dat,
+                                           do_exact=FALSE,
+                                           ...,
+                                           lengths=dat %>% 
+                                               getDGene3PrimeDeletionLengths
+                                          ) { 
+    p <- plotDistribution(lengths,
+                          do_exact=do_exact,
+                          x_label="D gene 3' deletion length")
+    return(p)
+}
+
 getDGene5PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "d_5p_del"))
+}
+
+plotDGene5PrimeDeletionLengths <- function(dat,
+                                           do_exact=FALSE,
+                                           ...,
+                                           lengths=dat %>% 
+                                               getDGene5PrimeDeletionLengths
+                                          ) { 
+    p <- plotDistribution(lengths,
+                          do_exact=do_exact,
+                          x_label="D gene 5' deletion length")
+    return(p)
 }
 
 getJGene3PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "j_3p_del"))
 }
 
+plotJGene3PrimeDeletionLengths <- function(dat,
+                                           do_exact=FALSE,
+                                           ...,
+                                           lengths=dat %>% 
+                                               getJGene3PrimeDeletionLengths
+                                          ) { 
+    p <- plotDistribution(lengths,
+                          do_exact=do_exact,
+                          x_label="J gene 3' deletion length")
+    return(p)
+}
+
 getJGene5PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "j_5p_del"))
+}
+
+plotJGene5PrimeDeletionLengths <- function(dat,
+                                           do_exact=FALSE,
+                                           ...,
+                                           lengths=dat %>% 
+                                               getJGene5PrimeDeletionLengths
+                                          ) { 
+    p <- plotDistribution(lengths,
+                          do_exact=do_exact,
+                          x_label="J gene 5' deletion length")
+    return(p)
 }
 
 compareDeletionLengths <- function(dat_a, dat_b, gene, end) {
