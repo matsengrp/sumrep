@@ -229,7 +229,13 @@ getGridDims <- function(n) {
 #' @param plotlist List of plots created with ggplot
 #' @param cols Number of columns for the figure
 #' @param rows Number of rows for the figure
-multiplot <- function(plotlist=NULL, cols, rows, layout=NULL, ...) {
+multiplot <- function(plotlist=NULL, 
+                      cols, 
+                      rows, 
+                      layout=NULL, 
+                      tall_plot=FALSE, 
+                      ...
+                     ) {
     library(grid)
     plots <- c(list(...), plotlist)
     numPlots = length(plots)
@@ -237,8 +243,14 @@ multiplot <- function(plotlist=NULL, cols, rows, layout=NULL, ...) {
     if(missing(cols) || missing(rows)) {
         grid_dims <- numPlots %>% 
             getGridDims
-        rows <- grid_dims[1]
-        cols <- grid_dims[2]
+        if(tall_plot) {
+            cols <- grid_dims[1]
+            rows <- grid_dims[2]
+        } else {
+            rows <- grid_dims[1]
+            cols <- grid_dims[2]
+        }
+        
     }
 
     if(is.null(layout)) {

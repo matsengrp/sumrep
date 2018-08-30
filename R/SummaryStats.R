@@ -1567,6 +1567,18 @@ getClusterSizes <- function(dat) {
     return(sizes)
 }
 
+plotClusterSizeDistribution <- function(dat,
+                                        do_exact=FALSE,
+                                        ...,
+                                        sizes=dat %>% 
+                                            getClusterSizes
+                                       ) { 
+    p <- plotDistribution(sizes,
+                          do_exact=do_exact,
+                          x_label="Cluster size")
+    return(p)
+}
+
 compareClusterSizes <- function(dat_a, dat_b) {
     dist_a <- dat_a %>% 
         getClusterSizes
@@ -1810,13 +1822,17 @@ compareAminoAcid2merDistributions <-
     function(dat_a,
              dat_b,
              aa_dist_1=getAminoAcid2merDistribution(dat_a),
-             aa_dist_2=getAminoAcid2merDistribution(dat_b)) 
-{
+             aa_dist_2=getAminoAcid2merDistribution(dat_b)
+            )  {
     divergence <- compareCategoricalDistributions(aa_dist_1, aa_dist_2)
     return(divergence)    
 }
 
-plotDistributions <- function(dat) {
+#' @param dat Dataset for which to plot univariate summary distributions
+#' @param tall_plot Make the plot portrait-oriented rather than landscape
+plotDistributions <- function(dat,
+                              tall_plot=FALSE
+                             ) {
     plot_function_strings <- list("plotPairwiseDistanceDistribution",
                                   "plotNearestNeighborDistribution",
                                   "plotGCContentDistribution",
@@ -1829,18 +1845,17 @@ plotDistributions <- function(dat) {
                                   "plotGRAVYDistribution",
                                   "plotDistanceBetweenMutationsDistribution",
                                   "plotVGene3PrimeDeletionLengths",
-                                  "plotVGene5PrimeDeletionLengths",
                                   "plotDGene3PrimeDeletionLengths",
                                   "plotDGene5PrimeDeletionLengths",
-                                  "plotJGene3PrimeDeletionLengths",
                                   "plotJGene5PrimeDeletionLengths",
                                   "plotVDInsertionLengths",
-                                  "plotDJInsertionLengths"
+                                  "plotDJInsertionLengths",
+                                  "plotClusterSizeDistribution"
                                  )
     plots <- {}
     for(f_string in plot_function_strings) {
         plot_function <- eval(parse(text=f_string))
         plots[[f_string]] <- dat %>% plot_function
     }
-    multiplot <- multiplot(plotlist=plots)
+    multiplot <- multiplot(plotlist=plots, tall_plot=tall_plot)
 }
