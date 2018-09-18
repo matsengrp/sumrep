@@ -95,10 +95,11 @@ getPairwiseDistanceDistribution <- function(dat,
     return(distribution)
 }
 
-plotDistribution <- function(values,
-                                     do_exact=FALSE,
-                                     x_label
-                                     ) {
+plotDistribution <- function(distribution_list,
+                             do_exact=FALSE,
+                             x_label,
+                             names=names
+                            ) {
     if(do_exact) {
         # Actually plot the frequency of each value (which can be >= 200 bars)
         distance_table <- table(values)
@@ -109,10 +110,27 @@ plotDistribution <- function(values,
         p <- ggplot(d) +
             geom_bar(aes(x=as.numeric(Value), y=Frequency), stat="identity") 
     } else {
+        # Combine distributions (of various lengths) into a common data.frame
+        # with corresponding IDs
+        dat <- distribution_list %>%
+            Map(function(x, y) {
+                    data.frame(Value=x, Dataset=y)
+                },
+                .,
+                names
+               ) %>%
+            do.call("rbind", .)
         # Just plot a histogram
-        p <- ggplot(data.frame(Value=values),
-                    aes(x=Value, y=..count../sum(..count..))) +
-            geom_histogram()
+        p <- ggplot(dat,
+                    aes(x=Value, 
+                        y=c(..count..[..group..==1]/sum(..count..[..group..==1]),
+                            ..count..[..group..==2]/sum(..count..[..group..==2])
+                           ),
+                        group=Dataset,
+                        fill=Dataset
+                       )
+                    ) +
+            geom_histogram(alpha=0.6, position="identity")
     }
     p <- p + 
         xlab(x_label) +
@@ -121,16 +139,23 @@ plotDistribution <- function(values,
 }
                                      
 
-plotPairwiseDistanceDistribution <- function(dat,
+plotPairwiseDistanceDistribution <- function(dat_list,
                                              do_exact=FALSE,
-                                             ...,
-                                             distances=dat %>% 
-                                                 getPairwiseDistanceDistribution(...)
+                                             distance_list=dat_list %>% 
+                                                 lapply(
+                                                        getPairwiseDistanceDistribution,
+                                                        ...
+                                                       ),
+                                             names=paste("Dataset",
+                                                         1:length(dat_list)
+                                                         ),
+                                             ...
                                              ) {
-    p <- plotDistribution(values=distances,
-                                  do_exact=do_exact,
-                                  x_label="Pairwise distance"
-                                  )
+    p <- plotDistribution(distribution_list=distance_list,
+                          do_exact=do_exact,
+                          x_label="Pairwise distance",
+                          names=names
+                         )
     return(p)
 }
 
