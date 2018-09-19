@@ -95,14 +95,24 @@ getPairwiseDistanceDistribution <- function(dat,
     return(distribution)
 }
 
-plotDistribution <- function(distribution_list,
+plotDistribution <- function(dat_list,
+                             summary_function,
                              do_exact=FALSE,
                              x_label,
-                             names=names
+                             names,
+                             ...
                             ) {
+    distribution_list <- dat_list %>%
+        lapply(summary_function,
+               ...)
+    if(is.null(names)) {
+        names <- paste("Dataset",
+                       1:length(distribution_list)
+                      )
+    }
     if(do_exact) {
         # Actually plot the frequency of each value (which can be >= 200 bars)
-        distance_table <- table(values)
+        distance_table <- table(distribution_list)
         distribution <- distance_table/sum(distance_table) 
         d <- distribution %>%
             data.frame %>%
@@ -124,7 +134,8 @@ plotDistribution <- function(distribution_list,
         p <- ggplot(dat,
                     aes(x=Value, 
                         y=c(..count..[..group..==1]/sum(..count..[..group..==1]),
-                            ..count..[..group..==2]/sum(..count..[..group..==2])
+                            ..count..[..group..==2]/sum(..count..[..group..==2]),
+                            ..count..[..group..==3]/sum(..count..[..group..==3])
                            ),
                         group=Dataset,
                         fill=Dataset
@@ -141,20 +152,15 @@ plotDistribution <- function(distribution_list,
 
 plotPairwiseDistanceDistribution <- function(dat_list,
                                              do_exact=FALSE,
-                                             distance_list=dat_list %>% 
-                                                 lapply(
-                                                        getPairwiseDistanceDistribution,
-                                                        ...
-                                                       ),
-                                             names=paste("Dataset",
-                                                         1:length(dat_list)
-                                                         ),
+                                             names=NULL,
                                              ...
                                              ) {
-    p <- plotDistribution(distribution_list=distance_list,
+    p <- plotDistribution(dat_list=dat_list,
+                          summary_function=getPairwiseDistanceDistribution,
                           do_exact=do_exact,
                           x_label="Pairwise distance",
-                          names=names
+                          names=names,
+                          ...
                          )
     return(p)
 }
@@ -251,16 +257,18 @@ getNearestNeighborDistribution <- function(dat,
     return(distribution)
 }
 
-plotNearestNeighborDistribution <- function(dat,
-                                             do_exact=FALSE,
-                                             ...,
-                                             distances=dat %>% 
-                                                 getNearestNeighborDistribution(...)
-                                             ) {
-    p <- plotDistribution(values=distances,
-                                  do_exact=do_exact,
-                                  x_label="Nearest neighbor distance"
-                                  )
+plotNearestNeighborDistribution <- function(dat_list,
+                                            do_exact=FALSE,
+                                            names=NULL,
+                                            ...
+                                           ) {
+    p <- plotDistribution(dat_list=dat_list,
+                          summary_function=getNearestNeighborDistribution,
+                          do_exact=do_exact,
+                          x_label="Nearest neighbor distance",
+                          names=names,
+                          ...
+                         )
     return(p)
 }
 
