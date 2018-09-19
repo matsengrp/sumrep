@@ -340,16 +340,16 @@ getGCContentDistribution <- function(dat,
     return(distribution)
 }
 
-plotGCContentDistribution <- function(dat,
+plotGCContentDistribution <- function(dat_list,
                                       do_exact=FALSE,
-                                      ...,
-                                      gc_contents=dat %>%
-                                        getGCContentDistribution(...)
-                                      ) {
-    p <- plotDistribution(values=gc_contents,
-                                 do_exact=do_exact,
-                                 x_label="GC content"
-                                 )
+                                      names=NULL
+                                     ) {
+    p <- plotDistribution(dat_list,
+                          getGCContentDistribution,
+                          do_exact=do_exact,
+                          x_label="GC content",
+                          names=names
+                         )
     return(p)
 }
 
@@ -439,16 +439,16 @@ getHotspotCountDistribution <- function(dat,
     return(counts)
 }
 
-plotHotspotCountDistribution <- function(dat,
-                                      do_exact=FALSE,
-                                      ...,
-                                      counts=dat %>%
-                                        getHotspotCountDistribution(...)
-                                      ) {
-    p <- plotDistribution(values=counts,
-                                 do_exact=do_exact,
-                                 x_label="Hotspot count"
-                                 )
+plotHotspotCountDistribution <- function(dat_list,
+                                         do_exact=FALSE,
+                                         names=NULL
+                                        ) {
+    p <- plotDistribution(dat_list,
+                          getHotspotCountDistribution,
+                          do_exact=do_exact,
+                          x_label="Hotspot count",
+                          names=names
+                         )
     return(p)
 }
 
@@ -487,15 +487,15 @@ getColdspotCountDistribution <- function(dat,
     return(counts)
 }
 
-plotColdspotCountDistribution <- function(dat,
+plotColdspotCountDistribution <- function(dat_list,
                                           do_exact=FALSE,
-                                          ...,
-                                          counts=dat %>%
-                                            getColdspotCountDistribution(...)
+                                          names=NULL
                                          ) {
-    p <- plotDistribution(values=counts,
+    p <- plotDistribution(dat_list,
+                          getColdspotCountDistribution,
                           do_exact=do_exact,
-                          x_label="Coldspot count"
+                          x_label="Coldspot count",
+                          names=names
                          )
     return(p)
 }
@@ -595,16 +595,16 @@ getDistanceFromNaiveToMatureDistribution <- function(dat,
     }
 }
 
-plotDistanceFromNaiveToMatureDistribution <- function(dat,
+plotDistanceFromNaiveToMatureDistribution <- function(dat_list,
                                                       do_exact=FALSE,
-                                                      ...,
-                                                      distances=dat %>%
-                                                        getDistanceFromNaiveToMatureDistribution(...)
-                                                      ) {
-    p <- plotDistribution(values=distances,
-                                 do_exact=do_exact,
-                                 x_label="Distance from naive to mature"
-                                 )
+                                                      names=NULL
+                                                     ) {
+    p <- plotDistribution(dat_list,
+                          getDistanceFromNaiveToMatureDistribution,
+                          do_exact=do_exact,
+                          x_label="Distance from naive to mature",
+                          names=names
+                         )
     return(p)
 }
 
@@ -655,15 +655,16 @@ getCDR3Lengths <- function(dat) {
     return(CDR3_lengths)
 }
 
-plotCDR3Lengths <- function(dat,
+plotCDR3Lengths <- function(dat_list,
                             do_exact=FALSE,
-                            ...,
-                            lengths=dat %>% getCDR3Lengths(...)
-                            ) {
-    p <- plotDistribution(values=lengths,
+                            names=NULL
+                           ) {
+    p <- plotDistribution(dat_list,
+                          getCDR3Lengths,
                           do_exact=do_exact,
-                          x_label="CDR3 length"
-                          )
+                          x_label="CDR3 length",
+                          names=names
+                         )
     return(p)
 }
 
@@ -882,15 +883,16 @@ getHydrophobicityDistribution <- function(dat,
     return(hydrophobicity_list)
 }
 
-plotHydrophobicityDistribution <- function(dat,
+plotHydrophobicityDistribution <- function(dat_list,
                                            do_exact=FALSE,
-                                           ...,
-                                           hydrophobicities=dat %>% getHydrophobicityDistribution
+                                           names=NULL
                                           ) {
-    p <- plotDistribution(values=hydrophobicities,
+    p <- plotDistribution(dat_list,
+                          getHydrophobicityDistribution,
                           do_exact=do_exact,
-                          x_label="Hydrophobicity"
-                          )
+                          x_label="Hydrophobicity",
+                          names=names
+                         )
     return(p)
 }
 
@@ -987,15 +989,16 @@ getAliphaticIndexDistribution <- function(dat) {
     return(a_indices)
 }
 
-plotAliphaticIndexDistribution <- function(dat,
+plotAliphaticIndexDistribution <- function(dat_list,
                                            do_exact=FALSE,
-                                           ...,
-                                           indices=dat %>% getAliphaticIndexDistribution
+                                           names=NULL
                                           ) {
-    p <- plotDistribution(values=indices,
+    p <- plotDistribution(dat_list,
+                          getAliphaticIndexDistribution,
                           do_exact=do_exact,
-                          x_label="Aliphatic index"
-                          )
+                          x_label="Aliphatic index",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1032,14 +1035,16 @@ getGRAVYDistribution <- function(dat) {
     return(dist)
 }
 
-plotGRAVYDistribution <- function(dat,
+plotGRAVYDistribution <- function(dat_list,
                                   do_exact=FALSE,
-                                  ...,
-                                  indices=dat %>% getGRAVYDistribution
-                                  ) { 
-    p <- plotDistribution(indices,
+                                  names=NULL
+                                 ) { 
+    p <- plotDistribution(dat_list,
+                          getGRAVYDistribution,
                           do_exact=do_exact,
-                          x_label="GRAVY index")
+                          x_label="GRAVY index",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1157,14 +1162,16 @@ getDistancesBetweenMutations <- function(dat) {
     return(dists)
 }
 
-plotDistanceBetweenMutationsDistribution <- function(dat,
-                                                      do_exact=FALSE,
-                                                      ...,
-                                                      distances=dat %>% getDistancesBetweenMutations
-                                                      ) { 
-    p <- plotDistribution(distances,
+plotDistanceBetweenMutationsDistribution <- function(dat_list,
+                                                     do_exact=FALSE,
+                                                     names=NULL
+                                                    ) { 
+    p <- plotDistribution(dat_list,
+                          getDistancesBetweenMutations,
                           do_exact=do_exact,
-                          x_label="Positional distance between mutations")
+                          x_label="Positional distance between mutations",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1320,15 +1327,16 @@ getVGene3PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "v_3p_del"))
 }
 
-plotVGene3PrimeDeletionLengths <- function(dat,
+plotVGene3PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
-                                           ...,
-                                           lengths=dat %>% 
-                                               getVGene3PrimeDeletionLengths
+                                           names=NULL
                                           ) { 
-    p <- plotDistribution(lengths,
+    p <- plotDistribution(dat_list,
+                          getVGene3PrimeDeletionLengths,
                           do_exact=do_exact,
-                          x_label="V gene 3' deletion length")
+                          x_label="V gene 3' deletion length",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1336,15 +1344,16 @@ getVGene5PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "v_5p_del"))
 }
 
-plotVGene5PrimeDeletionLengths <- function(dat,
+plotVGene5PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
-                                           ...,
-                                           lengths=dat %>% 
-                                               getVGene5PrimeDeletionLengths
+                                           names=NULL
                                           ) { 
-    p <- plotDistribution(lengths,
+    p <- plotDistribution(dat_list,
+                          getVGene5PrimeDeletionLengths,
                           do_exact=do_exact,
-                          x_label="V gene 5' deletion length")
+                          x_label="V gene 5' deletion length",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1352,15 +1361,16 @@ getDGene3PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "d_3p_del"))
 }
 
-plotDGene3PrimeDeletionLengths <- function(dat,
+plotDGene3PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
-                                           ...,
-                                           lengths=dat %>% 
-                                               getDGene3PrimeDeletionLengths
+                                           names=NULL
                                           ) { 
-    p <- plotDistribution(lengths,
+    p <- plotDistribution(dat_list,
+                          getDGene3PrimeDeletionLengths,
                           do_exact=do_exact,
-                          x_label="D gene 3' deletion length")
+                          x_label="D gene 3' deletion length",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1368,15 +1378,16 @@ getDGene5PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "d_5p_del"))
 }
 
-plotDGene5PrimeDeletionLengths <- function(dat,
+plotDGene5PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
-                                           ...,
-                                           lengths=dat %>% 
-                                               getDGene5PrimeDeletionLengths
+                                           names=NULL
                                           ) { 
-    p <- plotDistribution(lengths,
+    p <- plotDistribution(dat_list,
+                          getDGene5PrimeDeletionLengths,
                           do_exact=do_exact,
-                          x_label="D gene 5' deletion length")
+                          x_label="D gene 5' deletion length",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1384,15 +1395,16 @@ getJGene3PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "j_3p_del"))
 }
 
-plotJGene3PrimeDeletionLengths <- function(dat,
+plotJGene3PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
-                                           ...,
-                                           lengths=dat %>% 
-                                               getJGene3PrimeDeletionLengths
+                                           names=NULL
                                           ) { 
-    p <- plotDistribution(lengths,
+    p <- plotDistribution(dat_list,
+                          getJGene3PrimeDeletionLengths,
                           do_exact=do_exact,
-                          x_label="J gene 3' deletion length")
+                          x_label="J gene 3' deletion length",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1400,15 +1412,16 @@ getJGene5PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "j_5p_del"))
 }
 
-plotJGene5PrimeDeletionLengths <- function(dat,
+plotJGene5PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
-                                           ...,
-                                           lengths=dat %>% 
-                                               getJGene5PrimeDeletionLengths
+                                           names=NULL
                                           ) { 
-    p <- plotDistribution(lengths,
+    p <- plotDistribution(dat_list,
+                          getJGene5PrimeDeletionLengths,
                           do_exact=do_exact,
-                          x_label="J gene 5' deletion length")
+                          x_label="J gene 5' deletion length",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1453,15 +1466,16 @@ getVDInsertionLengths <- function(dat) {
     return(getInsertionLengths(dat, "vd_insertion"))
 }
 
-plotVDInsertionLengths <- function(dat,
+plotVDInsertionLengths <- function(dat_list,
                                    do_exact=FALSE,
-                                   ...,
-                                   lengths=dat %>% 
-                                       getVDInsertionLengths
+                                   names=NULL
                                   ) { 
-    p <- plotDistribution(lengths,
+    p <- plotDistribution(dat_list,
+                          getVDInsertionLengths,
                           do_exact=do_exact,
-                          x_label="VD insertion length")
+                          x_label="VD insertion length",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1469,15 +1483,16 @@ getDJInsertionLengths <- function(dat) {
     return(getInsertionLengths(dat, "dj_insertion"))
 }
 
-plotDJInsertionLengths <- function(dat,
+plotDJInsertionLengths <- function(dat_list,
                                    do_exact=FALSE,
-                                   ...,
-                                   lengths=dat %>% 
-                                       getDJInsertionLengths
+                                   names=NULL
                                   ) { 
-    p <- plotDistribution(lengths,
+    p <- plotDistribution(dat_list,
+                          getDJInsertionLengths,
                           do_exact=do_exact,
-                          x_label="DJ insertion length")
+                          x_label="DJ insertion length",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1589,8 +1604,8 @@ compareDJInsertionMatrices <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-# Partition functions
 getClusterSizes <- function(dat) {
+    print(dat$clone %>% length)
     sizes <- dat %$%
         clone %>% 
         table %>% 
@@ -1600,15 +1615,16 @@ getClusterSizes <- function(dat) {
     return(sizes)
 }
 
-plotClusterSizeDistribution <- function(dat,
+plotClusterSizeDistribution <- function(dat_list,
                                         do_exact=FALSE,
-                                        ...,
-                                        sizes=dat %>% 
-                                            getClusterSizes
+                                        names=NULL
                                        ) { 
-    p <- plotDistribution(sizes,
+    p <- plotDistribution(dat_list,
+                          getClusterSizes,
                           do_exact=do_exact,
-                          x_label="Cluster size")
+                          x_label="Cluster size",
+                          names=names
+                         )
     return(p)
 }
 
@@ -1861,11 +1877,14 @@ compareAminoAcid2merDistributions <-
     return(divergence)    
 }
 
-#' @param dat Dataset for which to plot univariate summary distributions
+#' @param dat List of annotation datasets for which to plot univariate summary 
+#'   distributions
 #' @param tall_plot Make the plot portrait-oriented rather than landscape
-plotDistributions <- function(dat,
-                              tall_plot=FALSE
-                             ) {
+plotUnivariateDistributions <- function(dat_list,
+                                        tall_plot=FALSE,
+                                        do_exact=FALSE,
+                                        names=NULL
+                                       ) {
     plot_function_strings <- list("plotPairwiseDistanceDistribution",
                                   "plotNearestNeighborDistribution",
                                   "plotGCContentDistribution",
@@ -1888,7 +1907,10 @@ plotDistributions <- function(dat,
     plots <- {}
     for(f_string in plot_function_strings) {
         plot_function <- eval(parse(text=f_string))
-        plots[[f_string]] <- dat %>% plot_function
+        plots[[f_string]] <- dat_list %>% 
+            plot_function(do_exact=do_exact,
+                          names=names
+                          )
     }
     multiplot <- multiplot(plotlist=plots, tall_plot=tall_plot)
 }
