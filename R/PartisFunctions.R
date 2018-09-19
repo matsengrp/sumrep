@@ -478,6 +478,9 @@ simulateDataset <- function(parameter_dir,
     sim_annotations <- sim_annotations %>% 
         processSequences
 
+    sim_annotations$clone <- sim_annotations$reco_id %>% sapply(as.numeric)
+    sim_annotations$reco_id <- NULL
+
     sim_data <- list(annotations=sim_annotations)
     return(sim_data)
 }
