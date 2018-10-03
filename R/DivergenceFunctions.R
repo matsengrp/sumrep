@@ -97,7 +97,11 @@ getContinuousJSDivergenceByIntegration <- function(sample_1, sample_2) {
 #' getJSDivergence(l1, l2)
 #' getJSDivergence(l2, l1)
 #' getJSDivergence(l1, l1)
-getJSDivergence <- function(list_a, list_b, continuous=FALSE, KL=FALSE) {
+getJSDivergence <- function(list_a, 
+                            list_b, 
+                            continuous=FALSE, 
+                            KL=FALSE
+                           ) {
     tabulateDiscreteData <- function(data_list, factor_levels) {
         result <- data_list %>%
             factor(levels=factor_levels) %>%
@@ -108,7 +112,16 @@ getJSDivergence <- function(list_a, list_b, continuous=FALSE, KL=FALSE) {
 
     if(continuous) {
         binned <- binContinuousListsAsDiscrete(list_a, list_b)
-        divergence <- textmineR::CalcJSDivergence(binned[[1]], binned[[2]])
+        if(KL) {
+            # If any of the bins have a zero, KL.empirical returns Inf, 
+            # which isn't very useful. So, let's just remove bins with zeros.
+            valid_indices <- which(binned[[1]] != 0 & binned[[2]] != 0)
+            binned <- binned %>%
+                lapply(function(x) { x[valid_indices] })
+            divergence <- entropy::KL.empirical(binned[[1]], binned[[2]])
+        } else {
+            divergence <- textmineR::CalcJSDivergence(binned[[1]], binned[[2]])
+        }
     } else {
         factor_levels <- c(list_a, list_b) %>%
             unique %>%

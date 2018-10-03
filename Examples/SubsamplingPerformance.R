@@ -8,8 +8,7 @@ getTrueDistributionDatasetInfo <- function(dat,
     true_dist <- summary_function(dat,
                                   ...) 
     true_time <- (proc.time() - pt)["elapsed"]
-    true_dat <- cbind(true_dist, "True") %>%
-        data.frame %>%
+    true_dat <- cbind.data.frame(true_dist, "True") %>%
         setNames(c("Value", "Setting"))
     return(list(true_dat=true_dat, true_time=true_time))
 }
@@ -18,8 +17,8 @@ loadNewDatasets("data/Annotations")
 
 do_dists <- TRUE
 if(do_dists) {
-    dat <- p_f1$annotations %>% subsample(10000)
-    distribution_function <- getPairwiseDistanceDistribution
+    dat <- p_f1$annotations %>% subsample(10000, replace=FALSE)
+    distribution_function <- getGCContentDistribution
 
     # Get true distribution
     pt <- proc.time()
@@ -40,17 +39,20 @@ if(do_dists) {
     divergences <- {}
     for(trial in 1:trial.count) {
         distributions <- list()
-        tols <- 10^seq(-1, -7)
+        tols <- 10^seq(0, -7)
         
         for(i in 1:length(tols)) { pt <- proc.time()
-            distributions[[i]] <- getPairwiseDistanceDistribution(dat,
-                                                                  column="cdr3s",
-                                                                  approximate=TRUE,
-                                                                  tol=tols[i])
+            distributions[[i]] <- distribution_function(dat,
+                                                        column="cdr3s",
+                                                        approximate=TRUE,
+                                                        tol=tols[i]
+                                                       )
             times[i] <- (proc.time() - pt)["elapsed"]
             divergences[i] <- getJSDivergence(distributions[[i]], 
-                                                true_dat$Value,
-                                                KL=TRUE)
+                                              true_dat$Value,
+                                              continuous=TRUE,
+                                              KL=TRUE
+                                             )
 
             metric_dat <- rbind(metric_dat,
                                 data.frame(Tolerance=tols[i],
@@ -74,10 +76,20 @@ if(do_dists) {
 dist_plot <- ggplot(dist_dat,
        aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
     geom_density(adjust=4) +
-    xlim(0, 60) +
     xlab("Pairwise Distance") +
-    ylab("Density")
+    ylab("Density") +
+    # We don't want outliers to stretch the x-axis
+    xlim(quantile(true_dat$Value, c(0.001, 0.999))) 
 ggsave("~/Manuscripts/sumrep-ms/Figures/dists_by_tol.pdf", width=10)
+
+ecdf_plot <- ggplot(dist_dat,
+       aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
+    stat_ecdf() +
+    xlab("GC content") +
+    ylab("Density") +
+    # We don't want outliers to stretch the x-axis
+    xlim(quantile(true_dat$Value, c(0.001, 0.999))) 
+ggsave("~/Manuscripts/sumrep-ms/Figures/ecdf_by_tol.pdf", width=10)
 
 time_plot <- ggplot(d=metric_dat, 
                     aes(x=log10(Tolerance), y=Time, group=log10(Tolerance))) +

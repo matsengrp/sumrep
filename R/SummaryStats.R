@@ -145,7 +145,8 @@ plotDistribution <- function(dat_list,
     }
     p <- p + 
         xlab(x_label) +
-        ylab("Frequency")
+        ylab("Frequency") +
+        theme(legend.position="none")
     return(p)
 }
                                      
@@ -323,13 +324,15 @@ getGCContent <- function(raw_sequences) {
 #' @return A vector of GC content values
 getGCContentDistribution <- function(dat,
                                      column="mature_seq",
-                                     approximate=TRUE
+                                     approximate=FALSE,
+                                     ...
                                      ) {
     sequence_list <- dat[[column]]
     if(approximate) {
         distribution <- sequence_list %>%
             getApproximateDistribution(summary_function=getGCContent,
-                                       divergence_function=getContinuousJSDivergence
+                                       divergence_function=getContinuousJSDivergence,
+                                       ...
                                        )
 
     } else {
@@ -420,15 +423,17 @@ getHotspotCount <- function(dat,
 getHotspotCountDistribution <- function(dat,
                                         column="mature_seq",
                                         hotspots=c("WRC", "WA"),
-                                        approximate=TRUE
+                                        approximate=TRUE,
+                                        ...
                                        ) {
     if(approximate) {
         counts <- dat %>% 
             getApproximateDistribution(summary_function=getHotspotCount,
                                        divergence_function=getJSDivergence,
                                        column=column,
-                                       hotspots=hotspots
-                                       )
+                                       hotspots=hotspots,
+                                       ...
+                                      )
     } else {
         counts <- dat %>% 
             getHotspotCount(column=column,
