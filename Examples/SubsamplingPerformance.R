@@ -16,16 +16,18 @@ getTrueDistributionDatasetInfo <- function(dat,
 loadNewDatasets("data/Annotations")
 
 do_dists <- TRUE
-if(do_dists) {
-    dat <- p_f1$annotations %>% subsample(10000, replace=FALSE)
-    distribution_function <- getGCContentDistribution
-
+runPerformanceAnalysis <- function(dat,
+                                   distribution_function,
+                                   continuous,
+                                   ...
+                                  ) {
     # Get true distribution
     pt <- proc.time()
     true_info <- getTrueDistributionDatasetInfo(dat,
-                                               distribution_function,
-                                               column="cdr3s",
-                                               approximate=FALSE) 
+                                                distribution_function,
+                                                approximate=FALSE,
+                                                ...
+                                               ) 
     true_dat <- true_info$true_dat
     true_time <- true_info$true_time
     
@@ -39,21 +41,21 @@ if(do_dists) {
     divergences <- {}
     for(trial in 1:trial.count) {
         distributions <- list()
-        tols <- 10^seq(0, -7)
+        tols <- 10^seq(-1, -7)
         
         for(i in 1:length(tols)) { pt <- proc.time()
+            print(i)
             distributions[[i]] <- distribution_function(dat,
-                                                        column="cdr3s",
                                                         approximate=TRUE,
-                                                        tol=tols[i]
+                                                        tol=tols[i],
+                                                        ...
                                                        )
             times[i] <- (proc.time() - pt)["elapsed"]
             divergences[i] <- getJSDivergence(distributions[[i]], 
                                               true_dat$Value,
-                                              continuous=TRUE,
+                                              continuous=continuous,
                                               KL=TRUE
                                              )
-
             metric_dat <- rbind(metric_dat,
                                 data.frame(Tolerance=tols[i],
                                            Time=times[i],
@@ -69,18 +71,46 @@ if(do_dists) {
         lapply(setNames, c("Value", "Setting")) %>%
         do.call(rbind, .) %>%
         rbind(., true_dat)
+
+    distributions %>% sapply(length) %>% print
     
     dist_dat$Value <- as.numeric(dist_dat$Value)
+
+    return(list(Distributions=dist_dat,
+                Metrics=metric_dat,
+                TrueTime=true_time
+               )
+          )
+}
+
+run <- FALSE
+if(run) {
+    perf_list <- runPerformanceAnalysis(
+                           p_f1_sim$annotations %>% subsample(10000, replace=FALSE),
+                           getPairwiseDistanceDistribution,
+                           continuous=FALSE,
+                           column="cdr3s"
+                          )
+    dist_dat <- perf_list$Distributions
+    metric_dat <- perf_list$Metrics
+    true_time <- perf_list$TrueTime
 }
     
-dist_plot <- ggplot(dist_dat,
+freq_plot <- ggplot(dist_dat,
+       aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
+    geom_freqpoly(aes(y=..density..), binwidth=1) +
+    xlim(quantile(dist_dat$Value, c(0.01, 0.99)))  +
+    xlab("Pairwise Distance") +
+    ylab("Density")
+ggsave("~/Manuscripts/sumrep-ms/Figures/freqpoly_by_tol.pdf", width=10)
+
+density_plot <- ggplot(dist_dat,
        aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
     geom_density(adjust=4) +
+    xlim(quantile(dist_dat$Value, c(0.01, 0.99)))  +
     xlab("Pairwise Distance") +
-    ylab("Density") +
-    # We don't want outliers to stretch the x-axis
-    xlim(quantile(true_dat$Value, c(0.001, 0.999))) 
-ggsave("~/Manuscripts/sumrep-ms/Figures/dists_by_tol.pdf", width=10)
+    ylab("Density")
+ggsave("~/Manuscripts/sumrep-ms/Figures/density_by_tol.pdf", width=10)
 
 ecdf_plot <- ggplot(dist_dat,
        aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
@@ -88,7 +118,7 @@ ecdf_plot <- ggplot(dist_dat,
     xlab("GC content") +
     ylab("Density") +
     # We don't want outliers to stretch the x-axis
-    xlim(quantile(true_dat$Value, c(0.001, 0.999))) 
+    xlim(quantile(dist_dat$Value, c(0.01, 0.99))) 
 ggsave("~/Manuscripts/sumrep-ms/Figures/ecdf_by_tol.pdf", width=10)
 
 time_plot <- ggplot(d=metric_dat, 
