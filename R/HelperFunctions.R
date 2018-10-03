@@ -27,10 +27,16 @@ standardizeList <- function(l) {
 #' @inheritParams subsample
 #' @param v Vector to subsample
 #' @return A subsampled vector 
-subsampleVector <- function(v, sample_count) {
+subsampleVector <- function(v, 
+                            sample_count,
+                            replace=TRUE
+                           ) {
     new_vector <- {}
     if(length(v) > sample_count) {
-        new_vector <- sample(v, sample_count)
+        new_vector <- sample(v, 
+                             sample_count,
+                             replace
+                            )
     } else {
         new_vector <- v
     }
@@ -43,12 +49,21 @@ subsampleVector <- function(v, sample_count) {
 #' @param sample_count Number of samples to retain in the subsampled data.
 #'   Samples refers to elements in a vector or rows in a data.table/data.frame
 #' @return A subsampled dataset of the same type given by \code{dataset}
-subsample <- function(dataset, sample_count) {
+subsample <- function(dataset, 
+                      sample_count,
+                      replace=TRUE
+                     ) {
     new_dataset <- {}
     if(is.null(dim(dataset))) {
-        new_dataset <- subsampleVector(dataset, sample_count)
+        new_dataset <- subsampleVector(dataset, 
+                                       sample_count,
+                                       replace=replace
+                                      )
     } else if(nrow(dataset) > sample_count) {
-        new_dataset <- dataset[sample(1:nrow(dataset), sample_count), ]
+        new_dataset <- dataset[sample(1:nrow(dataset), 
+                                      sample_count,
+                                      replace=replace
+                                     ), ]
     } else {
         new_dataset <- dataset
     }
