@@ -24,7 +24,10 @@ getTrueDistributionDatasetInfo <- function(dat,
                                            ) {
     pt <- proc.time()
     true_dist <- summary_function(dat,
-                                  ...) 
+                                  approximate=FALSE,
+                                  ...
+                                 ) 
+
     true_time <- (proc.time() - pt)["elapsed"]
     true_dat <- cbind.data.frame(true_dist, "True") %>%
         setNames(c("Value", "Setting"))
@@ -33,9 +36,10 @@ getTrueDistributionDatasetInfo <- function(dat,
 
 loadNewDatasets("data/Annotations")
 
-do_dists <- TRUE
 runPerformanceAnalysis <- function(dat,
                                    distribution_function,
+                                   tols,
+                                   trial_count,
                                    continuous,
                                    ...
                                   ) {
@@ -43,26 +47,22 @@ runPerformanceAnalysis <- function(dat,
     pt <- proc.time()
     true_info <- getTrueDistributionDatasetInfo(dat,
                                                 distribution_function,
-                                                approximate=FALSE,
                                                 ...
                                                ) 
     true_dat <- true_info$true_dat
     true_time <- true_info$true_time
     
     # Get subsampled distributions for various tolerances
-    trial.count <- 10
     times <- {}
     metric_names <- c("Tolerance", "Time", "Divergence", "Trial")
     metric_dat <- matrix(nrow=0, ncol=4) %>%
         data.frame %>%
         setNames(metric_names)
     divergences <- {}
-    for(trial in 1:trial.count) {
+    for(trial in 1:trial_count) {
         distributions <- list()
-        tols <- 10^seq(-1, -7)
         
         for(i in 1:length(tols)) { pt <- proc.time()
-            print(i)
             distributions[[i]] <- distribution_function(dat,
                                                         approximate=TRUE,
                                                         tol=tols[i],
@@ -109,11 +109,14 @@ runPerformanceAnalysis <- function(dat,
           )
 }
 
-run <- FALSE
+run <- TRUE
 if(run) {
     perf_list <- runPerformanceAnalysis(
-                           p_f1_sim$annotations %>% subsample(10000, replace=FALSE),
-                           getPairwiseDistanceDistribution,
+                           dat=p_f1$annotations %>% 
+                               subsample(10000, replace=FALSE),
+                           distribution_function=getPairwiseDistanceDistribution,
+                           tols=10^seq(-1, -7),
+                           trial_count=10,
                            continuous=FALSE,
                            column="cdr3s"
                           )
