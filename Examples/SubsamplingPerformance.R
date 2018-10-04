@@ -1,5 +1,23 @@
 devtools::load_all()
 
+library(xtable)
+
+printTable <- function(dat, filename, digits=4, hline_pos=0) {
+    sink(filename)
+    cat("\\begin{center}", '\n')
+    dat %>%
+        xtable::xtable(digits=digits) %>%
+        print(
+              floating=FALSE,
+              include.rownames=FALSE,
+              latex.environments="center",
+              hline.after=c(0, hline_pos),
+              sanitize.text.function=function(x){x}
+             )
+    cat("\\end{center}", '\n')
+    sink()
+}
+
 getTrueDistributionDatasetInfo <- function(dat,
                                            summary_function,
                                            ...
@@ -72,13 +90,21 @@ runPerformanceAnalysis <- function(dat,
         do.call(rbind, .) %>%
         rbind(., true_dat)
 
-    distributions %>% sapply(length) %>% print
-    
     dist_dat$Value <- as.numeric(dist_dat$Value)
+
+    summary_table <- dist_dat$Setting %>% 
+        unique %>% 
+        lapply(function(x) { 
+                  dist_dat[dist_dat$Setting == x, ]$Value %>% summary 
+               }) %>% 
+        do.call(rbind, .) %>%
+        as.data.table %>%
+        cbind(Distribution=dist_dat$Setting %>% unique, .)
 
     return(list(Distributions=dist_dat,
                 Metrics=metric_dat,
-                TrueTime=true_time
+                TrueTime=true_time,
+                Summary=summary_table
                )
           )
 }
@@ -94,6 +120,7 @@ if(run) {
     dist_dat <- perf_list$Distributions
     metric_dat <- perf_list$Metrics
     true_time <- perf_list$TrueTime
+    summary_table <- perf_list$Summary
 }
     
 freq_plot <- ggplot(dist_dat,
@@ -152,3 +179,8 @@ div_plot <- ggplot(d=metric_dat,
     ylab("KL-divergence") +
     ggtitle("KL-divergence to true distribution by tolerance")
 ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_tol.pdf", width=10)
+
+summary_table %>%
+    printTable(filename="~/Manuscripts/sumrep-ms/Tables/summary_by_tol.tex",
+               digits=c(0, 0, 0, 0, 0, 2, 0, 0)
+              )
