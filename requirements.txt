@@ -61,7 +61,7 @@ mkl=2017.0.3=intel_6
 nbconvert=5.2.1=py27_intel_0
 nbformat=4.3.0=py27_intel_0
 ncurses=5.9=10
-notebook=5.0.0=py27_intel_0
+notebook=5.4.1=py27_intel_0
 numpy=1.12.1=py27_intel_8
 openblas=0.2.19=0
 openmp=2017.0.3=intel_8
