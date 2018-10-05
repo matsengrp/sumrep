@@ -46,6 +46,8 @@ runPerformanceAnalysis <- function(dat,
                                    continuous,
                                    ...
                                   ) {
+    print(dat %>% nrow)
+
     # Get true distribution
     pt <- proc.time()
     true_info <- getTrueDistributionDatasetInfo(dat,
@@ -112,8 +114,8 @@ runPerformanceAnalysis <- function(dat,
           )
 }
 
-run <- TRUE
-if(run) {
+run_main <- FALSE
+if(run_main) {
     perf_list <- runPerformanceAnalysis(
                            dat=p_f1$annotations %>% 
                                subsample(10000, replace=FALSE),
@@ -127,66 +129,101 @@ if(run) {
     metric_dat <- perf_list$Metrics
     true_time <- perf_list$TrueTime
     summary_table <- perf_list$Summary
-}
     
-freq_plot <- ggplot(dist_dat,
-       aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
-    geom_freqpoly(aes(y=..density..), binwidth=1) +
-    xlim(quantile(dist_dat$Value, c(0.01, 0.99)))  +
-    xlab("Pairwise Distance") +
-    ylab("Density")
-ggsave("~/Manuscripts/sumrep-ms/Figures/freqpoly_by_tol.pdf", width=10)
+    freq_plot <- ggplot(dist_dat,
+           aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
+        geom_freqpoly(aes(y=..density..), binwidth=1) +
+        xlim(quantile(dist_dat$Value, c(0.01, 0.99)))  +
+        xlab("Pairwise Distance") +
+        ylab("Density")
+    ggsave("~/Manuscripts/sumrep-ms/Figures/freqpoly_by_tol.pdf", width=10)
+    
+    density_plot <- ggplot(dist_dat,
+           aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
+        geom_density(adjust=4) +
+        xlim(quantile(dist_dat$Value, c(0.01, 0.99)))  +
+        xlab("Pairwise Distance") +
+        ylab("Density")
+    ggsave("~/Manuscripts/sumrep-ms/Figures/density_by_tol.pdf", width=10)
+    
+    ecdf_plot <- ggplot(dist_dat,
+           aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
+        stat_ecdf() +
+        xlab("GC content") +
+        ylab("Density") +
+        # We don't want outliers to stretch the x-axis
+        xlim(quantile(dist_dat$Value, c(0.01, 0.99))) 
+    ggsave("~/Manuscripts/sumrep-ms/Figures/ecdf_by_tol.pdf", width=10)
+    
+    time_plot <- ggplot(d=metric_dat, 
+                        aes(x=log10(Tolerance), y=Time, group=log10(Tolerance))) +
+        geom_boxplot() +
+        geom_hline(yintercept=true_time, colour="red") +
+        geom_text(aes(0, true_time, label="Time for full dataset", hjust=1, 
+                      vjust=-1)) +
+        xlab("Log_10(tolerance)") +
+        ylab("Time (seconds)") +
+        ggtitle("Time complexity of distribution subsampling by tolerance")
+    ggsave("~/Manuscripts/sumrep-ms/Figures/time_by_tol.pdf", width=10)
+    
+    log_time_plot <- ggplot(d=metric_dat, 
+                            aes(x=log10(Tolerance), y=log(Time), group=log10(Tolerance))) +
+        geom_boxplot() +
+        geom_hline(yintercept=log(true_time), colour="red") +
+        geom_text(aes(0, log(true_time), label="Log(Time) for full dataset", 
+                      hjust=1, vjust=-1)) +
+        xlab("Log_10(Tolerance)") +
+        ylab("Log(time) (log-seconds)") +
+        ggtitle(
+         "Time complexity (in log-seconds) of distribution subsampling by tolerance"
+        )
+    ggsave("~/Manuscripts/sumrep-ms/Figures/log_time_by_tol.pdf", width=10)
+    
+    div_plot <- ggplot(d=metric_dat, 
+                       aes(x=log10(Tolerance), y=Divergence, group=log10(Tolerance))) +
+        geom_boxplot() +
+        xlab("Log_10(tolerance)") +
+        ylab("KL-divergence") +
+        ggtitle("KL-divergence to true distribution by tolerance")
+    ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_tol.pdf", width=10)
+    
+    summary_table %>%
+        printTable(filename="~/Manuscripts/sumrep-ms/Tables/summary_by_tol.tex",
+                   digits=c(0, 0, 0, 0, 0, 2, 0, 0),
+                   label="tab:SummaryTable"
+                  )
+}
 
-density_plot <- ggplot(dist_dat,
-       aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
-    geom_density(adjust=4) +
-    xlim(quantile(dist_dat$Value, c(0.01, 0.99)))  +
-    xlab("Pairwise Distance") +
-    ylab("Density")
-ggsave("~/Manuscripts/sumrep-ms/Figures/density_by_tol.pdf", width=10)
+run_sample_size <- TRUE
+if(run_sample_size) {
+    sample_sizes <- c(100, 500, 1000, 5000, 10000)
+    dats <- sample_sizes %>%
+        lapply(function(x) {
+                   p_f1$annotations %>% subsample(x, replace=FALSE)
+               })
 
-ecdf_plot <- ggplot(dist_dat,
-       aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
-    stat_ecdf() +
-    xlab("GC content") +
-    ylab("Density") +
-    # We don't want outliers to stretch the x-axis
-    xlim(quantile(dist_dat$Value, c(0.01, 0.99))) 
-ggsave("~/Manuscripts/sumrep-ms/Figures/ecdf_by_tol.pdf", width=10)
+    size_dat <- dats %>%
+        lapply(.,
+               FUN=function(dat) {
+                perf <- runPerformanceAnalysis(
+                            dat=dat,
+                            distribution_function=getPairwiseDistanceDistribution,
+                            tols=10^{-2},
+                            trial_count=5,
+                            continuous=FALSE,
+                            column="cdr3s"
+                )
 
-time_plot <- ggplot(d=metric_dat, 
-                    aes(x=log10(Tolerance), y=Time, group=log10(Tolerance))) +
-    geom_boxplot() +
-    geom_hline(yintercept=true_time, colour="red") +
-    geom_text(aes(0, true_time, label="Time for full dataset", hjust=1, 
-                  vjust=-1)) +
-    xlab("Log_10(tolerance)") +
-    ylab("Time (seconds)") +
-    ggtitle("Time complexity of distribution subsampling by tolerance")
-ggsave("~/Manuscripts/sumrep-ms/Figures/time_by_tol.pdf", width=10)
+                dist_dat <- cbind(perf$Metrics,
+                                  Size=nrow(dat)
+                                 )
+                return(dist_dat)
+               }) %>%
+        do.call(rbind, .)
 
-log_time_plot <- ggplot(d=metric_dat, 
-                        aes(x=log10(Tolerance), y=log(Time), group=log10(Tolerance))) +
-    geom_boxplot() +
-    geom_hline(yintercept=log(true_time), colour="red") +
-    geom_text(aes(0, log(true_time), label="Log(Time) for full dataset", 
-                  hjust=1, vjust=-1)) +
-    xlab("Log_10(Tolerance)") +
-    ylab("Log(time) (log-seconds)") +
-    ggtitle(
-     "Time complexity (in log-seconds) of distribution subsampling by tolerance"
-    )
-ggsave("~/Manuscripts/sumrep-ms/Figures/log_time_by_tol.pdf", width=10)
-
-div_plot <- ggplot(d=metric_dat, 
-                   aes(x=log10(Tolerance), y=Divergence, group=log10(Tolerance))) +
-    geom_boxplot() +
-    xlab("Log_10(tolerance)") +
-    ylab("KL-divergence") +
-    ggtitle("KL-divergence to true distribution by tolerance")
-ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_tol.pdf", width=10)
-
-summary_table %>%
-    printTable(filename="~/Manuscripts/sumrep-ms/Tables/summary_by_tol.tex",
-               digits=c(0, 0, 0, 0, 0, 2, 0, 0)
-              )
+    size_plot <- size_dat %>%
+        ggplot(aes(x=Size, y=Divergence, group=Size)) +
+        geom_boxplot() +
+        xlab("Size of full dataset") +
+        ylab("KL-divergence")
+}
