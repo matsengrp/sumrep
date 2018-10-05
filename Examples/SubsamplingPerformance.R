@@ -151,7 +151,7 @@ if(run_main) {
         stat_ecdf() +
         xlab("GC content") +
         ylab("Density") +
-        # We don't want outliers to stretch the x-axis
+        # We don't want outliers to stretch the x-axis too much
         xlim(quantile(dist_dat$Value, c(0.01, 0.99))) 
     ggsave("~/Manuscripts/sumrep-ms/Figures/ecdf_by_tol.pdf", width=10)
     
@@ -196,7 +196,7 @@ if(run_main) {
 
 run_sample_size <- TRUE
 if(run_sample_size) {
-    sample_sizes <- c(100, 500, 1000, 5000, 10000)
+    sample_sizes <- c(500, 1000, 2500, 10000, 25000)
     dats <- sample_sizes %>%
         lapply(function(x) {
                    p_f1$annotations %>% subsample(x, replace=FALSE)
@@ -208,8 +208,8 @@ if(run_sample_size) {
                 perf <- runPerformanceAnalysis(
                             dat=dat,
                             distribution_function=getPairwiseDistanceDistribution,
-                            tols=10^{-2},
-                            trial_count=5,
+                            tols=10^seq(-1, -3),
+                            trial_count=10,
                             continuous=FALSE,
                             column="cdr3s"
                 )
@@ -221,9 +221,16 @@ if(run_sample_size) {
                }) %>%
         do.call(rbind, .)
 
+    size_dat$Tolerance <- size_dat$Tolerance %>% as.factor
     size_plot <- size_dat %>%
-        ggplot(aes(x=Size, y=Divergence, group=Size)) +
+        ggplot(aes(x=log(Size), 
+                   y=Divergence, 
+                   group=interaction(log(Size), Tolerance),
+                   fill=Tolerance
+                  )
+              ) +
         geom_boxplot() +
-        xlab("Size of full dataset") +
+        xlab("log(Size)") +
         ylab("KL-divergence")
+    ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_size_and_tol.pdf", width=10)
 }
