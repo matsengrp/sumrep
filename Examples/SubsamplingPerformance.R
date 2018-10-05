@@ -2,11 +2,12 @@ devtools::load_all()
 
 library(xtable)
 
-printTable <- function(dat, filename, digits=4, hline_pos=0) {
+printTable <- function(dat, filename, digits=4, hline_pos=0, label=NULL) {
     sink(filename)
-    cat("\\begin{center}", '\n')
+    cat("\\begin{figure}", '\n')
     dat %>%
-        xtable::xtable(digits=digits) %>%
+        xtable::xtable(digits=digits
+                      ) %>%
         print(
               floating=FALSE,
               include.rownames=FALSE,
@@ -14,8 +15,10 @@ printTable <- function(dat, filename, digits=4, hline_pos=0) {
               hline.after=c(0, hline_pos),
               sanitize.text.function=function(x){x}
              )
-    cat("\\end{center}", '\n')
+    cat(paste0("\\label{", label, "}\n"))
+    cat("\\end{figure}", '\n')
     sink()
+    print(label)
 }
 
 getTrueDistributionDatasetInfo <- function(dat,
