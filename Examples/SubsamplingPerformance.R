@@ -209,7 +209,7 @@ if(run_sample_size) {
                             dat=dat,
                             distribution_function=getPairwiseDistanceDistribution,
                             tols=10^seq(-1, -3),
-                            trial_count=10,
+                            trial_count=50,
                             continuous=FALSE,
                             column="cdr3s"
                 )
