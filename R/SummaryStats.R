@@ -401,7 +401,7 @@ getSpotCount <- function(dna_sequences, spots) {
         # Get a length(dna_sequences) x length(spots) matrix of counts
         sapply(getMotifCount, dna_sequences=dna_sequences) %>%
         # Sum over each spot count for each sequence
-        apply(1, sum)     
+        sum
     return(count)
 }
 
@@ -412,7 +412,7 @@ getSpotCount <- function(dna_sequences, spots) {
 #' @return The number of AID hotspot occurrences in \code{dna_sequences}
 getHotspotCount <- function(dat,
                             column,
-                            hotspots
+                            hotspots=c("WRC", "WA")
                            ) {
     return(getSpotCount(dna_sequences=dat[[column]], 
                         spots=hotspots))
@@ -464,7 +464,7 @@ plotHotspotCountDistribution <- function(dat_list,
 #' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
 getColdspotCount <- function(dat,
                              column, 
-                             coldspots
+                             coldspots="SYC"
                             ) {
     return(getSpotCount(dna_sequences=dat[[column]], 
                         spots=coldspots))
@@ -1143,7 +1143,7 @@ getDistancesBetweenMutationsBySequence <- function(naive, mature) {
         unlist
     mut_indices_list <- which(naive_char_list != mature_char_list)
     if(length(mut_indices_list) > 1) {
-        distances <- (mut_indices_list %>% diff - 1) %>% list
+        distances <- mut_indices_list %>% diff
     } else {
         # If there are less than two mutations, this statistic is undefined,
         # so return NA and eventually ignore
@@ -1612,7 +1612,6 @@ compareDJInsertionMatrices <- function(dat_a, dat_b) {
 }
 
 getClusterSizes <- function(dat) {
-    print(dat$clone %>% length)
     sizes <- dat %$%
         clone %>% 
         table %>% 

@@ -84,13 +84,13 @@ test_that("test.comparePairwiseDistanceDistributions", {
 
 test_that("test.getColdspotCount", {
     seq_a <- "TTTTT"
-    seq_b <- list("GCC", "AAA", "AAAA")
+    seq_b <- c("GCC", "AAA", "AAAA")
     seq_c <- c("AAA", "CTC")
     seq_d <- "SYCSYC"
-    expect_equal(0, getColdspotCount(seq_a))
-    expect_equal(1, getColdspotCount(seq_b))
-    expect_equal(1, getColdspotCount(seq_c))
-    expect_equal(4, getColdspotCount(seq_d))
+    expect_equal(0, getColdspotCount(data.table(cdr3s=seq_a), column="cdr3s"))
+    expect_equal(1, getColdspotCount(data.table(cdr3s=seq_b), column="cdr3s"))
+    expect_equal(1, getColdspotCount(data.table(cdr3s=seq_c), column="cdr3s"))
+    expect_equal(4, getColdspotCount(data.table(cdr3s=seq_d), column="cdr3s"))
 })
 
 test_that("test.getDistanceMatrix", {
@@ -151,13 +151,13 @@ test_that("test.getGRAVYDistribution", {
 
 test_that("test.getHotspotCount", {
     seq_a <- "TTTTT"
-    seq_b <- list("AAC", "TTTT")
+    seq_b <- c("AAC", "TTTT")
     seq_c <- "NWRC"
     seq_d <- c("WRC", "WRC", "WGC")
-    expect_equal(0, getHotspotCount(seq_a))
-    expect_equal(2, getHotspotCount(seq_b))
-    expect_equal(3, getHotspotCount(seq_c))
-    expect_equal(5, getHotspotCount(seq_d))
+    expect_equal(0, getHotspotCount(data.table(cdr3s=seq_a), column="cdr3s"))
+    expect_equal(2, getHotspotCount(data.table(cdr3s=seq_b), column="cdr3s"))
+    expect_equal(3, getHotspotCount(data.table(cdr3s=seq_c), column="cdr3s"))
+    expect_equal(5, getHotspotCount(data.table(cdr3s=seq_d), column="cdr3s"))
 })
 
 test_that("test.getNearestNeighborDistances", {
@@ -177,13 +177,16 @@ test_that("test.getPositionalDistancesBetweenMutations", {
     naive_seq <- c("AAAA", "AAAA", "TTTT", "GGGGGGG")
     mature_seq <- c("AAAA", "ATAG", "TTAT", "CGGCGCG")
 
-    expect_equal(getDistancesBetweenMutations(naive_seq[1], mature_seq[1]), logical(0))
-    expect_equal(getDistancesBetweenMutations(naive_seq[2], mature_seq[2]), 1)
-    expect_equal(getDistancesBetweenMutations(naive_seq[3], mature_seq[3]), logical(0))
-    expect_equal(getDistancesBetweenMutations(naive_seq[4], mature_seq[4]) %>% sort,
-                 c(1, 2))
-    expect_equal(getDistancesBetweenMutations(naive_seq, mature_seq) %>% sort, 
-                 c(1, 1, 2))
+    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[1], mature_seq[1]), NA)
+    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[2], mature_seq[2]), 2)
+    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[3], mature_seq[3]), NA)
+    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[4], mature_seq[4]) %>% 
+                 sort,
+                 c(2, 3))
+    expect_equal(getDistancesBetweenMutations(data.table(naive_seq=naive_seq, 
+                                                         mature_seq=mature_seq
+                                                        )) %>% sort, 
+                 c(2, 2, 3))
 })
 
 test_that("getClusterSizes returns the correct cluster size distribution", {
