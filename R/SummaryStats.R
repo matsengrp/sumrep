@@ -1078,7 +1078,7 @@ compareGRAVYDistributions <- function(dat_a, dat_b) {
 #'   default.
 #' @param dictionary_list A vector of strings corresponding to a Python 
 #'   dictionary, present in the column \code{codon_positions} of a data.table 
-#'   returned by \code{annotateSequences}.
+#'   returned by \code{getPartisAnnotations}.
 #' @return A vector of positions of the CDR3 start codons of the BCR sequences
 extractCDR3CodonStartPositions <- function(dictionary_list) {
     positions <- dictionary_list %>% 

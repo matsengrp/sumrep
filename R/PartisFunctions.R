@@ -56,8 +56,8 @@ callPartis <- function(action,
 
 #' Get per-gene and per-gene-per-position mutation information from partis
 #'
-#' \code{getMutationInfo} is run if \code{doFullAnnotation} is true in the 
-#'   \link{annotateSequences} call. This function extracts mutation information
+#' \code{getMutationInfo} is run if \code{getFullPartisAnnotation} is true in the 
+#'   \link{getPartisAnnotations} call. This function extracts mutation information
 #'   from the given YAML file in the parameter directory output by partis.
 #' @param filename YAML file from partis output folder corresponding to a gene
 #' @return Object containing the gene's overall mutation rate as well as a 
@@ -132,8 +132,11 @@ preventOutputOverwrite <- function(output_path, cleanup) {
 
 #' Do extended partis processing of annotations
 #'
-#' @inheritParams annotateSequences
-doFullAnnotation <- function(output_path, output_file, partis_path) {
+#' @inheritParams getPartisAnnotations
+getFullPartisAnnotation <- function(output_path, 
+                                    output_file, 
+                                    partis_path
+                                   ) {
     extended_output_filename <- "new_output.csv"
     extended_output_filepath <- file.path(output_path, extended_output_filename)
     script_file <- system.file("process_output.py", package="sumrep")
@@ -166,7 +169,8 @@ processMatureSequences <- function(dat) {
 #' E.g., with strsplit, '::' would yield c('', ''), whereas
 #' stringr::str_split would yield c('', '', '')
 collapseColonedList <- function(coloned_list,
-                                type_conversion=as.numeric) {
+                                type_conversion=as.numeric
+                               ) {
     collapsed_vector <- coloned_list %>% 
         toString %>%
         stringr::str_split(':') %>%
@@ -239,11 +243,11 @@ collapseClones <- function(partition_dataset) {
 #' @param do_full_annotation Does further processing than the default by partis
 #' @param collapse_clones Convert a row of colon-separated clonal families to
 #'   separate rows for each member
-getPartisAnnotations <- function(output_path,
-                                 output_filename,
-                                 partis_path=Sys.getenv("PARTIS_PATH"),
-                                 do_full_annotation=FALSE,
-                                 collapse_clones=TRUE
+readPartisAnnotations <- function(output_path,
+                                  output_filename,
+                                  partis_path=Sys.getenv("PARTIS_PATH"),
+                                  do_full_annotation=FALSE,
+                                  collapse_clones=TRUE
                                 ) {
     annotation_filename <- output_filename %>%
         gsub(pattern='.csv',
@@ -252,9 +256,10 @@ getPartisAnnotations <- function(output_path,
                                  annotation_filename)
 
     if(do_full_annotation) {
-        annotated_data <- doFullAnnotation(output_path, 
-                                           annotation_file, 
-                                           partis_path)
+        annotated_data <- getFullPartisAnnotation(output_path, 
+                                                  annotation_file, 
+                                                  partis_path
+                                                 )
         annotated_data$cdr3s <- annotated_data %>% 
             getCDR3s
     } else {
@@ -337,29 +342,29 @@ processSequences <- function(annotated_data) {
 #'
 #' @inheritParams callPartis
 #' @return A data.table object containing the output of the partis annotate call
-annotateSequences <- function(input_filename, 
-                              output_filename="partis_output.csv", 
-                              partis_path=Sys.getenv("PARTIS_PATH"), 
-                              num_procs=16, 
-                              partition=TRUE,
-                              collapse_clones=TRUE,
-                              cleanup=TRUE, 
-                              do_full_annotation=FALSE, 
-                              output_path="_output",
-                              run_partis=TRUE,
-                              germline_dir=NULL,
-                              extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs"
-                              ) {
+getPartisAnnotations <- function(input_filename, 
+                                 output_filename="partis_output.csv", 
+                                 partis_path=Sys.getenv("PARTIS_PATH"), 
+                                 num_procs=16, 
+                                 partition=TRUE,
+                                 collapse_clones=TRUE,
+                                 cleanup=TRUE, 
+                                 do_full_annotation=FALSE, 
+                                 output_path="_output",
+                                 run_partis=TRUE,
+                                 germline_dir=NULL,
+                                 extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs"
+                                ) {
     preventOutputOverwrite(output_path, cleanup)
     if(partition) {
-        partition_data <- partitionSequences(input_filename,
-                                             output_filename,
-                                             partis_path,
-                                             num_procs,
-                                             cleanup=FALSE,
-                                             output_path,
-                                             germline_dir=germline_dir,
-                                             extra_columns=extra_columns
+        partition_data <- getPartisPartitions(input_filename,
+                                              output_filename,
+                                              partis_path,
+                                              num_procs,
+                                              cleanup=FALSE,
+                                              output_path,
+                                              germline_dir=germline_dir,
+                                              extra_columns=extra_columns
                                              )
     } else {
         output_file <- file.path(output_path, output_filename)
@@ -372,11 +377,11 @@ annotateSequences <- function(input_filename,
                                      )
     }
 
-    annotation_object <- getPartisAnnotations(output_path,
-                                              output_filename=output_filename,
-                                              partis_path=partis_path,
-                                              do_full_annotation=do_full_annotation,
-                                              collapse_clones=collapse_clones
+    annotation_object <- readPartisAnnotations(output_path,
+                                               output_filename=output_filename,
+                                               partis_path=partis_path,
+                                               do_full_annotation=do_full_annotation,
+                                               collapse_clones=collapse_clones
                                               )
 
     if(cleanup) {
@@ -392,14 +397,14 @@ annotateSequences <- function(input_filename,
 #' @inheritParams callPartis
 #' @return A data.table object containing the output of the partis partition 
 #'   call
-partitionSequences <- function(input_filename, 
-                               output_filename="partition.csv", 
-                               partis_path=Sys.getenv("PARTIS_PATH"), 
-                               num_procs=4, 
-                               cleanup=TRUE, 
-                               output_path="_output",
-                               germline_dir=NULL,
-                               extra_columns
+getPartisPartitions <- function(input_filename, 
+                                output_filename="partition.csv", 
+                                partis_path=Sys.getenv("PARTIS_PATH"), 
+                                num_procs=4, 
+                                cleanup=TRUE, 
+                                output_path="_output",
+                                germline_dir=NULL,
+                                extra_columns
                                ) {
     preventOutputOverwrite(output_path, cleanup)
 
@@ -412,7 +417,7 @@ partitionSequences <- function(input_filename,
                                    num_procs,
                                    germline_dir=germline_dir,
                                    extra_columns=extra_columns
-                                   )
+                                  )
 
     if(cleanup) {
         output_path %>% 
@@ -428,18 +433,22 @@ partitionSequences <- function(input_filename,
 #'    by default. The function cd's into the params directory
 #' @param num_events The desired number of VDJ rearragement events for the
 #'    simulation
-simulateDataset <- function(parameter_dir,
-                            partis_path=Sys.getenv("PARTIS_PATH"),
-                            output_file="simu.csv",
-                            num_events=NULL,
-                            num_leaves=NULL,
-                            cleanup=TRUE,
-                            do_full_annotation=FALSE,
-                            extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq"
-                            ) {
-    partis_command <- paste(partis_path, "simulate", 
-                            "--parameter-dir", file.path(parameter_dir, "params"),
-                            "--outfname", output_file)
+getPartisSimulation <- function(parameter_dir,
+                                partis_path=Sys.getenv("PARTIS_PATH"),
+                                output_file="simu.csv",
+                                num_events=NULL,
+                                num_leaves=NULL,
+                                cleanup=TRUE,
+                                do_full_annotation=FALSE,
+                                extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq"
+                               ) {
+    partis_command <- paste(partis_path, 
+                            "simulate", 
+                            "--parameter-dir", 
+                            file.path(parameter_dir, "params"),
+                            "--outfname", 
+                            output_file
+                           )
 
     if(!missing(num_events)) {
         partis_command <- paste(partis_command,
@@ -463,9 +472,10 @@ simulateDataset <- function(parameter_dir,
     sim_annotations <- output_file %>% 
         fread(stringsAsFactors=FALSE)
     if(do_full_annotation) {
-        sim_annotations <- doFullAnnotation(output_file,
-                                            output_path=".",
-                                            partis_path)
+        sim_annotations <- getFullPartisAnnotation(output_file,
+                                                   output_path=".",
+                                                   partis_path
+                                                  )
         sim_annotations$cdr3s <- sim_annotations %>% 
             getCDR3s
     }
@@ -489,13 +499,17 @@ simulateDataset <- function(parameter_dir,
 #'   saving as a fasta file)
 #'
 #' @param sequences List or vector of mature BCR sequences for annotation
-annotateSequencesFromStrings <- function(sequences, ...) {
+getPartisAnnotationsFromStrings <- function(sequences, 
+                                            ...
+                                           ) {
     annotations <- tryCatch({
         filename <- Sys.time() %>%
             gsub(pattern=' |:|-', replace='') %>%
             paste0('tmp', ., '.fasta')
         write.fasta(sequences, names="tmp", file.out=filename)
-        annotateSequences(filename, ...)
+        getPartisAnnotations(filename, 
+                             ...
+                            )
     }, warning = function(warning_condition) {
         message(error_condition)
         return(NA)

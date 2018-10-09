@@ -13,11 +13,12 @@ writeAnnotations <- function(filename,
                              germline_dir=NULL,
                              num_procs=100) {
     if(method == "partis") {
-        annotations <- annotateSequences(input_filename=filename, 
-                                         num_procs=num_procs,
-                                         output_path="tmp_output",
-                                         cleanup=FALSE,
-                                         germline_dir=germline_dir)
+        annotations <- getPartisAnnotations(input_filename=filename, 
+                                            num_procs=num_procs,
+                                            output_path="tmp_output",
+                                            cleanup=FALSE,
+                                            germline_dir=germline_dir
+                                           )
         saveRDS(annotations, outname)
 
         num_clones <- annotations$annotations$clone %>% 
