@@ -194,7 +194,7 @@ if(run_main) {
                   )
 }
 
-run_sample_size <- TRUE
+run_sample_size <- FALSE
 if(run_sample_size) {
     sample_sizes <- c(500, 1000, 2500, 10000, 25000)
     dats <- sample_sizes %>%
@@ -233,4 +233,49 @@ if(run_sample_size) {
         xlab("log(Size)") +
         ylab("KL-divergence")
     ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_size_and_tol.pdf", width=10)
+}
+
+run_summaries <- TRUE
+if(run_summaries) {
+    summaries <- c(getPairwiseDistanceDistribution,
+                   getGCContentDistribution,
+                   getHotspotCountDistribution,
+                   getColdspotCountDistribution
+                  )
+    summary_names <- c("Pairwise distances", 
+                       "GC content", 
+                       "Hotspot count", 
+                       "Coldspot count")
+    is_continuous <- c(FALSE, TRUE, FALSE, FALSE)
+    dat <- p_f1$annotations %>% subsample(5000, replace=FALSE)
+
+    distribution_dat <- mapply(
+            FUN=function(summary, is_continuous, summary_name) {
+                    perf <- runPerformanceAnalysis(dat=dat,
+                                           distribution_function=summary,
+                                           tols=10^seq(-1, -7),
+                                           trial_count=10,
+                                           continuous=is_continuous,
+                                           column="cdr3s"
+                                          )
+                    dist_dat <- cbind(perf$Metrics, Summary=summary_name)
+                    return(dist_dat)
+                },
+                summaries,
+                is_continuous,
+                summary_names ,
+                SIMPLIFY=FALSE
+            ) %>%
+        do.call(rbind, .)
+
+    distribution_dat$Tolerance <- distribution_dat$Tolerance %>% as.factor
+    summ_plot <- distribution_dat %>%
+        ggplot(aes(x=Summary,
+                   y=Divergence,
+                   group=interaction(Summary, Tolerance),
+                   fill=Tolerance
+                   )) +
+               geom_boxplot()
+    ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_summary_and_tol.pdf", width=10)
+
 }

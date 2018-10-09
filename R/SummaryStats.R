@@ -473,15 +473,17 @@ getColdspotCount <- function(dat,
 getColdspotCountDistribution <- function(dat,
                                          column="mature_seq",
                                          coldspots="SYC",
-                                         approximate=TRUE
+                                         approximate=TRUE,
+                                         ...
                                         ) {
     if(approximate) {
         counts <- dat %>% 
             getApproximateDistribution(summary_function=getColdspotCount,
                                        divergence_function=getJSDivergence,
                                        column=column,
-                                       coldspots=coldspots
-                                       )
+                                       coldspots=coldspots,
+                                       ...
+                                      )
     } else {
         counts <- dat %>% 
             getColdspotCount(column=column,
