@@ -172,7 +172,7 @@ getIgBlastAnnotations <- function(input_filename,
         names(annotations)[which(names(annotations) == "V_CALL")] <- "v_gene"
         names(annotations)[which(names(annotations) == "D_CALL")] <- "d_gene"
         names(annotations)[which(names(annotations) == "J_CALL")] <- "j_gene"
-        names(annotations)[which(names(annotations) == "JUNCTION")] <- "cdr3s"
+        names(annotations)[which(names(annotations) == "JUNCTION")] <- "junction"
         names(annotations)[which(names(annotations) == "JUNCTION_LENGTH")] <- 
             "cdr3_length"
         names(annotations)[which(names(annotations) == "IN_FRAME")] <- "in_frames"
@@ -187,10 +187,10 @@ getIgBlastAnnotations <- function(input_filename,
                                        annotations$SEQUENCE_IMGT
                                       )
 
-        annotations$cdr3s <- annotations$cdr3s %>%
+        annotations$junction <- annotations$junction %>%
             sapply(toString)
 
-        annotations$cdr3_aa <- annotations$cdr3s %>%
+        annotations$junction_aa <- annotations$junction %>%
             sapply(convertNucleobasesToAminoAcids)
 
         # For now, keep only the first gene if given in a per-sequence list 

@@ -260,7 +260,7 @@ readPartisAnnotations <- function(output_path,
                                                   annotation_file, 
                                                   partis_path
                                                  )
-        annotated_data$cdr3s <- annotated_data %>% 
+        annotated_data$junction <- annotated_data %>% 
             getCDR3s
     } else {
         annotated_data <- annotation_file %>%
@@ -321,11 +321,11 @@ processSequences <- function(annotated_data) {
         sapply(toString) %>% 
         tolower
 
-    annotated_data$cdr3s <- annotated_data$cdr3_seqs %>%
+    annotated_data$junction <- annotated_data$cdr3_seqs %>%
         sapply(toString) %>%
         tolower
 
-    annotated_data$cdr3_aa <- annotated_data$cdr3s %>%
+    annotated_data$junction_aa <- annotated_data$junction %>%
         convertNucleobasesToAminoAcids
 
     annotated_data <- annotated_data %>% 
@@ -476,7 +476,7 @@ getPartisSimulation <- function(parameter_dir,
                                                    output_path=".",
                                                    partis_path
                                                   )
-        sim_annotations$cdr3s <- sim_annotations %>% 
+        sim_annotations$junction <- sim_annotations %>% 
             getCDR3s
     }
 

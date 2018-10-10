@@ -883,7 +883,7 @@ getHydrophobicityDistribution <- function(dat,
                                           include_NA=FALSE
                                           ) {
     hydrophobicity_list <- dat %$%
-        cdr3_aa %>% 
+        junction_aa %>% 
         filterAminoAcidSequences %>%
         sapply(getHydrophobicityFromAASequence)
 
@@ -958,8 +958,8 @@ getMeanAtchleyFactorDistribution <- function(sequence_list) {
 #'   of \code{dat_a} and \code{dat_b}
 compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
     divergence <- getAutomaticAverageDivergence(
-        dat_a %$% cdr3_aa,
-        dat_b %$% cdr3_aa,
+        dat_a %$% junction_aa,
+        dat_b %$% junction_aa,
         getMeanAtchleyFactorDistribution,
         subsample_count=100,
         divergenceFunction=getSumOfAbsoluteDifferences)
@@ -984,7 +984,7 @@ getAliphaticIndex <- function(aa_sequence) {
 #' @return Vector of aliphatic indices
 getAliphaticIndexDistribution <- function(dat) {
     a_indices <- dat %$%
-        cdr3_aa %>% 
+        junction_aa %>% 
         filterAminoAcidSequences %>%
         sapply(function(x) {
                    ifelse(!is.na(x),
@@ -1030,7 +1030,7 @@ compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
 #' @return Vector of GRAVY values for \code{sequence_list}
 getGRAVYDistribution <- function(dat) {
     dist <- dat %$%
-            cdr3_aa %>% 
+            junction_aa %>% 
             filterAminoAcidSequences %>%
             sapply(function(x) {
                    ifelse(!is.na(x),
@@ -1123,8 +1123,8 @@ compareCDR3Distributions <- function(dat_a,
                                      subsample=TRUE, 
                                      subsample_count=100,
                                      trial_count=10) {
-    divergence <- getAutomaticAverageDivergence(dat_a %$% cdr3s,
-                                                dat_b %$% cdr3s,
+    divergence <- getAutomaticAverageDivergence(dat_a %$% junction,
+                                                dat_b %$% junction,
                                                 getDistanceVector,
                                                 subsample_count)
     return(divergence)
@@ -1809,7 +1809,7 @@ compareCopheneticIndices <- function(tree_1, tree_2) {
 getAminoAcidDistribution <- function(dat,
                                      standardize=TRUE
                                     ) {
-    sequences <- dat %$% cdr3_aa
+    sequences <- dat %$% junction_aa
     aa_dist <- paste(sequences[!is.na(sequences)], collapse="") %>%
         strsplit(split="") %>%
         unlist %>%
@@ -1860,7 +1860,7 @@ getSequence2mers <- function(sequence) {
 getAminoAcid2merDistribution <- function(dat,
                                          standardize=TRUE
                                         ) {
-    sequences <- dat %$% cdr3_aa
+    sequences <- dat %$% junction_aa
     dist <- sequences[!is.na(sequences)] %>%
         lapply(getSequence2mers) %>%
         unlist %>%

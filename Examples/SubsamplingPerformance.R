@@ -123,7 +123,7 @@ if(run_main) {
                            tols=10^seq(-1, -7),
                            trial_count=10,
                            continuous=FALSE,
-                           column="cdr3s"
+                           column="junction"
                           )
     dist_dat <- perf_list$Distributions
     metric_dat <- perf_list$Metrics
@@ -211,7 +211,7 @@ if(run_sample_size) {
                             tols=10^seq(-1, -3),
                             trial_count=50,
                             continuous=FALSE,
-                            column="cdr3s"
+                            column="junction"
                 )
 
                 dist_dat <- cbind(perf$Metrics,
@@ -256,7 +256,7 @@ if(run_summaries) {
                                            tols=10^seq(-1, -7),
                                            trial_count=10,
                                            continuous=is_continuous,
-                                           column="cdr3s"
+                                           column="junction"
                                           )
                     dist_dat <- cbind(perf$Metrics, Summary=summary_name)
                     return(dist_dat)
