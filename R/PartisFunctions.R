@@ -157,9 +157,9 @@ getFullPartisAnnotation <- function(output_path,
 
 processMatureSequences <- function(dat) {
     names(dat)[which(names(dat) == "input_seqs")] <- 
-        "mature_seq"
-    dat$mature_seq <- dat %$%
-        mature_seq %>%
+        "sequence"
+    dat$sequence <- dat %$%
+        sequence %>%
         sapply(toString) %>%
         tolower
     return(dat)
@@ -185,7 +185,7 @@ collapseClones <- function(partition_dataset) {
     coloned_columns <- c("unique_ids",
                          "mut_freqs",
                          "n_mutations",
-                         "mature_seq",
+                         "sequence",
                          "input_seqs",
                          "indel_reversed_seqs",
                          "mutated_invariants",

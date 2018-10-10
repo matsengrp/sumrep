@@ -75,7 +75,7 @@ getDistanceVector <- function(sequence_list) {
 #'   and averaging
 #' @return vector of integer-valued distances
 getPairwiseDistanceDistribution <- function(dat,
-                                            column="mature_seq",
+                                            column="sequence",
                                             approximate=TRUE,
                                             ...
                                             ) {
@@ -184,7 +184,7 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 #'   and list_b
 comparePairwiseDistanceDistributions <- function(dat_a, 
                                                  dat_b,
-                                                 column="mature_seq",
+                                                 column="sequence",
                                                  do_automatic=TRUE,
                                                  approximate=TRUE,
                                                  subsample_count=100,
@@ -238,7 +238,7 @@ getNearestNeighborDistances <- function(sequence_list,
 #' @inheritParams getNearestNeighborDistances
 #' @return vector of integer-value distances
 getNearestNeighborDistribution <- function(dat,
-                                           column="mature_seq", 
+                                           column="sequence", 
                                            k=1,
                                            approximate=TRUE,
                                            ...
@@ -289,14 +289,14 @@ plotNearestNeighborDistribution <- function(dat_list,
 #'   and list_b
 compareNNDistanceDistributions <- function(dat_a, 
                                            dat_b, 
-                                           column="mature_seq",
+                                           column="sequence",
                                            k=1,
                                            subsample_count=100,
                                            trial_count=10
                                            ) {
     average_divergence <- 
-        getAutomaticAverageDivergence(dat_a[[mature_seq]],
-                                      dat_b[[mature_seq]],
+        getAutomaticAverageDivergence(dat_a[[sequence]],
+                                      dat_b[[sequence]],
                                       getNearestNeighborDistances,
                                       subsample_count,
                                       k=k)
@@ -323,7 +323,7 @@ getGCContent <- function(raw_sequences) {
 #'   corresponding to DNA sequences
 #' @return A vector of GC content values
 getGCContentDistribution <- function(dat,
-                                     column="mature_seq",
+                                     column="sequence",
                                      approximate=FALSE,
                                      ...
                                      ) {
@@ -364,7 +364,7 @@ plotGCContentDistribution <- function(dat_list,
 #'   and list_b
 compareGCContents <- function(dat_a, 
                               dat_b, 
-                              column="mature_seq"
+                              column="sequence"
                              ) {
     density_a <- dat_a %>%
         getGCContentDistribution(column=column)
@@ -421,7 +421,7 @@ getHotspotCount <- function(dat,
 #' Get the distribution of hotspot counts of sequences in column \code{column}
 #'   of \code{dat}
 getHotspotCountDistribution <- function(dat,
-                                        column="mature_seq",
+                                        column="sequence",
                                         hotspots=c("WRC", "WA"),
                                         approximate=TRUE,
                                         ...
@@ -471,7 +471,7 @@ getColdspotCount <- function(dat,
 }
 
 getColdspotCountDistribution <- function(dat,
-                                         column="mature_seq",
+                                         column="sequence",
                                          coldspots="SYC",
                                          approximate=TRUE,
                                          ...
@@ -516,15 +516,15 @@ plotColdspotCountDistribution <- function(dat_list,
 #' @param subsample_count Number of subsamples for averaging
 #' @param trial_count Number of subsample trials
 #' @return The average JS divergence of the count distributions inferred from
-#'   \code{dat_a$mature_seq} and \code{dat_b$mature_seq}, respectively
+#'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareCounts <- function(dat_a,
                           dat_b,
                           count_function,
                           subsample_count,
                           trial_count) {
 
-    divergence <- getAutomaticAverageDivergence(dat_a %$% mature_seq,
-                                                dat_b %$% mature_seq,
+    divergence <- getAutomaticAverageDivergence(dat_a %$% sequence,
+                                                dat_b %$% sequence,
                                                 count_function,
                                                 subsample_count,
                                                 getSumOfAbsoluteDifferences,
@@ -536,7 +536,7 @@ compareCounts <- function(dat_a,
 #'
 #' @inheritParams compareCounts
 #' @return The JS divergence of the hotspot count distributions inferred from
-#'   \code{dat_a$mature_seq} and \code{dat_b$mature_seq}, respectively
+#'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareHotspotCounts <- function(dat_a, 
                                  dat_b,
                                  subsample_count=1000,
@@ -553,7 +553,7 @@ compareHotspotCounts <- function(dat_a,
 #'
 #' @inheritParams compareCounts
 #' @return The JS divergence of the coldspot count distributions inferred from
-#'   \code{dat_a$mature_seq} and \code{dat_b$mature_seq}, respectively
+#'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareColdspotCounts <- function(dat_a, 
                                   dat_b,
                                   subsample_count=1000,
@@ -574,7 +574,7 @@ compareColdspotCounts <- function(dat_a,
 getDistancesFromNaiveToMature <- function(dat,
                                           v_gene_only=TRUE
                                           ) {
-    mature_column <- ifelse(v_gene_only, "v_qr_seqs", "mature_seq")
+    mature_column <- ifelse(v_gene_only, "v_qr_seqs", "sequence")
     naive_column <- ifelse(v_gene_only, "v_gl_seq", "naive_seq")
     distances <- dat[[mature_column]] %>% 
         mapply(FUN=stringdist::stringdist, 
@@ -1097,7 +1097,7 @@ extractCDR3CodonStartPositions <- function(dictionary_list) {
 #' 
 #' Warning: This function is called on the raw dataset from 
 #'   \code{doFullAnnotation} before \code{input_seqs} is changed to
-#'   \code{mature_seq}.
+#'   \code{sequence}.
 #' @param dat Dataset, either a data.table or data.frame object
 #' @return Vector of CDR3 strings
 getCDR3s <- function(dat) {
@@ -1161,7 +1161,7 @@ getDistancesBetweenMutations <- function(dat) {
                         }
                     },
                     dat$naive_seq,
-                    dat$mature_seq
+                    dat$sequence
                    ) %>% 
         unname %>% 
         unlist %>% 
@@ -1262,7 +1262,7 @@ comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
 getSubstitutionModel <- function(dat) {
     sub_mat <- dat %>% 
         removeSequencesWithDifferentNaiveAndMatureLengths %>%
-        shazam::createSubstitutionMatrix(sequenceColumn="mature_seq",
+        shazam::createSubstitutionMatrix(sequenceColumn="sequence",
                                          germlineColumn="naive_seq",
                                          vCallColumn="v_gene") 
     return(sub_mat)
@@ -1280,7 +1280,7 @@ getMutabilityModel <- function(dat,
     mut_mat <- dat %>% 
         removeSequencesWithDifferentNaiveAndMatureLengths %>%
         shazam::createMutabilityMatrix(substitutionModel=substitution_model,
-                                       sequenceColumn="mature_seq",
+                                       sequenceColumn="sequence",
                                        germlineColumn="naive_seq",
                                        vCallColumn="v_gene")
     return(mut_mat)
@@ -1708,7 +1708,7 @@ compareInFramePercentages <- function(dat_a, dat_b) {
 #'   selection
 getSelectionEstimate <- function(dat) {
     baseline <- shazam::calcBaseline(dat,
-                                     sequenceColumn="mature_seq",
+                                     sequenceColumn="sequence",
                                      germlineColumn="naive_seq"
                                      ) %>%
         shazam::summarizeBaseline(returnType="df") %$%

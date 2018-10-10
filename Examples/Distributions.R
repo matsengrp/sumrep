@@ -45,7 +45,7 @@ dat_names=c("Individual 1, time 1",
 
 getUnivariateSummaries <- function(dat) {
     gc_content <- dat %$%
-        mature_seq %>%
+        sequence %>%
         getGCContentDistribution
 
     cdr3_lengths <- dat %>%
@@ -71,7 +71,7 @@ stop()
 
 plotDistribution(function_string="getGCContentDistribution",
                  datasets=dats,
-                 column_name="mature_seq",
+                 column_name="sequence",
                  dat_names=c("Individual 1, time 1",
                              "Individual 1, time 2",
                              "Individual 2, time 1",

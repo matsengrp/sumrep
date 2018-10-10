@@ -38,7 +38,7 @@ groups <- c(rep("Observed", 3), rep("Simulated", 3))
 
 plotDistribution(function_string="getGCContentDistribution",
                  datasets=dats,
-                 column_name="mature_seq",
+                 column_name="sequence",
                  dat_names=c("Individual 1, time 1",
                              "Individual 1, time 2",
                              "Individual 2, time 1",

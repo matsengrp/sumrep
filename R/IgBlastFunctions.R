@@ -182,9 +182,10 @@ getIgBlastAnnotations <- function(input_filename,
             sapply(gsub, pattern="\\.", replace='') %>%
             tolower
 
-        annotations$mature_seq <- mapply(getMatureSequences,
-                                         annotations$GERMLINE_IMGT,
-                                         annotations$SEQUENCE_IMGT)
+        annotations$sequence <- mapply(getMatureSequences,
+                                       annotations$GERMLINE_IMGT,
+                                       annotations$SEQUENCE_IMGT
+                                      )
 
         annotations$cdr3s <- annotations$cdr3s %>%
             sapply(toString)
