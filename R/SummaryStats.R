@@ -145,8 +145,7 @@ plotDistribution <- function(dat_list,
     }
     p <- p + 
         xlab(x_label) +
-        ylab("Frequency") +
-        theme(legend.position="none")
+        ylab("Frequency")
     return(p)
 }
                                      
@@ -1889,27 +1888,31 @@ compareAminoAcid2merDistributions <-
 plotUnivariateDistributions <- function(dat_list,
                                         tall_plot=FALSE,
                                         do_exact=FALSE,
-                                        names=NULL
+                                        names=NULL,
+                                        plot_function_strings=NULL
                                        ) {
-    plot_function_strings <- list("plotPairwiseDistanceDistribution",
-                                  "plotNearestNeighborDistribution",
-                                  "plotGCContentDistribution",
-                                  "plotHotspotCountDistribution",
-                                  "plotColdspotCountDistribution",
-                                  "plotDistanceFromNaiveToMatureDistribution",
-                                  "plotCDR3Lengths",
-                                  "plotHydrophobicityDistribution",
-                                  "plotAliphaticIndexDistribution",
-                                  "plotGRAVYDistribution",
-                                  "plotDistanceBetweenMutationsDistribution",
-                                  "plotVGene3PrimeDeletionLengths",
-                                  "plotDGene3PrimeDeletionLengths",
-                                  "plotDGene5PrimeDeletionLengths",
-                                  "plotJGene5PrimeDeletionLengths",
-                                  "plotVDInsertionLengths",
-                                  "plotDJInsertionLengths",
-                                  "plotClusterSizeDistribution"
-                                 )
+    if(plot_function_strings %>% is.null) {
+        plot_function_strings <- list("plotPairwiseDistanceDistribution",
+                                      "plotNearestNeighborDistribution",
+                                      "plotGCContentDistribution",
+                                      "plotHotspotCountDistribution",
+                                      "plotColdspotCountDistribution",
+                                      "plotDistanceFromNaiveToMatureDistribution",
+                                      "plotCDR3Lengths",
+                                      "plotHydrophobicityDistribution",
+                                      "plotAliphaticIndexDistribution",
+                                      "plotGRAVYDistribution",
+                                      "plotDistanceBetweenMutationsDistribution",
+                                      "plotVGene3PrimeDeletionLengths",
+                                      "plotDGene3PrimeDeletionLengths",
+                                      "plotDGene5PrimeDeletionLengths",
+                                      "plotJGene5PrimeDeletionLengths",
+                                      "plotVDInsertionLengths",
+                                      "plotDJInsertionLengths",
+                                      "plotClusterSizeDistribution"
+                                     )
+    } 
+
     plots <- {}
     for(f_string in plot_function_strings) {
         plot_function <- eval(parse(text=f_string))
