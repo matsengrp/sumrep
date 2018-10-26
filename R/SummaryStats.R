@@ -9,7 +9,6 @@ library(jsonlite)
 library(magrittr)
 library(pegas)
 library(Peptides)
-library(phytools)
 library(RecordLinkage)
 library(shazam)
 library(seqinr)
@@ -145,8 +144,7 @@ plotDistribution <- function(dat_list,
     }
     p <- p + 
         xlab(x_label) +
-        ylab("Frequency") +
-        theme(legend.position="none")
+        ylab("Frequency")
     return(p)
 }
                                      
@@ -1227,6 +1225,150 @@ compareGRAVYDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
+getPolarityDistribution <- function(dat) {
+    polarities <- dat %>%
+        alakazam::aminoAcidProperties(seq="junction_aa",
+                                      nt=FALSE) %$%
+        junction_aa_AA_POLARITY
+
+    return(polarities)
+}
+
+plotPolarityDistribution <- function(dat_list,
+                                     do_exact=FALSE,
+                                     names=NULL,
+                                     ...
+                                    ) {
+    p <- plotDistribution(dat_list,
+                          getPolarityDistribution,
+                          do_exact=do_exact,
+                          x_label="Polarity",
+                          names=names
+                         )
+
+    return(p)
+}
+
+getChargeDistribution <- function(dat) {
+    charges <- dat %>%
+        alakazam::aminoAcidProperties(seq="junction_aa",
+                                      nt=FALSE) %$%
+        junction_aa_AA_CHARGE
+
+    return(charges)
+}
+
+plotChargeDistribution <- function(dat_list,
+                                     do_exact=FALSE,
+                                     names=NULL,
+                                     ...
+                                    ) {
+    p <- plotDistribution(dat_list,
+                          getChargeDistribution,
+                          do_exact=do_exact,
+                          x_label="Charge",
+                          names=names
+                         )
+
+    return(p)
+}
+
+getBasicityDistribution <- function(dat) {
+    polarities <- dat %>%
+        alakazam::aminoAcidProperties(seq="junction_aa",
+                                      nt=FALSE) %$%
+        junction_aa_AA_BASIC
+
+    return(polarities)
+}
+
+plotBasicityDistribution <- function(dat_list,
+                                     do_exact=FALSE,
+                                     names=NULL,
+                                     ...
+                                    ) {
+    p <- plotDistribution(dat_list,
+                          getBasicityDistribution,
+                          do_exact=do_exact,
+                          x_label="Basicity",
+                          names=names
+                         )
+
+    return(p)
+}
+
+getAcidityDistribution <- function(dat) {
+    acidities <- dat %>%
+        alakazam::aminoAcidProperties(seq="junction_aa",
+                                      nt=FALSE) %$%
+        junction_aa_AA_ACIDIC
+
+    return(acidities)
+}
+
+plotAcidityDistribution <- function(dat_list,
+                                     do_exact=FALSE,
+                                     names=NULL,
+                                     ...
+                                    ) {
+    p <- plotDistribution(dat_list,
+                          getAcidityDistribution,
+                          do_exact=do_exact,
+                          x_label="Acidity",
+                          names=names
+                         )
+
+    return(p)
+}
+
+getAromaticityDistribution <- function(dat) {
+    acidities <- dat %>%
+        alakazam::aminoAcidProperties(seq="junction_aa",
+                                      nt=FALSE) %$%
+        junction_aa_AA_AROMATIC
+
+    return(acidities)
+}
+
+plotAromaticityDistribution <- function(dat_list,
+                                     do_exact=FALSE,
+                                     names=NULL,
+                                     ...
+                                    ) {
+    p <- plotDistribution(dat_list,
+                          getAromaticityDistribution,
+                          do_exact=do_exact,
+                          x_label="Aromaticity",
+                          names=names
+                         )
+
+    return(p)
+}
+
+getBulkinessDistribution <- function(dat) {
+    acidities <- dat %>%
+        alakazam::aminoAcidProperties(seq="junction_aa",
+                                      nt=FALSE) %$%
+        junction_aa_AA_BULK
+
+    return(acidities)
+}
+
+plotBulkinessDistribution <- function(dat_list,
+                                     do_exact=FALSE,
+                                     names=NULL,
+                                     ...
+                                    ) {
+    p <- plotDistribution(dat_list,
+                          getBulkinessDistribution,
+                          do_exact=do_exact,
+                          x_label="Bulkiness",
+                          names=names
+                         )
+
+    return(p)
+}
+
 #' Extract CDR3 codon start positions from partis-returned dictionary strings
 #'
 #' This is a helper function to \link{getCDR3s}.
@@ -2046,27 +2188,31 @@ compareAminoAcid2merDistributions <-
 plotUnivariateDistributions <- function(dat_list,
                                         tall_plot=FALSE,
                                         do_exact=FALSE,
-                                        names=NULL
+                                        names=NULL,
+                                        plot_function_strings=NULL
                                        ) {
-    plot_function_strings <- list("plotPairwiseDistanceDistribution",
-                                  "plotNearestNeighborDistribution",
-                                  "plotGCContentDistribution",
-                                  "plotHotspotCountDistribution",
-                                  "plotColdspotCountDistribution",
-                                  "plotDistanceFromNaiveToMatureDistribution",
-                                  "plotCDR3Lengths",
-                                  "plotHydrophobicityDistribution",
-                                  "plotAliphaticIndexDistribution",
-                                  "plotGRAVYDistribution",
-                                  "plotDistanceBetweenMutationsDistribution",
-                                  "plotVGene3PrimeDeletionLengths",
-                                  "plotDGene3PrimeDeletionLengths",
-                                  "plotDGene5PrimeDeletionLengths",
-                                  "plotJGene5PrimeDeletionLengths",
-                                  "plotVDInsertionLengths",
-                                  "plotDJInsertionLengths",
-                                  "plotClusterSizeDistribution"
-                                 )
+    if(plot_function_strings %>% is.null) {
+        plot_function_strings <- list("plotPairwiseDistanceDistribution",
+                                      "plotNearestNeighborDistribution",
+                                      "plotGCContentDistribution",
+                                      "plotHotspotCountDistribution",
+                                      "plotColdspotCountDistribution",
+                                      "plotDistanceFromNaiveToMatureDistribution",
+                                      "plotCDR3Lengths",
+                                      "plotHydrophobicityDistribution",
+                                      "plotAliphaticIndexDistribution",
+                                      "plotGRAVYDistribution",
+                                      "plotDistanceBetweenMutationsDistribution",
+                                      "plotVGene3PrimeDeletionLengths",
+                                      "plotDGene3PrimeDeletionLengths",
+                                      "plotDGene5PrimeDeletionLengths",
+                                      "plotJGene5PrimeDeletionLengths",
+                                      "plotVDInsertionLengths",
+                                      "plotDJInsertionLengths",
+                                      "plotClusterSizeDistribution"
+                                     )
+    } 
+
     plots <- {}
     for(f_string in plot_function_strings) {
         plot_function <- eval(parse(text=f_string))
