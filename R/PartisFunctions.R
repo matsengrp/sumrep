@@ -361,23 +361,23 @@ getPartisAnnotations <- function(input_filename,
                                 ) {
     preventOutputOverwrite(output_path, cleanup)
     if(partition) {
-        partition_data <- getPartisPartitions(input_filename,
-                                              output_filename,
-                                              partis_path,
-                                              num_procs,
+        partition_data <- getPartisPartitions(input_filename=input_filename,
+                                              output_filename=output_filename,
+                                              partis_path=partis_path,
+                                              num_procs=num_procs,
                                               cleanup=FALSE,
-                                              output_path,
+                                              output_path=output_path,
                                               germline_dir=germline_dir,
                                               extra_columns=extra_columns
                                              )
     } else {
         output_file <- file.path(output_path, output_filename)
-        annotated_data <- callPartis("annotate", 
-                                     input_filename, 
-                                     output_file, 
-                                     output_path, 
-                                     partis_path, 
-                                     num_procs
+        annotated_data <- callPartis(action="annotate", 
+                                     input_filename=input_filename, 
+                                     output_file=output_file, 
+                                     output_path=output_path, 
+                                     partis_path=partis_path, 
+                                     num_procs=num_procs
                                      )
     }
 
