@@ -243,12 +243,16 @@ getNearestNeighborDistribution <- function(dat,
                                            ) {
     sequence_list <- dat[[column]]
     if(approximate) {
-        distribution <- sequence_list %>%
-            getApproximateDistribution(summary_function=getNearestNeighborDistances,
-                                       divergence_function=getJSDivergence,
-                                       k=k,
-                                       ...
-                                       )
+        if(k == 1) {
+            distribution <- getApproximateNearestNeighborDistribution(
+                    dat=dat,
+                    column=column,
+                    k=1,
+                    ...
+            )
+        } else {
+            stop("k must be 1 to get approximate nearest neighbor distribution")
+        }
     } else {
         distribution <- sequence_list %>%
             getNearestNeighborDistances(k=k)
