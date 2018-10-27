@@ -19,8 +19,8 @@ test_that("test.compareDistancesFromNaiveToMature", {
     m3 <- c("GAAAAA")
     m4 <- c("AAAGGG")
     m5 <- c("GGGG")
-    dat_a <- data.table(naive_seq=naive_a, mature_seq=list(m1, m2, m3))
-    dat_b <- data.table(naive_seq=naive_b, mature_seq=list(m2, m3, m4))
+    dat_a <- data.table(naive_seq=naive_a, sequence=list(m1, m2, m3))
+    dat_b <- data.table(naive_seq=naive_b, sequence=list(m2, m3, m4))
     c1 <- compareDistancesFromNaiveToMature(dat_a, 
                                             dat_a, 
                                             do_automatic=FALSE, 
@@ -44,10 +44,10 @@ test_that("test.compareDistancesFromNaiveToMature", {
 })
 
 test_that("test.compareGCContents", {
-    dat_a <- data.table(mature_seq=seq_2)
-    dat_b <- data.table(mature_seq=seq_7)
-    dat_c <- data.table(mature_seq=seq_8)
-    dat_d <- data.table(mature_seq=seq_9)
+    dat_a <- data.table(sequence=seq_2)
+    dat_b <- data.table(sequence=seq_7)
+    dat_c <- data.table(sequence=seq_8)
+    dat_d <- data.table(sequence=seq_9)
     expect_equal(0, compareGCContents(dat_a, dat_b))
     c1 <- compareGCContents(dat_c, dat_d)
     c2 <- compareGCContents(dat_d, dat_c)
@@ -56,10 +56,10 @@ test_that("test.compareGCContents", {
 })
 
 test_that("test.comparePairwiseDistanceDistributions", {
-    s1 <- data.table(mature_seq=c("AAA", "AAT", "ATT"))
-    s2 <- data.table(mature_seq=c("ATT", "AAA", "AAT"))
-    s3 <- data.table(mature_seq=c("AAA", "AAT", "TTT"))
-    s4 <- data.table(mature_seq=c("AAA", "ATC", "GGG"))
+    s1 <- data.table(sequence=c("AAA", "AAT", "ATT"))
+    s2 <- data.table(sequence=c("ATT", "AAA", "AAT"))
+    s3 <- data.table(sequence=c("AAA", "AAT", "TTT"))
+    s4 <- data.table(sequence=c("AAA", "ATC", "GGG"))
     expect_equal(0, 
                  comparePairwiseDistanceDistributions(s1,
                                                       s2,
@@ -87,10 +87,10 @@ test_that("test.getColdspotCount", {
     seq_b <- c("GCC", "AAA", "AAAA")
     seq_c <- c("AAA", "CTC")
     seq_d <- "SYCSYC"
-    expect_equal(0, getColdspotCount(data.table(cdr3s=seq_a), column="cdr3s"))
-    expect_equal(1, getColdspotCount(data.table(cdr3s=seq_b), column="cdr3s"))
-    expect_equal(1, getColdspotCount(data.table(cdr3s=seq_c), column="cdr3s"))
-    expect_equal(4, getColdspotCount(data.table(cdr3s=seq_d), column="cdr3s"))
+    expect_equal(0, getColdspotCount(data.table(junction=seq_a), column="junction"))
+    expect_equal(1, getColdspotCount(data.table(junction=seq_b), column="junction"))
+    expect_equal(1, getColdspotCount(data.table(junction=seq_c), column="junction"))
+    expect_equal(4, getColdspotCount(data.table(junction=seq_d), column="junction"))
 })
 
 test_that("test.getDistanceMatrix", {
@@ -110,7 +110,7 @@ test_that("test.getDistancesFromNaiveToMature", {
     m2 <- c("CGCAAA")
     m3 <- c("GGGGGG")
     m4 <- c("AAAAAA")
-    dat <- data.table(naive_seq=naives, mature_seq=c(m1, m2, m3, m4))
+    dat <- data.table(naive_seq=naives, sequence=c(m1, m2, m3, m4))
     expect_equal(c(0, 1, 3, 6), getDistancesFromNaiveToMature(dat,
                                                               v_gene_only=FALSE
                                                               ))
@@ -139,9 +139,9 @@ test_that("test.getGCContentDistribution", {
 test_that("test.getGRAVYDistribution", {
     # Sample GRAVY values for a few particular amino acids obtained from 
     # https://github.com/PRIDE-Utilities/pride-utilities/wiki/1.2-GRAVY-Calculations 
-    alanine <- data.table(cdr3_aa=convertNucleobasesToAminoAcids("GCC"))
-    glutamine <- data.table(cdr3_aa=convertNucleobasesToAminoAcids("CAA"))
-    isoleucine <- data.table(cdr3_aa=convertNucleobasesToAminoAcids("ATT"))
+    alanine <- data.table(junction_aa=convertNucleobasesToAminoAcids("GCC"))
+    glutamine <- data.table(junction_aa=convertNucleobasesToAminoAcids("CAA"))
+    isoleucine <- data.table(junction_aa=convertNucleobasesToAminoAcids("ATT"))
     expect_equal(1.8, getGRAVYDistribution(alanine))
     expect_equal(-3.5, getGRAVYDistribution(glutamine))
     expect_equal(4.5, getGRAVYDistribution(isoleucine))
@@ -154,10 +154,10 @@ test_that("test.getHotspotCount", {
     seq_b <- c("AAC", "TTTT")
     seq_c <- "NWRC"
     seq_d <- c("WRC", "WRC", "WGC")
-    expect_equal(0, getHotspotCount(data.table(cdr3s=seq_a), column="cdr3s"))
-    expect_equal(2, getHotspotCount(data.table(cdr3s=seq_b), column="cdr3s"))
-    expect_equal(3, getHotspotCount(data.table(cdr3s=seq_c), column="cdr3s"))
-    expect_equal(5, getHotspotCount(data.table(cdr3s=seq_d), column="cdr3s"))
+    expect_equal(0, getHotspotCount(data.table(junction=seq_a), column="junction"))
+    expect_equal(2, getHotspotCount(data.table(junction=seq_b), column="junction"))
+    expect_equal(3, getHotspotCount(data.table(junction=seq_c), column="junction"))
+    expect_equal(5, getHotspotCount(data.table(junction=seq_d), column="junction"))
 })
 
 test_that("test.getNearestNeighborDistances", {
@@ -175,16 +175,16 @@ test_that("test.getNearestNeighborDistances", {
 
 test_that("test.getPositionalDistancesBetweenMutations", {
     naive_seq <- c("AAAA", "AAAA", "TTTT", "GGGGGGG")
-    mature_seq <- c("AAAA", "ATAG", "TTAT", "CGGCGCG")
+    sequence <- c("AAAA", "ATAG", "TTAT", "CGGCGCG")
 
-    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[1], mature_seq[1]), NA)
-    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[2], mature_seq[2]), 2)
-    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[3], mature_seq[3]), NA)
-    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[4], mature_seq[4]) %>% 
+    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[1], sequence[1]), NA)
+    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[2], sequence[2]), 2)
+    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[3], sequence[3]), NA)
+    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[4], sequence[4]) %>% 
                  sort,
                  c(2, 3))
     expect_equal(getDistancesBetweenMutations(data.table(naive_seq=naive_seq, 
-                                                         mature_seq=mature_seq
+                                                         sequence=sequence
                                                         )) %>% sort, 
                  c(2, 2, 3))
 })

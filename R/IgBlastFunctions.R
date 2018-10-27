@@ -169,9 +169,9 @@ getIgBlastAnnotations <- function(input_filename,
         annotations <- germline_filename %>%
             data.table::fread(stringsAsFactors=TRUE) 
 
-        names(annotations)[which(names(annotations) == "V_CALL")] <- "v_gene"
-        names(annotations)[which(names(annotations) == "D_CALL")] <- "d_gene"
-        names(annotations)[which(names(annotations) == "J_CALL")] <- "j_gene"
+        names(annotations)[which(names(annotations) == "V_CALL")] <- "v_call"
+        names(annotations)[which(names(annotations) == "D_CALL")] <- "d_call"
+        names(annotations)[which(names(annotations) == "J_CALL")] <- "j_call"
         names(annotations)[which(names(annotations) == "JUNCTION")] <- "junction"
         names(annotations)[which(names(annotations) == "JUNCTION_LENGTH")] <- 
             "cdr3_length"

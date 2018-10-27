@@ -35,7 +35,6 @@ callPartis <- function(action,
                      "-n", num_procs,
                      "-h", file.path(output_path, "params"))
     if(!missing(germline_dir) && !is.null(germline_dir)) {
-        print(germline_dir)
         command <- paste(command,
                          "-g",
                          germline_dir)
@@ -235,6 +234,7 @@ collapseClones <- function(partition_dataset) {
 }
 
 #' Get partis annotations from the partis output directory.
+#' Some column names are changed to match the AIRR standard, including:
 #' This function does NOT run partis from R. 
 #'
 #' @param filepath The output directory from the partis call
@@ -333,6 +333,10 @@ processSequences <- function(annotated_data) {
 
     annotated_data$in_frames <- annotated_data$in_frames %>% 
         as.logical
+
+    names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "v_call"
+    names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "d_call"
+    names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "j_call"
 
     return(annotated_data)
 }

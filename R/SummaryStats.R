@@ -903,7 +903,7 @@ compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
 #' @param dat_a First annotated dataset
 #' @param dat_b Second annotated dataset
 #' @param gene_type String for gene type, taken as a column name of the 
-#'   annotated datasets. Must be "v_gene", "d_gene", or "j_gene"
+#'   annotated datasets. Must be "v_call", "d_call", or "j_call"
 #' @inheritParams compareGeneUsage
 #' @return Mean absolute difference of gene counts between the two
 #'   repertoires
@@ -926,7 +926,7 @@ compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type,
 #' @return Mean absolute difference of V gene counts between the two
 #'   repertoires
 compareVGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="v_gene",
+    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="v_call",
                                             collapse_alleles=TRUE))
 }
 
@@ -936,7 +936,7 @@ compareVGeneDistributions <- function(dat_a, dat_b) {
 #' @return Mean absolute difference of D gene counts between the two
 #'   repertoires
 compareDGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="d_gene",
+    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="d_call",
                                             collapse_alleles=TRUE))
 }
 
@@ -946,7 +946,7 @@ compareDGeneDistributions <- function(dat_a, dat_b) {
 #' @return Mean absolute difference of J gene counts between the two
 #'   repertoires
 compareJGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="j_gene",
+    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="j_call",
                                             collapse_alleles=TRUE))
 }
 
@@ -958,22 +958,22 @@ compareJGeneDistributions <- function(dat_a, dat_b) {
 getJointGeneTable <- function(dat, collapseAlleles) {
     if(collapseAlleles) {
         v_genes <- dat %$% 
-            v_gene %>% 
+            v_call %>% 
             collapseAlleles
         d_genes <- dat %$% 
-            d_gene %>% 
+            d_call %>% 
             collapseAlleles
         j_genes <- dat %$% 
-            j_gene %>% 
+            j_call %>% 
             collapseAlleles
-        gene_dat <- data.table(v_gene=v_genes,
-                               d_gene=d_genes,
-                               j_gene=j_genes)
+        gene_dat <- data.table(v_call=v_genes,
+                               d_call=d_genes,
+                               j_call=j_genes)
     } else {
         gene_dat <- dat
     }
 
-    gene_type_list <- c("v_gene", "d_gene", "j_gene")
+    gene_type_list <- c("v_call", "d_call", "j_call")
     gene_table <- gene_dat %>% 
         plyr::count(gene_type_list)
     gene_table$concat <- do.call(paste0, gene_table[gene_type_list])
@@ -1563,7 +1563,7 @@ getSubstitutionModel <- function(dat) {
         removeSequencesWithDifferentNaiveAndMatureLengths %>%
         shazam::createSubstitutionMatrix(sequenceColumn="sequence",
                                          germlineColumn="naive_seq",
-                                         vCallColumn="v_gene") 
+                                         vCallColumn="v_call") 
     return(sub_mat)
 }
 
@@ -1581,7 +1581,7 @@ getMutabilityModel <- function(dat,
         shazam::createMutabilityMatrix(substitutionModel=substitution_model,
                                        sequenceColumn="sequence",
                                        germlineColumn="naive_seq",
-                                       vCallColumn="v_gene")
+                                       vCallColumn="v_call")
     return(mut_mat)
 }
 
