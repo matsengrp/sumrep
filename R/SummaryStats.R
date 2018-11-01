@@ -394,12 +394,14 @@ getMotifCount <- function(motif, dna_sequences) {
 #' @param spots Vector of hot or cold spots of interest
 #' @return The total number of occurrences of each motif in \code{spots}, in
 #'   \code{dna_sequences}
-getSpotCount <- function(dna_sequences, spots) {
+getSpotCount <- function(dna_sequences, 
+                         spots
+                        ) {
     count <- spots %>% 
         # Get a length(dna_sequences) x length(spots) matrix of counts
         sapply(getMotifCount, dna_sequences=dna_sequences) %>%
         # Sum over each spot count for each sequence
-        sum
+        apply(1, sum)
     return(count)
 }
 
@@ -412,8 +414,10 @@ getHotspotCount <- function(dat,
                             column,
                             hotspots=c("WRC", "WA")
                            ) {
-    return(getSpotCount(dna_sequences=dat[[column]], 
-                        spots=hotspots))
+    return(getSpotCount(spots=hotspots,
+                        dna_sequences=dat[[column]]
+                       )
+    )
 }
 
 #' Get the distribution of hotspot counts of sequences in column \code{column}
@@ -421,11 +425,11 @@ getHotspotCount <- function(dat,
 getHotspotCountDistribution <- function(dat,
                                         column="sequence",
                                         hotspots=c("WRC", "WA"),
-                                        approximate=TRUE,
+                                        approximate=FALSE,
                                         ...
                                        ) {
     if(approximate) {
-        counts <- dat[[column]] %>% 
+        counts <- dat %>% 
             getApproximateDistribution(summary_function=getHotspotCount,
                                        divergence_function=getJSDivergence,
                                        column=column,
@@ -433,7 +437,7 @@ getHotspotCountDistribution <- function(dat,
                                        ...
                                       )
     } else {
-        counts <- dat[[column]] %>% 
+        counts <- dat %>% 
             getHotspotCount(column=column,
                             hotspots=hotspots
                            )
@@ -471,11 +475,11 @@ getColdspotCount <- function(dat,
 getColdspotCountDistribution <- function(dat,
                                          column="sequence",
                                          coldspots="SYC",
-                                         approximate=TRUE,
+                                         approximate=FALSE,
                                          ...
                                         ) {
     if(approximate) {
-        counts <- dat[[column]] %>% 
+        counts <- dat %>% 
             getApproximateDistribution(summary_function=getColdspotCount,
                                        divergence_function=getJSDivergence,
                                        column=column,
@@ -483,7 +487,7 @@ getColdspotCountDistribution <- function(dat,
                                        ...
                                       )
     } else {
-        counts <- dat[[column]] %>% 
+        counts <- dat %>% 
             getColdspotCount(column=column,
                              coldspots=coldspots
                             )
