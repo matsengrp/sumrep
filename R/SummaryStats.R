@@ -183,23 +183,15 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 comparePairwiseDistanceDistributions <- function(dat_a, 
                                                  dat_b,
                                                  column="sequence",
-                                                 do_automatic=TRUE,
-                                                 approximate=TRUE,
-                                                 subsample_count=100,
-                                                 trial_count=10
+                                                 approximate=TRUE
                                                  ) {
-    if(do_automatic) {
-        divergence <- getAutomaticAverageDivergence(sequences_a,
-                                                    sequences_b,
-                                                    getDistanceVector,
-                                                    subsample_count)
-    } else {
-        dist_a <- dat_a %>% 
-            getPairwiseDistanceDistribution(approximate=approximate)
-        dist_b <- dat_b %>% 
-            getPairwiseDistanceDistribution(approximate=approximate)
-        divergence <- getJSDivergence(dist_a, dist_b)
-    }
+    dist_a <- dat_a %>% 
+        getPairwiseDistanceDistribution(approximate=approximate,
+                                        column=column)
+    dist_b <- dat_b %>% 
+        getPairwiseDistanceDistribution(approximate=approximate,
+                                        column=column)
+    divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
 
@@ -293,16 +285,20 @@ compareNNDistanceDistributions <- function(dat_a,
                                            dat_b, 
                                            column="sequence",
                                            k=1,
-                                           subsample_count=100,
-                                           trial_count=10
-                                           ) {
-    average_divergence <- 
-        getAutomaticAverageDivergence(dat_a[[sequence]],
-                                      dat_b[[sequence]],
-                                      getNearestNeighborDistances,
-                                      subsample_count,
-                                      k=k)
-    return(average_divergence)
+                                           approximate=TRUE
+                                          ) {
+    dist_a <- getNearestNeighborDistribution(dat=dat_a,
+                                             column=column,
+                                             k=k,
+                                             approximate=approximate
+                                            )
+    dist_b <- getNearestNeighborDistribution(dat=dat_b,
+                                             column=column,
+                                             k=k,
+                                             approximate=approximate
+                                            )
+    divergence <- getJSDivergence(dist_a, dist_b)
+    return(divergence)
 }
 
 getGCContent <- function(raw_sequences) {
@@ -429,7 +425,7 @@ getHotspotCountDistribution <- function(dat,
                                         ...
                                        ) {
     if(approximate) {
-        counts <- dat %>% 
+        counts <- dat[[column]] %>% 
             getApproximateDistribution(summary_function=getHotspotCount,
                                        divergence_function=getJSDivergence,
                                        column=column,
@@ -437,7 +433,7 @@ getHotspotCountDistribution <- function(dat,
                                        ...
                                       )
     } else {
-        counts <- dat %>% 
+        counts <- dat[[column]] %>% 
             getHotspotCount(column=column,
                             hotspots=hotspots
                            )
@@ -479,7 +475,7 @@ getColdspotCountDistribution <- function(dat,
                                          ...
                                         ) {
     if(approximate) {
-        counts <- dat %>% 
+        counts <- dat[[column]] %>% 
             getApproximateDistribution(summary_function=getColdspotCount,
                                        divergence_function=getJSDivergence,
                                        column=column,
@@ -487,7 +483,7 @@ getColdspotCountDistribution <- function(dat,
                                        ...
                                       )
     } else {
-        counts <- dat %>% 
+        counts <- dat[[column]] %>% 
             getColdspotCount(column=column,
                              coldspots=coldspots
                             )
@@ -754,8 +750,11 @@ compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
 #' @inheritParams compareGeneUsage
 #' @return Mean absolute difference of gene counts between the two
 #'   repertoires
-compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type,
-                                             collapse_alleles) {
+compareGermlineGeneDistributions <- function(dat_a, 
+                                             dat_b, 
+                                             gene_type,
+                                             collapse_alleles
+                                            ) {
     if(gene_type %>% missing) {
         stop("gene_type needs to be supplied.")
     }

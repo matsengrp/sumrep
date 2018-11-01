@@ -335,8 +335,8 @@ processSequences <- function(annotated_data) {
         as.logical
 
     names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "v_call"
-    names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "d_call"
-    names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "j_call"
+    names(annotated_data)[which(names(annotated_data) == "d_gene")] <- "d_call"
+    names(annotated_data)[which(names(annotated_data) == "j_gene")] <- "j_call"
 
     return(annotated_data)
 }
