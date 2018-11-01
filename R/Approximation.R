@@ -92,7 +92,7 @@ getApproximateDistribution <- function(dat,
 getApproximateNearestNeighborDistribution <- function(dat,
                                                       column,
                                                       k=1,
-                                                      pairwise_identity=0.5,
+                                                      pairwise_identity=0,
                                                       tol=0.01,
                                                       batch_size=100
                                                      ) {
@@ -154,14 +154,6 @@ getApproximateNearestNeighborDistribution <- function(dat,
     # Include sequences in clustered data.table based on sequence_ids from
     #   vsearch
     cluster_df$sequence <- dat[[column]][cluster_df$sequence_id]
-    cluster_freqs <- (cluster_df$cluster_id %>% 
-                          table)/sum(cluster_df$cluster_id %>% 
-                                         table)
-    cluster_df$cluster_freq <- cluster_df$cluster_id %>%
-        sapply(function(x) {
-                   cluster_freqs[x %>% toString]
-               }
-        )
 
     cluster_id_table <- cluster_df$cluster_id %>% 
         table
@@ -216,8 +208,7 @@ doNNSubsamplingBatchStep <- function(dat,
     nn_sample <- replicate(batch_size,
         {
             sequence_id <- sample(dat$sequence_id, 
-                                  1, 
-                                  prob=dat$cluster_freqs
+                                  1
                                  )
             if(sequence_id %in% singleton_df$sequence_id) {
                 seq_df <- singleton_df[singleton_df$sequence_id == sequence_id, ]
