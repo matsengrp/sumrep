@@ -123,16 +123,32 @@ getJSDivergence <- function(list_a,
             divergence <- textmineR::CalcJSDivergence(binned[[1]], binned[[2]])
         }
     } else {
-        factor_levels <- c(list_a, list_b) %>%
-            unique %>%
-            as.factor
-        table_a <- list_a %>%
-            tabulateDiscreteData(factor_levels=factor_levels)
-        table_b <- list_b %>%
-            tabulateDiscreteData(factor_levels=factor_levels)
         if(KL) {
+            table_a <- list_a %>% table
+            table_b <- list_b %>% table
+            full_names <- union(names(table_a),
+                                names(table_b)
+                               )
+            table_a [full_names %>% setdiff(names(table_a))] <- 0
+            table_a <- table_a[order(names(table_a) %>% as.numeric)]
+
+            table_b [full_names %>% setdiff(names(table_b))] <- 0
+            table_b <- table_b[order(names(table_b) %>% as.numeric)]
+
+            valid_indices <- which(table_a != 0 & table_b != 0)
+            table_a <- table_a[valid_indices]
+            table_b <- table_b[valid_indices]
+
+
             divergence <- entropy::KL.empirical(table_a, table_b)
         } else {
+            factor_levels <- c(list_a, list_b) %>%
+                unique %>%
+                as.factor
+            table_a <- list_a %>%
+                tabulateDiscreteData(factor_levels=factor_levels)
+            table_b <- list_b %>%
+                tabulateDiscreteData(factor_levels=factor_levels)
             divergence <- textmineR::CalcJSDivergence(table_a, table_b)
         }
     }

@@ -35,7 +35,6 @@ callPartis <- function(action,
                      "-n", num_procs,
                      "-h", file.path(output_path, "params"))
     if(!missing(germline_dir) && !is.null(germline_dir)) {
-        print(germline_dir)
         command <- paste(command,
                          "-g",
                          germline_dir)
@@ -235,6 +234,7 @@ collapseClones <- function(partition_dataset) {
 }
 
 #' Get partis annotations from the partis output directory.
+#' Some column names are changed to match the AIRR standard, including:
 #' This function does NOT run partis from R. 
 #'
 #' @param filepath The output directory from the partis call
@@ -334,6 +334,10 @@ processSequences <- function(annotated_data) {
     annotated_data$in_frames <- annotated_data$in_frames %>% 
         as.logical
 
+    names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "v_call"
+    names(annotated_data)[which(names(annotated_data) == "d_gene")] <- "d_call"
+    names(annotated_data)[which(names(annotated_data) == "j_gene")] <- "j_call"
+
     return(annotated_data)
 }
 
@@ -357,23 +361,23 @@ getPartisAnnotations <- function(input_filename,
                                 ) {
     preventOutputOverwrite(output_path, cleanup)
     if(partition) {
-        partition_data <- getPartisPartitions(input_filename,
-                                              output_filename,
-                                              partis_path,
-                                              num_procs,
+        partition_data <- getPartisPartitions(input_filename=input_filename,
+                                              output_filename=output_filename,
+                                              partis_path=partis_path,
+                                              num_procs=num_procs,
                                               cleanup=FALSE,
-                                              output_path,
+                                              output_path=output_path,
                                               germline_dir=germline_dir,
                                               extra_columns=extra_columns
                                              )
     } else {
         output_file <- file.path(output_path, output_filename)
-        annotated_data <- callPartis("annotate", 
-                                     input_filename, 
-                                     output_file, 
-                                     output_path, 
-                                     partis_path, 
-                                     num_procs
+        annotated_data <- callPartis(action="annotate", 
+                                     input_filename=input_filename, 
+                                     output_file=output_file, 
+                                     output_path=output_path, 
+                                     partis_path=partis_path, 
+                                     num_procs=num_procs
                                      )
     }
 

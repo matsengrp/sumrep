@@ -56,7 +56,7 @@ runPerformanceAnalysis <- function(dat,
                                                ) 
     true_dat <- true_info$true_dat
     true_time <- true_info$true_time
-    
+
     # Get subsampled distributions for various tolerances
     times <- {}
     metric_names <- c("Tolerance", "Time", "Divergence", "Trial")
@@ -114,46 +114,54 @@ runPerformanceAnalysis <- function(dat,
           )
 }
 
-run_main <- FALSE
-if(run_main) {
+runSingleSummaryAnalysis <- function(dat,
+                               distribution_function,
+                               tols,
+                               trial_count,
+                               continuous,
+                               column,
+                               out_dir,
+                               xlab="Value"
+                              ) {
     perf_list <- runPerformanceAnalysis(
-                           dat=p_f1$annotations %>% 
-                               subsample(10000, replace=FALSE),
-                           distribution_function=getPairwiseDistanceDistribution,
-                           tols=10^seq(-1, -7),
-                           trial_count=10,
-                           continuous=FALSE,
-                           column="junction"
+                           dat=dat,
+                           distribution_function=distribution_function,
+                           tols=tols,
+                           trial_count=trial_count,
+                           continuous=continuous,
+                           column=column
                           )
     dist_dat <- perf_list$Distributions
     metric_dat <- perf_list$Metrics
     true_time <- perf_list$TrueTime
     summary_table <- perf_list$Summary
+
+    dir.create(out_dir)
     
     freq_plot <- ggplot(dist_dat,
            aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
         geom_freqpoly(aes(y=..density..), binwidth=1) +
         xlim(quantile(dist_dat$Value, c(0.01, 0.99)))  +
-        xlab("Pairwise Distance") +
+        xlab(xlab) +
         ylab("Density")
-    ggsave("~/Manuscripts/sumrep-ms/Figures/freqpoly_by_tol.pdf", width=10)
+    ggsave(file.path(out_dir, "freqpoly_by_tol.pdf"), width=10)
     
     density_plot <- ggplot(dist_dat,
            aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
         geom_density(adjust=4) +
         xlim(quantile(dist_dat$Value, c(0.01, 0.99)))  +
-        xlab("Pairwise Distance") +
+        xlab(xlab) +
         ylab("Density")
-    ggsave("~/Manuscripts/sumrep-ms/Figures/density_by_tol.pdf", width=10)
+    ggsave(file.path(out_dir, "density_by_tol.pdf"), width=10)
     
     ecdf_plot <- ggplot(dist_dat,
            aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
         stat_ecdf() +
-        xlab("GC content") +
+        xlab(xlab) +
         ylab("Density") +
         # We don't want outliers to stretch the x-axis too much
         xlim(quantile(dist_dat$Value, c(0.01, 0.99))) 
-    ggsave("~/Manuscripts/sumrep-ms/Figures/ecdf_by_tol.pdf", width=10)
+    ggsave(file.path(out_dir, "ecdf_by_tol.pdf"), width=10)
     
     time_plot <- ggplot(d=metric_dat, 
                         aes(x=log10(Tolerance), y=Time, group=log10(Tolerance))) +
@@ -164,7 +172,7 @@ if(run_main) {
         xlab("Log_10(tolerance)") +
         ylab("Time (seconds)") +
         ggtitle("Time complexity of distribution subsampling by tolerance")
-    ggsave("~/Manuscripts/sumrep-ms/Figures/time_by_tol.pdf", width=10)
+    ggsave(file.path(out_dir, "time_by_tol.pdf"), width=10)
     
     log_time_plot <- ggplot(d=metric_dat, 
                             aes(x=log10(Tolerance), y=log(Time), group=log10(Tolerance))) +
@@ -177,7 +185,7 @@ if(run_main) {
         ggtitle(
          "Time complexity (in log-seconds) of distribution subsampling by tolerance"
         )
-    ggsave("~/Manuscripts/sumrep-ms/Figures/log_time_by_tol.pdf", width=10)
+    ggsave(file.path(out_dir, "log_time_by_tol.pdf"), width=10)
     
     div_plot <- ggplot(d=metric_dat, 
                        aes(x=log10(Tolerance), y=Divergence, group=log10(Tolerance))) +
@@ -185,21 +193,53 @@ if(run_main) {
         xlab("Log_10(tolerance)") +
         ylab("KL-divergence") +
         ggtitle("KL-divergence to true distribution by tolerance")
-    ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_tol.pdf", width=10)
+    ggsave(file.path(out_dir, "div_by_tol.pdf"), width=10)
     
     summary_table %>%
-        printTable(filename="~/Manuscripts/sumrep-ms/Tables/summary_by_tol.tex",
+        printTable(filename=file.path(out_dir, "summary_by_tol.tex"),
                    digits=c(0, 0, 0, 0, 0, 2, 0, 0),
                    label="tab:SummaryTable"
                   )
 }
 
-run_sample_size <- FALSE
-if(run_sample_size) {
-    sample_sizes <- c(500, 1000, 2500, 10000, 25000)
+test_dat <- p_f1$annotations %>%
+    subsample(10000, replace=FALSE)
+
+pairwise_dist_analysis <- runSingleSummaryAnalysis(
+    dat=test_dat,
+    distribution_function=getPairwiseDistanceDistribution,
+    tols=10^seq(-1, -7),
+    trial_count=10,
+    continuous=FALSE,
+    column="junction",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/PairwiseDistance",
+    xlab="Pairwise distance"
+)
+
+nn_dist_analysis <- runSingleSummaryAnalysis(
+    dat=test_dat,
+    distribution_function=getNearestNeighborDistribution,
+    tols=10^seq(-1, -7),
+    trial_count=50,
+    continuous=FALSE,
+    column="junction",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor",
+    xlab="NN distance"
+)
+
+runAnalysisBySampleSize <- function(
+    dat,
+    sample_sizes,
+    distribution_function,
+    tols,
+    trial_count,
+    continuous,
+    column,
+    out_dir
+) {
     dats <- sample_sizes %>%
         lapply(function(x) {
-                   p_f1$annotations %>% subsample(x, replace=FALSE)
+                   dat %>% subsample(x, replace=FALSE)
                })
 
     size_dat <- dats %>%
@@ -207,11 +247,11 @@ if(run_sample_size) {
                FUN=function(dat) {
                 perf <- runPerformanceAnalysis(
                             dat=dat,
-                            distribution_function=getPairwiseDistanceDistribution,
-                            tols=10^seq(-1, -3),
-                            trial_count=50,
-                            continuous=FALSE,
-                            column="junction"
+                            distribution_function=distribution_function,
+                            tols=tols,
+                            trial_count=trial_count,
+                            continuous=continuous,
+                            column=column
                 )
 
                 dist_dat <- cbind(perf$Metrics,
@@ -222,6 +262,9 @@ if(run_sample_size) {
         do.call(rbind, .)
 
     size_dat$Tolerance <- size_dat$Tolerance %>% as.factor
+
+    dir.create(out_dir)
+
     size_plot <- size_dat %>%
         ggplot(aes(x=log(Size), 
                    y=Divergence, 
@@ -232,43 +275,64 @@ if(run_sample_size) {
         geom_boxplot() +
         xlab("log(Size)") +
         ylab("KL-divergence")
-    ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_size_and_tol.pdf", width=10)
+    ggsave(file.path(out_dir,
+                     "div_by_size_and_tol.pdf"), width=10)
 }
 
-run_summaries <- TRUE
-if(run_summaries) {
-    summaries <- c(getPairwiseDistanceDistribution,
-                   getGCContentDistribution,
-                   getHotspotCountDistribution,
-                   getColdspotCountDistribution
-                  )
-    summary_names <- c("Pairwise distances", 
-                       "GC content", 
-                       "Hotspot count", 
-                       "Coldspot count")
-    is_continuous <- c(FALSE, TRUE, FALSE, FALSE)
-    dat <- p_f1$annotations %>% subsample(5000, replace=FALSE)
+pairwise_dist_size_analysis <- runAnalysisBySampleSize(
+    dat=p_f1$annotations,
+    sample_sizes=c(100, 250, 1000, 2500, 10000),
+    distribution_function=getPairwiseDistanceDistribution,
+    tols=10^seq(-1, -7),
+    trial_count=10,
+    continuous=FALSE,
+    column="junction",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/PairwiseDistance"
+)
+nn_size_analysis <- runAnalysisBySampleSize(
+    dat=p_f1$annotations,
+    sample_sizes=c(100, 250, 1000, 2500, 10000),
+    distribution_function=getNearestNeighborDistribution,
+    tols=10^seq(-1, -7),
+    trial_count=10,
+    continuous=FALSE,
+    column="junction",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor"
+)
 
+runMultipleSummaryAnalysis <- function(
+    dat,
+    summaries,
+    summary_names,
+    continuous,
+    tols,
+    trial_count,
+    column,
+    out_dir
+) {
     distribution_dat <- mapply(
-            FUN=function(summary, is_continuous, summary_name) {
+            FUN=function(summary, continuous, summary_name) {
                     perf <- runPerformanceAnalysis(dat=dat,
                                            distribution_function=summary,
-                                           tols=10^seq(-1, -7),
-                                           trial_count=10,
-                                           continuous=is_continuous,
-                                           column="junction"
+                                           tols=tols,
+                                           trial_count=trial_count,
+                                           continuous=continuous,
+                                           column=column
                                           )
                     dist_dat <- cbind(perf$Metrics, Summary=summary_name)
                     return(dist_dat)
                 },
                 summaries,
-                is_continuous,
+                continuous,
                 summary_names ,
                 SIMPLIFY=FALSE
             ) %>%
         do.call(rbind, .)
 
     distribution_dat$Tolerance <- distribution_dat$Tolerance %>% as.factor
+
+    dir.create(out_dir)
+
     summ_plot <- distribution_dat %>%
         ggplot(aes(x=Summary,
                    y=Divergence,
@@ -276,6 +340,29 @@ if(run_summaries) {
                    fill=Tolerance
                    )) +
                geom_boxplot()
-    ggsave("~/Manuscripts/sumrep-ms/Figures/div_by_summary_and_tol.pdf", width=10)
-
+    ggsave(file.path(out_dir,
+                     "div_by_summary_and_tol.pdf"),
+           width=10)
 }
+
+multiple_summary_analysis <- runMultipleSummaryAnalysis(
+    dat=p_f1$annotations %>% subsample(5000, replace=FALSE),
+    summaries=c(getPairwiseDistanceDistribution,
+                getNearestNeighborDistribution,
+                getGCContentDistribution,
+                getHotspotCountDistribution,
+                getColdspotCountDistribution
+               ),
+    summary_names=c(
+                    "Pairwise distances", 
+                    "NN distances",
+                    "GC content", 
+                    "Hotspot count", 
+                    "Coldspot count"
+                    ),
+    continuous=c(FALSE, FALSE, TRUE, FALSE, FALSE),
+    tols=10^seq(-1, -3),
+    trial_count=10,
+    column="junction",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/Multiple"
+)

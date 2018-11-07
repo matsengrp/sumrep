@@ -22,53 +22,6 @@ standardizeList <- function(l) {
         unname
     return(new_list)
 }
-#' Subsample a vector
-#' 
-#' @inheritParams subsample
-#' @param v Vector to subsample
-#' @return A subsampled vector 
-subsampleVector <- function(v, 
-                            sample_count,
-                            replace=TRUE
-                           ) {
-    new_vector <- {}
-    if(length(v) > sample_count) {
-        new_vector <- sample(v, 
-                             sample_count,
-                             replace
-                            )
-    } else {
-        new_vector <- v
-    }
-    return(new_vector)
-}
-
-#' Subsample a dataset
-#'
-#' @param dataset A data.table, data.frame, or vector object
-#' @param sample_count Number of samples to retain in the subsampled data.
-#'   Samples refers to elements in a vector or rows in a data.table/data.frame
-#' @return A subsampled dataset of the same type given by \code{dataset}
-subsample <- function(dataset, 
-                      sample_count,
-                      replace=TRUE
-                     ) {
-    new_dataset <- {}
-    if(is.null(dim(dataset))) {
-        new_dataset <- subsampleVector(dataset, 
-                                       sample_count,
-                                       replace=replace
-                                      )
-    } else if(nrow(dataset) > sample_count) {
-        new_dataset <- dataset[sample(1:nrow(dataset), 
-                                      sample_count,
-                                      replace=replace
-                                     ), ]
-    } else {
-        new_dataset <- dataset
-    }
-    return(new_dataset)
-}
 
 #' Import a vector of DNA sequence strings from a fasta file
 #' 
@@ -193,43 +146,6 @@ loadNewDatasets <- function(data_dir) {
                 envir=.GlobalEnv)
         }
     }
-}
-
-#' Approximate the distribution of \code{summary_function} for \code{dat} by 
-#    iteratively sampling from \code{dat}, computing the distribution of 
-#'   \code{summary_function} for the subsample, and accumulating a representative
-#'   distribution. The function stops when \code{divergence_function} between two
-#'   distribution iterates is sufficiently small.
-#'
-#' @param dat The dataset for which the distribution is desired
-#' @param summary_function A function which computes a summary statistic of \code{dat},
-#'   which yields a distribution
-#' @param sample_count The size of the subsample for each iteration
-#' @param tol The threshold for \code{divergence_function} to be considered converged
-#' @param divergence_function The divergence computed between successive iterates.
-#'   This should probably be the JS divergence, specified for discrete or continuous data
-#'   depending on the nature of \code{summary_function}
-getApproximateDistribution <- function(dat,
-                                       summary_function,
-                                       sample_count=100,
-                                       tol=0.001,
-                                       divergence_function=getContinuousJSDivergence,
-                                       ...
-                                       ) {
-    dist <- subsample(dat, sample_count) %>%
-        summary_function(...)
-
-    error <- Inf
-    while(error > tol) {
-        dist_prev <- dist
-        sample_dat <- subsample(dat, sample_count)
-        sample_dist <- sample_dat %>% 
-            summary_function(...)
-        dist <- c(dist_prev, sample_dist)
-        error <- divergence_function(dist, dist_prev)
-    }
-
-    return(dist)
 }
 
 #' Handy automatic dimension retrieval given number of grid cells 

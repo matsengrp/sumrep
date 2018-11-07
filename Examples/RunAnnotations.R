@@ -27,10 +27,10 @@ writeAnnotations <- function(filename,
 
         num_leaves <- nrow(annotations$annotations)/num_clones
 
-        simulation <- simulateDataset("tmp_output",
-                                      num_events=num_clones,
-                                      num_leaves=num_leaves
-                                      )
+        simulation <- getPartisSimulation("tmp_output",
+                                          num_events=num_clones,
+                                          num_leaves=num_leaves
+                                         )
         saveRDS(simulation, outname %>% gsub(pattern='.rds',
                                              replace='-sim.rds'))
         "tmp_output" %>% unlink(recursive=TRUE)

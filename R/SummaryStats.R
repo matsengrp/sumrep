@@ -187,23 +187,15 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 comparePairwiseDistanceDistributions <- function(dat_a, 
                                                  dat_b,
                                                  column="sequence",
-                                                 do_automatic=TRUE,
-                                                 approximate=TRUE,
-                                                 subsample_count=100,
-                                                 trial_count=10
+                                                 approximate=TRUE
                                                  ) {
-    if(do_automatic) {
-        divergence <- getAutomaticAverageDivergence(sequences_a,
-                                                    sequences_b,
-                                                    getDistanceVector,
-                                                    subsample_count)
-    } else {
-        dist_a <- dat_a %>% 
-            getPairwiseDistanceDistribution(approximate=approximate)
-        dist_b <- dat_b %>% 
-            getPairwiseDistanceDistribution(approximate=approximate)
-        divergence <- getJSDivergence(dist_a, dist_b)
-    }
+    dist_a <- dat_a %>% 
+        getPairwiseDistanceDistribution(approximate=approximate,
+                                        column=column)
+    dist_b <- dat_b %>% 
+        getPairwiseDistanceDistribution(approximate=approximate,
+                                        column=column)
+    divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
 
@@ -247,12 +239,16 @@ getNearestNeighborDistribution <- function(dat,
                                            ) {
     sequence_list <- dat[[column]]
     if(approximate) {
-        distribution <- sequence_list %>%
-            getApproximateDistribution(summary_function=getNearestNeighborDistances,
-                                       divergence_function=getJSDivergence,
-                                       k=k,
-                                       ...
-                                       )
+        if(k == 1) {
+            distribution <- getApproximateNearestNeighborDistribution(
+                    dat=dat,
+                    column=column,
+                    k=1,
+                    ...
+            )
+        } else {
+            stop("k must be 1 to get approximate nearest neighbor distribution")
+        }
     } else {
         distribution <- sequence_list %>%
             getNearestNeighborDistances(k=k)
@@ -293,16 +289,20 @@ compareNNDistanceDistributions <- function(dat_a,
                                            dat_b, 
                                            column="sequence",
                                            k=1,
-                                           subsample_count=100,
-                                           trial_count=10
-                                           ) {
-    average_divergence <- 
-        getAutomaticAverageDivergence(dat_a[[sequence]],
-                                      dat_b[[sequence]],
-                                      getNearestNeighborDistances,
-                                      subsample_count,
-                                      k=k)
-    return(average_divergence)
+                                           approximate=TRUE
+                                          ) {
+    dist_a <- getNearestNeighborDistribution(dat=dat_a,
+                                             column=column,
+                                             k=k,
+                                             approximate=approximate
+                                            )
+    dist_b <- getNearestNeighborDistribution(dat=dat_b,
+                                             column=column,
+                                             k=k,
+                                             approximate=approximate
+                                            )
+    divergence <- getJSDivergence(dist_a, dist_b)
+    return(divergence)
 }
 
 getGCContent <- function(raw_sequences) {
@@ -398,12 +398,14 @@ getMotifCount <- function(motif, dna_sequences) {
 #' @param spots Vector of hot or cold spots of interest
 #' @return The total number of occurrences of each motif in \code{spots}, in
 #'   \code{dna_sequences}
-getSpotCount <- function(dna_sequences, spots) {
+getSpotCount <- function(dna_sequences, 
+                         spots
+                        ) {
     count <- spots %>% 
         # Get a length(dna_sequences) x length(spots) matrix of counts
         sapply(getMotifCount, dna_sequences=dna_sequences) %>%
         # Sum over each spot count for each sequence
-        sum
+        apply(1, sum)
     return(count)
 }
 
@@ -416,8 +418,10 @@ getHotspotCount <- function(dat,
                             column,
                             hotspots=c("WRC", "WA")
                            ) {
-    return(getSpotCount(dna_sequences=dat[[column]], 
-                        spots=hotspots))
+    return(getSpotCount(spots=hotspots,
+                        dna_sequences=dat[[column]]
+                       )
+    )
 }
 
 #' Get the distribution of hotspot counts of sequences in column \code{column}
@@ -425,7 +429,7 @@ getHotspotCount <- function(dat,
 getHotspotCountDistribution <- function(dat,
                                         column="sequence",
                                         hotspots=c("WRC", "WA"),
-                                        approximate=TRUE,
+                                        approximate=FALSE,
                                         ...
                                        ) {
     if(approximate) {
@@ -475,7 +479,7 @@ getColdspotCount <- function(dat,
 getColdspotCountDistribution <- function(dat,
                                          column="sequence",
                                          coldspots="SYC",
-                                         approximate=TRUE,
+                                         approximate=FALSE,
                                          ...
                                         ) {
     if(approximate) {
@@ -750,12 +754,15 @@ compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
 #' @param dat_a First annotated dataset
 #' @param dat_b Second annotated dataset
 #' @param gene_type String for gene type, taken as a column name of the 
-#'   annotated datasets. Must be "v_gene", "d_gene", or "j_gene"
+#'   annotated datasets. Must be "v_call", "d_call", or "j_call"
 #' @inheritParams compareGeneUsage
 #' @return Mean absolute difference of gene counts between the two
 #'   repertoires
-compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type,
-                                             collapse_alleles) {
+compareGermlineGeneDistributions <- function(dat_a, 
+                                             dat_b, 
+                                             gene_type,
+                                             collapse_alleles
+                                            ) {
     if(gene_type %>% missing) {
         stop("gene_type needs to be supplied.")
     }
@@ -773,7 +780,7 @@ compareGermlineGeneDistributions <- function(dat_a, dat_b, gene_type,
 #' @return Mean absolute difference of V gene counts between the two
 #'   repertoires
 compareVGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="v_gene",
+    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="v_call",
                                             collapse_alleles=TRUE))
 }
 
@@ -783,7 +790,7 @@ compareVGeneDistributions <- function(dat_a, dat_b) {
 #' @return Mean absolute difference of D gene counts between the two
 #'   repertoires
 compareDGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="d_gene",
+    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="d_call",
                                             collapse_alleles=TRUE))
 }
 
@@ -793,7 +800,7 @@ compareDGeneDistributions <- function(dat_a, dat_b) {
 #' @return Mean absolute difference of J gene counts between the two
 #'   repertoires
 compareJGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="j_gene",
+    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="j_call",
                                             collapse_alleles=TRUE))
 }
 
@@ -805,22 +812,22 @@ compareJGeneDistributions <- function(dat_a, dat_b) {
 getJointGeneTable <- function(dat, collapseAlleles) {
     if(collapseAlleles) {
         v_genes <- dat %$% 
-            v_gene %>% 
+            v_call %>% 
             collapseAlleles
         d_genes <- dat %$% 
-            d_gene %>% 
+            d_call %>% 
             collapseAlleles
         j_genes <- dat %$% 
-            j_gene %>% 
+            j_call %>% 
             collapseAlleles
-        gene_dat <- data.table(v_gene=v_genes,
-                               d_gene=d_genes,
-                               j_gene=j_genes)
+        gene_dat <- data.table(v_call=v_genes,
+                               d_call=d_genes,
+                               j_call=j_genes)
     } else {
         gene_dat <- dat
     }
 
-    gene_type_list <- c("v_gene", "d_gene", "j_gene")
+    gene_type_list <- c("v_call", "d_call", "j_call")
     gene_table <- gene_dat %>% 
         plyr::count(gene_type_list)
     gene_table$concat <- do.call(paste0, gene_table[gene_type_list])
@@ -1410,7 +1417,7 @@ getSubstitutionModel <- function(dat) {
         removeSequencesWithDifferentNaiveAndMatureLengths %>%
         shazam::createSubstitutionMatrix(sequenceColumn="sequence",
                                          germlineColumn="naive_seq",
-                                         vCallColumn="v_gene") 
+                                         vCallColumn="v_call") 
     return(sub_mat)
 }
 
@@ -1428,7 +1435,7 @@ getMutabilityModel <- function(dat,
         shazam::createMutabilityMatrix(substitutionModel=substitution_model,
                                        sequenceColumn="sequence",
                                        germlineColumn="naive_seq",
-                                       vCallColumn="v_gene")
+                                       vCallColumn="v_call")
     return(mut_mat)
 }
 
