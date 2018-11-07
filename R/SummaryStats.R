@@ -143,6 +143,10 @@ plotDistribution <- function(dat_list,
             geom_histogram(alpha=0.6, position="identity")
     }
     p <- p + 
+        theme(panel.background=element_blank(),
+                  panel.grid.major=element_blank(),
+                  panel.grid.minor=element_blank(),
+                  axis.line=element_line(colour="grey")) +
         xlab(x_label) +
         ylab("Frequency")
     return(p)
