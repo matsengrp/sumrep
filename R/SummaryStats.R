@@ -2036,15 +2036,12 @@ compareAminoAcid2merDistributions <-
     return(divergence)    
 }
 
-#' @param dat List of annotation datasets for which to plot univariate summary 
-#'   distributions
-#' @param tall_plot Make the plot portrait-oriented rather than landscape
-plotUnivariateDistributions <- function(dat_list,
-                                        tall_plot=FALSE,
-                                        do_exact=FALSE,
-                                        names=NULL,
-                                        plot_function_strings=NULL
-                                       ) {
+#' @inheritParams plotUnivariateDistributions
+getUnivariateDistributionPlots <- function(dat_list,
+                                           do_exact=FALSE,
+                                           names=NULL,
+                                           plot_function_strings=NULL
+                                          ) {
     if(plot_function_strings %>% is.null) {
         plot_function_strings <- list("plotPairwiseDistanceDistribution",
                                       "plotNearestNeighborDistribution",
@@ -2075,5 +2072,25 @@ plotUnivariateDistributions <- function(dat_list,
                           names=names
                           )
     }
-    multiplot <- multiplot(plotlist=plots, tall_plot=tall_plot)
+    return(plots)
+}
+
+#' @param dat List of annotation datasets for which to plot univariate summary 
+#'   distributions
+#' @param tall_plot Make the plot portrait-oriented rather than landscape
+#' @param do_exact Display exact distribution plots rather than histograms
+#' @param names Strings to be displayed by the legend corresponding to the 
+#'   elements of \code{dat_list}
+plotUnivariateDistributions <- function(dat_list,
+                                        tall_plot=FALSE,
+                                        do_exact=FALSE,
+                                        names=NULL,
+                                        plot_function_strings=NULL
+                                       ) {
+    plots <- dat_list %>%
+        getUnivariateDistributionPlots(do_exact=do_exact,
+                                       names=names,
+                                       plot_function_strings=plot_function_strings)
+    multiplot <- multiplot(plot_list=plots, tall_plot=tall_plot)
+    return(multiplot)
 }
