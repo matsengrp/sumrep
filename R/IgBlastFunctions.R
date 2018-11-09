@@ -31,8 +31,8 @@ getIgBlastAnnotations <- function(input_filename,
 
     # IgBlast needs to be in its own directory to find the germline databases
     # easily, so let's remember where we are currently and chnage directories
-    try({
-        initial_wd <- getwd()
+    initial_wd <- getwd()
+    tryCatch({
         igblast_dir %>% setwd
         igblast_exec <- file.path(igblast_dir, "igblastn")
         arguments <- igblast_exec
@@ -194,11 +194,15 @@ getIgBlastAnnotations <- function(input_filename,
             sapply(convertNucleobasesToAminoAcids)
 
         # For now, keep only the first gene if given in a per-sequence list 
-        annotations$v_gene <- annotations$v_gene %>%
+        annotations$v_call <- annotations$v_call %>%
             processGenes
-        annotations$j_gene <- annotations$j_gene %>%
+        annotations$j_call <- annotations$j_call %>%
             processGenes
 
+    }, error = function(e) {
+        print(e)
+    }, finally = {
+        setwd(initial_wd)
     })
 
     # Go back to initial working directory
