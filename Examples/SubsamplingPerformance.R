@@ -220,7 +220,7 @@ nn_dist_analysis <- runSingleSummaryAnalysis(
     dat=test_dat,
     distribution_function=getNearestNeighborDistribution,
     tols=10^seq(-1, -7),
-    trial_count=50,
+    trial_count=10,
     continuous=FALSE,
     column="junction",
     out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor",
@@ -281,19 +281,20 @@ runAnalysisBySampleSize <- function(
 
 pairwise_dist_size_analysis <- runAnalysisBySampleSize(
     dat=p_f1$annotations,
-    sample_sizes=c(100, 250, 1000, 2500, 10000),
+    sample_sizes=c(6, 7, 8, 9, 10) %>% exp,
     distribution_function=getPairwiseDistanceDistribution,
-    tols=10^seq(-1, -7),
+    tols=10^seq(-1, -3),
     trial_count=10,
     continuous=FALSE,
     column="junction",
     out_dir="~/Manuscripts/sumrep-ms/Figures/PairwiseDistance"
 )
+
 nn_size_analysis <- runAnalysisBySampleSize(
     dat=p_f1$annotations,
-    sample_sizes=c(100, 250, 1000, 2500, 10000),
+    sample_sizes=c(5, 6, 7, 8, 9) %>% exp,
     distribution_function=getNearestNeighborDistribution,
-    tols=10^seq(-1, -7),
+    tols=10^seq(-1, -3),
     trial_count=10,
     continuous=FALSE,
     column="junction",
@@ -361,7 +362,7 @@ multiple_summary_analysis <- runMultipleSummaryAnalysis(
                     "Coldspot count"
                     ),
     continuous=c(FALSE, FALSE, TRUE, FALSE, FALSE),
-    tols=10^seq(-1, -3),
+    tols=10^seq(-1, -7),
     trial_count=10,
     column="junction",
     out_dir="~/Manuscripts/sumrep-ms/Figures/Multiple"
