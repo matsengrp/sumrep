@@ -1084,6 +1084,15 @@ getPolarityDistribution <- function(dat) {
     return(polarities)
 }
 
+comparePolarityDistributions <- function(dat_a,
+                                         dat_b
+                                        ) {
+    dist_a <- dat_a %>% getPolarityDistribution
+    dist_b <- dat_b %>% getPolarityDistribution
+    divergence <- getContinuousJSDivergence(dist_a, dist_b)
+    return(divergence)
+}
+
 plotPolarityDistribution <- function(dat_list,
                                      do_exact=FALSE,
                                      names=NULL,
@@ -1106,6 +1115,15 @@ getChargeDistribution <- function(dat) {
         junction_aa_AA_CHARGE
 
     return(charges)
+}
+
+compareChargeDistributions <- function(dat_a,
+                                       dat_b
+                                      ) {
+    dist_a <- dat_a %>% getChargeDistribution
+    dist_b <- dat_b %>% getChargeDistribution
+    divergence <- getContinuousJSDivergence(dist_a, dist_b)
+    return(divergence)
 }
 
 plotChargeDistribution <- function(dat_list,
@@ -1132,6 +1150,15 @@ getBasicityDistribution <- function(dat) {
     return(polarities)
 }
 
+compareBasicityDistributions <- function(dat_a,
+                                         dat_b
+                                        ) {
+    dist_a <- dat_a %>% getBasicityDistribution
+    dist_b <- dat_b %>% getBasicityDistribution
+    divergence <- getContinuousJSDivergence(dist_a, dist_b)
+    return(divergence)
+}
+
 plotBasicityDistribution <- function(dat_list,
                                      do_exact=FALSE,
                                      names=NULL,
@@ -1154,6 +1181,15 @@ getAcidityDistribution <- function(dat) {
         junction_aa_AA_ACIDIC
 
     return(acidities)
+}
+
+compareAcidityDistributions <- function(dat_a,
+                                         dat_b
+                                        ) {
+    dist_a <- dat_a %>% getAcidityDistribution
+    dist_b <- dat_b %>% getAcidityDistribution
+    divergence <- getContinuousJSDivergence(dist_a, dist_b)
+    return(divergence)
 }
 
 plotAcidityDistribution <- function(dat_list,
@@ -1180,6 +1216,15 @@ getAromaticityDistribution <- function(dat) {
     return(acidities)
 }
 
+compareAromaticityDistributions <- function(dat_a,
+                                         dat_b
+                                        ) {
+    dist_a <- dat_a %>% getAromaticityDistribution
+    dist_b <- dat_b %>% getAromaticityDistribution
+    divergence <- getContinuousJSDivergence(dist_a, dist_b)
+    return(divergence)
+}
+
 plotAromaticityDistribution <- function(dat_list,
                                      do_exact=FALSE,
                                      names=NULL,
@@ -1202,6 +1247,15 @@ getBulkinessDistribution <- function(dat) {
         junction_aa_AA_BULK
 
     return(acidities)
+}
+
+compareBulkinessDistributions <- function(dat_a,
+                                         dat_b
+                                        ) {
+    dist_a <- dat_a %>% getBulkinessDistribution
+    dist_b <- dat_b %>% getBulkinessDistribution
+    divergence <- getContinuousJSDivergence(dist_a, dist_b)
+    return(divergence)
 }
 
 plotBulkinessDistribution <- function(dat_list,
