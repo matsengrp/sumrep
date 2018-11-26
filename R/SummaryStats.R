@@ -415,7 +415,7 @@ getSpotCount <- function(dna_sequences,
 #' @inheritParams getMotifCount
 #' @return The number of AID hotspot occurrences in \code{dna_sequences}
 getHotspotCount <- function(dat,
-                            column,
+                            column="sequence",
                             hotspots=c("WRC", "WA")
                            ) {
     return(getSpotCount(spots=hotspots,
@@ -469,7 +469,7 @@ plotHotspotCountDistribution <- function(dat_list,
 #' @inheritParams getMotifCount
 #' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
 getColdspotCount <- function(dat,
-                             column, 
+                             column="sequence", 
                              coldspots="SYC"
                             ) {
     return(getSpotCount(dna_sequences=dat[[column]], 
@@ -526,15 +526,16 @@ plotColdspotCountDistribution <- function(dat_list,
 compareCounts <- function(dat_a,
                           dat_b,
                           count_function,
-                          subsample_count,
-                          trial_count) {
+                          ...
+                         ) {
+    counts_a <- dat_a %>%
+        count_function(...)
 
-    divergence <- getAutomaticAverageDivergence(dat_a %$% sequence,
-                                                dat_b %$% sequence,
-                                                count_function,
-                                                subsample_count,
-                                                getSumOfAbsoluteDifferences,
-                                                tolerance=1e-4)
+    counts_b <- dat_b %>%
+        count_function(...)
+    divergence <- getJSDivergence(counts_a,
+                                  counts_b
+                                 )
     return(divergence)
 }
 
@@ -545,13 +546,15 @@ compareCounts <- function(dat_a,
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareHotspotCounts <- function(dat_a, 
                                  dat_b,
-                                 subsample_count=1000,
-                                 trial_count=10) {
+                                 column="sequence",
+                                 ...
+                                ) {
     divergence <- compareCounts(dat_a,
                                 dat_b,
                                 getHotspotCount,
-                                subsample_count,
-                                trial_count)
+                                column=column,
+                                ...
+                               )
     return(divergence)
 }
 
@@ -562,13 +565,15 @@ compareHotspotCounts <- function(dat_a,
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareColdspotCounts <- function(dat_a, 
                                   dat_b,
-                                  subsample_count=1000,
-                                  trial_count=10) {
+                                  column="sequence",
+                                  ...
+                                 ) {
     divergence <- compareCounts(dat_a,
                                 dat_b,
                                 getColdspotCount,
-                                subsample_count,
-                                trial_count)
+                                column=column,
+                                ...
+                               )
     return(divergence)
 }
 
