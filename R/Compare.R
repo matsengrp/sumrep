@@ -128,10 +128,14 @@ doComparison <- function(function_string, input_list) {
 #' @param repertoire_2 Second repertoire
 #' @param rep_1_bootstrap Annotated repertoire based on bootstrapping the DNA
 #'   sequences from the first repertoire
+#' @param receptor_type A string denoting the type of immune receptor to which
+#'   \code{repertoire_1} and \code{repertoire_2} correspond.
+#'   Either "BCR" or "TCR".
 compareRepertoires <- function(repertoire_1, 
                                repertoire_2, 
-                               rep_1_bootstrap
-                               ) {
+                               rep_1_bootstrap=NULL,
+                               receptor_type
+                              ) {
     annotations_1 <- repertoire_1$annotations
     annotations_2 <- repertoire_2$annotations
     annotations_list <- list(annotations_1, annotations_2)
@@ -153,10 +157,6 @@ compareRepertoires <- function(repertoire_1,
                              "compareNNDistanceDistributions",
                              "compareCDR3Distributions",
                              "compareDistancesFromNaiveToMature",
-                             # SHM metrics
-                             "compareDistanceBetweenMutationsDistributions",
-                             "compareSubstitutionAndMutabilityModels",
-                             "compareSelectionEstimates",
                              # Sequence-based metrics
                              "compareGCContents",
                              "compareHotspotCounts",
@@ -165,6 +165,12 @@ compareRepertoires <- function(repertoire_1,
                              "compareAtchleyFactorDistributions",
                              "compareAliphaticIndexDistributions",
                              "compareGRAVYDistributions",
+                             "comparePolarityDistributions",
+                             "compareChargeDistributions",
+                             "compareBasicityDistributions",
+                             "compareAcidityDistributions",
+                             "compareAromaticityDistributions",
+                             "compareBulkinessDistributions",
                              "compareInFramePercentages",
                              # Recombination metrics
                              "compareCDR3Lengths",
@@ -181,7 +187,7 @@ compareRepertoires <- function(repertoire_1,
                              "compareVDInsertionMatrices",
                              "compareDJInsertionMatrices"
                              )
-    
+
     comparison_dat_names <- c("Comparison", "Divergence")
     if(length(annotations_list) == 3) {
         comparison_dat_names <- c(comparison_dat_names,
