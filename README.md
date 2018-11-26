@@ -4,7 +4,7 @@
 ### Installing `sumrep`
 * The following `R` command will install almost all of the `R` package dependencies:
   ```
-  install.packages(c("alakazam", "ape", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "pegas", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "textmineR", "yaml"))
+  install.packages(c("alakazam", "ape", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "pegas", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"))
   ```
 
 * `Biostrings` needs to be installed in a special way:
@@ -56,7 +56,7 @@
   
   NOTE: this needs to be the path to the actual partis executable, and *not* the parent folder, which is also named `partis`.
   
-#### Installing IgBlast
+#### Installing IgBlast + Change-O
 * [IgBlast](https://www.ncbi.nlm.nih.gov/igblast/) can also be used for annotation within `sumrep`; instructions for installing standalone `igblast` can be found [here](https://ncbi.github.io/igblast/cook/How-to-set-up.html).
 
 * `sumrep` uses [`changeo`](https://changeo.readthedocs.io/en/version-0.4.4/index.html) to process the raw `igblast` output. Installation instructions can be found [here](https://changeo.readthedocs.io/en/version-0.4.4/install.html).
