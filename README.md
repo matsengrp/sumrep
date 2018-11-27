@@ -2,31 +2,32 @@
 
 ## Installation Notes
 ### Installing `sumrep`
-* The following `R` command will install almost all of the `R` package dependencies:
+* Although `sumrep` is still in development, we can use the `devtools` package to load `sumrep` in R as a makeshift pacakge. Follow the instructions from the [`devtools` repo](https://github.com/hadley/devtools) for installation instructions.
+
+* The following `R` command will install almost all of the remaining `R` package dependencies:
   ```
   install.packages(c("alakazam", "ape", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "pegas", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"))
   ```
-
+  
 * `Biostrings` needs to be installed in a special way:
     ```
     source("https://bioconductor.org/biocLite.R")
     biocLite("Biostrings")
     ```
   (try `http://` if `https://` URLs are not supported)
-  
-* If you only want to use the partis functionality, only the following `R` packages need to be installed:
-  ```
-   install.packages(c("data.table", "dplyr", "magrittr", "stringr"))
-  ```
-  The section below discusses installing `partis` in more detail.
-  
-* `sumrep` is still in development and is not yet a complete R package. However, you can use the `devtools` library to load it   as if it were a package. Follow the instructions from the [`devtools` repo](https://github.com/hadley/devtools) for installation instructions.
-* Once `devtools` is installed, the following lines will load `sumrep` into your workspace:
+
+* Once all of the above are installed, the following lines will load `sumrep` into your workspace:
   ```
   library(devtools)
   devtools::load_all("/path/to/sumrep/")
   ```
   where `/path/to/sumrep/` is the directory of sumrep from `git clone`.
+  
+* If you only want to use the `partis` functionality, only the following `R` packages need to be installed:
+  ```
+   install.packages(c("data.table", "dplyr", "magrittr", "stringr"))
+  ```
+  The section below discusses installing `partis` in more detail.
 
 
 ### Installing annotation/simulation tools (optional)
