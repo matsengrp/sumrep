@@ -5,7 +5,7 @@ test_dat <- getPartisAnnotations("data/compare_data.fa",
                                 )
 
 # Simulate a dataset based on the observed DNA sequences
-test_simu <- simulateDataset(parameter_dir="tmp_output",
+test_simu <- getPartisSimulation(parameter_dir="tmp_output",
                              num_events=round(nrow(test_dat$annotations)/4)
                             )
 
@@ -27,4 +27,8 @@ test_dat_boot <- getPartisAnnotations("boot.fa",
 
 # Run repertoire comparison for the observed and simulated data,
 # and also compare the observed to bootstrapped data for refernce
-comparison <- compareRepertoires(test_dat, test_simu, test_dat_boot)
+comparison <- compareRepertoires(test_dat, 
+                                 test_simu, 
+                                 test_dat_boot,
+                                 receptor_type="BCR"
+                                )
