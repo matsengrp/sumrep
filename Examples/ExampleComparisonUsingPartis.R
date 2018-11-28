@@ -1,19 +1,28 @@
+# The path of the sumrep directory. This will need to be changed if the sumrep
+#   directory is not the working directory.
+path_to_sumrep <- getwd()
+
+# Make sure sumrep is loaded
+devtools::load_all(path_to_sumrep)
+
 # Get annnotation and clonal partition dataset
-test_dat <- getPartisAnnotations("data/compare_data.fa", 
+test_dat <- getPartisAnnotations(file.path(path_to_sumrep,
+                                           "data/compare_data.fa"),
                                  cleanup=FALSE,
                                  output_path="tmp_output"
                                 )
 
 # Simulate a dataset based on the observed DNA sequences
 test_simu <- getPartisSimulation(parameter_dir="tmp_output",
-                             num_events=round(nrow(test_dat$annotations)/4)
-                            )
+                                 num_events=round(nrow(test_dat$annotations)/4)
+                                )
 
 # Delete partis output folder
 "tmp_output" %>% unlink(recursive=TRUE)
 
 # Resample original fasta sequences and save to fasta file
-test_dat_boot <- bootstrapFasta("data/compare_data.fa",
+test_dat_boot <- bootstrapFasta(file.path(path_to_sumrep,
+                                          "data/compare_data.fa"),
                                 output_filename="boot.fa"
                                )
 
