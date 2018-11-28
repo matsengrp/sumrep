@@ -115,5 +115,12 @@ Note that by default `getPartisAnnotations` and `getIgBlastAnnotations` return l
 The `mutation_rates` object should be equivalent to a data structure returned by `getMutationInfo`, which is called within `getPartisAnnotations`.
 This structure includes a field for each gene name (e.g. `` `IGHD2-21\*01` ``), which then includes subfields `overall_mut_rate` and `mut_rate_by_position`.
 
+### Examples
+The `Examples` folder includes two scripts that demonstrate basic `sumrep` usage.
+
+* `ExampleComparisonUsingPartis.R` shows how to obtain `partis` annotations and parameters from `sumrep`; how to simulate from these parameters using `partis` from `sumrep`; and how to compare these observed and simulated annotations datasets with the `compareRepertoires` function.
+
+* `ExampleComparisonWithoutPartis.R` loads pre-computed annotations, so that `partis` need not be installed, and shows how to compare these observed and simulated annotations datasets with the `compareRepertoires` function.
+
 ##
 Please let us know if you run into any other installation issues not addressed above!
