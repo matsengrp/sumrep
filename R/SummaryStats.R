@@ -69,7 +69,9 @@ getDistanceVector <- function(sequence_list) {
 
 #' Get an exact or approximate distribution of pairwise distances
 #'
-#' @param sequence_list vector of DNA sequence strings
+#' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the pairwise distance distribution should be computed
 #' @param approximate if TRUE, approximate the distribution by subsampling
 #'   and averaging
 #' @return vector of integer-valued distances
@@ -177,8 +179,7 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 #'   DNA sequences. This function iterates through a number of trials (given
 #'   by \code{trial_count}, subsampling the full datasets by the amount given
 #'   by \code{subsample_count}, and returns the mean divergence.
-#' @param dat_a First dataset, containing mature sequences
-#' @param dat_b Second dataset, containing mature sequences
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param approximate If TRUE, uses approximate pairwise distance distributions
 #' @param do_automatic If TRUE, approximate divergence using subsampling
 #' @inheritParams getAutomaticAverageDivergence 
@@ -225,7 +226,7 @@ getNearestNeighborDistances <- function(sequence_list,
 
 #' Get exact or approximate nearest neighbor distribution
 #'
-#' @param sequence_list vector of DNA sequence strings
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param approximate If TRUE, approximate distribution by subsampling.
 #'   Note: this inhibits interpretability since any subsample will have a 
 #'   different definition of a "nearest neighbor"
@@ -277,8 +278,7 @@ plotNearestNeighborDistribution <- function(dat_list,
 #'   the kth nearest neighbor distance distribution of two lists of
 #'   DNA sequences
 #' @inheritParams getAutomaticAverageDivergence
-#' @param dat_a First dataset, containing mature sequences
-#' @param dat_b Second dataset, containing mature sequences
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param k The separation depth for the nearest neighbor distances.
 #'   k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 #'   the second-nearest neighbor, etc.
@@ -515,8 +515,7 @@ plotColdspotCountDistribution <- function(dat_list,
 
 #' Compare hot or coldspot count distributions of two sets of mature BCR sequences
 #'
-#' @param dat_a First dataset
-#' @param dat_b Second dataset
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param count_function The comparison function corresponding to hotspot or 
 #'   coldspot counts. Must be either getHotspotCount or getColdspotCount
 #' @param subsample_count Number of subsamples for averaging
@@ -577,10 +576,10 @@ compareColdspotCounts <- function(dat_a,
     return(divergence)
 }
 
-#' Get distribution of Levenshtein distances from the inferred naive sequences
-#' to the observed mature ones, sequence by sequence
+#' Get the exact distribution of Levenshtein distances from the inferred 
+#'   naive sequences to the observed mature ones, sequence by sequence
 #'
-#' @param dat Annotated dataset
+#' @inheritParams getDistanceFromNaiveToMatureDistribution
 #' @return Vector of Levenshtein distances from naive to mature
 getDistancesFromNaiveToMature <- function(dat,
                                           v_gene_only=TRUE
@@ -596,6 +595,11 @@ getDistancesFromNaiveToMature <- function(dat,
     return(distances)
 }
 
+#' Get the exact or approximate distribution of Levenshtein distances from 
+#'   the inferred naive sequences to the observed mature ones
+#'
+#' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @return Vector of Levenshtein distances from naive to mature
 getDistanceFromNaiveToMatureDistribution <- function(dat,
                                                      approximate=TRUE,
                                                      v_gene_only=FALSE,
@@ -628,8 +632,8 @@ plotDistanceFromNaiveToMatureDistribution <- function(dat_list,
 
 #' Compare Levenshtein distance distributions from naive sequences to 
 #  their corresponding mature ones for two repertoires
-#' @param dat_a First dataset
-#' @param dat_b Second dataset
+#'
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return JS divergence of the two distance distributions
 compareDistancesFromNaiveToMature <- function(dat_a, 
                                               dat_b, 
@@ -688,8 +692,7 @@ plotCDR3Lengths <- function(dat_list,
 
 #' Compare the distribution of CDR3 lengths for two datasets
 #'
-#' @param dat_a First dataset
-#' @param dat_b Second dataset
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the two CDR3 length distributions
 compareCDR3Lengths <- function(dat_a, dat_b) {
     a_lengths <- dat_a %>% 
@@ -756,8 +759,8 @@ compareGeneUsage <- function(gene_list_a, gene_list_b, collapse_alleles) {
 }
 
 #' Compare germline V, D, or J gene usage for two repertoires
-#' @param dat_a First annotated dataset
-#' @param dat_b Second annotated dataset
+#' 
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param gene_type String for gene type, taken as a column name of the 
 #'   annotated datasets. Must be "v_call", "d_call", or "j_call"
 #' @inheritParams compareGeneUsage
@@ -811,7 +814,7 @@ compareJGeneDistributions <- function(dat_a, dat_b) {
 
 #' Get table of combined V, D, and J usage frequencies
 #'
-#' @param dat Annotated dataset
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @inheritParams compareGermlineGeneDistributions
 #' @return A table of joint gene IDs and usage counts
 getJointGeneTable <- function(dat, collapseAlleles) {
@@ -966,8 +969,7 @@ getMeanAtchleyFactorDistribution <- function(sequence_list) {
 
 #' Compare the distributions of mean Atchley factors for two datasets
 #'
-#' @param dat_a First dataset, a data.table or data.frame
-#' @param dat_b Second dataset, a data.table or data.frame
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return Estimated mean absolute difference of the mean of each Atchley factor
 #'   of \code{dat_a} and \code{dat_b}
 compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
@@ -994,7 +996,7 @@ getAliphaticIndex <- function(aa_sequence) {
 
 #' Get the distribution of aliphatic indices of a list of sequences
 #'
-#' @param sequence_list List or vector of DNA sequences
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return Vector of aliphatic indices
 getAliphaticIndexDistribution <- function(dat) {
     a_indices <- dat %$%
@@ -1025,8 +1027,7 @@ plotAliphaticIndexDistribution <- function(dat_list,
 
 #' Compare the distributions of aliphatic indices of two datasets
 #'
-#' @param dat_a First dataset, a data.table or data.frame
-#' @param dat_b Second datset, a data.table or data.frame
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the two distributions
 compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
     divergence <- getAutomaticAverageDivergence(
@@ -1040,7 +1041,7 @@ compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
 
 #' Get the distribution of GRAVY values from a list or vector of sequences
 #'
-#' @param List or vector of DNA sequence strings
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return Vector of GRAVY values for \code{sequence_list}
 getGRAVYDistribution <- function(dat) {
     dist <- dat %$%
@@ -1072,8 +1073,7 @@ plotGRAVYDistribution <- function(dat_list,
 
 #' Compare the GRAVY distributions of two datasets
 #'
-#' @param dat_a First dataset, a data.table or data.frame object
-#' @param dat_b Second dataset, a data.table or data.frame object
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of GRAVY distributions
 compareGRAVYDistributions <- function(dat_a, dat_b) {
     dist_a <- dat_a %>% 
@@ -1310,7 +1310,7 @@ extractCDR3CodonStartPositions <- function(dictionary_list) {
 #' Warning: This function is called on the raw dataset from 
 #'   \code{doFullAnnotation} before \code{input_seqs} is changed to
 #'   \code{sequence}.
-#' @param dat Dataset, either a data.table or data.frame object
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return Vector of CDR3 strings
 getCDR3s <- function(dat) {
     codon_starts <- dat %$%
@@ -1326,8 +1326,7 @@ getCDR3s <- function(dat) {
 
 #' Compare levenshtein distance distributions of two CDR3 repertoires
 #'
-#' @param dat_a First dataset, a data.table or data.frame object
-#' @param dat_b Second dataset, a data.table or data.frame object
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the levenshtein distance distributions of the
 #'   CDR3s of the two repertoires
 compareCDR3Distributions <- function(dat_a, 
@@ -1469,7 +1468,7 @@ comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
 
 #' Get the inferred substitution model of a repertoire
 #'
-#' @param dat Annotated dataset
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return The default shazam substitution model 
 getSubstitutionModel <- function(dat) {
     sub_mat <- dat %>% 
@@ -1483,7 +1482,7 @@ getSubstitutionModel <- function(dat) {
 #' Get the inferred mutability model of a repetoire
 #'
 #' This requires the inferred substitution model of \code{dat} as input
-#' @param dat Annotated dataset
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param substitution_model The inferred substitution model, which can be
 #'   obtained via \code{getSubstitutionModel}
 #' @return The default shazam mutability model
@@ -1513,8 +1512,7 @@ compareMutabilityModels <- function(dat_a,
 
 #' Compare the substitution and mutability models of two datasets
 #'
-#' @param dat_a First dataset
-#' @param dat_b Second dataset
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return List of two divergences: one for the substitution models and 
 #'   another for the mutability models
 compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
@@ -1768,7 +1766,7 @@ getMarkovMatrix <- function(seq_list) {
 
 #' Get the Markov transition matrix for either VD or DJ insertions
 #'
-#' @param dat Data.table with inferred insertion sequences
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param column The name of the column corresponding to the inserted sequences
 #' @return The empirical transition matrix for each (base, base) pair.
 getInsertionMatrix <- function(dat, column) {
@@ -1797,8 +1795,7 @@ getDJInsertionMatrix <- function(dat) {
 
 #' Compare the transition matrices for VD insertions for two datasets
 #'
-#' @param dat_a First data.table with insertion annotations
-#' @param dat_b First data.table with insertion annotations
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The mean absolute difference of matrix entries, taken elementwise
 compareVDInsertionMatrices <- function(dat_a, dat_b) {
     matrix_a <- dat_a %>% 
@@ -1811,8 +1808,7 @@ compareVDInsertionMatrices <- function(dat_a, dat_b) {
 
 #' Compare the transition matrices for DJ insertions for two datasets
 #'
-#' @param dat_a First data.table with insertion annotations
-#' @param dat_b First data.table with insertion annotations
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The mean absolute difference of matrix entries, taken elementwise
 compareDJInsertionMatrices <- function(dat_a, dat_b) {
     matrix_a <- dat_a %>% 
@@ -1865,8 +1861,7 @@ getHillNumbers <- function(dat, diversity_orders=c(0, 1, 2)) {
 #' Compare one or multiple Hill numbers of two datasets. The measure of distance
 #' is a sum of absolute differences (or just the absolute difference if there is
 #' only one diversity_order value
-#' @param dat_a First dataset to compare
-#' @param dat_b Second dataset to compare
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param diversity_orders Scalar- or vector-valued list of parameters to the
 #' Hill diversity index. Can be any real value although nonnegative values are
 #' recommended as biologically meaningful.
@@ -1885,7 +1880,7 @@ compareHillNumbers <- function(dat_a, dat_b, diversity_orders=c(0, 1, 2)) {
 #'   and SHM, have the start of the CDR3 in line with the start of the germline 
 #'   V sequence
 #'
-#' @param dat Annotated dataset
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return The percentage of in-frame sequences in \code{dat}
 getInFramePercentage <- function(dat) {
     percentage <- 100*(dat %$%
@@ -1896,8 +1891,7 @@ getInFramePercentage <- function(dat) {
 
 #' Compare the percentage of in-frame sequences of two datasets
 #'
-#' @param dat_a First dataset to compare
-#' @param dat_b Second dataset to compare
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return Absolute differences of in-frame percentages
 compareInFramePercentages <- function(dat_a, dat_b) {
     percent_a <- dat_a %>%
@@ -1913,7 +1907,7 @@ compareInFramePercentages <- function(dat_a, dat_b) {
 #' shazam::summarizeBaseline appends mutliple columns to \code{dat}, including
 #'   BASELINE_SIGMA, which is the estimated selection strength of the 
 #'   repertoire
-#' @param dat Annotated dataset
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return Distribution of baseline values, which are measures of selection 
 #'   strength. Thus, Sigma = 0 corresponds to no selection, Sigma > 0 
 #'   corresponds to positive selection, and Sigma < 0 corresponds to negative
@@ -1930,8 +1924,7 @@ getSelectionEstimate <- function(dat) {
 
 #' Compare selection estimates for two datasets
 #'
-#' @param dat_a First dataset
-#' @param dat_b Second datset
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The estimated JS divergence of selection strength distributions
 compareSelectionEstimates <- function(dat_a, dat_b) {
     baseline_a <- dat_a %>% 
@@ -2134,8 +2127,8 @@ getUnivariateDistributionPlots <- function(dat_list,
     return(plots)
 }
 
-#' @param dat List of annotation datasets for which to plot univariate summary 
-#'   distributions
+#' @param dat_list A list of \code{data.table} objects corresponding to 
+#'    repertoire annotations
 #' @param tall_plot Make the plot portrait-oriented rather than landscape
 #' @param do_exact Display exact distribution plots rather than histograms
 #' @param names Strings to be displayed by the legend corresponding to the 
