@@ -123,4 +123,4 @@ The `Examples` folder includes two scripts that demonstrate basic `sumrep` usage
 * `ExampleComparisonWithoutPartis.R` loads pre-computed annotations, so that `partis` need not be installed, and shows how to compare these observed and simulated annotations datasets with the `compareRepertoires` function.
 
 ##
-Please let us know if you run into any other installation issues not addressed above!
+Please submit an issue if you encounter a problem not addressed above!
