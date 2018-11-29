@@ -700,6 +700,7 @@ compareDistancesFromNaiveToMature <- function(dat_a,
 #'   \code{by_amino_acid=FALSE}, or the \code{junction_aa} column for
 #'   \code{by_amnio_acid=TRUE}.
 #'
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param by_amino_acid If TRUE, the length is computed in terms of amino 
 #'   acids; otherwise, the length is computed in terms of nucleotides.
 #' @return Vector of CDR3 lengths (in nt units)
@@ -709,7 +710,8 @@ getCDR3Lengths <- function(dat,
     if(by_amino_acid) {
         if("junction_aa" %in% names(dat)) {
             CDR3_lengths <- dat$junction_aa %>%
-                sapply(nchar)
+                sapply(nchar) %>%
+                unname
         } else {
             stop("junction_aa column not present in dat.")
         }
@@ -720,7 +722,8 @@ getCDR3Lengths <- function(dat,
         } else {
             if("junction" %in% names(dat)) {
                 CDR3_lengths <- dat$junction %>%
-                    sapply(nchar)
+                    sapply(nchar) %>%
+                    unname
             } else {
                 stop("junction column not present in dat.")
             }
@@ -749,11 +752,14 @@ plotCDR3Lengths <- function(dat_list,
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the two CDR3 length distributions
-compareCDR3Lengths <- function(dat_a, dat_b) {
+compareCDR3Lengths <- function(dat_a, 
+                               dat_b,
+                               by_amino_acid=FALSE
+                              ) {
     a_lengths <- dat_a %>% 
-        getCDR3Lengths
+        getCDR3Lengths(by_amino_acid=by_amino_acid)
     b_lengths <- dat_b %>% 
-        getCDR3Lengths
+        getCDR3Lengths(by_amino_acid=by_amino_acid)
     divergence <- getJSDivergence(a_lengths, b_lengths)
     return(divergence)
 }
