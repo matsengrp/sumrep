@@ -48,10 +48,36 @@ callPartis <- function(action,
 
     command %>% 
         system
-    partis_dataset <- output_filename %>% 
-        data.table::fread(stringsAsFactors=TRUE)
+
+    # Manually add query sequences to dataset from fasta file.
+    # partis by default alters these, and it's not straightforward to
+    # get both the raw and altered sequences (we need both).
+    annotation_filename <- output_filename %>%
+        gsub(pattern='.csv',
+             replace='-cluster-annotations.csv')
+    partis_dataset <- appendQuerySequencesToPartisAnnotationsFile(
+        input_filename,
+        annotation_filename
+    )
+
     return(partis_dataset)
 } 
+
+appendQuerySequencesToPartisAnnotationsFile <- function(input_filename,
+                                                        annotation_filename
+                                                       ) {
+    partis_dataset <- annotation_filename %>% 
+        data.table::fread(stringsAsFactors=TRUE)
+    query_seqs <- input_filename %>%
+        read.fasta(as.string=TRUE, seqonly=TRUE) %>%
+        unlist %>%
+        tolower
+    partis_dataset$sequence <- query_seqs[partis_dataset$unique_ids]
+    partis_dataset %>%
+        data.table::fwrite(file=annotation_filename)
+    return(partis_dataset)
+}
+
 
 #' Get per-gene and per-gene-per-position mutation information from partis
 #'
@@ -154,11 +180,11 @@ getFullPartisAnnotation <- function(output_path,
     return(annotated_data)
 }
 
-processMatureSequences <- function(dat) {
+processPartisMatureSequences <- function(dat) {
     names(dat)[which(names(dat) == "input_seqs")] <- 
-        "sequence"
-    dat$sequence <- dat %$%
-        sequence %>%
+        "mature_seq"
+    dat$mature_seq <- dat %$%
+        mature_seq %>%
         sapply(toString) %>%
         tolower
     return(dat)
@@ -300,7 +326,7 @@ readPartisAnnotations <- function(output_path,
     }
 
     annotated_data <- annotated_data %>%
-        processSequences
+        processPartisSequences
 
     annotation_object <- {}
     annotation_object$annotations <- annotated_data
@@ -308,7 +334,10 @@ readPartisAnnotations <- function(output_path,
     return(annotation_object)
 }
 
-processSequences <- function(annotated_data) {
+processPartisSequences <- function(annotated_data) {
+    annotated_data$sequence <- annotated_data$sequence %>%
+        sapply(toString)
+
     annotated_data$naive_seq <- annotated_data$naive_seq %>% 
         sapply(toString) %>% 
         tolower
@@ -329,7 +358,7 @@ processSequences <- function(annotated_data) {
         convertNucleobasesToAminoAcids
 
     annotated_data <- annotated_data %>% 
-        processMatureSequences
+        processPartisMatureSequences
 
     annotated_data$in_frames <- annotated_data$in_frames %>% 
         as.logical
@@ -444,7 +473,8 @@ getPartisSimulation <- function(parameter_dir,
                                 num_leaves=NULL,
                                 cleanup=TRUE,
                                 do_full_annotation=FALSE,
-                                extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq"
+                                extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq",
+                                mimic_data_read_length=TRUE
                                ) {
     partis_command <- paste(partis_path, 
                             "simulate", 
@@ -469,10 +499,17 @@ getPartisSimulation <- function(parameter_dir,
                                 "--extra-annotation-columns", extra_columns)
     }
 
+    if(mimic_data_read_length) {
+        partis_command <- paste(partis_command,
+                                "--mimic-data-read-length")
+                                
+    }   
+
     print(partis_command)
 
     partis_command %>% 
         system
+
     sim_annotations <- output_file %>% 
         fread(stringsAsFactors=FALSE)
     if(do_full_annotation) {
@@ -490,10 +527,11 @@ getPartisSimulation <- function(parameter_dir,
     }
 
     sim_annotations <- sim_annotations %>% 
-        processSequences
+        processPartisSequences
 
     sim_annotations$clone <- sim_annotations$reco_id %>% sapply(as.numeric)
     sim_annotations$reco_id <- NULL
+    sim_annotations$sequence <- sim_annotations$mature_seq
 
     sim_data <- list(annotations=sim_annotations)
     return(sim_data)
@@ -515,7 +553,7 @@ getPartisAnnotationsFromStrings <- function(sequences,
                              ...
                             )
     }, warning = function(warning_condition) {
-        message(error_condition)
+        message(warning_condition)
         return(NA)
     }, error = function(error_condition) {
         message(error_condition)
