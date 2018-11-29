@@ -658,13 +658,37 @@ compareDistancesFromNaiveToMature <- function(dat_a,
     return(divergence)
 }
 
-#' Get the distribution of inferred length of CDR3 regions of each sequence
-#' 
-#' @param Annotated dataset
+#' Get the distribution of inferred length of CDR3 regions of each sequence.
+#'   Requires either the \code{cdr3_length} or \code{junction} column for
+#'   \code{by_amino_acid=FALSE}, or the \code{junction_aa} column for
+#'   \code{by_amnio_acid=TRUE}.
+#'
+#' @param by_amino_acid If TRUE, the length is computed in terms of amino 
+#'   acids; otherwise, the length is computed in terms of nucleotides.
 #' @return Vector of CDR3 lengths (in nt units)
-getCDR3Lengths <- function(dat) {
-    CDR3_lengths <- dat$cdr3_length %>% 
-        na.omit
+getCDR3Lengths <- function(dat,
+                           by_amino_acid=FALSE
+                          ) {
+    if(by_amino_acid) {
+        if("junction_aa" %in% names(dat)) {
+            CDR3_lengths <- dat$junction_aa %>%
+                sapply(nchar)
+        } else {
+            stop("junction_aa column not present in dat.")
+        }
+    } else {
+        if("cdr3_length" %in% names(dat)) {
+            CDR3_lengths <- dat$cdr3_length %>% 
+                na.omit
+        } else {
+            if("junction" %in% names(dat)) {
+                CDR3_lengths <- dat$junction %>%
+                    sapply(nchar)
+            } else {
+                stop("junction column not present in dat.")
+            }
+        }
+    }
     return(CDR3_lengths)
 }
 
