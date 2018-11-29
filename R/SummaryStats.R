@@ -96,6 +96,16 @@ getPairwiseDistanceDistribution <- function(dat,
     return(distribution)
 }
 
+#' Plot a summary distribution of one or more datasets
+#'
+#' @param dat_list A list of \code{data.table} objects corresponding to 
+#'    repertoire annotations
+#' @param summary_function A function that is applied to each dataset in 
+#'   \code{dat_list} and whose output values are plotted
+#' @param do_exact Display exact distribution plots rather than histograms
+#' @param x_label The text label for the x-axis
+#' @param names Strings to be displayed by the legend corresponding to the 
+#'   elements of \code{dat_list}
 plotDistribution <- function(dat_list,
                              summary_function,
                              do_exact=FALSE,
@@ -155,6 +165,9 @@ plotDistribution <- function(dat_list,
 }
                                      
 
+#' Plot the pairwise distance distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotPairwiseDistanceDistribution <- function(dat_list,
                                              do_exact=FALSE,
                                              names=NULL,
@@ -257,6 +270,9 @@ getNearestNeighborDistribution <- function(dat,
     return(distribution)
 }
 
+#' Plot the nearest neighbor distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotNearestNeighborDistribution <- function(dat_list,
                                             do_exact=FALSE,
                                             names=NULL,
@@ -345,6 +361,9 @@ getGCContentDistribution <- function(dat,
     return(distribution)
 }
 
+#' Plot the GC content distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotGCContentDistribution <- function(dat_list,
                                       do_exact=FALSE,
                                       names=NULL
@@ -450,6 +469,9 @@ getHotspotCountDistribution <- function(dat,
     return(counts)
 }
 
+#' Plot the hotspot count distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotHotspotCountDistribution <- function(dat_list,
                                          do_exact=FALSE,
                                          names=NULL
@@ -500,6 +522,9 @@ getColdspotCountDistribution <- function(dat,
     return(counts)
 }
 
+#' Plot the coldspot count distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotColdspotCountDistribution <- function(dat_list,
                                           do_exact=FALSE,
                                           names=NULL
@@ -617,6 +642,9 @@ getDistanceFromNaiveToMatureDistribution <- function(dat,
     }
 }
 
+#' Plot the distance from naive to mature distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotDistanceFromNaiveToMatureDistribution <- function(dat_list,
                                                       do_exact=FALSE,
                                                       names=NULL
@@ -677,6 +705,9 @@ getCDR3Lengths <- function(dat) {
     return(CDR3_lengths)
 }
 
+#' Plot the CDR3 length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotCDR3Lengths <- function(dat_list,
                             do_exact=FALSE,
                             names=NULL
@@ -907,6 +938,9 @@ getHydrophobicityDistribution <- function(dat,
     return(hydrophobicity_list)
 }
 
+#' Plot the hydrophobicity distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotHydrophobicityDistribution <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
@@ -1012,6 +1046,9 @@ getAliphaticIndexDistribution <- function(dat) {
     return(a_indices)
 }
 
+#' Plot the aliphatic index distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotAliphaticIndexDistribution <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
@@ -1057,6 +1094,9 @@ getGRAVYDistribution <- function(dat) {
     return(dist)
 }
 
+#' Plot the GRAVY index distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotGRAVYDistribution <- function(dat_list,
                                   do_exact=FALSE,
                                   names=NULL
@@ -1102,6 +1142,9 @@ comparePolarityDistributions <- function(dat_a,
     return(divergence)
 }
 
+#' Plot the polarity distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotPolarityDistribution <- function(dat_list,
                                      do_exact=FALSE,
                                      names=NULL,
@@ -1135,6 +1178,9 @@ compareChargeDistributions <- function(dat_a,
     return(divergence)
 }
 
+#' Plot the charge distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotChargeDistribution <- function(dat_list,
                                      do_exact=FALSE,
                                      names=NULL,
@@ -1168,6 +1214,9 @@ compareBasicityDistributions <- function(dat_a,
     return(divergence)
 }
 
+#' Plot the basicity distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotBasicityDistribution <- function(dat_list,
                                      do_exact=FALSE,
                                      names=NULL,
@@ -1201,6 +1250,9 @@ compareAcidityDistributions <- function(dat_a,
     return(divergence)
 }
 
+#' Plot the acidity distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotAcidityDistribution <- function(dat_list,
                                      do_exact=FALSE,
                                      names=NULL,
@@ -1234,6 +1286,9 @@ compareAromaticityDistributions <- function(dat_a,
     return(divergence)
 }
 
+#' Plot the aromaticity distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotAromaticityDistribution <- function(dat_list,
                                      do_exact=FALSE,
                                      names=NULL,
@@ -1267,6 +1322,9 @@ compareBulkinessDistributions <- function(dat_a,
     return(divergence)
 }
 
+#' Plot the bulkiness distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotBulkinessDistribution <- function(dat_list,
                                      do_exact=FALSE,
                                      names=NULL,
@@ -1380,6 +1438,9 @@ getDistancesBetweenMutations <- function(dat) {
     return(dists)
 }
 
+#' Plot the distance between mutation distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotDistanceBetweenMutationsDistribution <- function(dat_list,
                                                      do_exact=FALSE,
                                                      names=NULL
@@ -1544,6 +1605,9 @@ getVGene3PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "v_3p_del"))
 }
 
+#' Plot the V gene 3' deletion length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotVGene3PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
@@ -1561,6 +1625,9 @@ getVGene5PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "v_5p_del"))
 }
 
+#' Plot the V gene 5' deletion length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotVGene5PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
@@ -1578,6 +1645,9 @@ getDGene3PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "d_3p_del"))
 }
 
+#' Plot the D gene 3' deletion length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotDGene3PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
@@ -1595,6 +1665,9 @@ getDGene5PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "d_5p_del"))
 }
 
+#' Plot the D gene 5' deletion length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotDGene5PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
@@ -1612,6 +1685,9 @@ getJGene3PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "j_3p_del"))
 }
 
+#' Plot the J gene 3' deletion length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotJGene3PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
@@ -1629,6 +1705,9 @@ getJGene5PrimeDeletionLengths <- function(dat) {
     return(getDeletionLengths(dat, "j_5p_del"))
 }
 
+#' Plot the J gene 5' deletion length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotJGene5PrimeDeletionLengths <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
@@ -1683,6 +1762,9 @@ getVDInsertionLengths <- function(dat) {
     return(getInsertionLengths(dat, "vd_insertion"))
 }
 
+#' Plot the VD insertion length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotVDInsertionLengths <- function(dat_list,
                                    do_exact=FALSE,
                                    names=NULL
@@ -1700,6 +1782,9 @@ getDJInsertionLengths <- function(dat) {
     return(getInsertionLengths(dat, "dj_insertion"))
 }
 
+#' Plot the DJ insertion length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotDJInsertionLengths <- function(dat_list,
                                    do_exact=FALSE,
                                    names=NULL
@@ -1829,6 +1914,9 @@ getClusterSizes <- function(dat) {
     return(sizes)
 }
 
+#' Plot the cluster size distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
 plotClusterSizeDistribution <- function(dat_list,
                                         do_exact=FALSE,
                                         names=NULL
@@ -2127,10 +2215,7 @@ getUnivariateDistributionPlots <- function(dat_list,
     return(plots)
 }
 
-#' @param dat_list A list of \code{data.table} objects corresponding to 
-#'    repertoire annotations
-#' @param tall_plot Make the plot portrait-oriented rather than landscape
-#' @param do_exact Display exact distribution plots rather than histograms
+#' @inheritParams plotDistributions
 #' @param names Strings to be displayed by the legend corresponding to the 
 #'   elements of \code{dat_list}
 plotUnivariateDistributions <- function(dat_list,
