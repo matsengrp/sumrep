@@ -1096,13 +1096,13 @@ plotAliphaticIndexDistribution <- function(dat_list,
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the two distributions
-compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
-    divergence <- getAutomaticAverageDivergence(
-        dat_a,
-        dat_b,
-        getAliphaticIndexDistribution,
-        subsample_count=100,
-        divergenceFunction=getContinuousJSDivergence)
+compareAliphaticIndexDistributions <- function(dat_a, 
+                                               dat_b,
+                                               ...
+                                              ) {
+    dist_a <- dat_a %>% getAliphaticIndexDistribution(...)
+    dist_b <- dat_b %>% getAliphaticIndexDistribution(...)
+    divergence <- getContinuousJSDivergence(dist_a, dist_b)
     return(divergence)
 }
 
