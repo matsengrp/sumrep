@@ -71,7 +71,7 @@ getDistanceVector <- function(sequence_list) {
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param column the column name of \code{dat} containing the strings on which
-#'   the pairwise distance distribution should be computed
+#'   the distribution should be computed
 #' @param approximate if TRUE, approximate the distribution by subsampling
 #'   and averaging
 #' @return vector of integer-valued distances
@@ -193,6 +193,8 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 #'   by \code{trial_count}, subsampling the full datasets by the amount given
 #'   by \code{subsample_count}, and returns the mean divergence.
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @param approximate If TRUE, uses approximate pairwise distance distributions
 #' @param do_automatic If TRUE, approximate divergence using subsampling
 #' @inheritParams getAutomaticAverageDivergence 
@@ -240,6 +242,8 @@ getNearestNeighborDistances <- function(sequence_list,
 #' Get exact or approximate nearest neighbor distribution
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @param approximate If TRUE, approximate distribution by subsampling.
 #'   Note: this inhibits interpretability since any subsample will have a 
 #'   different definition of a "nearest neighbor"
@@ -295,6 +299,8 @@ plotNearestNeighborDistribution <- function(dat_list,
 #'   DNA sequences
 #' @inheritParams getAutomaticAverageDivergence
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @param k The separation depth for the nearest neighbor distances.
 #'   k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 #'   the second-nearest neighbor, etc.
@@ -337,8 +343,10 @@ getGCContent <- function(raw_sequences) {
 #'
 #' \code{getGCContentDistribution} returns a list of the GC content of each DNA
 #'   sequence in \code{raw_sequences}, given by the \code{ape} library
-#' @param sequence_list List or vector of strings or character sequences
-#'   corresponding to DNA sequences
+#' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
+#' @param approximate If TRUE, approximate distribution by subsampling.
 #' @return A vector of GC content values
 getGCContentDistribution <- function(dat,
                                      column="sequence",
@@ -432,6 +440,8 @@ getSpotCount <- function(dna_sequences,
 #'   sequences
 #' 
 #' @inheritParams getMotifCount
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @return The number of AID hotspot occurrences in \code{dna_sequences}
 getHotspotCount <- function(dat,
                             column="sequence",
@@ -489,6 +499,8 @@ plotHotspotCountDistribution <- function(dat_list,
 #'   sequences
 #' 
 #' @inheritParams getMotifCount
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
 getColdspotCount <- function(dat,
                              column="sequence", 
@@ -566,6 +578,8 @@ compareCounts <- function(dat_a,
 #' Compare hotspot count distributions of two sets of mature BCR sequences
 #'
 #' @inheritParams compareCounts
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @return The JS divergence of the hotspot count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareHotspotCounts <- function(dat_a, 
@@ -585,6 +599,8 @@ compareHotspotCounts <- function(dat_a,
 #' Compare coldspot count distributions of two sets of mature BCR sequences
 #'
 #' @inheritParams compareCounts
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @return The JS divergence of the coldspot count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareColdspotCounts <- function(dat_a, 
@@ -1594,6 +1610,8 @@ compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
     return(divergences)
 }
 
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 getDeletionLengths <- function(dat, column) {
     lengths <- dat %>% 
         dplyr::select_(column) %>% 
@@ -1748,6 +1766,8 @@ compareJGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "JGene", "5Prime"))
 }
 
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 getInsertionLengths <- function(dat, column) {
     lengths <- dat %>% 
         dplyr::select_(column) %>% 
