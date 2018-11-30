@@ -57,7 +57,7 @@ getDistanceMatrix <- function(raw_sequences) {
 #'
 #' Convert the matrix given by \link{getDistanceMatrix} into a sorted
 #'   vector of distance values.
-#' @param sequence_list List of DNA sequence strings
+#' @param sequence_list vector of sequence strings (DNA, AA, etc.)
 #' @return Vector of pairwise distances
 getDistanceVector <- function(sequence_list) {
     mat <- sequence_list %>% getDistanceMatrix
@@ -327,6 +327,10 @@ compareNNDistanceDistributions <- function(dat_a,
     return(divergence)
 }
 
+#' Get the GC content of each sequence in a vector of strings
+#' 
+#' @param raw_sequences Vector of sequence strings
+#' @return Vector of GC content values
 getGCContent <- function(raw_sequences) {
     sequence_list <- raw_sequences %>% 
         sapply(paste, collapse='') %>% 
@@ -387,14 +391,15 @@ plotGCContentDistribution <- function(dat_list,
 
 #' Compare the GC distributions of two lists of DNA sequences
 #'
-#' @param list_a First list or vector of DNA sequences
-#' @param list_b Second list or vector of DNA sequences
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @return JS divergence of the GC content distributions inferred from list_a
 #'   and list_b
-compareGCContents <- function(dat_a, 
-                              dat_b, 
-                              column="sequence"
-                             ) {
+compareGCContentDistributions <- function(dat_a, 
+                                          dat_b, 
+                                          column="sequence"
+                                         ) {
     density_a <- dat_a %>%
         getGCContentDistribution(column=column)
     density_b <- dat_b %>%
@@ -409,7 +414,9 @@ compareGCContents <- function(dat_a,
 #' @param motif String representing the motif pattern 
 #' @param dna_sequences List, vector of reference sequences
 #' @return The number of occurrences of \code{motif} in \code{dna_sequences}
-getMotifCount <- function(motif, dna_sequences) {
+getMotifCount <- function(motif, 
+                          dna_sequences
+                         ) {
     dna_strings <- dna_sequences %>% 
         unlist %>% 
         Biostrings::DNAStringSet()
@@ -455,6 +462,9 @@ getHotspotCount <- function(dat,
 
 #' Get the distribution of hotspot counts of sequences in column \code{column}
 #'   of \code{dat}
+#'
+#' @inheritParams getHotspotCount
+#' @param approximate 
 getHotspotCountDistribution <- function(dat,
                                         column="sequence",
                                         hotspots=c("WRC", "WA"),
@@ -555,8 +565,6 @@ plotColdspotCountDistribution <- function(dat_list,
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param count_function The comparison function corresponding to hotspot or 
 #'   coldspot counts. Must be either getHotspotCount or getColdspotCount
-#' @param subsample_count Number of subsamples for averaging
-#' @param trial_count Number of subsample trials
 #' @return The average JS divergence of the count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareCounts <- function(dat_a,
@@ -715,7 +723,7 @@ compareDistancesFromNaiveToMature <- function(dat_a,
 #' 
 #' @param Annotated dataset
 #' @return Vector of CDR3 lengths (in nt units)
-getCDR3Lengths <- function(dat) {
+getCDR3LengthDistribution <- function(dat) {
     CDR3_lengths <- dat$cdr3_length %>% 
         na.omit
     return(CDR3_lengths)
@@ -741,7 +749,7 @@ plotCDR3Lengths <- function(dat_list,
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the two CDR3 length distributions
-compareCDR3Lengths <- function(dat_a, dat_b) {
+compareCDR3LengthDistributions <- function(dat_a, dat_b) {
     a_lengths <- dat_a %>% 
         getCDR3Lengths
     b_lengths <- dat_b %>% 
@@ -1574,6 +1582,11 @@ getMutabilityModel <- function(dat,
     return(mut_mat)
 }
 
+#' Compare the mutability models of two datasets
+#'
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' @param sub_mod_a,sub_mod_b A shazam substitution model
+#' @return ell-1 divergence of mutability model matrices
 compareMutabilityModels <- function(dat_a, 
                                     dat_b, 
                                     sub_mod_a=getSubstitutionModel(dat_a),
