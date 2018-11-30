@@ -719,13 +719,40 @@ compareDistancesFromNaiveToMature <- function(dat_a,
     return(divergence)
 }
 
-#' Get the distribution of inferred length of CDR3 regions of each sequence
-#' 
-#' @param Annotated dataset
+#' Get the distribution of inferred length of CDR3 regions of each sequence.
+#'   Requires either the \code{cdr3_length} or \code{junction} column for
+#'   \code{by_amino_acid=FALSE}, or the \code{junction_aa} column for
+#'   \code{by_amnio_acid=TRUE}.
+#'
+#' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param by_amino_acid If TRUE, the length is computed in terms of amino 
+#'   acids; otherwise, the length is computed in terms of nucleotides.
 #' @return Vector of CDR3 lengths (in nt units)
-getCDR3LengthDistribution <- function(dat) {
-    CDR3_lengths <- dat$cdr3_length %>% 
-        na.omit
+getCDR3LengthDistribution <- function(dat,
+                                      by_amino_acid=FALSE
+                                     ) {
+    if(by_amino_acid) {
+        if("junction_aa" %in% names(dat)) {
+            CDR3_lengths <- dat$junction_aa %>%
+                sapply(nchar) %>%
+                unname
+        } else {
+            stop("junction_aa column not present in dat.")
+        }
+    } else {
+        if("cdr3_length" %in% names(dat)) {
+            CDR3_lengths <- dat$cdr3_length %>% 
+                na.omit
+        } else {
+            if("junction" %in% names(dat)) {
+                CDR3_lengths <- dat$junction %>%
+                    sapply(nchar) %>%
+                    unname
+            } else {
+                stop("junction column not present in dat.")
+            }
+        }
+    }
     return(CDR3_lengths)
 }
 
@@ -749,11 +776,14 @@ plotCDR3Lengths <- function(dat_list,
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the two CDR3 length distributions
-compareCDR3LengthDistributions <- function(dat_a, dat_b) {
+compareCDR3LengthDistributions <- function(dat_a, 
+                                           dat_b,
+                                           by_amino_acid=FALSE
+                                          ) {
     a_lengths <- dat_a %>% 
-        getCDR3Lengths
+        getCDR3Lengths(by_amino_acid=by_amino_acid)
     b_lengths <- dat_b %>% 
-        getCDR3Lengths
+        getCDR3Lengths(by_amino_acid=by_amino_acid)
     divergence <- getJSDivergence(a_lengths, b_lengths)
     return(divergence)
 }
@@ -1090,13 +1120,13 @@ plotAliphaticIndexDistribution <- function(dat_list,
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the two distributions
-compareAliphaticIndexDistributions <- function(dat_a, dat_b) {
-    divergence <- getAutomaticAverageDivergence(
-        dat_a,
-        dat_b,
-        getAliphaticIndexDistribution,
-        subsample_count=100,
-        divergenceFunction=getContinuousJSDivergence)
+compareAliphaticIndexDistributions <- function(dat_a, 
+                                               dat_b,
+                                               ...
+                                              ) {
+    dist_a <- dat_a %>% getAliphaticIndexDistribution(...)
+    dist_b <- dat_b %>% getAliphaticIndexDistribution(...)
+    divergence <- getContinuousJSDivergence(dist_a, dist_b)
     return(divergence)
 }
 
