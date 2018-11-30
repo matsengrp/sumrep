@@ -1,5 +1,5 @@
-library(data.table)
-library(shazam)
+require(data.table)
+require(shazam)
 
 #' Get IgBLAST annotations from an input fasta file
 #'

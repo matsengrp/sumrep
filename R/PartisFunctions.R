@@ -1,4 +1,4 @@
-library(stringr)
+require(stringr)
 
 #' Call partis
 #'

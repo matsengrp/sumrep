@@ -1,4 +1,4 @@
-library(entropy)
+require(entropy)
 
 #' Discretize two lists of continuous data into mutual, well-defined bins.
 #' 
