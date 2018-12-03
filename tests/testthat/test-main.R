@@ -43,14 +43,14 @@ test_that("test.compareDistancesFromNaiveToMature", {
     expect_true(c2 > 0)
 })
 
-test_that("test.compareGCContents", {
+test_that("test.compareGCContentDistributions", {
     dat_a <- data.table(sequence=seq_2)
     dat_b <- data.table(sequence=seq_7)
     dat_c <- data.table(sequence=seq_8)
     dat_d <- data.table(sequence=seq_9)
-    expect_equal(0, compareGCContents(dat_a, dat_b))
-    c1 <- compareGCContents(dat_c, dat_d)
-    c2 <- compareGCContents(dat_d, dat_c)
+    expect_equal(0, compareGCContentDistributions(dat_a, dat_b))
+    c1 <- compareGCContentDistributions(dat_c, dat_d)
+    c2 <- compareGCContentDistributions(dat_d, dat_c)
     expect_true(c1 > 0)
     expect_true(c1 == c2)
 })

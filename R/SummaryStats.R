@@ -2078,7 +2078,7 @@ compareInFramePercentages <- function(dat_a, dat_b) {
 #'   selection
 getSelectionEstimate <- function(dat) {
     baseline <- shazam::calcBaseline(dat,
-                                     sequenceColumn="sequence",
+                                     sequenceColumn="mature_seq",
                                      germlineColumn="naive_seq"
                                      ) %>%
         shazam::summarizeBaseline(returnType="df") %$%
@@ -2176,9 +2176,10 @@ compareCopheneticIndices <- function(tree_1, tree_2) {
 #' @param sequences Vector of amino acid sequences
 #' @return table of counts for each amino acid in \code{sequences}
 getAminoAcidDistribution <- function(dat,
+                                     column="junction_aa",
                                      standardize=TRUE
                                     ) {
-    sequences <- dat %$% junction_aa
+    sequences <- dat[[column]]
     aa_dist <- paste(sequences[!is.na(sequences)], collapse="") %>%
         strsplit(split="") %>%
         unlist %>%
@@ -2192,7 +2193,8 @@ getAminoAcidDistribution <- function(dat,
 }
 
 compareCategoricalDistributions <- function(d1,
-                                          d2) {
+                                            d2
+                                           ) {
     full_names <- union(names(d1), names(d2))
     missing_1 <- setdiff(full_names, names(d1))
     d1[missing_1] <- 0
@@ -2227,9 +2229,10 @@ getSequence2mers <- function(sequence) {
 }
 
 getAminoAcid2merDistribution <- function(dat,
+                                         column="junction_aa",
                                          standardize=TRUE
                                         ) {
-    sequences <- dat %$% junction_aa
+    sequences <- dat[[column]]
     dist <- sequences[!is.na(sequences)] %>%
         lapply(getSequence2mers) %>%
         unlist %>%
