@@ -124,8 +124,8 @@ doComparison <- function(function_string, input_list) {
 #'   partitioned.
 #'   Comparisons based on per-gene and per-gene-per-position mutation rates are 
 #'   also available given mutation rate information.
-#' @param repertoire_1 First repertoire
-#' @param repertoire_2 Second repertoire
+#' @param repertoire_1,repertoire_2 List including a \code{data.table} named
+#'    \code{annotations} and optionally a list called \code{mutation_rates}
 #' @param rep_1_bootstrap Annotated repertoire based on bootstrapping the DNA
 #'   sequences from the first repertoire
 #' @param receptor_type A string denoting the type of immune receptor to which
@@ -151,42 +151,59 @@ compareRepertoires <- function(repertoire_1,
     }
 
     sig_digs <- 4
-    function_strings <- list(
-                             # Distance-based metrics
-                             "comparePairwiseDistanceDistributions",
-                             "compareNNDistanceDistributions",
-                             "compareCDR3Distributions",
-                             "compareDistancesFromNaiveToMature",
-                             # Sequence-based metrics
-                             "compareGCContents",
-                             "compareHotspotCounts",
-                             "compareColdspotCounts",
-                             "compareHydrophobicityDistributions",
-                             "compareAtchleyFactorDistributions",
-                             "compareAliphaticIndexDistributions",
-                             "compareGRAVYDistributions",
-                             "comparePolarityDistributions",
-                             "compareChargeDistributions",
-                             "compareBasicityDistributions",
-                             "compareAcidityDistributions",
-                             "compareAromaticityDistributions",
-                             "compareBulkinessDistributions",
-                             "compareInFramePercentages",
-                             # Recombination metrics
-                             "compareCDR3Lengths",
-                             "compareVGeneDistributions",
-                             "compareDGeneDistributions",
-                             "compareJGeneDistributions",
-                             "compareVDJDistributions",
-                             "compareVGene3PrimeDeletionLengths",
-                             "compareDGene3PrimeDeletionLengths",
-                             "compareDGene5PrimeDeletionLengths",
-                             "compareJGene5PrimeDeletionLengths", 
-                             "compareVDInsertionLengths",
-                             "compareDJInsertionLengths",
-                             "compareVDInsertionMatrices",
-                             "compareDJInsertionMatrices"
+    xcr_function_strings <- list(
+                                 # Distance-based metrics
+                                 "comparePairwiseDistanceDistributions",
+                                 # "compareNNDistanceDistributions" 
+                                 # let's wait on this until we get it working
+                                 "compareCDR3Distributions",
+                                 # Sequence-based metrics
+                                 "compareGCContentDistributions",
+                                 "compareHydrophobicityDistributions",
+                                 "compareAtchleyFactorDistributions",
+                                 "compareAliphaticIndexDistributions",
+                                 "compareGRAVYDistributions",
+                                 "comparePolarityDistributions",
+                                 "compareChargeDistributions",
+                                 "compareBasicityDistributions",
+                                 "compareAcidityDistributions",
+                                 "compareAromaticityDistributions",
+                                 "compareBulkinessDistributions",
+                                 "compareInFramePercentages",
+                                 "compareAminoAcidDistributions",
+                                 "compareAminoAcid2merDistributions",
+                                 # Recombination metrics
+                                 "compareCDR3LengthDistributions",
+                                 "compareVGeneDistributions",
+                                 "compareDGeneDistributions",
+                                 "compareJGeneDistributions",
+                                 "compareVDJDistributions",
+                                 "compareVGene3PrimeDeletionLengthDistributions",
+                                 "compareDGene3PrimeDeletionLengthDistributions",
+                                 "compareDGene5PrimeDeletionLengthDistributions",
+                                 "compareJGene5PrimeDeletionLengthDistributions", 
+                                 "compareVDInsertionLengthDistributions",
+                                 "compareDJInsertionLengthDistributions",
+                                 "compareVDInsertionMatrices",
+                                 "compareDJInsertionMatrices"
+                                )
+
+    bcr_function_strings <- list(
+                                 # SHM-based metrics
+                                 "compareDistancesFromNaiveToMature",
+                                 "compareHotspotCountDistributions",
+                                 "compareColdspotCountDistributions"
+                                 # "compareSubstitutionAndMutabilityModels",
+                                 # "compareSelectionEstimates"
+                                 # ^ These comparisons takes forever
+                                )
+
+    function_strings <- xcr_function_strings
+    if(receptor_type == "BCR") {
+        function_strings <- c(function_strings,
+                              bcr_function_strings
                              )
+    }
 
     comparison_dat_names <- c("Comparison", "Divergence")
     if(length(annotations_list) == 3) {
@@ -196,6 +213,16 @@ compareRepertoires <- function(repertoire_1,
     comparison_dat <- matrix(NA, nrow=0, ncol=length(comparison_dat_names)) %>% 
         data.table %>%
         setNames(comparison_dat_names)
+
+    partition_function_strings <- list(
+                                       # Clonal family metrics
+                                       "compareClusterSizeDistributions",
+                                       "compareHillNumbers"
+                                      )
+    if("clone" %in% intersect(names(annotations_1),
+                              names(annotations_2))) {
+        function_strings <- c(function_strings, partition_function_strings)
+    }
 
     for(f_string in function_strings) {
         comparison_object <- doComparison(f_string, annotations_list)
@@ -221,15 +248,8 @@ compareRepertoires <- function(repertoire_1,
         }
     }
 
-    partition_function_strings <- list(
-                                       # Clonal family metrics
-                                       "compareClusterSizes",
-                                       "compareHillNumbers"
-                                       )
-    if("clone" %in% intersect(names(annotations_1),
-                              names(annotations_2))) {
-        function_strings <- c(function_strings, partition_function_strings)
-    }
+
+    # TODO: Add tree function strings
 
     return(comparison_dat)
 }
