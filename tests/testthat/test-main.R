@@ -129,6 +129,23 @@ test_that("test.getDistanceVector", {
     expect_equal(2, getDistanceVector(seq_7))
 })
 
+test_that("CDR3 pairwise distances functions", {
+    dat <- data.table(junction=c("AAACCC", "AAACCC", "ACTCAT"), 
+                        junction_aa=c("KP", "KP", "TH"))
+    dist_1 <- dat %>% 
+        getCDR3PairwiseDistanceDistribution(
+            approximate=FALSE,
+            by_amino_acid=FALSE
+        )
+    expect_equal(c(0, 4, 4), dist_1)
+    dist_2 <- dat %>% 
+        getCDR3PairwiseDistanceDistribution(
+            approximate=FALSE,
+            by_amino_acid=TRUE
+        )
+    expect_equal(c(0, 2, 2), dist_2)
+})
+
 test_that("test.getGCContentDistribution", {
     d1 <- rep(0, 3)
     expect_equal(d1, getGCContentDistribution(dat_1, approximate=FALSE))

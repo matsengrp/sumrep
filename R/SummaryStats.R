@@ -196,7 +196,6 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
 #' @param approximate If TRUE, uses approximate pairwise distance distributions
-#' @param do_automatic If TRUE, approximate divergence using subsampling
 #' @inheritParams getAutomaticAverageDivergence 
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
@@ -1396,7 +1395,7 @@ plotBulkinessDistribution <- function(dat_list,
 
 #' Extract CDR3 codon start positions from partis-returned dictionary strings
 #'
-#' This is a helper function to \link{getCDR3s}.
+#' This is a helper function to \link{getCDR3PairwiseDistanceDistribution}.
 #' Note: We add one to \code{positions} because partis returns position values
 #'   that are zero-based (an artifact) of Python, whereas R is one-based by
 #'   default.
@@ -1424,16 +1423,18 @@ extractCDR3CodonStartPositions <- function(dictionary_list) {
 #'   \code{sequence}.
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return Vector of CDR3 strings
-getCDR3s <- function(dat) {
-    codon_starts <- dat %$%
-        codon_positions %>% 
-        extractCDR3CodonStartPositions
-    codon_ends <- codon_starts + dat$cdr3_length
-    cdr3s <- dat %$% 
-        input_seqs %>% 
-        substr(codon_starts, codon_ends - 1) %>% 
-        unname
-    return(cdr3s)
+getCDR3PairwiseDistanceDistribution <- function(dat,
+                                        by_amino_acid=TRUE,
+                                        column=ifelse(by_amino_acid,
+                                                      "junction_aa",
+                                                      "junction"),
+                                        approximate=TRUE
+                                       ) {
+    distances <- dat %>% 
+        getPairwiseDistanceDistribution(column=column,
+                                        approximate=approximate
+                                       )
+    return(distances)
 }
 
 #' Compare levenshtein distance distributions of two CDR3 repertoires
@@ -1441,15 +1442,23 @@ getCDR3s <- function(dat) {
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the levenshtein distance distributions of the
 #'   CDR3s of the two repertoires
-compareCDR3Distributions <- function(dat_a, 
-                                     dat_b, 
-                                     subsample=TRUE, 
-                                     subsample_count=100,
-                                     trial_count=10) {
-    divergence <- getAutomaticAverageDivergence(dat_a %$% junction,
-                                                dat_b %$% junction,
-                                                getDistanceVector,
-                                                subsample_count)
+compareCDR3PairwiseDistanceDistributions <- function(dat_a, 
+                                                     dat_b, 
+                                                     by_amino_acid=TRUE,
+                                                     column=ifelse(by_amino_acid,
+                                                                   "junction_aa",
+                                                                   "junction"),
+                                                     approximate=TRUE
+                                                    ) {
+    distances_a <- dat_a %>% 
+        getCDR3PairwiseDistanceDistribution(column=column,
+                                            approximate=approximate
+                                           )
+    distances_b <- dat_b %>% 
+        getCDR3PairwiseDistanceDistribution(column=column,
+                                            approximate=approximate
+                                           )
+    divergence <- getJSDivergence(distances_a, distances_b)
     return(divergence)
 }
 
