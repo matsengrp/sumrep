@@ -590,7 +590,7 @@ compareCounts <- function(dat_a,
 #'   the distribution should be computed
 #' @return The JS divergence of the hotspot count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
-compareHotspotCounts <- function(dat_a, 
+compareHotspotCountDistributions <- function(dat_a, 
                                  dat_b,
                                  column="sequence",
                                  ...
@@ -611,7 +611,7 @@ compareHotspotCounts <- function(dat_a,
 #'   the distribution should be computed
 #' @return The JS divergence of the coldspot count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
-compareColdspotCounts <- function(dat_a, 
+compareColdspotCountDistributions <- function(dat_a, 
                                   dat_b,
                                   column="sequence",
                                   ...
@@ -781,9 +781,9 @@ compareCDR3LengthDistributions <- function(dat_a,
                                            by_amino_acid=FALSE
                                           ) {
     a_lengths <- dat_a %>% 
-        getCDR3Lengths(by_amino_acid=by_amino_acid)
+        getCDR3LengthDistribution(by_amino_acid=by_amino_acid)
     b_lengths <- dat_b %>% 
-        getCDR3Lengths(by_amino_acid=by_amino_acid)
+        getCDR3LengthDistribution(by_amino_acid=by_amino_acid)
     divergence <- getJSDivergence(a_lengths, b_lengths)
     return(divergence)
 }
@@ -1793,19 +1793,19 @@ compareDeletionLengths <- function(dat_a, dat_b, gene, end) {
     return(divergence)
 }
 
-compareVGene3PrimeDeletionLengths <- function(dat_a, dat_b) {
+compareVGene3PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "VGene", "3Prime"))
 }
 
-compareDGene3PrimeDeletionLengths <- function(dat_a, dat_b) {
+compareDGene3PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "DGene", "3Prime"))
 }
 
-compareDGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
+compareDGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "DGene", "5Prime"))
 }
 
-compareJGene5PrimeDeletionLengths <- function(dat_a, dat_b) {
+compareJGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "JGene", "5Prime"))
 }
 
@@ -1872,11 +1872,11 @@ compareInsertionLengths <- function(dat_a, dat_b, genes) {
     return(divergence)
 }
 
-compareVDInsertionLengths <- function(dat_a, dat_b) {
+compareVDInsertionLengthDistributions <- function(dat_a, dat_b) {
     return(compareInsertionLengths(dat_a, dat_b, "VD"))
 }
 
-compareDJInsertionLengths <- function(dat_a, dat_b) {
+compareDJInsertionLengthDistributions <- function(dat_a, dat_b) {
     return(compareInsertionLengths(dat_a, dat_b, "DJ"))
 }
 
@@ -1993,7 +1993,7 @@ plotClusterSizeDistribution <- function(dat_list,
     return(p)
 }
 
-compareClusterSizes <- function(dat_a, dat_b) {
+compareClusterSizeDistributions <- function(dat_a, dat_b) {
     dist_a <- dat_a %>% 
         getClusterSizes
     dist_b <- dat_b %>% 
