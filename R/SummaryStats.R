@@ -196,7 +196,6 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
 #' @param approximate If TRUE, uses approximate pairwise distance distributions
-#' @inheritParams getAutomaticAverageDivergence 
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
 comparePairwiseDistanceDistributions <- function(dat_a, 
@@ -296,14 +295,12 @@ plotNearestNeighborDistribution <- function(dat_list,
 #' \code{compareNNDistanceDistribution} computes the JS divergence of
 #'   the kth nearest neighbor distance distribution of two lists of
 #'   DNA sequences
-#' @inheritParams getAutomaticAverageDivergence
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
 #' @param k The separation depth for the nearest neighbor distances.
 #'   k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 #'   the second-nearest neighbor, etc.
-#' @inheritParams getAutomaticAverageDivergence
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
 compareNNDistanceDistributions <- function(dat_a, 
@@ -634,9 +631,9 @@ compareColdspotCountDistributions <- function(dat_a,
 #' @inheritParams getDistanceFromNaiveToMatureDistribution
 #' @return Vector of Levenshtein distances from naive to mature
 getDistancesFromNaiveToMature <- function(dat,
-                                          v_gene_only=TRUE
+                                          v_gene_only=FALSE
                                           ) {
-    mature_column <- ifelse(v_gene_only, "v_qr_seqs", "sequence")
+    mature_column <- ifelse(v_gene_only, "v_qr_seqs", "mature_seq")
     naive_column <- ifelse(v_gene_only, "v_gl_seq", "naive_seq")
     distances <- dat[[mature_column]] %>% 
         mapply(FUN=stringdist::stringdist, 
@@ -653,16 +650,16 @@ getDistancesFromNaiveToMature <- function(dat,
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return Vector of Levenshtein distances from naive to mature
 getDistanceFromNaiveToMatureDistribution <- function(dat,
-                                                     approximate=TRUE,
-                                                     v_gene_only=FALSE,
-                                                     ...
-                                                     ) {
+                                                     approximate=FALSE,
+                                                     v_gene_only=FALSE
+                                                    ) {
     if(approximate) {
         distribution <- dat %>%
-            getApproximateDistribution(summary_function=getDistancesFromNaiveToMature,
-                                       divergence_function=getJSDivergence,
-                                       ...
-                                       )
+            getApproximateDistribution(
+                summary_function=getDistancesFromNaiveToMature,
+                divergence_function=getJSDivergence,
+                v_gene_only=v_gene_only
+            )
     } else {
         distribution <- dat %>%
             getDistancesFromNaiveToMature(v_gene_only=v_gene_only)
@@ -690,35 +687,20 @@ plotDistanceFromNaiveToMatureDistribution <- function(dat_list,
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return JS divergence of the two distance distributions
-compareDistancesFromNaiveToMature <- function(dat_a, 
-                                              dat_b, 
-                                              do_automatic=TRUE,
-                                              approximate=TRUE,
-                                              ...
-                                              ) {
-    if(do_automatic) {
-        divergence <- 
-            getAutomaticAverageDivergence(
-                dat_a,
-                dat_b,
-                getDistanceFromNaiveToMatureDistribution,
-                approximate=approximate,
-                subsample_count=100,
-                tolerance=1e-3,
-                ...
-            )
-    } else {
-        dist_a <- dat_a %>% 
-            getDistanceFromNaiveToMatureDistribution(approximate=approximate,
-                                                     ...
-                                                     )
-        dist_b <- dat_b %>% 
-            getDistanceFromNaiveToMatureDistribution(approximate=approximate,
-                                                     ...
-                                                     )
-        divergence <- getJSDivergence(dist_a, dist_b)
-    }
-
+compareDistanceFromNaiveToMatureDistributions <- function(dat_a, 
+                                                          dat_b, 
+                                                          approximate=FALSE,
+                                                          v_gene_only=FALSE
+                                                         ) {
+    dist_a <- dat_a %>% 
+        getDistanceFromNaiveToMatureDistribution(approximate=approximate,
+                                                 v_gene_only=v_gene_only
+                                                )
+    dist_b <- dat_b %>% 
+        getDistanceFromNaiveToMatureDistribution(approximate=approximate,
+                                                 v_gene_only=v_gene_only
+                                                )
+    divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
 

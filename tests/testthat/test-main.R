@@ -11,7 +11,7 @@ test_that("test.binContinuousListsAsDiscrete", {
     expect_equal(c(20, rep(0, 4)), bin_b)
 })
 
-test_that("test.compareDistancesFromNaiveToMature", {
+test_that("test.compareDistanceFromNaiveToMatureDistributions", {
     naive_a <- c("AAAAAA")
     naive_b <- c("GGGGGG")
     m1 <- c("AAAAAA")
@@ -19,23 +19,20 @@ test_that("test.compareDistancesFromNaiveToMature", {
     m3 <- c("GAAAAA")
     m4 <- c("AAAGGG")
     m5 <- c("GGGG")
-    dat_a <- data.table(naive_seq=naive_a, sequence=list(m1, m2, m3))
-    dat_b <- data.table(naive_seq=naive_b, sequence=list(m2, m3, m4))
-    c1 <- compareDistancesFromNaiveToMature(dat_a, 
+    dat_a <- data.table(naive_seq=naive_a, mature_seq=list(m1, m2, m3))
+    dat_b <- data.table(naive_seq=naive_b, mature_seq=list(m2, m3, m4))
+    c1 <- compareDistanceFromNaiveToMatureDistributions(dat_a, 
                                             dat_a, 
-                                            do_automatic=FALSE, 
                                             approximate=FALSE,
                                             v_gene_only=FALSE
                                             )
-    c2 <- compareDistancesFromNaiveToMature(dat_a, 
+    c2 <- compareDistanceFromNaiveToMatureDistributions(dat_a, 
                                             dat_b, 
-                                            do_automatic=FALSE, 
                                             approximate=FALSE,
                                             v_gene_only=FALSE
                                             )
-    c3 <- compareDistancesFromNaiveToMature(dat_b, 
+    c3 <- compareDistanceFromNaiveToMatureDistributions(dat_b, 
                                             dat_a, 
-                                            do_automatic=FALSE, 
                                             approximate=FALSE,
                                             v_gene_only=FALSE)
     expect_equal(0, c1)
@@ -104,20 +101,22 @@ test_that("test.getDistanceMatrix", {
     expect_equal(m4, getDistanceMatrix(seq_4))
 })
 
-test_that("test.getDistancesFromNaiveToMature", {
+test_that("test.getDistanceFromNaiveToMatureDistribution", {
     naives <- c("AAAAAC", rep(c("AAAAAA"), 3))
     m1 <- c("AAAAAT")
     m2 <- c("CGCAAA")
     m3 <- c("GGGGGG")
     m4 <- c("AAAAAA")
-    dat <- data.table(naive_seq=naives, sequence=c(m1, m2, m3, m4))
-    expect_equal(c(0, 1, 3, 6), getDistancesFromNaiveToMature(dat,
+    dat <- data.table(naive_seq=naives, mature_seq=c(m1, m2, m3, m4))
+    expect_equal(c(0, 1, 3, 6), getDistanceFromNaiveToMatureDistribution(dat,
                                                               v_gene_only=FALSE
                                                               ))
     dat$v_gl_seq <- c("AAA", "CGC", "GGG", "AAA")
     dat$v_qr_seqs <- rep("AAA", 4)
     expect_equal(c(0, 0, 3, 3), 
-                 getDistancesFromNaiveToMature(dat)
+                 getDistanceFromNaiveToMatureDistribution(dat,
+                                                          v_gene_only=TRUE
+                                                         )
                  )
 })
 
