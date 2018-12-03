@@ -63,34 +63,34 @@ test_that("test.comparePairwiseDistanceDistributions", {
     expect_equal(0, 
                  comparePairwiseDistanceDistributions(s1,
                                                       s2,
-                                                      do_automatic=FALSE,
                                                       approximate=FALSE
                                                       ))
     c1 <- comparePairwiseDistanceDistributions(s1, 
                                                s3, 
-                                               do_automatic=FALSE, 
                                                approximate=FALSE)
     c2 <- comparePairwiseDistanceDistributions(s1, 
                                                s4, 
-                                               do_automatic=FALSE, 
                                                approximate=FALSE)
     expect_true(c1 < c2)
     c3 <- comparePairwiseDistanceDistributions(s4, 
                                                s1, 
-                                               do_automatic=FALSE, 
                                                approximate=FALSE)
     expect_equal(c3, c2)
 })
 
-test_that("test.getColdspotCount", {
+test_that("test.getColdspotCountDistribution", {
     seq_a <- "TTTTT"
     seq_b <- c("GCC", "AAA", "AAAA")
     seq_c <- c("AAA", "CTC")
     seq_d <- "SYCSYC"
-    expect_equal(0, getColdspotCount(data.table(junction=seq_a), column="junction"))
-    expect_equal(1, getColdspotCount(data.table(junction=seq_b), column="junction"))
-    expect_equal(1, getColdspotCount(data.table(junction=seq_c), column="junction"))
-    expect_equal(4, getColdspotCount(data.table(junction=seq_d), column="junction"))
+    expect_equal(0, getColdspotCountDistribution(data.table(junction=seq_a), 
+                                                 column="junction"))
+    expect_equal(c(1, 0, 0), getColdspotCountDistribution(data.table(junction=seq_b), 
+                                                 column="junction"))
+    expect_equal(c(0, 1), getColdspotCountDistribution(data.table(junction=seq_c), 
+                                                 column="junction"))
+    expect_equal(4, getColdspotCountDistribution(data.table(junction=seq_d), 
+                                                 column="junction"))
 })
 
 test_that("test.getDistanceMatrix", {
@@ -166,15 +166,19 @@ test_that("test.getGRAVYDistribution", {
                  getGRAVYDistribution(rbind(alanine, glutamine, isoleucine)))
 })
 
-test_that("test.getHotspotCount", {
+test_that("test.getHotspotCountDistribution", {
     seq_a <- "TTTTT"
     seq_b <- c("AAC", "TTTT")
     seq_c <- "NWRC"
     seq_d <- c("WRC", "WRC", "WGC")
-    expect_equal(0, getHotspotCount(data.table(junction=seq_a), column="junction"))
-    expect_equal(2, getHotspotCount(data.table(junction=seq_b), column="junction"))
-    expect_equal(3, getHotspotCount(data.table(junction=seq_c), column="junction"))
-    expect_equal(5, getHotspotCount(data.table(junction=seq_d), column="junction"))
+    expect_equal(0, getHotspotCountDistribution(data.table(junction=seq_a), 
+                                                column="junction"))
+    expect_equal(c(2, 0), getHotspotCountDistribution(data.table(junction=seq_b), 
+                                                column="junction"))
+    expect_equal(3, getHotspotCountDistribution(data.table(junction=seq_c), 
+                                                column="junction"))
+    expect_equal(c(2, 2, 1), getHotspotCountDistribution(data.table(junction=seq_d), 
+                                                column="junction"))
 })
 
 test_that("test.getNearestNeighborDistances", {

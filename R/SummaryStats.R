@@ -434,12 +434,16 @@ getMotifCount <- function(motif,
 getSpotCount <- function(dna_sequences, 
                          spots
                         ) {
-    count <- spots %>% 
+    spot_counts <- spots %>% 
         # Get a length(dna_sequences) x length(spots) matrix of counts
-        sapply(getMotifCount, dna_sequences=dna_sequences) %>%
+        sapply(getMotifCount, dna_sequences=dna_sequences)
         # Sum over each spot count for each sequence
-        apply(1, sum)
-    return(count)
+    if(dim(spot_counts) %>% is.null) {
+        total_count <- spot_counts %>% sum
+    } else {
+        total_count <- spot_counts %>% apply(1, sum)
+    }
+    return(total_count)
 }
 
 #' Get the number of occurrences of AID hotspots in a set of reference 
