@@ -946,66 +946,6 @@ getKideraFactorsBySequence <- function(sequence) {
     return(kidera_factors)
 }
 
-#' Get hydrophobicity from amino acid sequence, corresponding to
-#' the fourth kidera factor
-#'
-#' @param sequence Amino acid sequence string
-#' @return real-valued hydrophobicity estimate, computed as the average
-#'   hydrophobicity of each amino acid in the sequence
-getHydrophobicityFromAASequence <- function(sequence) {
-    if(!is.na(sequence)) {
-        hydrophobicity <- sequence %>%
-            getKideraFactorsBySequence %>%
-            t %>%
-            as.data.table %$%
-            KF4
-    } else {
-        hydrophobicity <- NA
-    }
-
-    return(hydrophobicity)
-}
-
-getHydrophobicityDistribution <- function(dat,
-                                          include_NA=FALSE
-                                          ) {
-    hydrophobicity_list <- dat %$%
-        junction_aa %>% 
-        filterAminoAcidSequences %>%
-        sapply(getHydrophobicityFromAASequence)
-
-    return(hydrophobicity_list)
-}
-
-#' Plot the hydrophobicity distribution of one or more datasets
-#'
-#' @inheritParams plotDistribution
-plotHydrophobicityDistribution <- function(dat_list,
-                                           do_exact=FALSE,
-                                           names=NULL
-                                          ) {
-    p <- plotDistribution(dat_list,
-                          getHydrophobicityDistribution,
-                          do_exact=do_exact,
-                          x_label="Hydrophobicity",
-                          names=names
-                         )
-    return(p)
-}
-
-compareHydrophobicityDistributions <- function(dat_a, dat_b) {
-    divergence <- 
-        getAutomaticAverageDivergence(
-            dat_a,
-            dat_b,
-            getHydrophobicityDistribution,
-            subsample_count=100,
-            divergenceFunction=getContinuousJSDivergence,
-            tolerance=1e-3
-        )
-    return(divergence)
-}
-
 #' Get the mean Atchley factor of an amino acid sequence
 #'
 #' @param aa_seq String of an amino acid sequence

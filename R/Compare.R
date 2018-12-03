@@ -159,7 +159,6 @@ compareRepertoires <- function(repertoire_1,
                                  "compareCDR3Distributions",
                                  # Sequence-based metrics
                                  "compareGCContentDistributions",
-                                 "compareHydrophobicityDistributions",
                                  "compareAtchleyFactorDistributions",
                                  "compareAliphaticIndexDistributions",
                                  "compareGRAVYDistributions",
