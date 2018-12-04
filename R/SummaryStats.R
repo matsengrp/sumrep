@@ -443,12 +443,12 @@ getSpotCount <- function(dna_sequences,
     return(total_count)
 }
 
-#' Get the number of occurrences of AID hotspots in a set of reference 
-#'   sequences
+#' Get the number of occurrences of AID hotspots in a column of a dataset
 #' 
-#' @inheritParams getMotifCount
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
+#' @param hotspots Vector of hotspots of interest
 #' @return The number of AID hotspot occurrences in \code{dna_sequences}
 getHotspotCount <- function(dat,
                             column="sequence",
@@ -460,11 +460,11 @@ getHotspotCount <- function(dat,
     )
 }
 
-#' Get the distribution of hotspot counts of sequences in column \code{column}
-#'   of \code{dat}
+#' Get full or approximate distribution of coldspot counts for a column of
+#'   a given dataset
 #'
 #' @inheritParams getHotspotCount
-#' @param approximate 
+#' @param approximate If TRUE, approximate distribution by subsampling.
 getHotspotCountDistribution <- function(dat,
                                         column="sequence",
                                         hotspots=c("WRC", "WA"),
@@ -505,12 +505,12 @@ plotHotspotCountDistribution <- function(dat_list,
     return(p)
 }
 
-#' Get the number of occurrences of AID coldspots in a set of reference 
-#'   sequences
+#' Get the number of occurrences of AID coldspots in a column of a dataset
 #' 
-#' @inheritParams getMotifCount
+#' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
+#' @param coldspots Vector of coldspots of interest
 #' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
 getColdspotCount <- function(dat,
                              column="sequence", 
@@ -520,6 +520,11 @@ getColdspotCount <- function(dat,
                         spots=coldspots))
 }
 
+#' Get full or approximate distribution of coldspot counts for a column of
+#'   a given dataset
+#'
+#' @inheritParams getColdspotCount
+#' @param approximate If TRUE, approximate distribution by subsampling.
 getColdspotCountDistribution <- function(dat,
                                          column="sequence",
                                          coldspots="SYC",
