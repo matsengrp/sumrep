@@ -18,9 +18,9 @@ test_that("sumrep correctly calls partis annotate", {
     expect_equal(dat_a$mutation_rates[[1]] %>% names, 
                  c("overall_mut_rate", "mut_rate_by_position"))
 
-    expect_equal(ncol(dat_a$annotations), 38)
+    expect_equal(ncol(dat_a$annotations), 39)
     expect_equal(nrow(dat_a$annotations), 17)
-    expect_equal(ncol(dat_b$annotations), 38)
+    expect_equal(ncol(dat_b$annotations), 39)
     expect_equal(nrow(dat_b$annotations), 17)
 
     dir.create("_output")
@@ -30,14 +30,15 @@ test_that("sumrep correctly calls partis annotate", {
 })
 
 test_that("sumrep correctly calls partis partition", {
-    dat <- getPartisPartitions(test_data_path, 
+    dat_c <- getPartisPartitions(test_data_path, 
                               output_filename="blah2.csv",
                               output_path="_output_arbitrary_again", 
                               num_procs=8)
     "_output_arbitrary_again" %>% unlink(recursive=TRUE)
 
-    expect_equal(dat %>% names, c("logprob", "n_clusters", "n_procs", 
-                                  "partition"))
+    print(dat_c %>% names)
+    expect_equal(nrow(dat_c), 17)
+    expect_equal(ncol(dat_c), 33)
 
     dir.create("_output")
     file.create("_output/blah2.txt")
