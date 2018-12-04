@@ -248,3 +248,62 @@ test_that("getInFramePercentage returns the correct percentage of in-frame seque
     expect_equal(getInFramePercentage(dat_b), 75)
     expect_equal(compareInFramePercentages(dat_a, dat_b), 25)
 })
+
+test_that("Gene usage comparison", {
+    dat_a <- data.frame(v_call=c("IGHV3-30*18",
+                                 "IGHV4-31*03",
+                                 "IGHV1-3*01"),
+                        d_call=c("IGHD6-19*01",
+                                 "IGHD2-15*01",
+                                 "IGHD1-1*01"),
+                        j_call=c("IGHJ6*02",
+                                 "IGHJ5*02",
+                                 "IGHJ4*02")                        
+                        )
+    dat_b <- data.frame(v_call=c("IGHV3-30*18",
+                                 "IGHV2-01*03",
+                                 "IGHV1-3*02"),
+                        d_call=c("IGHD6-19*02",
+                                 "IGHD2-11*01",
+                                 "IGHD1-1*02"),
+                        j_call=c("IGHJ6*02",
+                                 "IGHJ5*02",
+                                 "IGHJ4*02")                        
+                        )
+    expect_equal(4, compareVGeneDistributions(dat_a, 
+                                              dat_b,
+                                              collapse_alleles=FALSE
+                                             )
+    )
+    expect_equal(2, compareVGeneDistributions(dat_a, 
+                                              dat_b,
+                                              collapse_alleles=TRUE
+                                             )
+    )
+    expect_equal(6, compareDGeneDistributions(dat_a, 
+                                              dat_b,
+                                              collapse_alleles=FALSE
+                                             )
+    )
+    expect_equal(2, compareDGeneDistributions(dat_a, 
+                                              dat_b,
+                                              collapse_alleles=TRUE
+                                             )
+    )
+    expect_equal(0, compareJGeneDistributions(dat_a, 
+                                              dat_b,
+                                              collapse_alleles=FALSE
+                                             )
+    )
+    expect_equal(6, compareVDJDistributions(dat_a, 
+                                            dat_b,
+                                            collapse_alleles=FALSE
+                                           )
+    )
+    expect_equal(2, compareVDJDistributions(dat_a, 
+                                            dat_b,
+                                            collapse_alleles=TRUE
+                                           )
+    )
+    
+})

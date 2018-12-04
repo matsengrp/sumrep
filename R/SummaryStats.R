@@ -845,8 +845,8 @@ compareGermlineGeneDistributions <- function(dat_a,
         stop("gene_type needs to be supplied.")
     }
 
-    gene_list_a <- dat_a[, gene_type, with=FALSE] 
-    gene_list_b <- dat_b[, gene_type, with=FALSE]
+    gene_list_a <- dat_a[[gene_type]] 
+    gene_list_b <- dat_b[[gene_type]]
     divergence <- compareGeneUsage(gene_list_a, gene_list_b, 
                                    collapse_alleles) 
     return(divergence)
@@ -857,9 +857,16 @@ compareGermlineGeneDistributions <- function(dat_a,
 #' @inheritParams compareGermlineGeneDistributions
 #' @return Mean absolute difference of V gene counts between the two
 #'   repertoires
-compareVGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="v_call",
-                                            collapse_alleles=TRUE))
+compareVGeneDistributions <- function(dat_a, 
+                                      dat_b,
+                                      collapse_alleles=TRUE
+                                     ) {
+    return(compareGermlineGeneDistributions(dat_a, 
+                                            dat_b, 
+                                            gene_type="v_call",
+                                            collapse_alleles=collapse_alleles
+                                           )
+    )
 }
 
 #' Compare D gene distribution between two repertoires
@@ -867,9 +874,16 @@ compareVGeneDistributions <- function(dat_a, dat_b) {
 #' @inheritParams compareGermlineGeneDistributions
 #' @return Mean absolute difference of D gene counts between the two
 #'   repertoires
-compareDGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="d_call",
-                                            collapse_alleles=TRUE))
+compareDGeneDistributions <- function(dat_a, 
+                                      dat_b,
+                                      collapse_alleles=TRUE
+                                     ) {
+    return(compareGermlineGeneDistributions(dat_a, 
+                                            dat_b, 
+                                            gene_type="d_call",
+                                            collapse_alleles=collapse_alleles
+                                           )
+    )
 }
 
 #' Compare J gene distribution between two repertoires
@@ -877,9 +891,16 @@ compareDGeneDistributions <- function(dat_a, dat_b) {
 #' @inheritParams compareGermlineGeneDistributions
 #' @return Mean absolute difference of J gene counts between the two
 #'   repertoires
-compareJGeneDistributions <- function(dat_a, dat_b) {
-    return(compareGermlineGeneDistributions(dat_a, dat_b, gene_type="j_call",
-                                            collapse_alleles=TRUE))
+compareJGeneDistributions <- function(dat_a, 
+                                      dat_b,
+                                      collapse_alleles=TRUE
+                                     ) {
+    return(compareGermlineGeneDistributions(dat_a, 
+                                            dat_b, 
+                                            gene_type="j_call",
+                                            collapse_alleles=collapse_alleles
+                                           )
+    )
 }
 
 #' Get table of combined V, D, and J usage frequencies
@@ -887,8 +908,8 @@ compareJGeneDistributions <- function(dat_a, dat_b) {
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @inheritParams compareGermlineGeneDistributions
 #' @return A table of joint gene IDs and usage counts
-getJointGeneTable <- function(dat, collapseAlleles) {
-    if(collapseAlleles) {
+getJointGeneTable <- function(dat, collapse_alleles) {
+    if(collapse_alleles) {
         v_genes <- dat %$% 
             v_call %>% 
             collapseAlleles
@@ -917,9 +938,9 @@ getJointGeneTable <- function(dat, collapseAlleles) {
 #' @inheritParams compareGermlineGeneDistributions
 #' @return Mean absolute difference between joint gene usage, over all
 #'   observed genes between the two repertoires
-compareVDJDistributions <- function(dat_a, dat_b, collapseAlleles=TRUE) {
-    table_a <- getJointGeneTable(dat_a, collapseAlleles)
-    table_b <- getJointGeneTable(dat_b, collapseAlleles)
+compareVDJDistributions <- function(dat_a, dat_b, collapse_alleles=TRUE) {
+    table_a <- getJointGeneTable(dat_a, collapse_alleles)
+    table_b <- getJointGeneTable(dat_b, collapse_alleles)
 
     full_triple_list <- union(table_a$concat, table_b$concat)
 
