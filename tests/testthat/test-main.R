@@ -193,19 +193,21 @@ test_that("test.getNearestNeighborDistances", {
         k = 3))
 })
 
-test_that("test.getPositionalDistancesBetweenMutations", {
+test_that("test.getPositionalPositionalDistanceBetweenMutations", {
     naive_seq <- c("AAAA", "AAAA", "TTTT", "GGGGGGG")
-    sequence <- c("AAAA", "ATAG", "TTAT", "CGGCGCG")
+    mature_seq <- c("AAAA", "ATAG", "TTAT", "CGGCGCG")
 
-    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[1], sequence[1]), NA)
-    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[2], sequence[2]), 2)
-    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[3], sequence[3]), NA)
-    expect_equal(getDistancesBetweenMutationsBySequence(naive_seq[4], sequence[4]) %>% 
+    expect_equal(getPositionalDistancesBetweenMutationsBySequence(naive_seq[1], mature_seq[1]), NA)
+    expect_equal(getPositionalDistancesBetweenMutationsBySequence(naive_seq[2], mature_seq[2]), 2)
+    expect_equal(getPositionalDistancesBetweenMutationsBySequence(naive_seq[3], mature_seq[3]), NA)
+    expect_equal(getPositionalDistancesBetweenMutationsBySequence(naive_seq[4], mature_seq[4]) %>% 
                  sort,
                  c(2, 3))
-    expect_equal(getDistancesBetweenMutations(data.table(naive_seq=naive_seq, 
-                                                         sequence=sequence
-                                                        )) %>% sort, 
+    expect_equal(getPositionalDistanceBetweenMutationsDistribution(
+                     data.table(naive_seq=naive_seq, 
+                                mature_seq=mature_seq
+                               )
+                 ) %>% sort, 
                  c(2, 2, 3))
 })
 

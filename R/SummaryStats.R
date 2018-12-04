@@ -1480,7 +1480,13 @@ compareCDR3PairwiseDistanceDistributions <- function(dat_a,
     return(divergence)
 }
 
-getDistancesBetweenMutationsBySequence <- function(naive, mature) {
+#' Get the positional distances between mutations given a single mature sequence
+#'   and corresponding naive sequence
+#'
+#' @param naive A string corresponding to a naive sequence
+#' @param mature A string corresponding to a mature sequence
+#' @return A vector of positional distances between the mutations
+getPositionalDistancesBetweenMutationsBySequence <- function(naive, mature) {
     if(nchar(naive) != nchar(mature)) {
         stop(paste0("nchar(naive) [", nchar(naive), "] != ", "nchar(mature) [", 
                     nchar(mature), "]"))
@@ -1502,16 +1508,30 @@ getDistancesBetweenMutationsBySequence <- function(naive, mature) {
     return(distances)
 }
 
-getDistancesBetweenMutations <- function(dat) {
+#' Get the distribution of positional distances between mutations of a given
+#'   dataset.
+#'   Note that this requires \code{nchar} to match for each naive/mature 
+#'   sequence pair. (TODO: relax this assumption by discarding cases which
+#'   don't match)
+#'
+#' @param dat 
+#' @param naive_column Column containing the inferred naive/germline sequences
+#' @param mature_column Column containing the mature SHM-experienced sequences
+#' @param return Vector of positional distances
+getPositionalDistanceBetweenMutationsDistribution <- function(
+    dat,
+    naive_column="naive_seq",
+    mature_column="mature_seq"
+) {
     dists <- mapply(function(x, y) {
                         if(nchar(x) == nchar(y)) {
-                            res <- getDistancesBetweenMutationsBySequence(x, y)
+                            res <- getPositionalDistancesBetweenMutationsBySequence(x, y)
                         } else {
                             res <- NA
                         }
                     },
-                    dat$naive_seq,
-                    dat$sequence
+                    dat[[naive_column]],
+                    dat[[mature_column]]
                    ) %>% 
         unname %>% 
         unlist %>% 
@@ -1522,12 +1542,12 @@ getDistancesBetweenMutations <- function(dat) {
 #' Plot the distance between mutation distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotDistanceBetweenMutationsDistribution <- function(dat_list,
+plotPositionalDistanceBetweenMutationsDistribution <- function(dat_list,
                                                      do_exact=FALSE,
                                                      names=NULL
                                                     ) { 
     p <- plotDistribution(dat_list,
-                          getDistancesBetweenMutations,
+                          getPositionalDistanceBetweenMutationsDistribution,
                           do_exact=do_exact,
                           x_label="Positional distance between mutations",
                           names=names
@@ -1536,9 +1556,9 @@ plotDistanceBetweenMutationsDistribution <- function(dat_list,
 }
 
 
-compareDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
-    dists_a <- getDistancesBetweenMutations(dat_a)
-    dists_b <- getDistancesBetweenMutations(dat_b)
+comparePositionalDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
+    dists_a <- getPositionalDistanceBetweenMutationsDistribution(dat_a)
+    dists_b <- getPositionalDistanceBetweenMutationsDistribution(dat_b)
     divergence <- getJSDivergence(dists_a, dists_b)
     return(divergence)
 }
@@ -2286,7 +2306,7 @@ getUnivariateDistributionPlots <- function(dat_list,
                                       "plotHydrophobicityDistribution",
                                       "plotAliphaticIndexDistribution",
                                       "plotGRAVYDistribution",
-                                      "plotDistanceBetweenMutationsDistribution",
+                                      "plotPositionalDistanceBetweenMutationsDistribution",
                                       "plotVGene3PrimeDeletionLengths",
                                       "plotDGene3PrimeDeletionLengths",
                                       "plotDGene5PrimeDeletionLengths",
