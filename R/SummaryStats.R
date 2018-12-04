@@ -1031,17 +1031,20 @@ getAliphaticIndex <- function(aa_sequence) {
 #' Get the distribution of aliphatic indices of a list of sequences
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @return Vector of aliphatic indices
-getAliphaticIndexDistribution <- function(dat) {
-    a_indices <- dat %$%
-        junction_aa %>% 
+getAliphaticIndexDistribution <- function(dat,
+                                          column="junction_aa"
+                                         ) {
+    a_indices <- dat[[column]] %>%
         filterAminoAcidSequences %>%
         sapply(function(x) {
                    ifelse(!is.na(x),
                           getAliphaticIndex(x),
                           NA)
         }
-        )
+    )
 
     return(a_indices)
 }
@@ -1079,10 +1082,13 @@ compareAliphaticIndexDistributions <- function(dat_a,
 #' Get the distribution of GRAVY values from a list or vector of sequences
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @return Vector of GRAVY values for \code{sequence_list}
-getGRAVYDistribution <- function(dat) {
-    dist <- dat %$%
-            junction_aa %>% 
+getGRAVYDistribution <- function(dat,
+                                 column="junction_aa"
+                                ) {
+    dist <- dat[[column]] %>%
             filterAminoAcidSequences %>%
             sapply(function(x) {
                    ifelse(!is.na(x),
@@ -1124,15 +1130,46 @@ compareGRAVYDistributions <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getPolarityDistribution <- function(dat) {
-    polarities <- dat %>%
-        alakazam::aminoAcidProperties(seq="junction_aa",
-                                      nt=FALSE) %$%
-        junction_aa_AA_POLARITY
+#' Get a particular distribution of amino acid properties using the
+#'   \ocde{alakazam::aminoAcidProperties} function
+#'
+#' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
+#' @param suffix A property-specific suffix used to extract the desired
+#'   property from the \code{data.table} returned by \code{alakazam}. 
+#'   This is usually of the form "AA_PROPERTY" (e.g. "AA_POLARITY"),
+#'   but not always (e.g. "AA_BASIC" for basicity)
+#' @return distribution of the given amino acid property
+getAminoAcidProperties <- function(dat,
+                                   column="junction_aa",
+                                   suffix
+                                  ) {
+    properties <- dat %>%
+        alakazam::aminoAcidProperties(seq=column,
+                                      nt=FALSE)
+    properties_column <- paste(column,
+                               suffix,
+                               sep="_"
+                              )
+    print(properties_column)
+    print(is(properties))
 
+    return(properties[[properties_column]])
+}
+
+#' @inheritParams getAminoAcidProperties
+getPolarityDistribution <- function(dat,
+                                    column="junction_aa"
+                                   ) {
+    polarities <- dat %>%
+        getAminoAcidProperties(column=column,
+                               suffix="AA_POLARITY"
+                              )
     return(polarities)
 }
 
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 comparePolarityDistributions <- function(dat_a,
                                          dat_b
                                         ) {
@@ -1160,15 +1197,18 @@ plotPolarityDistribution <- function(dat_list,
     return(p)
 }
 
-getChargeDistribution <- function(dat) {
+#' @inheritParams getAminoAcidProperties
+getChargeDistribution <- function(dat,
+                                  column="junction_aa"
+                                 ) {
     charges <- dat %>%
-        alakazam::aminoAcidProperties(seq="junction_aa",
-                                      nt=FALSE) %$%
-        junction_aa_AA_CHARGE
-
+        getAminoAcidProperties(column=column,
+                               suffix="AA_CHARGE"
+                              )
     return(charges)
 }
 
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareChargeDistributions <- function(dat_a,
                                        dat_b
                                       ) {
@@ -1196,15 +1236,19 @@ plotChargeDistribution <- function(dat_list,
     return(p)
 }
 
-getBasicityDistribution <- function(dat) {
-    polarities <- dat %>%
-        alakazam::aminoAcidProperties(seq="junction_aa",
-                                      nt=FALSE) %$%
-        junction_aa_AA_BASIC
+#' @inheritParams getAminoAcidProperties
+getBasicityDistribution <- function(dat,
+                                    column="junction_aa"
+                                   ) {
+    basicities <- dat %>%
+        getAminoAcidProperties(column=column,
+                               suffix="AA_BASIC"
+                              )
 
-    return(polarities)
+    return(basicities)
 }
 
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareBasicityDistributions <- function(dat_a,
                                          dat_b
                                         ) {
@@ -1232,15 +1276,18 @@ plotBasicityDistribution <- function(dat_list,
     return(p)
 }
 
-getAcidityDistribution <- function(dat) {
+#' @inheritParams getAminoAcidProperties
+getAcidityDistribution <- function(dat,
+                                   column="junction_aa"
+                                  ) {
     acidities <- dat %>%
-        alakazam::aminoAcidProperties(seq="junction_aa",
-                                      nt=FALSE) %$%
-        junction_aa_AA_ACIDIC
-
+        getAminoAcidProperties(column=column,
+                               suffix="AA_ACIDIC"
+                              )
     return(acidities)
 }
 
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareAcidityDistributions <- function(dat_a,
                                          dat_b
                                         ) {
@@ -1268,15 +1315,19 @@ plotAcidityDistribution <- function(dat_list,
     return(p)
 }
 
-getAromaticityDistribution <- function(dat) {
-    acidities <- dat %>%
-        alakazam::aminoAcidProperties(seq="junction_aa",
-                                      nt=FALSE) %$%
-        junction_aa_AA_AROMATIC
+#' @inheritParams getAminoAcidProperties
+getAromaticityDistribution <- function(dat,
+                                       column="junction_aa"
+                                      ) {
+    aromaticities <- dat %>%
+        getAminoAcidProperties(column=column,
+                               suffix="AA_AROMATIC"
+                              )
 
-    return(acidities)
+    return(aromaticities)
 }
 
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareAromaticityDistributions <- function(dat_a,
                                          dat_b
                                         ) {
@@ -1304,15 +1355,18 @@ plotAromaticityDistribution <- function(dat_list,
     return(p)
 }
 
-getBulkinessDistribution <- function(dat) {
-    acidities <- dat %>%
-        alakazam::aminoAcidProperties(seq="junction_aa",
-                                      nt=FALSE) %$%
-        junction_aa_AA_BULK
-
-    return(acidities)
+#' @inheritParams getAminoAcidProperties
+getBulkinessDistribution <- function(dat,
+                                     column="junction_aa"
+                                    ) {
+    bulkinesses <- dat %>%
+        getAminoAcidProperties(column=column,
+                               suffix="AA_BULK"
+                              )
+    return(bulkinesses)
 }
 
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareBulkinessDistributions <- function(dat_a,
                                          dat_b
                                         ) {
