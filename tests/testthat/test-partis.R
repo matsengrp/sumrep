@@ -36,7 +36,6 @@ test_that("sumrep correctly calls partis partition", {
                               num_procs=8)
     "_output_arbitrary_again" %>% unlink(recursive=TRUE)
 
-    print(dat_c %>% names)
     expect_equal(nrow(dat_c), 17)
     expect_equal(ncol(dat_c), 33)
 
