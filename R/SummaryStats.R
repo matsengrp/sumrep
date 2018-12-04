@@ -692,8 +692,8 @@ plotDistanceFromNaiveToMatureDistribution <- function(dat_list,
 #' Compare Levenshtein distance distributions from naive sequences to 
 #  their corresponding mature ones for two repertoires
 #'
+#' @inheritParams getDistanceFromNaiveToMatureDistribution
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
-#' @return JS divergence of the two distance distributions
 compareDistanceFromNaiveToMatureDistributions <- function(dat_a, 
                                                           dat_b, 
                                                           approximate=FALSE,
@@ -767,6 +767,7 @@ plotCDR3Lengths <- function(dat_list,
 #' Compare the distribution of CDR3 lengths for two datasets
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' @inheritParams getCDR3LengthDistribution
 #' @return The JS divergence of the two CDR3 length distributions
 compareCDR3LengthDistributions <- function(dat_a, 
                                            dat_b,
@@ -971,8 +972,13 @@ compareVDJDistributions <- function(dat_a,
     return(divergence)
 }
 
-getKideraFactorsBySequence <- function(sequence) {
-    kidera_factors <- sequence %>% 
+#' Get the kidera factors of a single sequence.
+#'   See the \code{Peptides::kideraFactors} documentation for more information.
+#'
+#' @param aa_sequence An amino acid sequence string
+#' @return A named vector of the 10 Kidera factors for \code{aa_sequence}
+getKideraFactorsBySequence <- function(aa_sequence) {
+    kidera_factors <- aa_sequence %>% 
         Peptides::kideraFactors() %>% 
         first
     return(kidera_factors)
@@ -980,13 +986,13 @@ getKideraFactorsBySequence <- function(sequence) {
 
 #' Get the mean Atchley factor of an amino acid sequence
 #'
-#' @param aa_seq String of an amino acid sequence
+#' @param aa_sequence An amino acid sequence string
 #' @param factor_number The Atchley factor to be applied to \code{aa_seq}. 
 #'  Must be 1, 2, 3, 4, or 5.
 #' @return The mean of the set of Atchley factors for 
 #'   \code{aa_seq}
-getAtchleyFactorList <- function(aa_seq, factor_number) {
-    factor_list <- aa_seq %>% 
+getAtchleyFactorList <- function(aa_sequence, factor_number) {
+    factor_list <- aa_sequence %>% 
         HDMD::FactorTransform(Factor=factor_number)
     return(factor_list)
 }
@@ -1029,7 +1035,7 @@ compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
 
 #' Get the aliphatic index of a DNA sequence
 #'
-#' @param dna_sequence String of DNA characters
+#' @param aa_sequence An amino acid sequence string
 #' @return The aliphatic index of \code{dna_sequence}, if applicable
 getAliphaticIndex <- function(aa_sequence) {
     aliphatic_index <- aa_sequence %>% 
