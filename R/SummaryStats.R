@@ -1829,8 +1829,15 @@ plotJGene5PrimeDeletionLengths <- function(dat_list,
     return(p)
 }
 
+#' Compare the deletion length distributions of two datasets
+#'
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' @param gene Gene label Either "VGene", "DGene", or "JGene".
+#' @param end The end of gene over which the deletion occured. Either "3Prime" 
+#'   or "5Prime".
+#' @return JS divergence of deletion lengths between \code{dat_a} and \code{dat_b}
 compareDeletionLengths <- function(dat_a, dat_b, gene, end) {
-    deletion_length_function <- paste0("get", gene, end, "DeletionLengths") %>%
+    deletion_length_function <- paste0("get", gene, end, "DeletionLengthDistribution") %>%
         get
     dist_a <- dat_a %>% 
         deletion_length_function
@@ -1868,19 +1875,20 @@ getInsertionLengths <- function(dat, column) {
     return(lengths)
 }
 
-getVDInsertionLengths <- function(dat) {
+#' @inheritParams getInsertionLengths
+getVDInsertionLengthDistribution <- function(dat) {
     return(getInsertionLengths(dat, "vd_insertion"))
 }
 
 #' Plot the VD insertion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotVDInsertionLengths <- function(dat_list,
+plotVDInsertionLengthDistribution <- function(dat_list,
                                    do_exact=FALSE,
                                    names=NULL
                                   ) { 
     p <- plotDistribution(dat_list,
-                          getVDInsertionLengths,
+                          getVDInsertionLengthDistribution,
                           do_exact=do_exact,
                           x_label="VD insertion length",
                           names=names
@@ -1888,19 +1896,23 @@ plotVDInsertionLengths <- function(dat_list,
     return(p)
 }
 
-getDJInsertionLengths <- function(dat) {
+
+#' Plot the DJ insertion length distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
+getDJInsertionLengthDistribution <- function(dat) {
     return(getInsertionLengths(dat, "dj_insertion"))
 }
 
 #' Plot the DJ insertion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotDJInsertionLengths <- function(dat_list,
+plotDJInsertionLengthDistribution <- function(dat_list,
                                    do_exact=FALSE,
                                    names=NULL
                                   ) { 
     p <- plotDistribution(dat_list,
-                          getDJInsertionLengths,
+                          getDJInsertionLengthDistribution,
                           do_exact=do_exact,
                           x_label="DJ insertion length",
                           names=names
@@ -1909,7 +1921,10 @@ plotDJInsertionLengths <- function(dat_list,
 }
 
 compareInsertionLengths <- function(dat_a, dat_b, genes) {
-    insertion_length_function <- paste0("get", genes, "InsertionLengths") %>% 
+    insertion_length_function <- paste0("get", 
+                                        genes, 
+                                        "InsertionLengthDistribution"
+                                       ) %>% 
         get
     dist_a <- dat_a %>% 
         insertion_length_function
@@ -2302,17 +2317,17 @@ getUnivariateDistributionPlots <- function(dat_list,
                                       "plotHotspotCountDistribution",
                                       "plotColdspotCountDistribution",
                                       "plotDistanceFromNaiveToMatureDistribution",
-                                      "plotCDR3Lengths",
+                                      "plotCDR3LengthDistribution",
                                       "plotHydrophobicityDistribution",
                                       "plotAliphaticIndexDistribution",
                                       "plotGRAVYDistribution",
                                       "plotPositionalDistanceBetweenMutationsDistribution",
-                                      "plotVGene3PrimeDeletionLengths",
-                                      "plotDGene3PrimeDeletionLengths",
-                                      "plotDGene5PrimeDeletionLengths",
-                                      "plotJGene5PrimeDeletionLengths",
-                                      "plotVDInsertionLengths",
-                                      "plotDJInsertionLengths",
+                                      "plotVGene3PrimeDeletionLengthDistribution",
+                                      "plotDGene3PrimeDeletionLengthDistribution",
+                                      "plotDGene5PrimeDeletionLengthDistribution",
+                                      "plotJGene5PrimeDeletionLengthDistribution",
+                                      "plotVDInsertionLengthDistribution",
+                                      "plotDJInsertionLengthDistribution",
                                       "plotClusterSizeDistribution"
                                      )
     } 

@@ -156,7 +156,7 @@ compareRepertoires <- function(repertoire_1,
                                  "comparePairwiseDistanceDistributions",
                                  # "compareNNDistanceDistributions" 
                                  # let's wait on this until we get it working
-                                 "compareCDR3Distributions",
+                                 "compareCDR3PairwiseDistanceDistributions",
                                  # Sequence-based metrics
                                  "compareGCContentDistributions",
                                  "compareAtchleyFactorDistributions",
@@ -189,9 +189,10 @@ compareRepertoires <- function(repertoire_1,
 
     bcr_function_strings <- list(
                                  # SHM-based metrics
-                                 "compareDistancesFromNaiveToMature",
+                                 "compareDistanceFromNaiveToMatureDistributions",
                                  "compareHotspotCountDistributions",
-                                 "compareColdspotCountDistributions"
+                                 "compareColdspotCountDistributions",
+                                 "comparePositionalDistanceBetweenMutationsDistributions"
                                  # "compareSubstitutionAndMutabilityModels",
                                  # "compareSelectionEstimates"
                                  # ^ These comparisons takes forever
