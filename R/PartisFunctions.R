@@ -221,7 +221,7 @@ collapseClones <- function(partition_dataset) {
                          "v_qr_seqs",
                          "cdr3_seqs"
                          )
-    partition_dataset$clone <- 0
+    partition_dataset$clone_id <- 0
     all_columns <- partition_dataset %>% names
 
     clone_count <- partition_dataset %>% nrow
@@ -247,10 +247,10 @@ collapseClones <- function(partition_dataset) {
             }
 
             clone_dat <- clone_list %>% as.data.table
-            clone_dat$clone <- clone
+            clone_dat$clone_id <- clone
         }  else {
             clone_dat <- clone_annotations
-            clone_dat$clone <- clone
+            clone_dat$clone_id <- clone
         }
         collapsed_dat <- rbind(collapsed_dat, clone_dat)
     }
@@ -362,6 +362,11 @@ processPartisSequences <- function(annotated_data) {
 
     annotated_data$vj_in_frame <- annotated_data$in_frames %>% 
         as.logical
+
+    annotated_data$np1_length <- annotated_data$vd_insertion %>%
+        sapply(nchar)
+    annotated_data$np2_length <- annotated_data$dj_insertion %>%
+        sapply(nchar)
 
     names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "v_call"
     names(annotated_data)[which(names(annotated_data) == "d_gene")] <- "d_call"
@@ -529,7 +534,7 @@ getPartisSimulation <- function(parameter_dir,
     sim_annotations <- sim_annotations %>% 
         processPartisSequences
 
-    sim_annotations$clone <- sim_annotations$reco_id %>% sapply(as.numeric)
+    sim_annotations$clone_id <- sim_annotations$reco_id %>% sapply(as.numeric)
     sim_annotations$reco_id <- NULL
     sim_annotations$sequence <- sim_annotations$mature_seq
     sim_annotations$sequence_alignment <- sim_annotations$mature_seq
