@@ -1958,10 +1958,7 @@ compareJGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
 getInsertionLengths <- function(dat, column) {
     lengths <- dat %>% 
         dplyr::select_(column) %>% 
-        unlist %>% 
-        sapply(toString) %>% 
-        sapply(nchar) %>% 
-        unname
+        unlist(use.names=FALSE)
     return(lengths)
 }
 
@@ -1969,7 +1966,7 @@ getInsertionLengths <- function(dat, column) {
 #'
 #' @inheritParams getInsertionLengths
 getVDInsertionLengthDistribution <- function(dat) {
-    return(getInsertionLengths(dat, "vd_insertion"))
+    return(getInsertionLengths(dat, "np1_length"))
 }
 
 #' Plot the VD insertion length distribution of one or more datasets
@@ -1993,7 +1990,7 @@ plotVDInsertionLengthDistribution <- function(dat_list,
 #'
 #' @inheritParams plotDistribution
 getDJInsertionLengthDistribution <- function(dat) {
-    return(getInsertionLengths(dat, "dj_insertion"))
+    return(getInsertionLengths(dat, "np2_length"))
 }
 
 #' Plot the DJ insertion length distribution of one or more datasets
