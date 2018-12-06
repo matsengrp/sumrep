@@ -67,7 +67,7 @@
 ## Usage
 ### Data structures
 Most functions to retrieve and compare distributions between repertoires expect `data.table` objects as input.
-For example, the `data` folder contains an annotations dataset (obtained from `getPartisAnnotations("data/test_data.fa") %$% annotations %>% fwrite("data/test_annotations.csv")`.
+For example, the `data` folder contains an annotations dataset (obtained via `getPartisAnnotations("data/test_data.fa") %$% annotations %>% fwrite("data/test_annotations.csv")`.
 We can read this in as a `data.table` as follows:
 ```
 dat <- data.table::fread("data/test_annotations.csv")
@@ -76,6 +76,31 @@ There are many other helper functions which take other types of data structures 
 These are of course available to the user but are not as polished or standardized.
 For example, the `getDistanceMatrix` function returns the pairwise distance matrix of a `list` or `vector` of input sequences.
 This object may be of auxiliary interest to the user but is not directly useful for plotting or comparison functions within the package.
+
+The following table details the expected columns in an annotations `data.table`:
+
+| Name               | Type    | Description                                                                                                                                                       |
+|--------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| sequence           | string  | The unmodified query nucleotide sequence                                                                                                                          |
+| vj_in_frame        | boolean | True if the V and J segment alignments are in-frame.                                                                                                              |
+| v_call             | string  | V gene with or without allele. For example, IGHV4-59\*01.                                                                                                          |
+| d_call             | string  | D gene with or without allele. For example, IGHD3-10\*01.                                                                                                          |
+| j_call             | string  | J gene with or without allele. For example, IGHJ4\*02.                                                                                                             |
+| sequence_alignment | string  | Aligned portion of query sequence. By default constrained to variable region, but not required. Synonymous with "mature" sequence in sumrep.                      |
+| germline_alignment | string  | Assembled, aligned, fully length inferred germline sequence spanning the same region as the sequence_alignment field. Synonymous with "naive" sequence in sumrep. |
+| junction           | string  | Junction region nucleotide sequence, where the junction is defined as the CDR3 plus the two flanking conserved codons.                                            |
+| junction_aa        | string  | Junction region amino acid sequence.                                                                                                                              |
+| v_3p_del           | integer | Number of nucleotides in the V 3' deletion                                                                                                                        |
+| d_5p_del           | integer | Number of nucleotides in the D 5' deletion                                                                                                                        |
+| d_3p_del           | integer | Number of nucleotides in the D 3' deletion                                                                                                                        |
+| j_5p_del           | integer | Number of nucleotides in the J 5' deletion                                                                                                                        |
+| np1_length         | integer | Number of nucleotides between the V and D segments or V and J segments.                                                                                           |
+| np2_length         | integer | Number of nucleotides between the D and J segments.                                                                                                               |
+| clone_id           | integer | Clonal familiy cluster assignment for the query sequence.                                                                                                         |
+
+Most of these names and definitions come directly from the [AIRR standard](http://docs.airr-community.org/en/latest/datarep/rearrangements.html#fields), with some exceptions and modifications.
+Not every column is strictly required for sumrep to work (e.g., TCR datasets to not need a `clone_id`), but you will only be able to use functions for which the required columns are present.
+See specific function man pages for more details.
 
 ### Retrieving distributions
 Functions for retrieving distributions are generally of the form `getXDistribution`.
