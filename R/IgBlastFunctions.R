@@ -16,25 +16,29 @@ require(shazam)
 #' @param domain_system (input to IgBLAST)
 #' @param ig_seqtype (input to IgBLAST
 getIgBlastAnnotations <- function(input_filename,
-                                  output_filename="igblast_out",
-                                  locus="igh",
+                                  output_filename="igblast_out.tsv",
+                                  locus="IGH",
                                   organism="human",
                                   domain_system="imgt",
-                                  ig_seqtype="Ig",
+                                  loci="ig",
                                   num_threads=8,
                                   igblast_dir,
-                                  changeo_dir
+                                  changeo_dir,
+                                  airr_format=TRUE
                                  ) {
 
     input_filename <- input_filename %>% 
         normalizePath
+
+    igblast_bin_dir <- file.path(igblast_dir,
+                                  "bin")
 
     # IgBlast needs to be in its own directory to find the germline databases
     # easily, so let's remember where we are currently and chnage directories
     initial_wd <- getwd()
     tryCatch({
         igblast_dir %>% setwd
-        igblast_exec <- file.path(igblast_dir, "igblastn")
+        igblast_exec <- file.path(igblast_bin_dir, "igblastn")
         arguments <- igblast_exec
         regions <- c("V", "D", "J")
         for(region in regions) {
@@ -49,10 +53,9 @@ getIgBlastAnnotations <- function(input_filename,
                          )
         }
 
-        full_output_filename <- 
-                       paste(output_filename,
-                             "fmt7",
-                             sep='.')
+        full_output_filename <- file.path(initial_wd,
+                                          output_filename
+                                         )
 
         arguments <- c(arguments,
                        "-auxiliary_data",
@@ -65,11 +68,14 @@ getIgBlastAnnotations <- function(input_filename,
                        "-domain_system",
                        domain_system,
                        "-ig_seqtype",
-                       ig_seqtype,
+                       loci,
                        "-organism",
                        organism,
                        "-outfmt",
-                       "'7 std qseq sseq btop'", # Suggested by Change-O docs
+                       ifelse(airr_format, 
+                              19, # AIRR tab-delimited file
+                              "'7 std qseq sseq btop'" # blast-style tabular output
+                              ),
                        "-query",
                        # Give absolute path for 
                        # input file, since we have changed directories
@@ -83,34 +89,51 @@ getIgBlastAnnotations <- function(input_filename,
         command <- arguments %>%
             paste(collapse=' ')
 
+        command <- paste(file.path(changeo_dir,
+                                   "AssignGenes.py"),
+                         "igblast",
+                         "-s",
+                         input_filename %>% normalizePath,
+                         "-b",
+                         igblast_dir,
+                         "--organism",
+                         organism,
+                         "--loci",
+                         loci,
+                         "--format",
+                         "airr",
+                         "--exec",
+                         igblast_exec,
+                         "-o",
+                         full_output_filename,
+                         sep=" "
+                        )
+
+
+
+        cat("\n", command, "\n")
         command %>% system
 
          germline_sequences <- regions %>%
-                                   sapply(tolower) %>%
                                    sapply(function(x) {
-                                              paste0(locus,
-                                                     '/',
-                                                     locus,
-                                                     x,
-                                                     '.fasta')
+                                              file.path(
+                                                     igblast_dir,
+                                                     "germlines/imgt",
+                                                     organism,
+                                                     "vdj",
+                                                     paste0(
+                                                         paste(
+                                                           "imgt",
+                                                           organism,
+                                                           paste0(locus, x),
+                                                           sep='_'),
+                                                         '.fasta')
+                                                     )
                                        }
                                    ) %>%
                                    paste(collapse=' ')
 
-        changeo_command <- paste(file.path(changeo_dir,
-                                           "MakeDb.py"),
-                                 "igblast",
-                                 "-i",
-                                 full_output_filename,
-                                 "-s",
-                                 input_filename,
-                                 "-r",
-                                 germline_sequences
-                                 )
-
-        changeo_command %>% system
-        changeo_filename <- output_filename %>%
-            paste0("_db-pass.tab")
+        changeo_filename <- full_output_filename
 
         annotations_without_naive <- changeo_filename %>%
             data.table::fread(stringsAsFactors=TRUE)
@@ -119,7 +142,10 @@ getIgBlastAnnotations <- function(input_filename,
         #   before getting naive sequences
         try({
         cluster_threshold <- annotations_without_naive %>%
-            shazam::distToNearest() %$%
+            shazam::distToNearest(sequenceColumn="junction",
+                                  vCallColumn="v_call",
+                                  jCallColumn="j_call"
+                                 ) %$%
             DIST_NEAREST %>%
             shazam::findThreshold() %>%
             slot(name="threshold")
@@ -128,9 +154,14 @@ getIgBlastAnnotations <- function(input_filename,
             cluster_threshold <- 0.5
         }
 
+        cluster_filename <-  file.path(
+                                      gsub(changeo_filename,
+                                      pattern=".tsv",
+                                      replace="_clustered.tsv"
+                                     )
+                                      )
         cluster_command <- paste(file.path(changeo_dir,
                                            "DefineClones.py"),
-                                 "bygroup",
                                  "-d",
                                  changeo_filename,
                                  "--act",
@@ -142,63 +173,18 @@ getIgBlastAnnotations <- function(input_filename,
                                  "--norm",
                                  "len",
                                  "--dist",
-                                 cluster_threshold
-                                 )
+                                 cluster_threshold,
+                                 "-o",
+                                 cluster_filename
+                                )
 
         cluster_command %>% system
 
-        changeo_clone_filename <- changeo_filename %>%
-            gsub(pattern=".tab", replace="_clone-pass.tab")
+        annotations <- cluster_filename %>%
+            data.table::fread() 
 
-        germline_command <- paste(file.path(changeo_dir,
-                                            "CreateGermlines.py"),
-                                  "-d",
-                                  changeo_clone_filename,
-                                  "-r",
-                                  germline_sequences,
-                                  "-g",
-                                  "full",
-                                  "--cloned"
-                                  )
-
-        germline_command %>% system
-
-        germline_filename <- changeo_clone_filename %>%
-            gsub(pattern=".tab", replace="_germ-pass.tab")
-
-        annotations <- germline_filename %>%
-            data.table::fread(stringsAsFactors=TRUE) 
-
-        names(annotations)[which(names(annotations) == "V_CALL")] <- "v_call"
-        names(annotations)[which(names(annotations) == "D_CALL")] <- "d_call"
-        names(annotations)[which(names(annotations) == "J_CALL")] <- "j_call"
-        names(annotations)[which(names(annotations) == "JUNCTION")] <- "junction"
-        names(annotations)[which(names(annotations) == "JUNCTION_LENGTH")] <- 
-            "cdr3_length"
-        names(annotations)[which(names(annotations) == "IN_FRAME")] <- "in_frames"
-
-        annotations$naive_seq <- annotations$GERMLINE_IMGT %>%
-            sapply(toString) %>%
-            sapply(gsub, pattern="\\.", replace='') %>%
-            tolower
-
-        annotations$sequence <- mapply(getMatureSequences,
-                                       annotations$GERMLINE_IMGT,
-                                       annotations$SEQUENCE_IMGT
-                                      )
-
-        annotations$junction <- annotations$junction %>%
-            sapply(toString)
-
-        annotations$junction_aa <- annotations$junction %>%
-            sapply(convertNucleobasesToAminoAcids)
-
-        # For now, keep only the first gene if given in a per-sequence list 
-        annotations$v_call <- annotations$v_call %>%
-            processGenes
-        annotations$j_call <- annotations$j_call %>%
-            processGenes
-
+        names(annotations) <- names(annotations) %>%
+            sapply(tolower)
     }, error = function(e) {
         print(e)
     }, finally = {
@@ -218,7 +204,8 @@ getIgBlastAnnotations <- function(input_filename,
 #'   is also the symbol to denote IMGT gaps. Thus, manual processing to account
 #'   for this is required.
 getMatureSequences <- function(germline_imgt,
-                              sequence_imgt) {
+                               sequence_imgt
+                              ) {
     naive_sequence <- germline_imgt %>%
         toString %>%
         tolower
