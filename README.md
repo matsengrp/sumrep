@@ -67,7 +67,7 @@
 ## Usage
 ### Data structures
 Most functions to retrieve and compare distributions between repertoires expect `data.table` objects as input.
-For example, the `data` folder contains an annotations dataset (obtained from `getPartisAnnotations("data/test_data.fa") %$% annotations %>% fwrite("data/test_annotations.csv")`.
+For example, the `data` folder contains an annotations dataset (obtained via `getPartisAnnotations("data/test_data.fa") %$% annotations %>% fwrite("data/test_annotations.csv")`.
 We can read this in as a `data.table` as follows:
 ```
 dat <- data.table::fread("data/test_annotations.csv")
@@ -97,6 +97,11 @@ The following table details the expected columns in an annotations `data.table`:
 | np1_length         | integer | Number of nucleotides between the V and D segments or V and J segments.                                                                                           |
 | np2_length         | integer | Number of nucleotides between the D and J segments.                                                                                                               |
 | clone_id           | integer | Clonal familiy cluster assignment for the query sequence.                                                                                                         |
+
+Most of these names and definitions come directly from the [AIRR standard](http://docs.airr-community.org/en/latest/datarep/rearrangements.html#fields), with some exceptions and modifications.
+Not every column is strictly required for sumrep to work (e.g., TCR datasets to not need a `clone_id`), but you will only be able to use functions for which the required columns are present.
+See specific function man pages for more details.
+
 ### Retrieving distributions
 Functions for retrieving distributions are generally of the form `getXDistribution`.
 For example, the pairwise distance distribution of `dat` can be obtained via
