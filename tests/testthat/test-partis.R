@@ -18,9 +18,9 @@ test_that("sumrep correctly calls partis annotate", {
     expect_equal(dat_a$mutation_rates[[1]] %>% names, 
                  c("overall_mut_rate", "mut_rate_by_position"))
 
-    expect_equal(ncol(dat_a$annotations), 39)
+    expect_equal(ncol(dat_a$annotations), 41)
     expect_equal(nrow(dat_a$annotations), 17)
-    expect_equal(ncol(dat_b$annotations), 39)
+    expect_equal(ncol(dat_b$annotations), 41)
     expect_equal(nrow(dat_b$annotations), 17)
 
     dir.create("_output")

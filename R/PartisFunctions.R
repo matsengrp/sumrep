@@ -182,9 +182,9 @@ getFullPartisAnnotation <- function(output_path,
 
 processPartisMatureSequences <- function(dat) {
     names(dat)[which(names(dat) == "input_seqs")] <- 
-        "mature_seq"
-    dat$mature_seq <- dat %$%
-        mature_seq %>%
+        "sequence_alignment"
+    dat$sequence_alignment <- dat %$%
+        sequence_alignment %>%
         sapply(toString) %>%
         tolower
     return(dat)
@@ -290,7 +290,7 @@ readPartisAnnotations <- function(output_path,
             getCDR3s
     } else {
         annotated_data <- annotation_file %>%
-            data.table::fread(stringsAsFactors=TRUE)
+            data.table::fread()
     }
 
     if(collapse_clones) {
@@ -338,7 +338,7 @@ processPartisSequences <- function(annotated_data) {
     annotated_data$sequence <- annotated_data$sequence %>%
         sapply(toString)
 
-    annotated_data$naive_seq <- annotated_data$naive_seq %>% 
+    annotated_data$germline_alignment <- annotated_data$naive_seq %>% 
         sapply(toString) %>% 
         tolower
 
@@ -360,7 +360,7 @@ processPartisSequences <- function(annotated_data) {
     annotated_data <- annotated_data %>% 
         processPartisMatureSequences
 
-    annotated_data$in_frames <- annotated_data$in_frames %>% 
+    annotated_data$vj_in_frame <- annotated_data$in_frames %>% 
         as.logical
 
     names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "v_call"
@@ -532,6 +532,7 @@ getPartisSimulation <- function(parameter_dir,
     sim_annotations$clone <- sim_annotations$reco_id %>% sapply(as.numeric)
     sim_annotations$reco_id <- NULL
     sim_annotations$sequence <- sim_annotations$mature_seq
+    sim_annotations$sequence_alignment <- sim_annotations$mature_seq
 
     sim_data <- list(annotations=sim_annotations)
     return(sim_data)

@@ -19,8 +19,8 @@ test_that("test.compareDistanceFromNaiveToMatureDistributions", {
     m3 <- c("GAAAAA")
     m4 <- c("AAAGGG")
     m5 <- c("GGGG")
-    dat_a <- data.table(naive_seq=naive_a, mature_seq=list(m1, m2, m3))
-    dat_b <- data.table(naive_seq=naive_b, mature_seq=list(m2, m3, m4))
+    dat_a <- data.table(germline_alignment=naive_a, sequence_alignment=list(m1, m2, m3))
+    dat_b <- data.table(germline_alignment=naive_b, sequence_alignment=list(m2, m3, m4))
     c1 <- compareDistanceFromNaiveToMatureDistributions(dat_a, 
                                             dat_a, 
                                             approximate=FALSE,
@@ -107,7 +107,7 @@ test_that("test.getDistanceFromNaiveToMatureDistribution", {
     m2 <- c("CGCAAA")
     m3 <- c("GGGGGG")
     m4 <- c("AAAAAA")
-    dat <- data.table(naive_seq=naives, mature_seq=c(m1, m2, m3, m4))
+    dat <- data.table(germline_alignment=naives, sequence_alignment=c(m1, m2, m3, m4))
     expect_equal(c(0, 1, 3, 6), getDistanceFromNaiveToMatureDistribution(dat,
                                                               v_gene_only=FALSE
                                                               ))
@@ -194,18 +194,18 @@ test_that("test.getNearestNeighborDistances", {
 })
 
 test_that("test.getPositionalPositionalDistanceBetweenMutations", {
-    naive_seq <- c("AAAA", "AAAA", "TTTT", "GGGGGGG")
-    mature_seq <- c("AAAA", "ATAG", "TTAT", "CGGCGCG")
+    germline_alignment <- c("AAAA", "AAAA", "TTTT", "GGGGGGG")
+    sequence_alignment <- c("AAAA", "ATAG", "TTAT", "CGGCGCG")
 
-    expect_equal(getPositionalDistancesBetweenMutationsBySequence(naive_seq[1], mature_seq[1]), NA)
-    expect_equal(getPositionalDistancesBetweenMutationsBySequence(naive_seq[2], mature_seq[2]), 2)
-    expect_equal(getPositionalDistancesBetweenMutationsBySequence(naive_seq[3], mature_seq[3]), NA)
-    expect_equal(getPositionalDistancesBetweenMutationsBySequence(naive_seq[4], mature_seq[4]) %>% 
+    expect_equal(getPositionalDistancesBetweenMutationsBySequence(germline_alignment[1], sequence_alignment[1]), NA)
+    expect_equal(getPositionalDistancesBetweenMutationsBySequence(germline_alignment[2], sequence_alignment[2]), 2)
+    expect_equal(getPositionalDistancesBetweenMutationsBySequence(germline_alignment[3], sequence_alignment[3]), NA)
+    expect_equal(getPositionalDistancesBetweenMutationsBySequence(germline_alignment[4], sequence_alignment[4]) %>% 
                  sort,
                  c(2, 3))
     expect_equal(getPositionalDistanceBetweenMutationsDistribution(
-                     data.table(naive_seq=naive_seq, 
-                                mature_seq=mature_seq
+                     data.table(germline_alignment=germline_alignment, 
+                                sequence_alignment=sequence_alignment
                                )
                  ) %>% sort, 
                  c(2, 2, 3))
@@ -244,8 +244,8 @@ test_that("getInsertionMatrix functions return correct transition matrices", {
 })
 
 test_that("getInFramePercentage returns the correct percentage of in-frame sequences", {
-    dat_a <- data.frame(in_frames=c(TRUE, FALSE, TRUE, FALSE))
-    dat_b <- data.frame(in_frames=c(TRUE, FALSE, TRUE, TRUE))
+    dat_a <- data.frame(vj_in_frame=c(TRUE, FALSE, TRUE, FALSE))
+    dat_b <- data.frame(vj_in_frame=c(TRUE, FALSE, TRUE, TRUE))
     expect_equal(getInFramePercentage(dat_a), 50)
     expect_equal(getInFramePercentage(dat_b), 75)
     expect_equal(compareInFramePercentages(dat_a, dat_b), 25)

@@ -638,8 +638,8 @@ compareColdspotCountDistributions <- function(dat_a,
 getDistancesFromNaiveToMature <- function(dat,
                                           v_gene_only=FALSE
                                           ) {
-    mature_column <- ifelse(v_gene_only, "v_qr_seqs", "mature_seq")
-    naive_column <- ifelse(v_gene_only, "v_gl_seq", "naive_seq")
+    mature_column <- ifelse(v_gene_only, "v_qr_seqs", "sequence_alignment")
+    naive_column <- ifelse(v_gene_only, "v_gl_seq", "germline_alignment")
     distances <- dat[[mature_column]] %>% 
         mapply(FUN=stringdist::stringdist, 
                b=dat[[naive_column]], 
@@ -712,7 +712,7 @@ compareDistanceFromNaiveToMatureDistributions <- function(dat_a,
 }
 
 #' Get the distribution of inferred length of CDR3 regions of each sequence.
-#'   Requires either the \code{cdr3_length} or \code{junction} column for
+#'   Requires either the \code{junction_length} or \code{junction} column for
 #'   \code{by_amino_acid=FALSE}, or the \code{junction_aa} column for
 #'   \code{by_amnio_acid=TRUE}.
 #'
@@ -732,8 +732,8 @@ getCDR3LengthDistribution <- function(dat,
             stop("junction_aa column not present in dat.")
         }
     } else {
-        if("cdr3_length" %in% names(dat)) {
-            CDR3_lengths <- dat$cdr3_length %>% 
+        if("junction_length" %in% names(dat)) {
+            CDR3_lengths <- dat$junction_length %>% 
                 na.omit
         } else {
             if("junction" %in% names(dat)) {
@@ -1542,8 +1542,8 @@ getPositionalDistancesBetweenMutationsBySequence <- function(naive, mature) {
 #' @param return Vector of positional distances
 getPositionalDistanceBetweenMutationsDistribution <- function(
     dat,
-    naive_column="naive_seq",
-    mature_column="mature_seq"
+    naive_column="germline_alignment",
+    mature_column="sequence_alignment"
 ) {
     dists <- mapply(function(x, y) {
                         if(nchar(x) == nchar(y)) {
@@ -1682,8 +1682,8 @@ comparePerGenePerPositionMutationRates <- function(rate_dat_a,
 getSubstitutionModel <- function(dat) {
     sub_mat <- dat %>% 
         removeSequencesWithDifferentNaiveAndMatureLengths %>%
-        shazam::createSubstitutionMatrix(sequenceColumn="sequence",
-                                         germlineColumn="naive_seq",
+        shazam::createSubstitutionMatrix(sequenceColumn="sequence_alignment",
+                                         germlineColumn="germline_alignment",
                                          vCallColumn="v_call") 
     return(sub_mat)
 }
@@ -1696,12 +1696,13 @@ getSubstitutionModel <- function(dat) {
 #'   obtained via \code{getSubstitutionModel}
 #' @return The default shazam mutability model
 getMutabilityModel <- function(dat, 
-                               substitution_model) {
+                               substitution_model=getSubstitutionModel(dat)
+                              ) {
     mut_mat <- dat %>% 
         removeSequencesWithDifferentNaiveAndMatureLengths %>%
         shazam::createMutabilityMatrix(substitutionModel=substitution_model,
-                                       sequenceColumn="sequence",
-                                       germlineColumn="naive_seq",
+                                       sequenceColumn="sequence_alignment",
+                                       germlineColumn="germline_alignment",
                                        vCallColumn="v_call")
     return(mut_mat)
 }
@@ -2186,9 +2187,9 @@ compareHillNumbers <- function(dat_a, dat_b, diversity_orders=c(0, 1, 2)) {
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return The percentage of in-frame sequences in \code{dat}
-getInFramePercentage <- function(dat) {
-    percentage <- 100*(dat %$%
-                       in_frames %>% 
+getInFramePercentage <- function(dat,
+                                 column="vj_in_frame") {
+    percentage <- 100*(dat[[column]] %>%
                        mean)
     return(percentage)
 }
@@ -2197,7 +2198,10 @@ getInFramePercentage <- function(dat) {
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return Absolute differences of in-frame percentages
-compareInFramePercentages <- function(dat_a, dat_b) {
+compareInFramePercentages <- function(dat_a, 
+                                      dat_b,
+                                      column="vj_in_frame"
+                                     ) {
     percent_a <- dat_a %>%
         getInFramePercentage
     percent_b <- dat_b %>%
@@ -2218,8 +2222,8 @@ compareInFramePercentages <- function(dat_a, dat_b) {
 #'   selection
 getSelectionEstimate <- function(dat) {
     baseline <- shazam::calcBaseline(dat,
-                                     sequenceColumn="mature_seq",
-                                     germlineColumn="naive_seq"
+                                     sequenceColumn="sequence_alignment",
+                                     germlineColumn="germline_alignment"
                                      ) %>%
         shazam::summarizeBaseline(returnType="df") %$%
         BASELINE_SIGMA 
