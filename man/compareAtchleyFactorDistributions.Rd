@@ -7,9 +7,7 @@
 compareAtchleyFactorDistributions(dat_a, dat_b)
 }
 \arguments{
-\item{dat_a}{First dataset, a data.table or data.frame}
-
-\item{dat_b}{Second dataset, a data.table or data.frame}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 Estimated mean absolute difference of the mean of each Atchley factor

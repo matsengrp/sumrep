@@ -7,18 +7,15 @@
 compareGermlineGeneDistributions(dat_a, dat_b, gene_type, collapse_alleles)
 }
 \arguments{
-\item{dat_a}{First annotated dataset}
-
-\item{dat_b}{Second annotated dataset}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 
 \item{gene_type}{String for gene type, taken as a column name of the 
-annotated datasets. Must be "v_gene", "d_gene", or "j_gene"}
+annotated datasets. Must be "v_call", "d_call", or "j_call"}
 
 \item{collapse_alleles}{Should allelic variants be ignored?}
 }
 \value{
-Mean absolute difference of gene counts between the two
-  repertoires
+l1 divergence of gene counts between the two repertoires
 }
 \description{
 Compare germline V, D, or J gene usage for two repertoires

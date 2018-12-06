@@ -4,12 +4,10 @@
 \alias{compareInFramePercentages}
 \title{Compare the percentage of in-frame sequences of two datasets}
 \usage{
-compareInFramePercentages(dat_a, dat_b)
+compareInFramePercentages(dat_a, dat_b, column = "vj_in_frame")
 }
 \arguments{
-\item{dat_a}{First dataset to compare}
-
-\item{dat_b}{Second dataset to compare}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 Absolute differences of in-frame percentages

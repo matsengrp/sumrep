@@ -2,18 +2,20 @@
 % Please edit documentation in R/SummaryStats.R
 \name{getDistancesFromNaiveToMature}
 \alias{getDistancesFromNaiveToMature}
-\title{Get distribution of Levenshtein distances from the inferred naive sequences
-to the observed mature ones, sequence by sequence}
+\title{Get the exact distribution of Levenshtein distances from the inferred 
+  naive sequences to the observed mature ones, sequence by sequence}
 \usage{
-getDistancesFromNaiveToMature(dat, v_gene_only = TRUE)
+getDistancesFromNaiveToMature(dat, v_gene_only = FALSE)
 }
 \arguments{
-\item{dat}{Annotated dataset}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{v_gene_only}{If TRUE, restrict sequences to the V gene only}
 }
 \value{
 Vector of Levenshtein distances from naive to mature
 }
 \description{
-Get distribution of Levenshtein distances from the inferred naive sequences
-to the observed mature ones, sequence by sequence
+Get the exact distribution of Levenshtein distances from the inferred 
+  naive sequences to the observed mature ones, sequence by sequence
 }

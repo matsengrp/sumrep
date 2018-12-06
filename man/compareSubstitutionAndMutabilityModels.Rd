@@ -7,9 +7,7 @@
 compareSubstitutionAndMutabilityModels(dat_a, dat_b)
 }
 \arguments{
-\item{dat_a}{First dataset}
-
-\item{dat_b}{Second dataset}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 List of two divergences: one for the substitution models and 

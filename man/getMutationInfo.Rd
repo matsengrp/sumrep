@@ -14,7 +14,7 @@ Object containing the gene's overall mutation rate as well as a
   vector of positional mutation rates
 }
 \description{
-\code{getMutationInfo} is run if \code{doFullAnnotation} is true in the 
-  \link{annotateSequences} call. This function extracts mutation information
+\code{getMutationInfo} is run if \code{getFullPartisAnnotation} is true in the 
+  \link{getPartisAnnotations} call. This function extracts mutation information
   from the given YAML file in the parameter directory output by partis.
 }

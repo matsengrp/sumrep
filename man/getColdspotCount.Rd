@@ -2,15 +2,21 @@
 % Please edit documentation in R/SummaryStats.R
 \name{getColdspotCount}
 \alias{getColdspotCount}
-\title{Get the number of occurrences of AID coldspots in a set of reference 
-  sequences}
+\title{Get the number of occurrences of AID coldspots in a column of a dataset}
 \usage{
-getColdspotCount(dat, column, coldspots)
+getColdspotCount(dat, column = "sequence", coldspots = "SYC")
+}
+\arguments{
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
+
+\item{coldspots}{Vector of coldspots of interest}
 }
 \value{
 The number of AID coldhotspot occurrences in \code{dna_sequences}
 }
 \description{
-Get the number of occurrences of AID coldspots in a set of reference 
-  sequences
+Get the number of occurrences of AID coldspots in a column of a dataset
 }

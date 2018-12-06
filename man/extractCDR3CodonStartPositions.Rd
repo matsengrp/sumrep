@@ -9,13 +9,13 @@ extractCDR3CodonStartPositions(dictionary_list)
 \arguments{
 \item{dictionary_list}{A vector of strings corresponding to a Python 
 dictionary, present in the column \code{codon_positions} of a data.table 
-returned by \code{annotateSequences}.}
+returned by \code{getPartisAnnotations}.}
 }
 \value{
 A vector of positions of the CDR3 start codons of the BCR sequences
 }
 \description{
-This is a helper function to \link{getCDR3s}.
+This is a helper function to \link{getCDR3PairwiseDistanceDistribution}.
 Note: We add one to \code{positions} because partis returns position values
   that are zero-based (an artifact) of Python, whereas R is one-based by
   default.

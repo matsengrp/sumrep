@@ -4,11 +4,15 @@
 \alias{getGCContentDistribution}
 \title{Get the GC content distribution of a list of DNA sequences}
 \usage{
-getGCContentDistribution(dat, column = "mature_seq", approximate = TRUE)
+getGCContentDistribution(dat, column = "sequence", approximate = FALSE, ...)
 }
 \arguments{
-\item{sequence_list}{List or vector of strings or character sequences
-corresponding to DNA sequences}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
+
+\item{approximate}{If TRUE, approximate distribution by subsampling.}
 }
 \value{
 A vector of GC content values

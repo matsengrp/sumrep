@@ -2,13 +2,23 @@
 % Please edit documentation in R/SummaryStats.R
 \name{getHotspotCountDistribution}
 \alias{getHotspotCountDistribution}
-\title{Get the distribution of hotspot counts of sequences in column \code{column}
-  of \code{dat}}
+\title{Get full or approximate distribution of coldspot counts for a column of
+  a given dataset}
 \usage{
-getHotspotCountDistribution(dat, column = "mature_seq", hotspots = c("WRC",
-  "WA"), approximate = TRUE)
+getHotspotCountDistribution(dat, column = "sequence", hotspots = c("WRC",
+  "WA"), approximate = FALSE, ...)
+}
+\arguments{
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
+
+\item{hotspots}{Vector of hotspots of interest}
+
+\item{approximate}{If TRUE, approximate distribution by subsampling.}
 }
 \description{
-Get the distribution of hotspot counts of sequences in column \code{column}
-  of \code{dat}
+Get full or approximate distribution of coldspot counts for a column of
+  a given dataset
 }

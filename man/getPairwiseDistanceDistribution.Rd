@@ -4,14 +4,17 @@
 \alias{getPairwiseDistanceDistribution}
 \title{Get an exact or approximate distribution of pairwise distances}
 \usage{
-getPairwiseDistanceDistribution(dat, column = "mature_seq",
+getPairwiseDistanceDistribution(dat, column = "sequence",
   approximate = TRUE, ...)
 }
 \arguments{
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
+
 \item{approximate}{if TRUE, approximate the distribution by subsampling
 and averaging}
-
-\item{sequence_list}{vector of DNA sequence strings}
 }
 \value{
 vector of integer-valued distances

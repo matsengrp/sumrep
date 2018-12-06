@@ -4,10 +4,13 @@
 \alias{getAliphaticIndexDistribution}
 \title{Get the distribution of aliphatic indices of a list of sequences}
 \usage{
-getAliphaticIndexDistribution(dat)
+getAliphaticIndexDistribution(dat, column = "junction_aa")
 }
 \arguments{
-\item{sequence_list}{List or vector of DNA sequences}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
 }
 \value{
 Vector of aliphatic indices

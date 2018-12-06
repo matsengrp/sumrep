@@ -7,7 +7,7 @@
 getDistanceVector(sequence_list)
 }
 \arguments{
-\item{sequence_list}{List of DNA sequence strings}
+\item{sequence_list}{vector of sequence strings (DNA, AA, etc.)}
 }
 \value{
 Vector of pairwise distances

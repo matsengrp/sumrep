@@ -7,7 +7,7 @@
 getSubstitutionModel(dat)
 }
 \arguments{
-\item{dat}{Annotated dataset}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 The default shazam substitution model

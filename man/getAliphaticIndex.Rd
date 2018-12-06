@@ -7,7 +7,7 @@
 getAliphaticIndex(aa_sequence)
 }
 \arguments{
-\item{dna_sequence}{String of DNA characters}
+\item{aa_sequence}{An amino acid sequence string}
 }
 \value{
 The aliphatic index of \code{dna_sequence}, if applicable

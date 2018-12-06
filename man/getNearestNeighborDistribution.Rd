@@ -4,10 +4,15 @@
 \alias{getNearestNeighborDistribution}
 \title{Get exact or approximate nearest neighbor distribution}
 \usage{
-getNearestNeighborDistribution(dat, column = "mature_seq", k = 1,
+getNearestNeighborDistribution(dat, column = "sequence", k = 1,
   approximate = TRUE, ...)
 }
 \arguments{
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
+
 \item{k}{The separation depth for the nearest neighbor distances.
 k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 the second-nearest neighbor, etc.}
@@ -15,8 +20,6 @@ the second-nearest neighbor, etc.}
 \item{approximate}{If TRUE, approximate distribution by subsampling.
 Note: this inhibits interpretability since any subsample will have a 
 different definition of a "nearest neighbor"}
-
-\item{sequence_list}{vector of DNA sequence strings}
 }
 \value{
 vector of integer-value distances

@@ -9,9 +9,7 @@ only one diversity_order value}
 compareHillNumbers(dat_a, dat_b, diversity_orders = c(0, 1, 2))
 }
 \arguments{
-\item{dat_a}{First dataset to compare}
-
-\item{dat_b}{Second dataset to compare}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 
 \item{diversity_orders}{Scalar- or vector-valued list of parameters to the
 Hill diversity index. Can be any real value although nonnegative values are

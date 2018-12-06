@@ -4,10 +4,10 @@
 \alias{getAtchleyFactorList}
 \title{Get the mean Atchley factor of an amino acid sequence}
 \usage{
-getAtchleyFactorList(aa_seq, factor_number)
+getAtchleyFactorList(aa_sequence, factor_number)
 }
 \arguments{
-\item{aa_seq}{String of an amino acid sequence}
+\item{aa_sequence}{An amino acid sequence string}
 
 \item{factor_number}{The Atchley factor to be applied to \code{aa_seq}. 
 Must be 1, 2, 3, 4, or 5.}

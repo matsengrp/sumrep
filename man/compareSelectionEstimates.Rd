@@ -7,9 +7,7 @@
 compareSelectionEstimates(dat_a, dat_b)
 }
 \arguments{
-\item{dat_a}{First dataset}
-
-\item{dat_b}{Second datset}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 The estimated JS divergence of selection strength distributions

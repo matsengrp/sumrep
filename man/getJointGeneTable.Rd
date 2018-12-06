@@ -4,10 +4,12 @@
 \alias{getJointGeneTable}
 \title{Get table of combined V, D, and J usage frequencies}
 \usage{
-getJointGeneTable(dat, collapseAlleles)
+getJointGeneTable(dat, collapse_alleles)
 }
 \arguments{
-\item{dat}{Annotated dataset}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{collapse_alleles}{Should allelic variants be ignored?}
 }
 \value{
 A table of joint gene IDs and usage counts

@@ -7,7 +7,7 @@
 getInsertionMatrix(dat, column)
 }
 \arguments{
-\item{dat}{Data.table with inferred insertion sequences}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
 
 \item{column}{The name of the column corresponding to the inserted sequences}
 }

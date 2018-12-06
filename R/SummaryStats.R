@@ -654,7 +654,7 @@ getDistancesFromNaiveToMature <- function(dat,
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param approximate If TRUE, approximate distribution by subsampling.
-#' @param v_gene_only
+#' @param v_gene_only If TRUE, restrict sequences to the V gene only
 #' @return Vector of Levenshtein distances from naive to mature
 getDistanceFromNaiveToMatureDistribution <- function(dat,
                                                      approximate=FALSE,
@@ -1148,7 +1148,7 @@ compareGRAVYDistributions <- function(dat_a, dat_b) {
 }
 
 #' Get a particular distribution of amino acid properties using the
-#'   \ocde{alakazam::aminoAcidProperties} function
+#'   \code{alakazam::aminoAcidProperties} function
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param column the column name of \code{dat} containing the strings on which
@@ -1169,12 +1169,12 @@ getAminoAcidProperties <- function(dat,
                                suffix,
                                sep="_"
                               )
-    print(properties_column)
-    print(is(properties))
 
     return(properties[[properties_column]])
 }
 
+#' Get a vector of polarity values for a set of an amino acid sequences
+#'
 #' @inheritParams getAminoAcidProperties
 getPolarityDistribution <- function(dat,
                                     column="junction_aa"
@@ -1186,6 +1186,8 @@ getPolarityDistribution <- function(dat,
     return(polarities)
 }
 
+#' Compare the polarity distributions of two datasets
+#'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 comparePolarityDistributions <- function(dat_a,
                                          dat_b
@@ -1214,6 +1216,8 @@ plotPolarityDistribution <- function(dat_list,
     return(p)
 }
 
+#' Get a vector of charge values for a set of an amino acid sequences
+#'
 #' @inheritParams getAminoAcidProperties
 getChargeDistribution <- function(dat,
                                   column="junction_aa"
@@ -1225,6 +1229,8 @@ getChargeDistribution <- function(dat,
     return(charges)
 }
 
+#' Compare the charge distributions of two datasets
+#'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareChargeDistributions <- function(dat_a,
                                        dat_b
@@ -1253,6 +1259,8 @@ plotChargeDistribution <- function(dat_list,
     return(p)
 }
 
+#' Get a vector of basicity values for a set of an amino acid sequences
+#'
 #' @inheritParams getAminoAcidProperties
 getBasicityDistribution <- function(dat,
                                     column="junction_aa"
@@ -1265,6 +1273,8 @@ getBasicityDistribution <- function(dat,
     return(basicities)
 }
 
+#' Compare the basicity distributions of two datasets
+#'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareBasicityDistributions <- function(dat_a,
                                          dat_b
@@ -1293,6 +1303,8 @@ plotBasicityDistribution <- function(dat_list,
     return(p)
 }
 
+#' Get a vector of acidity values for a set of an amino acid sequences
+#'
 #' @inheritParams getAminoAcidProperties
 getAcidityDistribution <- function(dat,
                                    column="junction_aa"
@@ -1304,6 +1316,8 @@ getAcidityDistribution <- function(dat,
     return(acidities)
 }
 
+#' Compare the acidity distributions of two datasets
+#'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareAcidityDistributions <- function(dat_a,
                                          dat_b
@@ -1332,6 +1346,8 @@ plotAcidityDistribution <- function(dat_list,
     return(p)
 }
 
+#' Get a vector of aromaticity values for a set of an amino acid sequences
+#'
 #' @inheritParams getAminoAcidProperties
 getAromaticityDistribution <- function(dat,
                                        column="junction_aa"
@@ -1344,6 +1360,8 @@ getAromaticityDistribution <- function(dat,
     return(aromaticities)
 }
 
+#' Compare the aromaticity distributions of two datasets
+#'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareAromaticityDistributions <- function(dat_a,
                                          dat_b
@@ -1372,6 +1390,8 @@ plotAromaticityDistribution <- function(dat_list,
     return(p)
 }
 
+#' Get a vector of bulkiness values for a set of an amino acid sequences
+#'
 #' @inheritParams getAminoAcidProperties
 getBulkinessDistribution <- function(dat,
                                      column="junction_aa"
@@ -1383,6 +1403,8 @@ getBulkinessDistribution <- function(dat,
     return(bulkinesses)
 }
 
+#' Compare the bulkiness distributions of two datasets
+#'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 compareBulkinessDistributions <- function(dat_a,
                                          dat_b
@@ -1555,7 +1577,10 @@ plotPositionalDistanceBetweenMutationsDistribution <- function(dat_list,
     return(p)
 }
 
-
+#' Compare the positional distance between mutations distributions of two
+#'   datasets
+#'
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 comparePositionalDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
     dists_a <- getPositionalDistanceBetweenMutationsDistribution(dat_a)
     dists_b <- getPositionalDistanceBetweenMutationsDistribution(dat_b)
@@ -1563,6 +1588,13 @@ comparePositionalDistanceBetweenMutationsDistributions <- function(dat_a, dat_b)
     return(divergence)
 }
 
+#' Get mutation rates of each gene from a \code{mutation_rates} object.
+#'   This object is inferred from some XCR repertoire and should be an element 
+#'   of a \code{list}, e.g. as returned by \code{getPartisAnnotations}.
+#'
+#' @param rate_dat A \code{mutation_rates} object containing, e.g. as obtained
+#'   in \code{getPartisAnnotations}
+#' return A named vector of mutation rates for each gene
 getPerGeneMutationRates <- function(rate_dat) {
     rates <- rate_dat %>% 
         sapply( function(gene) { 
@@ -1572,10 +1604,16 @@ getPerGeneMutationRates <- function(rate_dat) {
     return(rates)
 }
 
-comparePerGeneMutationRates <- function(dat_a, dat_b) {
-    rates_a <- dat_a %>% 
+#' Compare per gene mutation rates of two datasets
+#'
+#' @param rate_dat_a,rate_dat_b A \code{mutation_rates} object
+#' @return l1 divergence of per gene mutation rates
+comparePerGeneMutationRates <- function(rate_dat_a, 
+                                        rate_dat_b
+                                       ) {
+    rates_a <- rate_dat_a %>% 
         getPerGeneMutationRates
-    rates_b <- dat_b %>% 
+    rates_b <- rate_dat_b %>% 
         getPerGeneMutationRates
     common_genes <- intersect(rates_a %>% names, 
                               rates_b %>% names)
@@ -1587,10 +1625,14 @@ comparePerGeneMutationRates <- function(dat_a, dat_b) {
         unname
     divergence <- (rates_a_common - rates_b_common) %>% 
         abs %>% 
-        mean
-    return(divergence/length(common_genes)) 
+        sum
+    return(divergence) 
 }
 
+#' Get mutation rates by position of each gene from a \code{mutation_rates}
+#'   object.
+#'
+#' @inheritParams getPerGeneMutationRates
 getPerGenePerPositionMutationRates <- function(rate_dat) {
     rates <- rate_dat %>% 
         sapply( function(gene) {
@@ -1600,10 +1642,15 @@ getPerGenePerPositionMutationRates <- function(rate_dat) {
     return(rates)
 }
 
-comparePerGenePerPositionMutationRates <- function(dat_a, dat_b) {
-    rates_a <- dat_a %>% 
+#' Compare per gene per position mutation rates of two datasets
+#'
+#' @inheritParams comparePerGeneMutationRates
+comparePerGenePerPositionMutationRates <- function(rate_dat_a, 
+                                                   rate_dat_b
+                                                  ) {
+    rates_a <- rate_dat_a %>% 
         getPerGenePerPositionMutationRates
-    rates_b <- dat_b %>% 
+    rates_b <- rate_dat_b %>% 
         getPerGenePerPositionMutationRates
     common_genes <- intersect(rates_a %>% names, 
                               rates_b %>% names)
@@ -1700,8 +1747,12 @@ compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
     return(divergences)
 }
 
-#' @param column the column name of \code{dat} containing the strings on which
-#'   the distribution should be computed
+#' Get the requested deletion lengths of a dataset
+#'
+#' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the desired deletion
+#'   lengths.
+#' @return Vector of deletion lengths
 getDeletionLengths <- function(dat, column) {
     lengths <- dat %>% 
         dplyr::select_(column) %>% 
@@ -1709,14 +1760,18 @@ getDeletionLengths <- function(dat, column) {
     return(lengths)
 }
 
-getVGene3PrimeDeletionLengths <- function(dat) {
+#' Get the distribution of V gene 3' deletion lengths of a dataset
+#'
+#' @inheritParams getDeletionLengths
+#' @return Distribution of V gene 3' deletion lengths
+getVGene3PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "v_3p_del"))
 }
 
 #' Plot the V gene 3' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotVGene3PrimeDeletionLengths <- function(dat_list,
+plotVGene3PrimeDeletionLengthDistribution <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
                                           ) { 
@@ -1729,14 +1784,18 @@ plotVGene3PrimeDeletionLengths <- function(dat_list,
     return(p)
 }
 
-getVGene5PrimeDeletionLengths <- function(dat) {
+#' Get the distribution of V gene 5' deletion lengths of a dataset
+#'
+#' @inheritParams getDeletionLengths
+#' @return Distribution of V gene 5' deletion lengths
+getVGene5PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "v_5p_del"))
 }
 
 #' Plot the V gene 5' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotVGene5PrimeDeletionLengths <- function(dat_list,
+plotVGene5PrimeDeletionLengthDistribution <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
                                           ) { 
@@ -1749,14 +1808,18 @@ plotVGene5PrimeDeletionLengths <- function(dat_list,
     return(p)
 }
 
-getDGene3PrimeDeletionLengths <- function(dat) {
+#' Get the distribution of D gene 3' deletion lengths of a dataset
+#'
+#' @inheritParams getDeletionLengths
+#' @return Distribution of D gene 3' deletion lengths
+getDGene3PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "d_3p_del"))
 }
 
 #' Plot the D gene 3' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotDGene3PrimeDeletionLengths <- function(dat_list,
+plotDGene3PrimeDeletionLengthDistribution <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
                                           ) { 
@@ -1769,14 +1832,18 @@ plotDGene3PrimeDeletionLengths <- function(dat_list,
     return(p)
 }
 
-getDGene5PrimeDeletionLengths <- function(dat) {
+#' Get the distribution of D gene 5' deletion lengths of a dataset
+#'
+#' @inheritParams getDeletionLengths
+#' @return Distribution of D gene 5' deletion lengths
+getDGene5PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "d_5p_del"))
 }
 
 #' Plot the D gene 5' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotDGene5PrimeDeletionLengths <- function(dat_list,
+plotDGene5PrimeDeletionLengthDistribution <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
                                           ) { 
@@ -1789,19 +1856,23 @@ plotDGene5PrimeDeletionLengths <- function(dat_list,
     return(p)
 }
 
-getJGene3PrimeDeletionLengths <- function(dat) {
+#' Get the distribution of J gene 3' deletion lengths of a dataset
+#'
+#' @inheritParams getDeletionLengths
+#' @return Distribution of J gene 3' deletion lengths
+getJGene3PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "j_3p_del"))
 }
 
 #' Plot the J gene 3' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotJGene3PrimeDeletionLengths <- function(dat_list,
+plotJGene3PrimeDeletionLengthDistribution <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
-                          getJGene3PrimeDeletionLengths,
+                          getJGene3PrimeDeletionLengthDistribution,
                           do_exact=do_exact,
                           x_label="J gene 3' deletion length",
                           names=names
@@ -1809,19 +1880,23 @@ plotJGene3PrimeDeletionLengths <- function(dat_list,
     return(p)
 }
 
-getJGene5PrimeDeletionLengths <- function(dat) {
+#' Get the distribution of J gene 5' deletion lengths of a dataset
+#'
+#' @inheritParams getDeletionLengths
+#' @return Distribution of J gene 5' deletion lengths
+getJGene5PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "j_5p_del"))
 }
 
 #' Plot the J gene 5' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotJGene5PrimeDeletionLengths <- function(dat_list,
+plotJGene5PrimeDeletionLengthDistribution <- function(dat_list,
                                            do_exact=FALSE,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
-                          getJGene5PrimeDeletionLengths,
+                          getJGene5PrimeDeletionLengthDistribution,
                           do_exact=do_exact,
                           x_label="J gene 5' deletion length",
                           names=names
@@ -1847,22 +1922,36 @@ compareDeletionLengths <- function(dat_a, dat_b, gene, end) {
     return(divergence)
 }
 
+#' Compare the V gene 3' deletion length distributions of two datasets
+#'
+#' @inheritParams compareDeletionLengths
 compareVGene3PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "VGene", "3Prime"))
 }
 
+#' Compare the D gene 3' deletion length distributions of two datasets
+#'
+#' @inheritParams compareDeletionLengths
 compareDGene3PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "DGene", "3Prime"))
 }
 
+#' Compare the D gene 5' deletion length distributions of two datasets
+#'
+#' @inheritParams compareDeletionLengths
 compareDGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "DGene", "5Prime"))
 }
 
+#' Compare the J gene 5' deletion length distributions of two datasets
+#'
+#' @inheritParams compareDeletionLengths
 compareJGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "JGene", "5Prime"))
 }
 
+#' Get the insertion lengths corresponding to a column of a given datset
+#'
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
 getInsertionLengths <- function(dat, column) {
@@ -1875,6 +1964,8 @@ getInsertionLengths <- function(dat, column) {
     return(lengths)
 }
 
+#' Get the distribution of VD insertion lengths of a dataset
+#'
 #' @inheritParams getInsertionLengths
 getVDInsertionLengthDistribution <- function(dat) {
     return(getInsertionLengths(dat, "vd_insertion"))
@@ -1897,7 +1988,7 @@ plotVDInsertionLengthDistribution <- function(dat_list,
 }
 
 
-#' Plot the DJ insertion length distribution of one or more datasets
+#' Get the distribution of DJ insertion lengths of a dataset
 #'
 #' @inheritParams plotDistribution
 getDJInsertionLengthDistribution <- function(dat) {
@@ -2343,7 +2434,10 @@ getUnivariateDistributionPlots <- function(dat_list,
     return(plots)
 }
 
-#' @inheritParams plotDistributions
+#' Generate a gridded plot of each univariate distribution corresponding to
+#'   one or more annotations datasets
+#'
+#' @inheritParams plotDistribution
 #' @param names Strings to be displayed by the legend corresponding to the 
 #'   elements of \code{dat_list}
 plotUnivariateDistributions <- function(dat_list,

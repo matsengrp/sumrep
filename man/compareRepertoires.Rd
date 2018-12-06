@@ -4,15 +4,19 @@
 \alias{compareRepertoires}
 \title{Run through a full repertoire comparison}
 \usage{
-compareRepertoires(repertoire_1, repertoire_2, rep_1_bootstrap)
+compareRepertoires(repertoire_1, repertoire_2, rep_1_bootstrap = NULL,
+  receptor_type)
 }
 \arguments{
-\item{repertoire_1}{First repertoire}
-
-\item{repertoire_2}{Second repertoire}
+\item{repertoire_1, repertoire_2}{List including a \code{data.table} named
+\code{annotations} and optionally a list called \code{mutation_rates}}
 
 \item{rep_1_bootstrap}{Annotated repertoire based on bootstrapping the DNA
 sequences from the first repertoire}
+
+\item{receptor_type}{A string denoting the type of immune receptor to which
+\code{repertoire_1} and \code{repertoire_2} correspond.
+Either "BCR" or "TCR".}
 }
 \description{
 \code{compareRepertoires} iterates through the various comparison functions

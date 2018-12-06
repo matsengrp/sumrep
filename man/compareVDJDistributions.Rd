@@ -4,16 +4,17 @@
 \alias{compareVDJDistributions}
 \title{Compare joint V, D, and J gene usage between two annotated repertoires}
 \usage{
-compareVDJDistributions(dat_a, dat_b, collapseAlleles = TRUE)
+compareVDJDistributions(dat_a, dat_b, collapse_alleles = TRUE)
 }
 \arguments{
-\item{dat_a}{First annotated dataset}
+\item{dat_a}{A \code{data.table} corresponding to repertoire annotations}
 
-\item{dat_b}{Second annotated dataset}
+\item{dat_b}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{collapse_alleles}{Should allelic variants be ignored?}
 }
 \value{
-Mean absolute difference between joint gene usage, over all
-  observed genes between the two repertoires
+l1 divergence of counts of VDJ triples between the two repertoires
 }
 \description{
 Compare joint V, D, and J gene usage between two annotated repertoires

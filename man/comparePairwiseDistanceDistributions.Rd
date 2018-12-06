@@ -4,20 +4,16 @@
 \alias{comparePairwiseDistanceDistributions}
 \title{Compare pairwise distance distributions of two lists of sequences}
 \usage{
-comparePairwiseDistanceDistributions(dat_a, dat_b, column = "mature_seq",
-  do_automatic = TRUE, approximate = TRUE, subsample_count = 100,
-  trial_count = 10)
+comparePairwiseDistanceDistributions(dat_a, dat_b, column = "sequence",
+  approximate = TRUE)
 }
 \arguments{
-\item{dat_a}{First dataset, containing mature sequences}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 
-\item{dat_b}{Second dataset, containing mature sequences}
-
-\item{do_automatic}{If TRUE, approximate divergence using subsampling}
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
 
 \item{approximate}{If TRUE, uses approximate pairwise distance distributions}
-
-\item{subsample_count}{Number of samples to extract on each trial}
 }
 \value{
 Estimated JS divergence of the distributions inferred from list_a

@@ -7,7 +7,7 @@
 getSelectionEstimate(dat)
 }
 \arguments{
-\item{dat}{Annotated dataset}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 Distribution of baseline values, which are measures of selection 

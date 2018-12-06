@@ -4,9 +4,10 @@
 \alias{getIgBlastAnnotations}
 \title{Get IgBLAST annotations from an input fasta file}
 \usage{
-getIgBlastAnnotations(input_filename, output_filename = "igblast_out",
-  locus = "igh", organism = "human", domain_system = "imgt",
-  ig_seqtype = "Ig", num_threads = 8, igblast_dir, changeo_dir)
+getIgBlastAnnotations(input_filename, output_filename = "igblast_out.tsv",
+  locus = "IGH", organism = "human", domain_system = "imgt",
+  loci = "ig", num_threads = 8, igblast_dir, changeo_dir,
+  airr_format = TRUE)
 }
 \arguments{
 \item{input_filename}{The path to the input fasta file}

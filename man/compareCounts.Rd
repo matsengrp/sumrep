@@ -4,23 +4,17 @@
 \alias{compareCounts}
 \title{Compare hot or coldspot count distributions of two sets of mature BCR sequences}
 \usage{
-compareCounts(dat_a, dat_b, count_function, subsample_count, trial_count)
+compareCounts(dat_a, dat_b, count_function, ...)
 }
 \arguments{
-\item{dat_a}{First dataset}
-
-\item{dat_b}{Second dataset}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 
 \item{count_function}{The comparison function corresponding to hotspot or 
 coldspot counts. Must be either getHotspotCount or getColdspotCount}
-
-\item{subsample_count}{Number of subsamples for averaging}
-
-\item{trial_count}{Number of subsample trials}
 }
 \value{
 The average JS divergence of the count distributions inferred from
-  \code{dat_a$mature_seq} and \code{dat_b$mature_seq}, respectively
+  \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 }
 \description{
 Compare hot or coldspot count distributions of two sets of mature BCR sequences

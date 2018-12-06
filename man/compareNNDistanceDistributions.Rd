@@ -8,19 +8,18 @@
   the kth nearest neighbor distance distribution of two lists of
   DNA sequences}
 \usage{
-compareNNDistanceDistributions(dat_a, dat_b, column = "mature_seq", k = 1,
-  subsample_count = 100, trial_count = 10)
+compareNNDistanceDistributions(dat_a, dat_b, column = "sequence", k = 1,
+  approximate = TRUE)
 }
 \arguments{
-\item{dat_a}{First dataset, containing mature sequences}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 
-\item{dat_b}{Second dataset, containing mature sequences}
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
 
 \item{k}{The separation depth for the nearest neighbor distances.
 k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 the second-nearest neighbor, etc.}
-
-\item{subsample_count}{Number of samples to extract on each trial}
 }
 \value{
 Estimated JS divergence of the distributions inferred from list_a

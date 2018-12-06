@@ -2,26 +2,34 @@
 % Please edit documentation in R/PartisFunctions.R
 \name{getPartisAnnotations}
 \alias{getPartisAnnotations}
-\title{Get partis annotations from the partis output directory.
-This function does NOT run partis from R.}
+\title{Perform sequence annotation with partis.
+This function does call partis.}
 \usage{
-getPartisAnnotations(output_path, output_filename,
-  partis_path = Sys.getenv("PARTIS_PATH"), do_full_annotation = FALSE,
-  collapse_clones = TRUE)
+getPartisAnnotations(input_filename, output_filename = "partis_output.csv",
+  partis_path = Sys.getenv("PARTIS_PATH"), num_procs = 16,
+  partition = TRUE, collapse_clones = TRUE, cleanup = TRUE,
+  do_full_annotation = FALSE, output_path = "_output", run_partis = TRUE,
+  germline_dir = NULL, extra_columns = "v_gl_seq:v_qr_seqs:cdr3_seqs")
 }
 \arguments{
-\item{output_filename}{The --infname argument to partis}
+\item{input_filename}{The input (fasta) file, i.e. --infname argument}
 
-\item{partis_path}{The path to the partis binary}
+\item{output_filename}{Desired output (csv) filename, i.e. --outfname 
+argument}
 
-\item{do_full_annotation}{Does further processing than the default by partis}
+\item{partis_path}{The full path to the partis executable}
 
-\item{collapse_clones}{Convert a row of colon-separated clonal families to
-separate rows for each member}
+\item{num_procs}{The number of processors to use in parallel}
 
-\item{filepath}{The output directory from the partis call}
+\item{cleanup}{Flag to delete all interim files created by partis}
+
+\item{output_path}{Desired output directory, which will contain 
+\code{output_filename}}
+}
+\value{
+A data.table object containing the output of the partis annotate call
 }
 \description{
-Get partis annotations from the partis output directory.
-This function does NOT run partis from R.
+Perform sequence annotation with partis.
+This function does call partis.
 }

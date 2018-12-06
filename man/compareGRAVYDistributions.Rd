@@ -7,9 +7,7 @@
 compareGRAVYDistributions(dat_a, dat_b)
 }
 \arguments{
-\item{dat_a}{First dataset, a data.table or data.frame object}
-
-\item{dat_b}{Second dataset, a data.table or data.frame object}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 The JS divergence of GRAVY distributions

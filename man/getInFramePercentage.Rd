@@ -6,10 +6,10 @@
   and SHM, have the start of the CDR3 in line with the start of the germline 
   V sequence}
 \usage{
-getInFramePercentage(dat)
+getInFramePercentage(dat, column = "vj_in_frame")
 }
 \arguments{
-\item{dat}{Annotated dataset}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 The percentage of in-frame sequences in \code{dat}

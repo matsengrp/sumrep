@@ -4,12 +4,10 @@
 \alias{compareAliphaticIndexDistributions}
 \title{Compare the distributions of aliphatic indices of two datasets}
 \usage{
-compareAliphaticIndexDistributions(dat_a, dat_b)
+compareAliphaticIndexDistributions(dat_a, dat_b, ...)
 }
 \arguments{
-\item{dat_a}{First dataset, a data.table or data.frame}
-
-\item{dat_b}{Second datset, a data.table or data.frame}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 The JS divergence of the two distributions

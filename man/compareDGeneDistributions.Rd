@@ -4,16 +4,17 @@
 \alias{compareDGeneDistributions}
 \title{Compare D gene distribution between two repertoires}
 \usage{
-compareDGeneDistributions(dat_a, dat_b)
+compareDGeneDistributions(dat_a, dat_b, collapse_alleles = TRUE)
 }
 \arguments{
-\item{dat_a}{First annotated dataset}
+\item{dat_a}{A \code{data.table} corresponding to repertoire annotations}
 
-\item{dat_b}{Second annotated dataset}
+\item{dat_b}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{collapse_alleles}{Should allelic variants be ignored?}
 }
 \value{
-Mean absolute difference of D gene counts between the two
-  repertoires
+l1 divergence of D gene counts between the two repertoires
 }
 \description{
 Compare D gene distribution between two repertoires

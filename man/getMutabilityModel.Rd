@@ -4,10 +4,10 @@
 \alias{getMutabilityModel}
 \title{Get the inferred mutability model of a repetoire}
 \usage{
-getMutabilityModel(dat, substitution_model)
+getMutabilityModel(dat, substitution_model = getSubstitutionModel(dat))
 }
 \arguments{
-\item{dat}{Annotated dataset}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
 
 \item{substitution_model}{The inferred substitution model, which can be
 obtained via \code{getSubstitutionModel}}

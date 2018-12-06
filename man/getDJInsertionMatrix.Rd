@@ -7,7 +7,7 @@
 getDJInsertionMatrix(dat)
 }
 \arguments{
-\item{dat}{Data.table with inferred insertion sequences}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 The empirical transition matrix for each (base, base) pair.

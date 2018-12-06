@@ -2,15 +2,21 @@
 % Please edit documentation in R/SummaryStats.R
 \name{getHotspotCount}
 \alias{getHotspotCount}
-\title{Get the number of occurrences of AID hotspots in a set of reference 
-  sequences}
+\title{Get the number of occurrences of AID hotspots in a column of a dataset}
 \usage{
-getHotspotCount(dat, column, hotspots)
+getHotspotCount(dat, column = "sequence", hotspots = c("WRC", "WA"))
+}
+\arguments{
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
+
+\item{hotspots}{Vector of hotspots of interest}
 }
 \value{
 The number of AID hotspot occurrences in \code{dna_sequences}
 }
 \description{
-Get the number of occurrences of AID hotspots in a set of reference 
-  sequences
+Get the number of occurrences of AID hotspots in a column of a dataset
 }

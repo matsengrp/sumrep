@@ -4,10 +4,13 @@
 \alias{getGRAVYDistribution}
 \title{Get the distribution of GRAVY values from a list or vector of sequences}
 \usage{
-getGRAVYDistribution(dat)
+getGRAVYDistribution(dat, column = "junction_aa")
 }
 \arguments{
-\item{List}{or vector of DNA sequence strings}
+\item{dat}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{column}{the column name of \code{dat} containing the strings on which
+the distribution should be computed}
 }
 \value{
 Vector of GRAVY values for \code{sequence_list}

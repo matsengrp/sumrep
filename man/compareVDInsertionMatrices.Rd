@@ -7,9 +7,7 @@
 compareVDInsertionMatrices(dat_a, dat_b)
 }
 \arguments{
-\item{dat_a}{First data.table with insertion annotations}
-
-\item{dat_b}{First data.table with insertion annotations}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 }
 \value{
 The mean absolute difference of matrix entries, taken elementwise

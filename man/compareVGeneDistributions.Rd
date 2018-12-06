@@ -4,16 +4,17 @@
 \alias{compareVGeneDistributions}
 \title{Compare V gene distribution between two repertoires}
 \usage{
-compareVGeneDistributions(dat_a, dat_b)
+compareVGeneDistributions(dat_a, dat_b, collapse_alleles = TRUE)
 }
 \arguments{
-\item{dat_a}{First annotated dataset}
+\item{dat_a}{A \code{data.table} corresponding to repertoire annotations}
 
-\item{dat_b}{Second annotated dataset}
+\item{dat_b}{A \code{data.table} corresponding to repertoire annotations}
+
+\item{collapse_alleles}{Should allelic variants be ignored?}
 }
 \value{
-Mean absolute difference of V gene counts between the two
-  repertoires
+l1 divergence of V gene counts between the two repertoires
 }
 \description{
 Compare V gene distribution between two repertoires
