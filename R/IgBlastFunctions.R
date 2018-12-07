@@ -1,4 +1,5 @@
 require(data.table)
+require(dplyr)
 require(shazam)
 
 #' Get IgBLAST annotations from an input fasta file
@@ -10,22 +11,33 @@ require(shazam)
 #'   TODO: Delete interim files, try-catch the success of changeo
 #'
 #' @param input_filename The path to the input fasta file
-#' @param output_filename The desired output filename WITHOUT an extension
-#' @param locus The locus from which the sequences are derived
+#' @param output_filename The desired output filename (should be a tsv file)
 #' @param organism The organism/species to which the sequences belong
-#' @param domain_system (input to IgBLAST)
-#' @param ig_seqtype (input to IgBLAST
+#' @param domain_system (input to IgBLAST -- alter with caution)
+#' @param receptor_type String denoting the type of receptors given in 
+#'   \code{input_filename}. Either "BCR" or "TCR".
+#' @param igblast_dir Path to parent directory of the igblast bin folder.
+#' @param changeo_dir The path of the changeo bin folder.
+#' @param cleanup If TRUE, remove all interim files created
 getIgBlastAnnotations <- function(input_filename,
                                   output_filename="igblast_out.tsv",
-                                  locus="IGH",
                                   organism="human",
                                   domain_system="imgt",
-                                  loci="ig",
+                                  receptor_type,
                                   num_threads=8,
                                   igblast_dir,
                                   changeo_dir,
-                                  airr_format=TRUE
+                                  cleanup=TRUE
                                  ) {
+    if(receptor_type %>% missing) {
+        stop("receptor_type argument must be specified.")
+    }
+    if(igblast_dir %>% missing) {
+        stop("igblast_dir argument must be specified.")
+    }
+    if(changeo_dir %>% missing) {
+        stop("changeo_dir argument must be specified.")
+    }
 
     input_filename <- input_filename %>% 
         normalizePath
@@ -39,156 +51,111 @@ getIgBlastAnnotations <- function(input_filename,
     tryCatch({
         igblast_dir %>% setwd
         igblast_exec <- file.path(igblast_bin_dir, "igblastn")
-        arguments <- igblast_exec
-        regions <- c("V", "D", "J")
-        for(region in regions) {
-            arguments <- c(arguments, 
-                         paste0("-germline_db_", region),
-                         file.path(
-                                   locus, 
-                                   paste0(locus,
-                                       region %>% tolower,
-                                       "-unaligned.fasta")
-                                   )
-                         )
-        }
-
         full_output_filename <- file.path(initial_wd,
                                           output_filename
                                          )
 
-        arguments <- c(arguments,
-                       "-auxiliary_data",
-                       file.path(
-                                 "optional_file",
-                                 paste(organism, 
-                                       "gl.aux", 
-                                       sep="_")
-                                 ),
-                       "-domain_system",
-                       domain_system,
-                       "-ig_seqtype",
-                       loci,
-                       "-organism",
-                       organism,
-                       "-outfmt",
-                       ifelse(airr_format, 
-                              19, # AIRR tab-delimited file
-                              "'7 std qseq sseq btop'" # blast-style tabular output
-                              ),
-                       "-query",
-                       # Give absolute path for 
-                       # input file, since we have changed directories
-                       input_filename %>% normalizePath, 
-                       "-out",
-                       full_output_filename,
-                       "-num_threads",
-                       num_threads
-                       )
+        loci_hash <- list(BCR="ig",
+                          TCR="tr"
+                         )
         
-        command <- arguments %>%
-            paste(collapse=' ')
-
-        command <- paste(file.path(changeo_dir,
-                                   "AssignGenes.py"),
-                         "igblast",
-                         "-s",
-                         input_filename %>% normalizePath,
-                         "-b",
-                         igblast_dir,
-                         "--organism",
-                         organism,
-                         "--loci",
-                         loci,
-                         "--format",
-                         "airr",
-                         "--exec",
-                         igblast_exec,
-                         "-o",
-                         full_output_filename,
-                         sep=" "
-                        )
+        igblast_command <- paste(file.path(changeo_dir,
+                                           "AssignGenes.py"),
+                                 "igblast",
+                                 "-s",
+                                 input_filename %>% normalizePath,
+                                 "-b",
+                                 igblast_dir,
+                                 "--organism",
+                                 organism,
+                                 "--loci",
+                                 loci_hash[[receptor_type]],
+                                 "--format",
+                                 "airr",
+                                 "--exec",
+                                 igblast_exec,
+                                 "-o",
+                                 full_output_filename,
+                                 sep=" "
+                                )
 
 
 
-        cat("\n", command, "\n")
-        command %>% system
-
-         germline_sequences <- regions %>%
-                                   sapply(function(x) {
-                                              file.path(
-                                                     igblast_dir,
-                                                     "germlines/imgt",
-                                                     organism,
-                                                     "vdj",
-                                                     paste0(
-                                                         paste(
-                                                           "imgt",
-                                                           organism,
-                                                           paste0(locus, x),
-                                                           sep='_'),
-                                                         '.fasta')
-                                                     )
-                                       }
-                                   ) %>%
-                                   paste(collapse=' ')
+        cat("\n", igblast_command, "\n")
+        igblast_command %>% system
 
         changeo_filename <- full_output_filename
 
-        annotations_without_naive <- changeo_filename %>%
+        annotations <- changeo_filename %>%
             data.table::fread(stringsAsFactors=TRUE)
 
-        # Need to do clustering with some help from shazam and changeo
-        #   before getting naive sequences
-        try({
-        cluster_threshold <- annotations_without_naive %>%
-            shazam::distToNearest(sequenceColumn="junction",
-                                  vCallColumn="v_call",
-                                  jCallColumn="j_call"
-                                 ) %$%
-            DIST_NEAREST %>%
-            shazam::findThreshold() %>%
-            slot(name="threshold")
-        })
-        if(!exists("cluster_threshold")) {
-            cluster_threshold <- 0.5
+        if(receptor_type == "BCR") {
+            try({
+                cluster_threshold <- annotations %>%
+                    shazam::distToNearest(sequenceColumn="junction",
+                                          vCallColumn="v_call",
+                                          jCallColumn="j_call"
+                                         ) %$%
+                    DIST_NEAREST %>%
+                    shazam::findThreshold() %>%
+                    slot(name="threshold")
+            })
+            if(!exists("cluster_threshold")) {
+                cluster_threshold <- 0.5
+            }
+
+            cluster_filename <-  file.path(
+                                          gsub(changeo_filename,
+                                          pattern=".tsv",
+                                          replace="_clustered.tsv"
+                                         )
+                                 )
+            cluster_command <- paste(file.path(changeo_dir,
+                                               "DefineClones.py"),
+                                     "-d",
+                                     changeo_filename,
+                                     "--act",
+                                     "set",
+                                     "--model",
+                                     "ham",
+                                     "--sym",
+                                     "min",
+                                     "--norm",
+                                     "len",
+                                     "--dist",
+                                     cluster_threshold,
+                                     "-o",
+                                     cluster_filename
+                                    )
+
+            cluster_command %>% system
+
+            annotations <- cluster_filename %>%
+                data.table::fread() 
+
+            names(annotations) <- names(annotations) %>%
+                sapply(tolower)
+
+            names(annotations)[which(names(annotations) == "clone")] <- 
+                "clone_id"
         }
-
-        cluster_filename <-  file.path(
-                                      gsub(changeo_filename,
-                                      pattern=".tsv",
-                                      replace="_clustered.tsv"
-                                     )
-                                      )
-        cluster_command <- paste(file.path(changeo_dir,
-                                           "DefineClones.py"),
-                                 "-d",
-                                 changeo_filename,
-                                 "--act",
-                                 "set",
-                                 "--model",
-                                 "ham",
-                                 "--sym",
-                                 "min",
-                                 "--norm",
-                                 "len",
-                                 "--dist",
-                                 cluster_threshold,
-                                 "-o",
-                                 cluster_filename
-                                )
-
-        cluster_command %>% system
-
-        annotations <- cluster_filename %>%
-            data.table::fread() 
-
-        names(annotations) <- names(annotations) %>%
-            sapply(tolower)
     }, error = function(e) {
         print(e)
-    }, finally = {
         setwd(initial_wd)
+    }, finally = {
+        if(cleanup) {
+           c(
+             "changeo_filename",
+             "cluster_filename"
+            ) %>%
+                sapply(function(x) { 
+                           if(exists(x)) { 
+                               eval(parse(text=x)) %>%
+                                   file.remove
+                           } 
+                       } 
+                )
+        }
     })
 
     # Go back to initial working directory
