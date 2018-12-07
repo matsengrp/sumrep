@@ -5,22 +5,28 @@
 \title{Get IgBLAST annotations from an input fasta file}
 \usage{
 getIgBlastAnnotations(input_filename, output_filename = "igblast_out.tsv",
-  locus = "IGH", organism = "human", domain_system = "imgt",
-  loci = "ig", num_threads = 8, igblast_dir, changeo_dir,
-  airr_format = TRUE)
+  organism = "human", domain_system = "imgt", receptor_type,
+  num_threads = 8, igblast_dir, changeo_dir, cleanup = TRUE)
 }
 \arguments{
 \item{input_filename}{The path to the input fasta file}
 
-\item{output_filename}{The desired output filename WITHOUT an extension}
-
-\item{locus}{The locus from which the sequences are derived}
+\item{output_filename}{The desired output filename (should be a tsv file)}
 
 \item{organism}{The organism/species to which the sequences belong}
 
-\item{domain_system}{(input to IgBLAST)}
+\item{domain_system}{(input to IgBLAST -- alter with caution)}
 
-\item{ig_seqtype}{(input to IgBLAST}
+\item{receptor_type}{String denoting the type of receptors given in 
+\code{input_filename}. Either "BCR" or "TCR".}
+
+\item{igblast_dir}{Path to parent directory of the igblast bin folder
+(e.g. "path/to/parent", NOT "path/to/parent/bin").}
+
+\item{changeo_dir}{The path of the changeo bin folder (e.g.
+"path/to/bin").}
+
+\item{cleanup}{If TRUE, remove all interim files created}
 }
 \description{
 Currently kind of hacky, as it changes directories to the location of

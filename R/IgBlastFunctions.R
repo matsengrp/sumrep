@@ -16,8 +16,10 @@ require(shazam)
 #' @param domain_system (input to IgBLAST -- alter with caution)
 #' @param receptor_type String denoting the type of receptors given in 
 #'   \code{input_filename}. Either "BCR" or "TCR".
-#' @param igblast_dir Path to parent directory of the igblast bin folder.
-#' @param changeo_dir The path of the changeo bin folder.
+#' @param igblast_dir Path to parent directory of the igblast bin folder
+#'   (e.g. "path/to/parent", NOT "path/to/parent/bin").
+#' @param changeo_dir The path of the changeo bin folder (e.g.
+#'   "path/to/bin").
 #' @param cleanup If TRUE, remove all interim files created
 getIgBlastAnnotations <- function(input_filename,
                                   output_filename="igblast_out.tsv",
