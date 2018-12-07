@@ -37,7 +37,7 @@ writeAnnotations <- function(filename,
     } else if(method == "igblast") {
         annotations <- getIgBlastAnnotations(filename, 
                                              num_threads=num_procs,
-                                             igblast_dir="~/Software/igblast/bin",
+                                             igblast_dir="~/Software/igblast",
                                              changeo_dir="~/.local/bin")
         saveRDS(annotations, outname)
     }
@@ -45,8 +45,7 @@ writeAnnotations <- function(filename,
 
 igb_germline_dir <- "~/Software/igblast/partis_friendly_bin"
 
-
-write_partis_annotations <- TRUE
+write_partis_annotations <- FALSE
 if(write_partis_annotations) {
     writeAnnotations("~/Data/GMC-igh-m1h.fa", 
                      "data/Annotations/p_g1.rds", 
@@ -59,7 +58,7 @@ if(write_partis_annotations) {
                      "partis")
 }
 
-write_partis_igb_annotations <- TRUE
+write_partis_igb_annotations <- FALSE
 if(write_partis_igb_annotations) {
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
                      "data/Annotations/pi_f1.rds", 
