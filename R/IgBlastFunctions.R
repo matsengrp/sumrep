@@ -4,11 +4,10 @@ require(shazam)
 
 #' Get IgBLAST annotations from an input fasta file
 #'
-#' Currently kind of hacky, as it changes directories to the location of
-#'   igblast and its germline databases, runs some commands, and changes back
-#'   to the initial directory.
-#'   Change-O is used to parse the raw output of igblastn.
-#'   TODO: Delete interim files, try-catch the success of changeo
+#' The routine changes directories to the provided igblast directory,
+#'   runs some Change-O commands, reads in the resultant tsv files,
+#'   changes back to the initial directory, and returns the annotations
+#'   list object.
 #'
 #' @param input_filename The path to the input fasta file
 #' @param output_filename The desired output filename (should be a tsv file)
@@ -21,6 +20,7 @@ require(shazam)
 #' @param changeo_dir The path of the changeo bin folder (e.g.
 #'   "path/to/bin").
 #' @param cleanup If TRUE, remove all interim files created
+#' @return A \code{list} of a \code{data.table} containing the annotations.
 getIgBlastAnnotations <- function(input_filename,
                                   output_filename="igblast_out.tsv",
                                   organism="human",
@@ -47,8 +47,6 @@ getIgBlastAnnotations <- function(input_filename,
     igblast_bin_dir <- file.path(igblast_dir,
                                   "bin")
 
-    # IgBlast needs to be in its own directory to find the germline databases
-    # easily, so let's remember where we are currently and chnage directories
     initial_wd <- getwd()
     tryCatch({
         igblast_dir %>% setwd
@@ -160,74 +158,8 @@ getIgBlastAnnotations <- function(input_filename,
         }
     })
 
-    # Go back to initial working directory
     initial_wd %>% setwd
 
     annotation_object <- list(annotations=annotations)
     return(annotation_object)
-}
-
-#' Add n's to positions for which the input (mature) sequence did not contain
-#'   a base, but for which the inferred naive (germline) sequence does contain
-#'   a base. IgBlast/Change-O by default place '.'s in these positions, which
-#'   is also the symbol to denote IMGT gaps. Thus, manual processing to account
-#'   for this is required.
-getMatureSequences <- function(germline_imgt,
-                               sequence_imgt
-                              ) {
-    naive_sequence <- germline_imgt %>%
-        toString %>%
-        tolower
-
-    mature_sequence <- sequence_imgt %>%
-        toString %>%
-        tolower
-
-    missing_indices <- getMissingDataIndices(naive_sequence,
-                                             mature_sequence)
-
-    mature_seq_split <- mature_sequence %>%
-        strsplit('') %>%
-        first 
-
-    mature_seq_split[missing_indices] <- "n"
-
-    mature_sequence <- mature_seq_split %>%
-        paste(collapse='') %>%
-        gsub(pattern='\\.', replace='')
-
-    return(mature_sequence) 
-}
-
-getMissingDataIndices <- function(germline, mature) {
-    germline_dots <- germline %>%
-        getDotIndices
-
-    mature_dots <- mature %>%
-        getDotIndices
-
-    missing_indices <- setdiff(mature_dots,
-                               germline_dots)
-    return(missing_indices)
-}
-
-getDotIndices <- function(seq) {
-    indices <- seq %>%
-        strsplit('') %>%
-        first %>%
-        grep(pattern='\\.')
-    
-    return(indices)
-}
-
-processGenes <- function(genes) {
-    genes <- genes %>%
-        sapply(toString) %>%
-        # Remove all but first gene
-        sapply(gsub, pattern=',.*', replace='') %>%
-        # Remove gene after OR, e.g. IGHV3/OR12-1*01 should be IGHV3-1*01
-        sapply(gsub, pattern='\\/OR.*-', replace='-') %>% 
-        as.factor %>%
-        unname
-    return(genes)
 }

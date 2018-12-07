@@ -28,10 +28,12 @@ getIgBlastAnnotations(input_filename, output_filename = "igblast_out.tsv",
 
 \item{cleanup}{If TRUE, remove all interim files created}
 }
+\value{
+A \code{list} of a \code{data.table} containing the annotations.
+}
 \description{
-Currently kind of hacky, as it changes directories to the location of
-  igblast and its germline databases, runs some commands, and changes back
-  to the initial directory.
-  Change-O is used to parse the raw output of igblastn.
-  TODO: Delete interim files, try-catch the success of changeo
+The routine changes directories to the provided igblast directory,
+  runs some Change-O commands, reads in the resultant tsv files,
+  changes back to the initial directory, and returns the annotations
+  list object.
 }
