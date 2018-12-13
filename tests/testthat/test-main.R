@@ -274,20 +274,39 @@ test_that("Gene usage comparison", {
                         )
     expect_equal(4, compareVGeneDistributions(dat_a, 
                                               dat_b,
-                                              collapse_alleles=FALSE
+                                              collapse_alleles=FALSE,
+                                              standardize=FALSE
+                                             )
+    )
+    expect_equal(4/3, compareVGeneDistributions(dat_a, 
+                                              dat_b,
+                                              collapse_alleles=FALSE,
+                                              standardize=TRUE
                                              )
     )
     expect_equal(2, compareVGeneDistributions(dat_a, 
                                               dat_b,
+                                              collapse_alleles=TRUE,
+                                              standardize=FALSE
+                                             )
+    )
+    expect_equal(2/3, compareVGeneDistributions(dat_a, 
+                                              dat_b,
+                                              collapse_alleles=TRUE,
+                                              standardize=TRUE
+                                             )
+    )
+    expect_equal(2/3, compareVGeneDistributions(dat_a, 
+                                              dat_b,
                                               collapse_alleles=TRUE
                                              )
     )
-    expect_equal(6, compareDGeneDistributions(dat_a, 
+    expect_equal(6/3, compareDGeneDistributions(dat_a, 
                                               dat_b,
                                               collapse_alleles=FALSE
                                              )
     )
-    expect_equal(2, compareDGeneDistributions(dat_a, 
+    expect_equal(2/3, compareDGeneDistributions(dat_a, 
                                               dat_b,
                                               collapse_alleles=TRUE
                                              )
@@ -299,13 +318,44 @@ test_that("Gene usage comparison", {
     )
     expect_equal(6, compareVDJDistributions(dat_a, 
                                             dat_b,
-                                            collapse_alleles=FALSE
+                                            collapse_alleles=FALSE,
+                                            by_frequency=FALSE
                                            )
     )
     expect_equal(2, compareVDJDistributions(dat_a, 
                                             dat_b,
-                                            collapse_alleles=TRUE
+                                            collapse_alleles=FALSE,
+                                            by_frequency=TRUE
                                            )
     )
-    
+    expect_equal(2/3, compareVDJDistributions(dat_a, 
+                                            dat_b,
+                                            collapse_alleles=TRUE,
+                                            by_frequency=TRUE
+                                           )
+    )
+    expect_equal(2, compareVDJDistributions(dat_a, 
+                                            dat_b,
+                                            collapse_alleles=TRUE,
+                                            by_frequency=FALSE
+                                           )
+    )
+    expect_equal(2/3, compareVJDistributions(dat_a,
+                                           dat_b,
+                                           collapse_alleles=TRUE,
+                                           by_frequency=TRUE
+                                          )
+   ) 
+    expect_equal(4/3, compareVJDistributions(dat_a,
+                                           dat_b,
+                                           collapse_alleles=FALSE,
+                                           by_frequency=TRUE
+                                          )
+   ) 
+    expect_equal(4, compareVJDistributions(dat_a,
+                                           dat_b,
+                                           collapse_alleles=FALSE,
+                                           by_frequency=FALSE
+                                          )
+   ) 
 })
