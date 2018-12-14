@@ -131,11 +131,21 @@ doComparison <- function(function_string, input_list) {
 #' @param receptor_type A string denoting the type of immune receptor to which
 #'   \code{repertoire_1} and \code{repertoire_2} correspond.
 #'   Either "BCR" or "TCR".
+#' @param chain_type The locus from which the sequences were sampled. Either
+#'   "heavy", "light", "beta", or "alpha".
 compareRepertoires <- function(repertoire_1, 
                                repertoire_2, 
                                rep_1_bootstrap=NULL,
-                               receptor_type
+                               receptor_type,
+                               chain_type
                               ) {
+    if(!(receptor_type %in% c("BCR", "TCR"))) {
+        stop('receptor_type must be either "BCR" or "TCR"')
+    }
+    if(!(chain_type %in% c("heavy", "light", "beta", "alpha"))) {
+        stop('chain_type must be either "heavy", "light", "beta", or "alpha"')
+    }
+
     annotations_1 <- repertoire_1$annotations
     annotations_2 <- repertoire_2$annotations
     annotations_list <- list(annotations_1, annotations_2)
@@ -174,18 +184,39 @@ compareRepertoires <- function(repertoire_1,
                                  # Recombination metrics
                                  "compareCDR3LengthDistributions",
                                  "compareVGeneDistributions",
-                                 "compareDGeneDistributions",
                                  "compareJGeneDistributions",
-                                 "compareVDJDistributions",
                                  "compareVGene3PrimeDeletionLengthDistributions",
-                                 "compareDGene3PrimeDeletionLengthDistributions",
-                                 "compareDGene5PrimeDeletionLengthDistributions",
-                                 "compareJGene5PrimeDeletionLengthDistributions", 
-                                 "compareVDInsertionLengthDistributions",
-                                 "compareDJInsertionLengthDistributions",
-                                 "compareVDInsertionMatrices",
-                                 "compareDJInsertionMatrices"
+                                 "compareJGene5PrimeDeletionLengthDistributions"
                                 )
+
+    function_strings <- xcr_function_strings
+
+    big_chain_function_strings <- list(
+                                    "compareDGeneDistributions",
+                                    "compareVDJDistributions",
+                                    "compareDGene3PrimeDeletionLengthDistributions",
+                                    "compareDGene5PrimeDeletionLengthDistributions",
+                                    "compareVDInsertionLengthDistributions",
+                                    "compareDJInsertionLengthDistributions",
+                                    "compareVDInsertionMatrices",
+                                    "compareDJInsertionMatrices"
+                                   )
+
+    small_chain_function_strings <- list(
+                                      "compareVJDistributions",
+                                      "compareVJInsertionLengthDistributions",
+                                      "compareVJInsertionMatrices"
+                                     )
+
+    if(chain_type %in% c("heavy", "beta")) {
+        function_strings <- c(function_strings,
+                              big_chain_function_strings
+                             ) 
+    } else {
+        function_strings <- c(function_strings,
+                              small_chain_function_strings
+                             )
+    }
 
     bcr_function_strings <- list(
                                  # SHM-based metrics
@@ -198,7 +229,6 @@ compareRepertoires <- function(repertoire_1,
                                  # ^ These comparisons takes forever
                                 )
 
-    function_strings <- xcr_function_strings
     if(receptor_type == "BCR") {
         function_strings <- c(function_strings,
                               bcr_function_strings

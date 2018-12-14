@@ -2086,6 +2086,26 @@ plotDJInsertionLengthDistribution <- function(dat_list,
     return(p)
 }
 
+
+#' This calls the function for VD insertions since the AIRR field
+#'   for VD and VJ insertion lengths is the same
+#'
+#' @inheritParams getVDInsertionLengthDistribution
+getVJInsertionLengthDistribution <- function(dat) {
+    return(getVDInsertionLengthDistribution(dat))
+}
+
+#' This calls the function for VD insertions since the AIRR field
+#'   for VD and VJ insertion lengths is the same
+#'
+#' @inheritParams plotVDInsertionLengthDistribution
+plotVJInsertionLengthDistribution <- function(dat_list,
+                                              do_exact=FALSE,
+                                              names=NULL
+                                             ) {
+    return(plotVDInsertionLengthDistribution(dat))
+}
+
 compareInsertionLengths <- function(dat_a, dat_b, genes) {
     insertion_length_function <- paste0("get", 
                                         genes, 
@@ -2106,6 +2126,10 @@ compareVDInsertionLengthDistributions <- function(dat_a, dat_b) {
 
 compareDJInsertionLengthDistributions <- function(dat_a, dat_b) {
     return(compareInsertionLengths(dat_a, dat_b, "DJ"))
+}
+
+compareVJInsertionLengthDistributions <- function(dat_a, dat_b) {
+    return(compareInsertionLengths(dat_a, dat_b, "VJ"))
 }
 
 #' Constructs a Markov matrix for a vector of DNA sequences
@@ -2169,6 +2193,14 @@ getDJInsertionMatrix <- function(dat) {
     return(getInsertionMatrix(dat, "dj_insertion"))
 }
 
+#' Get the Markov transition matrix for DJ insertions
+#'
+#' @inheritParams getInsertionMatrix
+#' @return The empirical transition matrix for each (base, base) pair.
+getVJInsertionMatrix <- function(dat) {
+    return(getInsertionMatrix(dat, "vj_insertion"))
+}
+
 #' Compare the transition matrices for VD insertions for two datasets
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
@@ -2191,6 +2223,19 @@ compareDJInsertionMatrices <- function(dat_a, dat_b) {
         getDJInsertionMatrix
     matrix_b <- dat_b %>% 
         getDJInsertionMatrix
+    divergence <- getSumOfAbsoluteDifferences(matrix_a, matrix_b)
+    return(divergence)
+}
+
+#' Compare the transition matrices for VJ insertions for two datasets
+#'
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' @return The mean absolute difference of matrix entries, taken elementwise
+compareVJInsertionMatrices <- function(dat_a, dat_b) {
+    matrix_a <- dat_a %>% 
+        getVJInsertionMatrix
+    matrix_b <- dat_b %>% 
+        getVJInsertionMatrix
     divergence <- getSumOfAbsoluteDifferences(matrix_a, matrix_b)
     return(divergence)
 }
