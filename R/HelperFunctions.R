@@ -127,7 +127,11 @@ parsePythonDictionary <- function(dictionary) {
 }
 
 removeSequencesWithDifferentNaiveAndMatureLengths <- function(dat) {
-    return(dat %>% subset(nchar(dat$sequence) == nchar(dat$naive_seq)))
+    return(dat %>% 
+               subset(nchar(dat$germline_alignment) == 
+                      nchar(dat$sequence_alignment)
+                     )
+          )
 }
 
 #' Load datasets that are not already in the workspace.

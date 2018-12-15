@@ -133,11 +133,15 @@ doComparison <- function(function_string, input_list) {
 #'   Either "BCR" or "TCR".
 #' @param chain_type The locus from which the sequences were sampled. Either
 #'   "heavy", "light", "beta", or "alpha".
+#' @param do_full_comparison If TRUE, performs all available comparisons for
+#'   the given receptor_type/chain_type combo, including comparisons for the 
+#'   slower summaries
 compareRepertoires <- function(repertoire_1, 
                                repertoire_2, 
                                rep_1_bootstrap=NULL,
                                receptor_type,
-                               chain_type
+                               chain_type,
+                               do_full_comparison=FALSE
                               ) {
     if(!(receptor_type %in% c("BCR", "TCR"))) {
         stop('receptor_type must be either "BCR" or "TCR"')
@@ -164,8 +168,6 @@ compareRepertoires <- function(repertoire_1,
     xcr_function_strings <- list(
                                  # Distance-based metrics
                                  "comparePairwiseDistanceDistributions",
-                                 # "compareNNDistanceDistributions" 
-                                 # let's wait on this until we get it working
                                  "compareCDR3PairwiseDistanceDistributions",
                                  # Sequence-based metrics
                                  "compareGCContentDistributions",
@@ -188,6 +190,12 @@ compareRepertoires <- function(repertoire_1,
                                  "compareVGene3PrimeDeletionLengthDistributions",
                                  "compareJGene5PrimeDeletionLengthDistributions"
                                 )
+    if(do_full_comparison) {
+        xcr_function_strings <- c(
+                                  "compareNNDistanceDistributions",
+                                  xcr_function_strings
+                                 )
+    }
 
     function_strings <- xcr_function_strings
 
@@ -219,15 +227,20 @@ compareRepertoires <- function(repertoire_1,
     }
 
     bcr_function_strings <- list(
-                                 # SHM-based metrics
-                                 "compareDistanceFromNaiveToMatureDistributions",
-                                 "compareHotspotCountDistributions",
-                                 "compareColdspotCountDistributions",
-                                 "comparePositionalDistanceBetweenMutationsDistributions"
-                                 # "compareSubstitutionAndMutabilityModels",
-                                 # "compareSelectionEstimates"
-                                 # ^ These comparisons takes forever
-                                )
+        # SHM-based metrics
+        "compareDistanceFromNaiveToMatureDistributions",
+        "compareHotspotCountDistributions",
+        "compareColdspotCountDistributions",
+        "comparePositionalDistanceBetweenMutationsDistributions"
+    )
+         
+    if(do_full_comparison) {
+        bcr_function_strings <- c(
+                                  bcr_function_strings,
+                                  "compareSubstitutionAndMutabilityModels",
+                                  "compareSelectionEstimates"
+                                 )
+    }
 
     if(receptor_type == "BCR") {
         function_strings <- c(function_strings,
