@@ -47,7 +47,9 @@ for(dats in data_to_compare) {
     if(!exists(comparison_name)) {
         comparison <-
                compareRepertoires(eval(parse(text=dats[1])), 
-                                  eval(parse(text=dats[2]))) %>%
+                                  eval(parse(text=dats[2])),
+                                  receptor_type="BCR"
+                                 ) %>%
                cbind(Type1=dats[1],
                      Type2=dats[2])
         saveRDS(comparison, 
