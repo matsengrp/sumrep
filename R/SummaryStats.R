@@ -1061,53 +1061,64 @@ getKideraFactorsBySequence <- function(aa_sequence) {
     return(kidera_factors)
 }
 
-#' Get the mean Atchley factor of an amino acid sequence
+#' Get the distribution of a given Atchley factor for a vector of amino acid 
+#'   sequences
 #'
-#' @param aa_sequence An amino acid sequence string
-#' @param factor_number The Atchley factor to be applied to \code{aa_seq}. 
-#'  Must be 1, 2, 3, 4, or 5.
-#' @return The mean of the set of Atchley factors for 
-#'   \code{aa_seq}
-getAtchleyFactorList <- function(aa_sequence, factor_number) {
+#' @param aa_sequences A vector of amino acid sequence string
+#' @param factor_number The Atchley factor to be applied over 
+#'  \code{aa_sequences}. Must be 1, 2, 3, 4, or 5.
+#' @return A vector of Atchley factors of each amino acid in each sequence
+getAtchleyFactorDistribution <- function(aa_sequences, 
+                                         factor_number,
+                                         approximate=TRUE
+                                        ) {
     factor_list <- aa_sequence %>% 
-        HDMD::FactorTransform(Factor=factor_number)
+        HDMD::FactorTransform(Factor=factor_number) %>%
+        unlist %>%
+        unname
     return(factor_list)
 }
 
-#' Get a list of the means of each of the five Atchley factors for 
-#'   a list of DNA seuqnces
+#' Get a list of the distributions of each of the five Atchley factors for a 
+#'   dataset.
 #'
-#' @param sequence_list List or vector of DNA sequences
+#' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
 #' @return Vector of means of each of the five Atchley factors of \code{sequence_list}
-getMeanAtchleyFactorDistribution <- function(sequence_list) {
-    collapsed_sequence <- sequence_list %>% 
-        filterAminoAcidSequences %>%
-        paste(collapse='')
+getAtchleyFactorDistributions <- function(dat,
+                                          column="junction_aa"
+                                         ) {
+    collapsed_sequence <- dat[[column]] %>% 
+        filterAminoAcidSequences
     factor_numbers <- 1:5
-    mean_atchley_factors <- rep(NA, length(factor_numbers))
-    for(factor_number in factor_numbers) {
-        mean_atchley_factors[factor_number] <- collapsed_sequence %>% 
-            getAtchleyFactorList(factor_number=factor_number) %>%
-            first %>%
-            mean
-    }
+    atchley_factors <- factor_numbers %>% 
+        lapply(function(x) {
+            collapsed_sequence %>% 
+                getAtchleyFactorDistribution(factor_number=x) %>%
+                unlist
+        })
 
-    return(mean_atchley_factors)
+    return(atchley_factors)
 }
 
-#' Compare the distributions of mean Atchley factors for two datasets
+#' Compare the distributions of Atchley factors for two datasets
 #'
-#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
-#' @return Estimated mean absolute difference of the mean of each Atchley factor
-#'   of \code{dat_a} and \code{dat_b}
-compareAtchleyFactorDistributions <- function(dat_a, dat_b) {
-    divergence <- getAutomaticAverageDivergence(
-        dat_a %$% junction_aa,
-        dat_b %$% junction_aa,
-        getMeanAtchleyFactorDistribution,
-        subsample_count=100,
-        divergenceFunction=getSumOfAbsoluteDifferences)
-    return(divergence)
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire 
+#'   annotations
+#' @return Vector of divergences of each Atchley factor distribution
+compareAtchleyFactorDistributions <- function(dat_a, 
+                                              dat_b
+                                             ) {
+    dists_a <- dat_a %>% getAtchleyFactorDistributions
+    dists_b <- dat_b %>% getAtchleyFactorDistributions
+    divergences <- mapply(function(x, y) { 
+                              div <- getContinuousJSDivergence(x, y)
+                          },
+                          dists_a,
+                          dists_b
+                         )
+    return(divergences)
 }
 
 #' Get the aliphatic index of a DNA sequence
