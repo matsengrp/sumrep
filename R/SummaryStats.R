@@ -1072,7 +1072,7 @@ getAtchleyFactorDistribution <- function(aa_sequences,
                                          factor_number,
                                          approximate=TRUE
                                         ) {
-    factor_list <- aa_sequence %>% 
+    factor_list <- aa_sequences %>% 
         HDMD::FactorTransform(Factor=factor_number) %>%
         unlist %>%
         unname
@@ -1117,7 +1117,9 @@ compareAtchleyFactorDistributions <- function(dat_a,
                           },
                           dists_a,
                           dists_b
-                         )
+                         ) %>%
+        as.list %>%
+        setNames(paste0("AtchleyFactor", 1:5, "Divergence"))
     return(divergences)
 }
 
@@ -1831,8 +1833,8 @@ compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
         getMutabilityModel(substitution_model=sub_model_b)
     mut_divergence <- getSumOfAbsoluteDifferences(mut_model_a, mut_model_b)
 
-    divergences <- list(SubstitutionModel=sub_divergence,
-                        MutabilityModel=mut_divergence)
+    divergences <- list(SubstitutionModelDivergence=sub_divergence,
+                        MutabilityModelDivergence=mut_divergence)
     return(divergences)
 }
 
