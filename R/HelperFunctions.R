@@ -106,12 +106,15 @@ hasStopCodon <- function(aa_sequence) {
 #' @param aa_sequences Vector or list of amino acid sequences
 #' @return Filtered list with "bad" sequences removed
 filterAminoAcidSequences <- function(aa_sequences) {
-    filtered_seqs <- ifelse(hasStopCodon(aa_sequences),
+    filtered_seqs <- aa_sequences %>%
+        sapply(function(x) {
+        ifelse(hasStopCodon(x) || hasUnrecognizedAminoAcids(x),
                             NA,
-                            aa_sequences
-                            ) %>%
-        gsub(pattern="X", replace="")
-    return(filtered_seqs)
+                            x
+                            )
+        })
+
+    return(filtered_seqs[!is.na(filtered_seqs)])
 }
 
 #' Parse a python dictionary string into an R list

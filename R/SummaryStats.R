@@ -1057,8 +1057,56 @@ compareVDJDistributions <- function(dat_a,
 getKideraFactorsBySequence <- function(aa_sequence) {
     kidera_factors <- aa_sequence %>% 
         Peptides::kideraFactors() %>% 
-        first
+        unlist
     return(kidera_factors)
+}
+
+#' Get distributions for each of the ten Kidera factors for a dataset 
+#'
+#' @param dat A \code{data.table} corresponding to repertoire annotations
+#' @param column the column name of \code{dat} containing the strings on which
+#'   the distribution should be computed
+#' @param as_list If TRUE, return a list of the ten distributions. Otherwise,
+#'   return an (n)x(10) data.table, where n is the number of valid amino acid 
+#'   sequences in \code{column}
+#' @return List or data.table of Kidera factor distributions
+getKideraFactorDistributions <- function(dat,
+                                         column="junction_aa",
+                                         as_list=TRUE
+                                        ) {
+    factor_distributions <- dat[[column]] %>% 
+        filterAminoAcidSequences %>%
+        lapply(getKideraFactorsBySequence) %>%
+        do.call("rbind", .)
+
+    if(as_list) {
+        factor_distributions <- 1:10 %>%
+            lapply(function(x) { factor_distributions[, x] }) %>%
+            setNames(paste0("KF", 1:10))
+    }
+
+    return(factor_distributions) 
+}
+
+#' Compare the distributions of Kidera factors for two datasets
+#'
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire 
+#'   annotations
+#' @return Vector of divergences of each Kidera factor distribution
+compareKideraFactorDistributions <- function(dat_a,
+                                             dat_b,
+                                             column="junction_aa"
+                                            ) {
+    dists_a <- dat_a %>% getKideraFactorDistributions(column=column)
+    dists_b <- dat_b %>% getKideraFactorDistributions(column=column)
+    divergences <- mapply(getContinuousJSDivergence,
+                          dists_a,
+                          dists_b
+                         ) %>% 
+        as.list %>%
+        setNames(paste0("KideraFactor", 1:10, "Divergence"))
+
+    return(divergences)
 }
 
 #' Get the distribution of a given Atchley factor for a vector of amino acid 
@@ -1069,8 +1117,7 @@ getKideraFactorsBySequence <- function(aa_sequence) {
 #'  \code{aa_sequences}. Must be 1, 2, 3, 4, or 5.
 #' @return A vector of Atchley factors of each amino acid in each sequence
 getAtchleyFactorDistribution <- function(aa_sequences, 
-                                         factor_number,
-                                         approximate=TRUE
+                                         factor_number
                                         ) {
     factor_list <- aa_sequences %>% 
         HDMD::FactorTransform(Factor=factor_number) %>%
@@ -1085,16 +1132,16 @@ getAtchleyFactorDistribution <- function(aa_sequences,
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
-#' @return Vector of means of each of the five Atchley factors of \code{sequence_list}
+#' @return List of Atchley factor distributions
 getAtchleyFactorDistributions <- function(dat,
                                           column="junction_aa"
                                          ) {
-    collapsed_sequence <- dat[[column]] %>% 
+    collapsed_sequences <- dat[[column]] %>% 
         filterAminoAcidSequences
     factor_numbers <- 1:5
     atchley_factors <- factor_numbers %>% 
         lapply(function(x) {
-            collapsed_sequence %>% 
+            collapsed_sequences %>% 
                 getAtchleyFactorDistribution(factor_number=x) %>%
                 unlist
         })
@@ -1108,13 +1155,12 @@ getAtchleyFactorDistributions <- function(dat,
 #'   annotations
 #' @return Vector of divergences of each Atchley factor distribution
 compareAtchleyFactorDistributions <- function(dat_a, 
-                                              dat_b
+                                              dat_b,
+                                              column="junction_aa"
                                              ) {
-    dists_a <- dat_a %>% getAtchleyFactorDistributions
-    dists_b <- dat_b %>% getAtchleyFactorDistributions
-    divergences <- mapply(function(x, y) { 
-                              div <- getContinuousJSDivergence(x, y)
-                          },
+    dists_a <- dat_a %>% getAtchleyFactorDistributions(column=column)
+    dists_b <- dat_b %>% getAtchleyFactorDistributions(column=column)
+    divergences <- mapply(getContinuousJSDivergence,
                           dists_a,
                           dists_b
                          ) %>%
