@@ -237,7 +237,7 @@ getNearestNeighborDistances <- function(sequence_list,
     return(distances)
 }
 
-#' Get exact or approximate nearest neighbor distribution
+#' Get exact or approximate nearest neighbor distance distribution
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param column the column name of \code{dat} containing the strings on which
@@ -257,10 +257,9 @@ getNearestNeighborDistribution <- function(dat,
     if(approximate) {
         if(k == 1) {
             distribution <- getApproximateNearestNeighborDistribution(
-                    dat=dat,
-                    column=column,
-                    k=1,
-                    ...
+                dat=dat,
+                column=column,
+                ...
             )
         } else {
             stop("k must be 1 to get approximate nearest neighbor distribution")
