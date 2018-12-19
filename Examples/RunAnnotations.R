@@ -17,7 +17,8 @@ writeAnnotations <- function(filename,
                                             num_procs=num_procs,
                                             output_path="tmp_output",
                                             cleanup=FALSE,
-                                            germline_dir=germline_dir
+                                            germline_dir=germline_dir,
+                                            locus="igh"
                                            )
         saveRDS(annotations, outname)
 
@@ -35,10 +36,13 @@ writeAnnotations <- function(filename,
                                              replace='-sim.rds'))
         "tmp_output" %>% unlink(recursive=TRUE)
     } else if(method == "igblast") {
-        annotations <- getIgBlastAnnotations(filename, 
+        annotations <- getIgBlastAnnotations(input_filename=filename, 
                                              num_threads=num_procs,
                                              igblast_dir="~/Software/igblast",
-                                             changeo_dir="~/.local/bin")
+                                             changeo_dir="~/.local/bin",
+                                             receptor_type="BCR",
+                                             chain_type="heavy"
+                                            )
         saveRDS(annotations, outname)
     }
 }
