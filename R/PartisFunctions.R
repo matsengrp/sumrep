@@ -22,6 +22,7 @@ callPartis <- function(action,
                        output_path, 
                        partis_path, 
                        num_procs, 
+                       locus,
                        germline_dir,
                        extra_columns
                        ) {
@@ -33,6 +34,7 @@ callPartis <- function(action,
                      "-i", input_filename, 
                      "-o", output_filename, 
                      "-n", num_procs,
+                     "-l", locus,
                      "-h", file.path(output_path, "params"))
     if(!missing(germline_dir) && !is.null(germline_dir)) {
         command <- paste(command,
@@ -384,21 +386,27 @@ getPartisAnnotations <- function(input_filename,
                                  output_filename="partis_output.csv", 
                                  partis_path=Sys.getenv("PARTIS_PATH"), 
                                  num_procs=16, 
-                                 partition=TRUE,
+                                 locus,
+                                 partition=ifelse(
+                                     stringr::str_sub(locus, 0, 2) == "ig",
+                                     TRUE,
+                                     FALSE
+                                 ),
                                  collapse_clones=TRUE,
                                  cleanup=TRUE, 
                                  do_full_annotation=FALSE, 
                                  output_path="_output",
-                                 run_partis=TRUE,
                                  germline_dir=NULL,
                                  extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs"
                                 ) {
     preventOutputOverwrite(output_path, cleanup)
+
     if(partition) {
         partition_data <- getPartisPartitions(input_filename=input_filename,
                                               output_filename=output_filename,
                                               partis_path=partis_path,
                                               num_procs=num_procs,
+                                              locus=locus,
                                               cleanup=FALSE,
                                               output_path=output_path,
                                               germline_dir=germline_dir,
@@ -411,7 +419,8 @@ getPartisAnnotations <- function(input_filename,
                                      output_file=output_file, 
                                      output_path=output_path, 
                                      partis_path=partis_path, 
-                                     num_procs=num_procs
+                                     num_procs=num_procs,
+                                     locus=locus
                                      )
     }
 
@@ -439,6 +448,7 @@ getPartisPartitions <- function(input_filename,
                                 output_filename="partition.csv", 
                                 partis_path=Sys.getenv("PARTIS_PATH"), 
                                 num_procs=4, 
+                                locus,
                                 cleanup=TRUE, 
                                 output_path="_output",
                                 germline_dir=NULL,
@@ -448,11 +458,12 @@ getPartisPartitions <- function(input_filename,
 
     output_file <- file.path(output_path, output_filename)
     partitioned_data <- callPartis("partition", 
-                                   input_filename, 
-                                   output_file, 
-                                   output_path, 
-                                   partis_path, 
-                                   num_procs,
+                                   input_filename=input_filename, 
+                                   output_file=output_file, 
+                                   output_path=output_path ,
+                                   partis_path=partis_path, 
+                                   num_procs=num_procs,
+                                   locus=locus,
                                    germline_dir=germline_dir,
                                    extra_columns=extra_columns
                                   )

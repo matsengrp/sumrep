@@ -1,4 +1,4 @@
-while getopts p:a:i:o:h:n:g:e: option
+while getopts p:a:i:o:h:n:l:g:e: option
 do
     case "${option}" in
         p) PARTISPATH=${OPTARG};;
@@ -7,6 +7,7 @@ do
         o) OUTFNAME=${OPTARG};;
         h) PARAMPATH=${OPTARG};;
         n) NPROCS=${OPTARG};;
+        l) LOCUS=${OPTARG};;
         g) GERMLINE_DIR=${OPTARG};;
         e) EXTRA_COLUMNS=${OPTARG};;
     esac
@@ -16,6 +17,7 @@ COMMAND="$PARTISPATH $ACTION \
     --infname $INFNAME \
     --outfname $OUTFNAME \
     --n-procs $NPROCS \
+    --locus $LOCUS \
     --parameter-dir $PARAMPATH "
 
 # Add the germline directory to the command only if passed
