@@ -5,22 +5,26 @@ test_data_path <- system.file("data/test_data.fa", package="sumrep")
 
 test_that("sumrep correctly calls partis annotate", {
     dat_a <- getPartisAnnotations(test_data_path, 
-                                  do_full_annotation=FALSE)
+                                  do_full_annotation=FALSE,
+                                  locus="igh"
+                                 )
     "_output" %>% unlink(recursive=TRUE)
 
     dat_b <- getPartisAnnotations(test_data_path, 
                                   output_filename="blah.csv",
                                   output_path="_output_arbitrary", 
-                                  num_procs=8)
+                                  num_procs=8,
+                                  locus="igh"
+                                 )
     "_output_arbitrary" %>% unlink(recursive=TRUE)
 
     expect_equal(dat_a %>% names, c("annotations", "mutation_rates"))
     expect_equal(dat_a$mutation_rates[[1]] %>% names, 
                  c("overall_mut_rate", "mut_rate_by_position"))
 
-    expect_equal(ncol(dat_a$annotations), 41)
+    expect_equal(ncol(dat_a$annotations), 43)
     expect_equal(nrow(dat_a$annotations), 17)
-    expect_equal(ncol(dat_b$annotations), 41)
+    expect_equal(ncol(dat_b$annotations), 43)
     expect_equal(nrow(dat_b$annotations), 17)
 
     dir.create("_output")
@@ -31,9 +35,11 @@ test_that("sumrep correctly calls partis annotate", {
 
 test_that("sumrep correctly calls partis partition", {
     dat_c <- getPartisPartitions(test_data_path, 
-                              output_filename="blah2.csv",
-                              output_path="_output_arbitrary_again", 
-                              num_procs=8)
+                                 output_filename="blah2.csv",
+                                 output_path="_output_arbitrary_again", 
+                                 num_procs=8,
+                                 locus="igh"
+                                )
     "_output_arbitrary_again" %>% unlink(recursive=TRUE)
 
     expect_equal(nrow(dat_c), 17)
