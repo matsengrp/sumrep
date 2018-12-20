@@ -129,7 +129,7 @@ parsePythonDictionary <- function(dictionary) {
     return(parsed)
 }
 
-removeSequencesWithDifferentNaiveAndMatureLengths <- function(dat) {
+removeSequencesWithDifferentGermlineAndSequenceLengths <- function(dat) {
     return(dat %>% 
                subset(nchar(dat$germline_alignment) == 
                       nchar(dat$sequence_alignment)

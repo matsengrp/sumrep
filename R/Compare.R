@@ -229,7 +229,7 @@ compareRepertoires <- function(repertoire_1,
 
     bcr_function_strings <- list(
         # SHM-based metrics
-        "compareDistanceFromNaiveToMatureDistributions",
+        "compareDistanceFromGermlineToSequenceDistributions",
         "compareHotspotCountDistributions",
         "compareColdspotCountDistributions",
         "comparePositionalDistanceBetweenMutationsDistributions"

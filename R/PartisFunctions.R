@@ -557,7 +557,7 @@ getPartisSimulation <- function(parameter_dir,
 #' Run partis annotate on vector or list of sequences directly (i.e. without
 #'   saving as a fasta file)
 #'
-#' @param sequences List or vector of mature BCR sequences for annotation
+#' @param sequences List or vector of query BCR sequences for annotation
 getPartisAnnotationsFromStrings <- function(sequences, 
                                             ...
                                            ) {

@@ -632,16 +632,24 @@ compareColdspotCountDistributions <- function(dat_a,
 #' Get the exact distribution of Levenshtein distances from the inferred 
 #'   naive sequences to the observed mature ones, sequence by sequence
 #'
-#' @inheritParams getDistanceFromNaiveToMatureDistribution
+#' @inheritParams getDistanceFromGermlineToSequenceDistribution
 #' @return Vector of Levenshtein distances from naive to mature
-getDistancesFromNaiveToMature <- function(dat,
-                                          v_gene_only=FALSE
-                                          ) {
-    mature_column <- ifelse(v_gene_only, "v_qr_seqs", "sequence_alignment")
-    naive_column <- ifelse(v_gene_only, "v_gl_seq", "germline_alignment")
-    distances <- dat[[mature_column]] %>% 
+getDistancesFromGermlineToSequence <- function(dat,
+                                          v_gene_only=FALSE,
+                                          sequence_column=ifelse(
+                                              v_gene_only,
+                                              "v_qr_seqs",
+                                              "sequence_alignment"
+                                          ),
+                                          germline_column=ifelse(
+                                              v_gene_only,
+                                              "v_gl_seq",
+                                              "germline_alignment"
+                                          )
+                                         ) {
+    distances <- dat[[sequence_column]] %>% 
         mapply(FUN=stringdist::stringdist, 
-               b=dat[[naive_column]], 
+               b=dat[[germline_column]], 
                method="lv") %>% 
         sort %>% 
         unname
@@ -655,32 +663,32 @@ getDistancesFromNaiveToMature <- function(dat,
 #' @param approximate If TRUE, approximate distribution by subsampling.
 #' @param v_gene_only If TRUE, restrict sequences to the V gene only
 #' @return Vector of Levenshtein distances from naive to mature
-getDistanceFromNaiveToMatureDistribution <- function(dat,
+getDistanceFromGermlineToSequenceDistribution <- function(dat,
                                                      approximate=FALSE,
                                                      v_gene_only=FALSE
                                                     ) {
     if(approximate) {
         distribution <- dat %>%
             getApproximateDistribution(
-                summary_function=getDistancesFromNaiveToMature,
+                summary_function=getDistancesFromGermlineToSequence,
                 divergence_function=getJSDivergence,
                 v_gene_only=v_gene_only
             )
     } else {
         distribution <- dat %>%
-            getDistancesFromNaiveToMature(v_gene_only=v_gene_only)
+            getDistancesFromGermlineToSequence(v_gene_only=v_gene_only)
     }
 }
 
 #' Plot the distance from naive to mature distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotDistanceFromNaiveToMatureDistribution <- function(dat_list,
+plotDistanceFromGermlineToSequenceDistribution <- function(dat_list,
                                                       do_exact=FALSE,
                                                       names=NULL
                                                      ) {
     p <- plotDistribution(dat_list,
-                          getDistanceFromNaiveToMatureDistribution,
+                          getDistanceFromGermlineToSequenceDistribution,
                           do_exact=do_exact,
                           x_label="Distance from naive to mature",
                           names=names
@@ -691,19 +699,19 @@ plotDistanceFromNaiveToMatureDistribution <- function(dat_list,
 #' Compare Levenshtein distance distributions from naive sequences to 
 #  their corresponding mature ones for two repertoires
 #'
-#' @inheritParams getDistanceFromNaiveToMatureDistribution
+#' @inheritParams getDistanceFromGermlineToSequenceDistribution
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
-compareDistanceFromNaiveToMatureDistributions <- function(dat_a, 
+compareDistanceFromGermlineToSequenceDistributions <- function(dat_a, 
                                                           dat_b, 
                                                           approximate=FALSE,
                                                           v_gene_only=FALSE
                                                          ) {
     dist_a <- dat_a %>% 
-        getDistanceFromNaiveToMatureDistribution(approximate=approximate,
+        getDistanceFromGermlineToSequenceDistribution(approximate=approximate,
                                                  v_gene_only=v_gene_only
                                                 )
     dist_b <- dat_b %>% 
-        getDistanceFromNaiveToMatureDistribution(approximate=approximate,
+        getDistanceFromGermlineToSequenceDistribution(approximate=approximate,
                                                  v_gene_only=v_gene_only
                                                 )
     divergence <- getJSDivergence(dist_a, dist_b)
@@ -1816,7 +1824,7 @@ comparePerGenePerPositionMutationRates <- function(rate_dat_a,
 #' @return The default shazam substitution model 
 getSubstitutionModel <- function(dat) {
     sub_mat <- dat %>% 
-        removeSequencesWithDifferentNaiveAndMatureLengths %>%
+        removeSequencesWithDifferentGermlineAndSequenceLengths %>%
         shazam::createSubstitutionMatrix(sequenceColumn="sequence_alignment",
                                          germlineColumn="germline_alignment",
                                          vCallColumn="v_call") 
@@ -1834,7 +1842,7 @@ getMutabilityModel <- function(dat,
                                substitution_model=getSubstitutionModel(dat)
                               ) {
     mut_mat <- dat %>% 
-        removeSequencesWithDifferentNaiveAndMatureLengths %>%
+        removeSequencesWithDifferentGermlineAndSequenceLengths %>%
         shazam::createMutabilityMatrix(substitutionModel=substitution_model,
                                        sequenceColumn="sequence_alignment",
                                        germlineColumn="germline_alignment",
@@ -2589,7 +2597,7 @@ getUnivariateDistributionPlots <- function(dat_list,
                                       "plotGCContentDistribution",
                                       "plotHotspotCountDistribution",
                                       "plotColdspotCountDistribution",
-                                      "plotDistanceFromNaiveToMatureDistribution",
+                                      "plotDistanceFromGermlineToSequenceDistribution",
                                       "plotCDR3LengthDistribution",
                                       "plotHydrophobicityDistribution",
                                       "plotAliphaticIndexDistribution",

@@ -11,7 +11,7 @@ test_that("test.binContinuousListsAsDiscrete", {
     expect_equal(c(20, rep(0, 4)), bin_b)
 })
 
-test_that("test.compareDistanceFromNaiveToMatureDistributions", {
+test_that("test.compareDistanceFromGermlineToSequenceDistributions", {
     naive_a <- c("AAAAAA")
     naive_b <- c("GGGGGG")
     m1 <- c("AAAAAA")
@@ -21,17 +21,17 @@ test_that("test.compareDistanceFromNaiveToMatureDistributions", {
     m5 <- c("GGGG")
     dat_a <- data.table(germline_alignment=naive_a, sequence_alignment=list(m1, m2, m3))
     dat_b <- data.table(germline_alignment=naive_b, sequence_alignment=list(m2, m3, m4))
-    c1 <- compareDistanceFromNaiveToMatureDistributions(dat_a, 
+    c1 <- compareDistanceFromGermlineToSequenceDistributions(dat_a, 
                                             dat_a, 
                                             approximate=FALSE,
                                             v_gene_only=FALSE
                                             )
-    c2 <- compareDistanceFromNaiveToMatureDistributions(dat_a, 
+    c2 <- compareDistanceFromGermlineToSequenceDistributions(dat_a, 
                                             dat_b, 
                                             approximate=FALSE,
                                             v_gene_only=FALSE
                                             )
-    c3 <- compareDistanceFromNaiveToMatureDistributions(dat_b, 
+    c3 <- compareDistanceFromGermlineToSequenceDistributions(dat_b, 
                                             dat_a, 
                                             approximate=FALSE,
                                             v_gene_only=FALSE)
@@ -101,20 +101,20 @@ test_that("test.getDistanceMatrix", {
     expect_equal(m4, getDistanceMatrix(seq_4))
 })
 
-test_that("test.getDistanceFromNaiveToMatureDistribution", {
+test_that("test.getDistanceFromGermlineToSequenceDistribution", {
     naives <- c("AAAAAC", rep(c("AAAAAA"), 3))
     m1 <- c("AAAAAT")
     m2 <- c("CGCAAA")
     m3 <- c("GGGGGG")
     m4 <- c("AAAAAA")
     dat <- data.table(germline_alignment=naives, sequence_alignment=c(m1, m2, m3, m4))
-    expect_equal(c(0, 1, 3, 6), getDistanceFromNaiveToMatureDistribution(dat,
+    expect_equal(c(0, 1, 3, 6), getDistanceFromGermlineToSequenceDistribution(dat,
                                                               v_gene_only=FALSE
                                                               ))
     dat$v_gl_seq <- c("AAA", "CGC", "GGG", "AAA")
     dat$v_qr_seqs <- rep("AAA", 4)
     expect_equal(c(0, 0, 3, 3), 
-                 getDistanceFromNaiveToMatureDistribution(dat,
+                 getDistanceFromGermlineToSequenceDistribution(dat,
                                                           v_gene_only=TRUE
                                                          )
                  )
