@@ -48,7 +48,8 @@ for(dats in data_to_compare) {
         comparison <-
                compareRepertoires(eval(parse(text=dats[1])), 
                                   eval(parse(text=dats[2])),
-                                  receptor_type="BCR"
+                                  receptor_type="BCR",
+                                  chain_type="heavy"
                                  ) %>%
                cbind(Type1=dats[1],
                      Type2=dats[2])

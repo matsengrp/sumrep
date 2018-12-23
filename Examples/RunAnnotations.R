@@ -40,8 +40,7 @@ writeAnnotations <- function(filename,
                                              num_threads=num_procs,
                                              igblast_dir="~/Software/igblast",
                                              changeo_dir="~/.local/bin",
-                                             receptor_type="BCR",
-                                             chain_type="heavy"
+                                             receptor_type="BCR"
                                             )
         saveRDS(annotations, outname)
     }
@@ -78,7 +77,7 @@ if(write_partis_igb_annotations) {
                      germline_dir=igb_germline_dir)
 }
 
-write_igb_annotations <- TRUE
+write_igb_annotations <- FALSE
 if(write_igb_annotations) {
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
                      "data/Annotations/i_f1.rds", 
