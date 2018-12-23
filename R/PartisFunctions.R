@@ -370,6 +370,8 @@ processPartisSequences <- function(annotated_data) {
     annotated_data$np2_length <- annotated_data$dj_insertion %>%
         sapply(nchar)
 
+    names(annotated_data)[which(names(annotated_data) == "cdr3_length")] <- 
+        "junction_length"
     names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "v_call"
     names(annotated_data)[which(names(annotated_data) == "d_gene")] <- "d_call"
     names(annotated_data)[which(names(annotated_data) == "j_gene")] <- "j_call"
@@ -547,8 +549,10 @@ getPartisSimulation <- function(parameter_dir,
 
     sim_annotations$clone_id <- sim_annotations$reco_id %>% sapply(as.numeric)
     sim_annotations$reco_id <- NULL
-    sim_annotations$sequence <- sim_annotations$mature_seq
-    sim_annotations$sequence_alignment <- sim_annotations$mature_seq
+    sim_annotations$sequence <- sim_annotations$sequence_alignment
+
+    names(sim_annotations)[which(names(sim_annotations) == "cdr3_length")] <- 
+        "junction_length"
 
     sim_data <- list(annotations=sim_annotations)
     return(sim_data)
