@@ -108,8 +108,8 @@ getPairwiseDistanceDistribution <- function(dat,
 #'   elements of \code{dat_list}
 plotDistribution <- function(dat_list,
                              summary_function,
-                             do_exact=FALSE,
-                             x_label,
+                             plot_type,
+                             x_label="Value",
                              names,
                              ...
                             ) {
@@ -121,7 +121,7 @@ plotDistribution <- function(dat_list,
                        1:length(distribution_list)
                       )
     }
-    if(do_exact) {
+    if(plot_type == "barplot") {
         # Actually plot the frequency of each value (which can be >= 200 bars)
         distance_table <- table(distribution_list)
         distribution <- distance_table/sum(distance_table) 
@@ -130,7 +130,7 @@ plotDistribution <- function(dat_list,
             setNames(c("Value", "Frequency"))
         p <- ggplot(d) +
             geom_bar(aes(x=as.numeric(Value), y=Frequency), stat="identity") 
-    } else {
+    } else if(plot_type == "histogram") {
         # Combine distributions (of various lengths) into a common data.frame
         # with corresponding IDs
         dat <- distribution_list %>%
@@ -153,6 +153,24 @@ plotDistribution <- function(dat_list,
                        )
                     ) +
             geom_histogram(alpha=0.6, position="identity")
+    } else if(plot_type == "freqpoly") {
+        dat <- distribution_list %>%
+            Map(function(x, y) {
+                    data.frame(Value=x, Dataset=y)
+                },
+                .,
+                names
+               ) %>%
+            do.call("rbind", .)
+
+        p <- ggplot(dat,
+                    aes(x=Value,
+                        y=..density..,
+                        group=Dataset,
+                        colour=Dataset
+                        )
+                    ) +
+            geom_freqpoly()
     }
     p <- p + 
         theme(panel.background=element_blank(),
@@ -169,13 +187,13 @@ plotDistribution <- function(dat_list,
 #'
 #' @inheritParams plotDistribution
 plotPairwiseDistanceDistribution <- function(dat_list,
-                                             do_exact=FALSE,
+                                             plot_type,
                                              names=NULL,
                                              ...
                                              ) {
     p <- plotDistribution(dat_list=dat_list,
                           summary_function=getPairwiseDistanceDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Pairwise distance",
                           names=names,
                           ...
@@ -275,13 +293,13 @@ getNearestNeighborDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotNearestNeighborDistribution <- function(dat_list,
-                                            do_exact=FALSE,
+                                            plot_type,
                                             names=NULL,
                                             ...
                                            ) {
     p <- plotDistribution(dat_list=dat_list,
                           summary_function=getNearestNeighborDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Nearest neighbor distance",
                           names=names,
                           ...
@@ -372,12 +390,12 @@ getGCContentDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotGCContentDistribution <- function(dat_list,
-                                      do_exact=FALSE,
+                                      plot_type,
                                       names=NULL
                                      ) {
     p <- plotDistribution(dat_list,
                           getGCContentDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="GC content",
                           names=names
                          )
@@ -492,12 +510,12 @@ getHotspotCountDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotHotspotCountDistribution <- function(dat_list,
-                                         do_exact=FALSE,
+                                         plot_type,
                                          names=NULL
                                         ) {
     p <- plotDistribution(dat_list,
                           getHotspotCountDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Hotspot count",
                           names=names
                          )
@@ -552,12 +570,12 @@ getColdspotCountDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotColdspotCountDistribution <- function(dat_list,
-                                          do_exact=FALSE,
+                                          plot_type,
                                           names=NULL
                                          ) {
     p <- plotDistribution(dat_list,
                           getColdspotCountDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Coldspot count",
                           names=names
                          )
@@ -684,12 +702,12 @@ getDistanceFromGermlineToSequenceDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotDistanceFromGermlineToSequenceDistribution <- function(dat_list,
-                                                      do_exact=FALSE,
+                                                      plot_type,
                                                       names=NULL
                                                      ) {
     p <- plotDistribution(dat_list,
                           getDistanceFromGermlineToSequenceDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Distance from naive to mature",
                           names=names
                          )
@@ -758,13 +776,13 @@ getCDR3LengthDistribution <- function(dat,
 #' Plot the CDR3 length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotCDR3Lengths <- function(dat_list,
-                            do_exact=FALSE,
+plotCDR3LengthDistribution <- function(dat_list,
+                            plot_type,
                             names=NULL
                            ) {
     p <- plotDistribution(dat_list,
-                          getCDR3Lengths,
-                          do_exact=do_exact,
+                          getCDR3LengthDistribution,
+                          plot_type=plot_type,
                           x_label="CDR3 length",
                           names=names
                          )
@@ -1213,12 +1231,12 @@ getAliphaticIndexDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotAliphaticIndexDistribution <- function(dat_list,
-                                           do_exact=FALSE,
+                                           plot_type,
                                            names=NULL
                                           ) {
     p <- plotDistribution(dat_list,
                           getAliphaticIndexDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Aliphatic index",
                           names=names
                          )
@@ -1264,12 +1282,12 @@ getGRAVYDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotGRAVYDistribution <- function(dat_list,
-                                  do_exact=FALSE,
+                                  plot_type,
                                   names=NULL
                                  ) { 
     p <- plotDistribution(dat_list,
                           getGRAVYDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="GRAVY index",
                           names=names
                          )
@@ -1345,13 +1363,13 @@ comparePolarityDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotPolarityDistribution <- function(dat_list,
-                                     do_exact=FALSE,
+                                     plot_type,
                                      names=NULL,
                                      ...
                                     ) {
     p <- plotDistribution(dat_list,
                           getPolarityDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Polarity",
                           names=names
                          )
@@ -1388,13 +1406,13 @@ compareChargeDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotChargeDistribution <- function(dat_list,
-                                     do_exact=FALSE,
+                                     plot_type,
                                      names=NULL,
                                      ...
                                     ) {
     p <- plotDistribution(dat_list,
                           getChargeDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Charge",
                           names=names
                          )
@@ -1432,13 +1450,13 @@ compareBasicityDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotBasicityDistribution <- function(dat_list,
-                                     do_exact=FALSE,
+                                     plot_type,
                                      names=NULL,
                                      ...
                                     ) {
     p <- plotDistribution(dat_list,
                           getBasicityDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Basicity",
                           names=names
                          )
@@ -1475,13 +1493,13 @@ compareAcidityDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotAcidityDistribution <- function(dat_list,
-                                     do_exact=FALSE,
+                                     plot_type,
                                      names=NULL,
                                      ...
                                     ) {
     p <- plotDistribution(dat_list,
                           getAcidityDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Acidity",
                           names=names
                          )
@@ -1519,13 +1537,13 @@ compareAromaticityDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotAromaticityDistribution <- function(dat_list,
-                                     do_exact=FALSE,
+                                     plot_type,
                                      names=NULL,
                                      ...
                                     ) {
     p <- plotDistribution(dat_list,
                           getAromaticityDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Aromaticity",
                           names=names
                          )
@@ -1562,13 +1580,13 @@ compareBulkinessDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotBulkinessDistribution <- function(dat_list,
-                                     do_exact=FALSE,
+                                     plot_type,
                                      names=NULL,
                                      ...
                                     ) {
     p <- plotDistribution(dat_list,
                           getBulkinessDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Bulkiness",
                           names=names
                          )
@@ -1708,12 +1726,12 @@ getPositionalDistanceBetweenMutationsDistribution <- function(
 #'
 #' @inheritParams plotDistribution
 plotPositionalDistanceBetweenMutationsDistribution <- function(dat_list,
-                                                     do_exact=FALSE,
+                                                     plot_type,
                                                      names=NULL
                                                     ) { 
     p <- plotDistribution(dat_list,
                           getPositionalDistanceBetweenMutationsDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Positional distance between mutations",
                           names=names
                          )
@@ -1916,12 +1934,12 @@ getVGene3PrimeDeletionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotDistribution
 plotVGene3PrimeDeletionLengthDistribution <- function(dat_list,
-                                           do_exact=FALSE,
+                                           plot_type,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
                           getVGene3PrimeDeletionLengths,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="V gene 3' deletion length",
                           names=names
                          )
@@ -1940,12 +1958,12 @@ getVGene5PrimeDeletionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotDistribution
 plotVGene5PrimeDeletionLengthDistribution <- function(dat_list,
-                                           do_exact=FALSE,
+                                           plot_type,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
                           getVGene5PrimeDeletionLengths,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="V gene 5' deletion length",
                           names=names
                          )
@@ -1964,12 +1982,12 @@ getDGene3PrimeDeletionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotDistribution
 plotDGene3PrimeDeletionLengthDistribution <- function(dat_list,
-                                           do_exact=FALSE,
+                                           plot_type,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
                           getDGene3PrimeDeletionLengths,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="D gene 3' deletion length",
                           names=names
                          )
@@ -1988,12 +2006,12 @@ getDGene5PrimeDeletionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotDistribution
 plotDGene5PrimeDeletionLengthDistribution <- function(dat_list,
-                                           do_exact=FALSE,
+                                           plot_type,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
                           getDGene5PrimeDeletionLengths,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="D gene 5' deletion length",
                           names=names
                          )
@@ -2012,12 +2030,12 @@ getJGene3PrimeDeletionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotDistribution
 plotJGene3PrimeDeletionLengthDistribution <- function(dat_list,
-                                           do_exact=FALSE,
+                                           plot_type,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
                           getJGene3PrimeDeletionLengthDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="J gene 3' deletion length",
                           names=names
                          )
@@ -2036,12 +2054,12 @@ getJGene5PrimeDeletionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotDistribution
 plotJGene5PrimeDeletionLengthDistribution <- function(dat_list,
-                                           do_exact=FALSE,
+                                           plot_type,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
                           getJGene5PrimeDeletionLengthDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="J gene 5' deletion length",
                           names=names
                          )
@@ -2116,12 +2134,12 @@ getVDInsertionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotDistribution
 plotVDInsertionLengthDistribution <- function(dat_list,
-                                   do_exact=FALSE,
+                                   plot_type,
                                    names=NULL
                                   ) { 
     p <- plotDistribution(dat_list,
                           getVDInsertionLengthDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="VD insertion length",
                           names=names
                          )
@@ -2140,12 +2158,12 @@ getDJInsertionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotDistribution
 plotDJInsertionLengthDistribution <- function(dat_list,
-                                   do_exact=FALSE,
+                                   plot_type,
                                    names=NULL
                                   ) { 
     p <- plotDistribution(dat_list,
                           getDJInsertionLengthDistribution,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="DJ insertion length",
                           names=names
                          )
@@ -2166,7 +2184,7 @@ getVJInsertionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotVDInsertionLengthDistribution
 plotVJInsertionLengthDistribution <- function(dat_list,
-                                              do_exact=FALSE,
+                                              plot_type,
                                               names=NULL
                                              ) {
     return(plotVDInsertionLengthDistribution(dat))
@@ -2320,12 +2338,12 @@ getClusterSizes <- function(dat) {
 #'
 #' @inheritParams plotDistribution
 plotClusterSizeDistribution <- function(dat_list,
-                                        do_exact=FALSE,
+                                        plot_type,
                                         names=NULL
                                        ) { 
     p <- plotDistribution(dat_list,
                           getClusterSizes,
-                          do_exact=do_exact,
+                          plot_type=plot_type,
                           x_label="Cluster size",
                           names=names
                          )
@@ -2587,19 +2605,17 @@ compareAminoAcid2merDistributions <-
 
 #' @inheritParams plotUnivariateDistributions
 getUnivariateDistributionPlots <- function(dat_list,
-                                           do_exact=FALSE,
+                                           plot_type,
                                            names=NULL,
                                            plot_function_strings=NULL
                                           ) {
     if(plot_function_strings %>% is.null) {
         plot_function_strings <- list("plotPairwiseDistanceDistribution",
-                                      "plotNearestNeighborDistribution",
                                       "plotGCContentDistribution",
                                       "plotHotspotCountDistribution",
                                       "plotColdspotCountDistribution",
                                       "plotDistanceFromGermlineToSequenceDistribution",
                                       "plotCDR3LengthDistribution",
-                                      "plotHydrophobicityDistribution",
                                       "plotAliphaticIndexDistribution",
                                       "plotGRAVYDistribution",
                                       "plotPositionalDistanceBetweenMutationsDistribution",
@@ -2617,7 +2633,7 @@ getUnivariateDistributionPlots <- function(dat_list,
     for(f_string in plot_function_strings) {
         plot_function <- eval(parse(text=f_string))
         plots[[f_string]] <- dat_list %>% 
-            plot_function(do_exact=do_exact,
+            plot_function(plot_type=plot_type,
                           names=names
                           )
     }
@@ -2632,12 +2648,12 @@ getUnivariateDistributionPlots <- function(dat_list,
 #'   elements of \code{dat_list}
 plotUnivariateDistributions <- function(dat_list,
                                         tall_plot=FALSE,
-                                        do_exact=FALSE,
+                                        plot_type,
                                         names=NULL,
                                         plot_function_strings=NULL
                                        ) {
     plots <- dat_list %>%
-        getUnivariateDistributionPlots(do_exact=do_exact,
+        getUnivariateDistributionPlots(plot_type=plot_type,
                                        names=names,
                                        plot_function_strings=plot_function_strings)
     multiplot <- multiplot(plot_list=plots, tall_plot=tall_plot)
