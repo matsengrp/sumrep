@@ -1938,7 +1938,7 @@ plotVGene3PrimeDeletionLengthDistribution <- function(dat_list,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
-                          getVGene3PrimeDeletionLengths,
+                          getVGene3PrimeDeletionLengthDistribution,
                           plot_type=plot_type,
                           x_label="V gene 3' deletion length",
                           names=names
@@ -1962,7 +1962,7 @@ plotVGene5PrimeDeletionLengthDistribution <- function(dat_list,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
-                          getVGene5PrimeDeletionLengths,
+                          getVGene5PrimeDeletionLengthDistribution,
                           plot_type=plot_type,
                           x_label="V gene 5' deletion length",
                           names=names
@@ -1986,7 +1986,7 @@ plotDGene3PrimeDeletionLengthDistribution <- function(dat_list,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
-                          getDGene3PrimeDeletionLengths,
+                          getDGene3PrimeDeletionLengthDistribution,
                           plot_type=plot_type,
                           x_label="D gene 3' deletion length",
                           names=names
@@ -2010,7 +2010,7 @@ plotDGene5PrimeDeletionLengthDistribution <- function(dat_list,
                                            names=NULL
                                           ) { 
     p <- plotDistribution(dat_list,
-                          getDGene5PrimeDeletionLengths,
+                          getDGene5PrimeDeletionLengthDistribution,
                           plot_type=plot_type,
                           x_label="D gene 5' deletion length",
                           names=names
@@ -2324,9 +2324,10 @@ compareVJInsertionMatrices <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getClusterSizes <- function(dat) {
-    sizes <- dat %$%
-        clone %>% 
+getClusterSizes <- function(dat,
+                            column="clone_id"
+                           ) {
+    sizes <- dat[[column]] %>%
         table %>% 
         unname %>% 
         c %>% 
@@ -2618,6 +2619,12 @@ getUnivariateDistributionPlots <- function(dat_list,
                                       "plotCDR3LengthDistribution",
                                       "plotAliphaticIndexDistribution",
                                       "plotGRAVYDistribution",
+                                      "plotPolarityDistribution",
+                                      "plotChargeDistribution",
+                                      "plotBasicityDistribution",
+                                      "plotAcidityDistribution",
+                                      "plotAromaticityDistribution",
+                                      "plotBulkinessDistribution",
                                       "plotPositionalDistanceBetweenMutationsDistribution",
                                       "plotVGene3PrimeDeletionLengthDistribution",
                                       "plotDGene3PrimeDeletionLengthDistribution",
@@ -2656,6 +2663,6 @@ plotUnivariateDistributions <- function(dat_list,
         getUnivariateDistributionPlots(plot_type=plot_type,
                                        names=names,
                                        plot_function_strings=plot_function_strings)
-    multiplot <- multiplot(plot_list=plots, tall_plot=tall_plot)
-    return(multiplot)
+    multiplot(plotlist=plots, tall_plot=tall_plot)
+    return(p)
 }
