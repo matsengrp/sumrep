@@ -19,7 +19,6 @@ rm -rf $WD_PATH/aligns
 rm -rf $WD_PATH/$GEN_BATCH_NAME*
 rm -rf $WD_PATH/$EVAL_BATCH_NAME*
 
-
 IGOR_PREFIX="igor -set_wd $WD_PATH"
 
 echo $IGOR_PREFIX -batch $EVAL_BATCH_NAME -read_seqs $INPUT_FILE

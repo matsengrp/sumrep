@@ -25,25 +25,46 @@ runIgor <- function(input_filename,
 }
 
 getIgorAnnotations <- function(input_filename,
-                               dir_name="tmp",
-                               num_scenarios=1,
-                               species="human",
-                               chain="beta",
-                               cleanup=TRUE
-                               ) {
-    if(!(dir_name %in% list.files())) {
-        dir.create(dir_name) 
+                               igor_wd_name,
+                               chain,
+                               output_filename="annotations.csv"
+                              ) {
+    python_command <- paste("python",
+                            "inst/run_igor.py",
+                            input_filename,
+                            igor_wd_name,
+                            chain,
+                            output_filename
+                           )
+    python_command %>% system
+    annotations <- data.table::fread(file.path(igor_wd_name,
+                                               output_filename
+                                              )
+    )
+
+    if(chain == "beta") {
+        annotations[["vd_insertion"]] <- annotations[["vd_insertion"]] %>%
+            gsub(pattern="[^A-Z]", replace="") %>%
+            tolower
+        annotations[["dj_insertion"]] <- annotations[["dj_insertion"]] %>%
+            gsub(pattern="[^A-Z]", replace="") %>%
+            tolower
+    } else {
+        annotations[["vj_insertion"]] <- annotations[["vj_insertion"]] %>%
+            gsub(pattern="[^A-Z]", replace="") %>%
+            tolower
     }
 
-    input_seqs <- input_filename %>%
-        data.table::fread()
-    num_gen_sequences <- input_seqs %>%
-        nrow
-    runIgor(input_filename,
-            file.path(getwd(), dir_name),
-            num_scenarios=num_scenarios,
-            num_gen_sequences=num_gen_sequences,
-            species=species,
-            chain=chain
-           )
+    indexed_seqs <- fread(file.path(igor_wd_name,
+                                    "aligns",
+                                    "igor_indexed_sequences.csv")
+    )
+
+    # Get query sequences from an igor alignment file. Add one to indices 
+    # since annotations$seq_index contains zero-based positions
+    annotations$sequence <- 
+        indexed_seqs[["sequence"]][1 + annotations[["seq_index"]]] %>%
+        tolower
+    annotations$sequence_alignment <- annotations$sequence
+    return(annotations)
 }
