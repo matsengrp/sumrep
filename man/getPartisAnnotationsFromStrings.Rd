@@ -8,7 +8,7 @@
 getPartisAnnotationsFromStrings(sequences, ...)
 }
 \arguments{
-\item{sequences}{List or vector of mature BCR sequences for annotation}
+\item{sequences}{List or vector of query BCR sequences for annotation}
 }
 \description{
 Run partis annotate on vector or list of sequences directly (i.e. without

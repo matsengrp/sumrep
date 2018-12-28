@@ -2,7 +2,7 @@
 % Please edit documentation in R/SummaryStats.R
 \name{getNearestNeighborDistribution}
 \alias{getNearestNeighborDistribution}
-\title{Get exact or approximate nearest neighbor distribution}
+\title{Get exact or approximate nearest neighbor distance distribution}
 \usage{
 getNearestNeighborDistribution(dat, column = "sequence", k = 1,
   approximate = TRUE, ...)
@@ -25,5 +25,5 @@ different definition of a "nearest neighbor"}
 vector of integer-value distances
 }
 \description{
-Get exact or approximate nearest neighbor distribution
+Get exact or approximate nearest neighbor distance distribution
 }

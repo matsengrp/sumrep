@@ -5,12 +5,14 @@
 \title{Get usage table from full list of categorical variables, such as
   genes or amino acids, setting zero to unused ones}
 \usage{
-getUsageTableFromFullList(factor_list, full_factor_list)
+getUsageTableFromFullList(factor_list, full_factor_list, standardize = TRUE)
 }
 \arguments{
 \item{factor_list}{List of factors}
 
 \item{full_factor_list}{Full list of reference factors under consideration}
+
+\item{standardize}{If TRUE, return relative frequencies rather than counts}
 }
 \value{
 A table of usage counts of \code{factor_list}

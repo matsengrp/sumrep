@@ -98,7 +98,7 @@ getPairwiseDistanceDistribution <- function(dat,
 
 #' Plot a summary distribution of one or more datasets
 #'
-#' @param dat_list A list of \code{data.table} objects corresponding to 
+#' @param dat_list A \code{list} of \code{data.table} objects corresponding to 
 #'    repertoire annotations
 #' @param summary_function A function that is applied to each dataset in 
 #'   \code{dat_list} and whose output values are plotted
@@ -1045,7 +1045,7 @@ getJointGeneTable <- function(dat,
 
 #' Compare joint gene distributions of two datasets
 #'
-#' @inheritParams comapreGermlineGeneDistributions
+#' @inheritParams compareGermlineGeneDistributions
 compareJointGeneDistributions <- function(dat_a,
                                           dat_b,
                                           gene_calls,
@@ -2609,6 +2609,9 @@ getAminoAcidDistribution <- function(dat,
     return(aa_dist)
 }
 
+#' Get the l1 divergence of two categorical distributions, manifest as 
+#'   \code{table} objects
+#'
 #' @param d1,d2 Table containing empirical frequencies 
 compareCategoricalDistributions <- function(d1,
                                             d2

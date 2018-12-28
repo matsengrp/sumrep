@@ -4,8 +4,8 @@
 \alias{getCDR3LengthDistribution}
 \title{Get the distribution of inferred length of CDR3 regions of each sequence.
   Requires either the \code{junction_length} or \code{junction} column for
-  \code{by_amino_acid=FALSE}, or the \code{junction_aa} column for
-  \code{by_amnio_acid=TRUE}.}
+  \code{by_amino_acid=FALSE}, or either the \code{junction} or 
+  \code{junction_aa} column for \code{by_amnio_acid=TRUE}.}
 \usage{
 getCDR3LengthDistribution(dat, by_amino_acid = FALSE)
 }
@@ -21,6 +21,6 @@ Vector of CDR3 lengths (in nt units)
 \description{
 Get the distribution of inferred length of CDR3 regions of each sequence.
   Requires either the \code{junction_length} or \code{junction} column for
-  \code{by_amino_acid=FALSE}, or the \code{junction_aa} column for
-  \code{by_amnio_acid=TRUE}.
+  \code{by_amino_acid=FALSE}, or either the \code{junction} or 
+  \code{junction_aa} column for \code{by_amnio_acid=TRUE}.
 }

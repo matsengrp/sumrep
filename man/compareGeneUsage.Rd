@@ -4,7 +4,7 @@
 \alias{compareGeneUsage}
 \title{Compare gene usage counts for two lists of genes}
 \usage{
-compareGeneUsage(gene_list_a, gene_list_b, collapse_alleles)
+compareGeneUsage(gene_list_a, gene_list_b, collapse_alleles, standardize)
 }
 \arguments{
 \item{gene_list_a}{First vector of genes}

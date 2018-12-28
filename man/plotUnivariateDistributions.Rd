@@ -5,14 +5,12 @@
 \title{Generate a gridded plot of each univariate distribution corresponding to
   one or more annotations datasets}
 \usage{
-plotUnivariateDistributions(dat_list, tall_plot = FALSE, do_exact = FALSE,
+plotUnivariateDistributions(dat_list, tall_plot = FALSE, plot_type,
   names = NULL, plot_function_strings = NULL)
 }
 \arguments{
-\item{dat_list}{A list of \code{data.table} objects corresponding to 
+\item{dat_list}{A \code{list} of \code{data.table} objects corresponding to 
 repertoire annotations}
-
-\item{do_exact}{Display exact distribution plots rather than histograms}
 
 \item{names}{Strings to be displayed by the legend corresponding to the 
 elements of \code{dat_list}}

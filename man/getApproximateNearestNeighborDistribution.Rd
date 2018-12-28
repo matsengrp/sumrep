@@ -4,19 +4,30 @@
 \alias{getApproximateNearestNeighborDistribution}
 \title{Runs a special approximation routine since nearest neighbor distances are
   not a regular distribution for subsampling. (Since the nearest neighbor
-  distance of a sample is necessarily larger than that of the population)
-  So, we cluster the sequences using vsearch and sample sequences based
-  on cluster frequency. This ensures no nearest neighbor distance is higher
-  than the given cutoff.}
+  distance of a sample is necessarily larger than that of the population)}
 \usage{
-getApproximateNearestNeighborDistribution(dat, column, k = 1,
-  pairwise_identity = 0, tol = 0.01, batch_size = 100)
+getApproximateNearestNeighborDistribution(dat, column, tol = 0.001,
+  batch_size = 50)
+}
+\arguments{
+\item{dat}{}
+
+\item{column}{The column over which the nearest neighbor distance
+should be computed. Must correspond to sequence strings, e.g. DNA or
+amino acid sequences.}
+
+\item{tol}{The allowed tolerance for determining convergence.}
+
+\item{batch_size}{The number of sequences sampled during each iteration.}
+
+\item{dat}{The dataset for which the distribution is desired}
+}
+\value{
+Approximate nearest neighbor distance distribution of sequences
+  given by \code{dat[[column]]}
 }
 \description{
 Runs a special approximation routine since nearest neighbor distances are
   not a regular distribution for subsampling. (Since the nearest neighbor
   distance of a sample is necessarily larger than that of the population)
-  So, we cluster the sequences using vsearch and sample sequences based
-  on cluster frequency. This ensures no nearest neighbor distance is higher
-  than the given cutoff.
 }

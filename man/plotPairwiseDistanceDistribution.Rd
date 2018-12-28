@@ -4,14 +4,12 @@
 \alias{plotPairwiseDistanceDistribution}
 \title{Plot the pairwise distance distribution of one or more datasets}
 \usage{
-plotPairwiseDistanceDistribution(dat_list, do_exact = FALSE, names = NULL,
-  ...)
+plotPairwiseDistanceDistribution(dat_list, plot_type, names = NULL,
+  show_legend = TRUE, ...)
 }
 \arguments{
-\item{dat_list}{A list of \code{data.table} objects corresponding to 
+\item{dat_list}{A \code{list} of \code{data.table} objects corresponding to 
 repertoire annotations}
-
-\item{do_exact}{Display exact distribution plots rather than histograms}
 
 \item{names}{Strings to be displayed by the legend corresponding to the 
 elements of \code{dat_list}}

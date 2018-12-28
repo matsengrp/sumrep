@@ -4,7 +4,8 @@
 \alias{compareVGeneDistributions}
 \title{Compare V gene distribution between two repertoires}
 \usage{
-compareVGeneDistributions(dat_a, dat_b, collapse_alleles = TRUE)
+compareVGeneDistributions(dat_a, dat_b, collapse_alleles = TRUE,
+  standardize = TRUE)
 }
 \arguments{
 \item{dat_a}{A \code{data.table} corresponding to repertoire annotations}

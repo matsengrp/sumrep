@@ -4,7 +4,8 @@
 \alias{compareVDJDistributions}
 \title{Compare joint V, D, and J gene usage between two annotated repertoires}
 \usage{
-compareVDJDistributions(dat_a, dat_b, collapse_alleles = TRUE)
+compareVDJDistributions(dat_a, dat_b, collapse_alleles = TRUE,
+  by_frequency = TRUE)
 }
 \arguments{
 \item{dat_a}{A \code{data.table} corresponding to repertoire annotations}

@@ -2,17 +2,17 @@
 % Please edit documentation in R/SummaryStats.R
 \name{compareAtchleyFactorDistributions}
 \alias{compareAtchleyFactorDistributions}
-\title{Compare the distributions of mean Atchley factors for two datasets}
+\title{Compare the distributions of Atchley factors for two datasets}
 \usage{
-compareAtchleyFactorDistributions(dat_a, dat_b)
+compareAtchleyFactorDistributions(dat_a, dat_b, column = "junction_aa")
 }
 \arguments{
-\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire 
+annotations}
 }
 \value{
-Estimated mean absolute difference of the mean of each Atchley factor
-  of \code{dat_a} and \code{dat_b}
+Vector of divergences of each Atchley factor distribution
 }
 \description{
-Compare the distributions of mean Atchley factors for two datasets
+Compare the distributions of Atchley factors for two datasets
 }

@@ -4,7 +4,8 @@
 \alias{compareGermlineGeneDistributions}
 \title{Compare germline V, D, or J gene usage for two repertoires}
 \usage{
-compareGermlineGeneDistributions(dat_a, dat_b, gene_type, collapse_alleles)
+compareGermlineGeneDistributions(dat_a, dat_b, gene_type, collapse_alleles,
+  standardize)
 }
 \arguments{
 \item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
