@@ -2680,56 +2680,70 @@ compareAminoAcid2merDistributions <-
 }
 
 #' @inheritParams plotUnivariateDistributions
-getUnivariateDistributionPlots <- function(dat_list,
+getUnivariateDistributionDataTable <- function(dat_list,
                                            plot_type,
                                            names=NULL,
-                                           plot_function_strings=NULL
+                                           plot_function_strings=NULL,
+                                           do_all_plots=FALSE
                                           ) {
     if(plot_function_strings %>% is.null) {
-        plot_function_strings <- list("plotPairwiseDistanceDistribution",
-                                      "plotGCContentDistribution",
-                                      "plotHotspotCountDistribution",
-                                      "plotColdspotCountDistribution",
-                                      "plotDistanceFromGermlineToSequenceDistribution",
-                                      "plotCDR3LengthDistribution",
-                                      "plotAliphaticIndexDistribution",
-                                      "plotGRAVYDistribution",
-                                      "plotPolarityDistribution",
-                                      "plotChargeDistribution",
-                                      "plotBasicityDistribution",
-                                      "plotAcidityDistribution",
-                                      "plotAromaticityDistribution",
-                                      "plotBulkinessDistribution",
-                                      "plotPositionalDistanceBetweenMutationsDistribution",
-                                      "plotVGene3PrimeDeletionLengthDistribution",
-                                      "plotDGene3PrimeDeletionLengthDistribution",
-                                      "plotDGene5PrimeDeletionLengthDistribution",
-                                      "plotJGene5PrimeDeletionLengthDistribution",
-                                      "plotVDInsertionLengthDistribution",
-                                      "plotDJInsertionLengthDistribution",
-                                      "plotClusterSizeDistribution"
+        plot_function_strings <- list(
+                                      "getPairwiseDistanceDistribution",
+                                      "getGCContentDistribution",
+                                      "getHotspotCountDistribution",
+                                      "getColdspotCountDistribution",
+                                      "getDistanceFromGermlineToSequenceDistribution",
+                                      "getCDR3LengthDistribution",
+                                      "getAliphaticIndexDistribution",
+                                      "getGRAVYDistribution",
+                                      "getPolarityDistribution",
+                                      "getChargeDistribution",
+                                      "getBasicityDistribution",
+                                      "getAcidityDistribution",
+                                      "getAromaticityDistribution",
+                                      "getBulkinessDistribution",
+                                      "getPositionalDistanceBetweenMutationsDistribution",
+                                      "getVGene3PrimeDeletionLengthDistribution",
+                                      "getDGene3PrimeDeletionLengthDistribution",
+                                      "getDGene5PrimeDeletionLengthDistribution",
+                                      "getJGene5PrimeDeletionLengthDistribution",
+                                      "getVDInsertionLengthDistribution",
+                                      "getDJInsertionLengthDistribution",
+                                      "getClusterSizeDistribution"
                                      )
+        if(do_all_plots) {
+            plot_function_strings <- c(plot_function_strings,
+                                       "getNearestNeighborDistribution"
+                                      )
+        }
     } 
 
-    plots <- {}
-    for(f_string in plot_function_strings) {
-        plot_function <- eval(parse(text=f_string))
-        plots[[f_string]] <- dat_list %>% 
-            plot_function(plot_type=plot_type,
-                          names=names,
-                          show_legend=FALSE
-                          )
-    }
+    plot_names <- plot_function_strings %>%
+        sapply(getNameFromFunctionString)
 
-    legend <- dat_list %>% plot_function(plot_type=plot_type,
-                                           names=names,
-                                           show_legend=TRUE
-                                          ) %>%
-        cowplot::get_legend() %>%
-        plot_grid(NULL, .) %>%
-        ggdraw()
-    
-    return(c(plots, legend))
+    distribution_df <- dat_list %>%
+        Map(
+            function(dat, dat_name) {
+                dat_df <- Map(
+                    function(f_string, name) {
+                        f <- eval(parse(text=f_string))
+                        distribution <- f(dat=dat)
+                        dist_dat <- data.table(Value=distribution, 
+                                               Dataset=dat_name,
+                                               Name=name)
+                        return(dist_dat)
+                    },
+                    plot_function_strings,
+                    plot_names
+                ) %>%
+                    do.call("rbind", .)
+               return(dat_df)
+            },
+            .,
+            names
+        ) %>%
+            do.call("rbind", .)
+
 }
 
 #' Generate a gridded plot of each univariate distribution corresponding to
@@ -2739,16 +2753,59 @@ getUnivariateDistributionPlots <- function(dat_list,
 #' @param names Strings to be displayed by the legend corresponding to the 
 #'   elements of \code{dat_list}
 plotUnivariateDistributions <- function(dat_list,
-                                        tall_plot=FALSE,
                                         plot_type,
                                         names=NULL,
-                                        plot_function_strings=NULL
+                                        plot_function_strings=NULL,
+                                        do_all_plots=FALSE
                                        ) {
+    distribution_dat <- getUnivariateDistributionDataTable(
+        dat_list,
+        plot_type=plot_type,
+        names=names,
+        plot_function_strings=plot_function_strings,
+        do_all_plots=do_all_plots
+    )
+    p <- distribution_dat %>% ggplot(aes(x=Value,
+                                   group=Dataset,
+                                   colour=Dataset
+                                  )) +
+        facet_wrap( ~ Name, scales="free")
+    if(plot_type == "freqpoly") {
+        p <- p + geom_freqpoly()
+    } else if(plot_type == "ecdf") {
+        p <- p + stat_ecdf()
+    }
 
-    plots <- dat_list %>%
-        getUnivariateDistributionPlots(plot_type=plot_type,
-                                       names=names,
-                                       plot_function_strings=plot_function_strings)
-    multiplot(plotlist=c(plots, legend), tall_plot=tall_plot)
     return(p)
+    return(plots)
+}
+
+getNameFromFunctionString <- function(function_string) {
+    name_hash <- list(
+        getNearestNeighborDistribution="Nearest neighbor distance",
+        getPairwiseDistanceDistribution="Pairwise distance",
+        getGCContentDistribution="GC content",
+        getHotspotCountDistribution="Hotspot count",
+        getColdspotCountDistribution="Coldsplot count",
+        getDistanceFromGermlineToSequenceDistribution="Dist. from germ. to seq.",
+        getCDR3LengthDistribution="CDR3 length",
+        getAliphaticIndexDistribution="Aliphatic index",
+        getGRAVYDistribution="GRAVY index",
+        getPolarityDistribution="Polarity",
+        getChargeDistribution="Charge",
+        getBasicityDistribution="Basicity",
+        getAcidityDistribution="Acidity",
+        getAromaticityDistribution="Aromaticity",
+        getBulkinessDistribution="Bulkiness",
+        getPositionalDistanceBetweenMutationsDistribution="Pos. dist. b/w muts.",
+        getVGene3PrimeDeletionLengthDistribution="V 3' del. length",
+        getDGene3PrimeDeletionLengthDistribution="D 3' del. length",
+        getDGene5PrimeDeletionLengthDistribution="D 5' del. length",
+        getJGene5PrimeDeletionLengthDistribution="J 5' del. length",
+        getVDInsertionLengthDistribution="VD insertion length",
+        getDJInsertionLengthDistribution="DJ insertion length",
+        getClusterSizeDistribution="Cluster size"
+    )
+
+    return(name_hash[[function_string]])
 }
