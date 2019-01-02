@@ -1,5 +1,10 @@
 # *Sum*mary Statistics for BCR and TCR *Rep*ertoires
 
+`sumrep` is a package for summarizing, visualizing, and comparing immune receptor repertoires.
+It contains dozens of different summary statistics to be applied on various levels of assumptions, from raw query reads to  inferred phylogenies.
+It currently supports the IgH, IgL, IgK, TRA, and TRB loci.
+The [usage](#usage) section provides in-depth instructions on how to use `sumrep` to analyze and gain insights from your data.
+
 ## Installation Notes
 ### Installing `sumrep`
 * Although `sumrep` is still in development, we can use the `devtools` package to load `sumrep` in R as a makeshift pacakge. Follow the instructions from the [`devtools` repo](https://github.com/hadley/devtools) for installation instructions.
