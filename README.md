@@ -124,6 +124,50 @@ junction_pairwise_distances <- getPairwiseDistanceDistribution(dat, column="junc
 ```
 Column defaults are chosen to agree with the [AIRR standard](http://docs.airr-community.org/en/latest/datarep/rearrangements.html#fields), but can be manually set via the `column` argument to many of these functions.
 
+The following table details the available distribution retrieval functions in `sumrep`:
+
+| sumrep function                                   | Summary statistic                                                                       | Assumptions              | Packages used | Comments                                  |
+|---------------------------------------------------|-----------------------------------------------------------------------------------------|--------------------------|---------------|-------------------------------------------|
+| getPairwiseDistanceDistribution                   | Pairwise Levenshtein distance of sequences                                              | None                     | stringdist    |                                           |
+| getNearestNeighborDistribution                    | Nearest neighbor Levenshtein distance of sequences                                      | None                     | stringdist    |                                           |
+| getGCContentDistribution                          | Sequence-wise GC contents                                                               | None                     | ape           |                                           |
+| getHotspotCountDistribution                       | Sequence-wise hotspot counts                                                            | None                     | Biostrings    | "WRC" and "WA" are default hotspot motifs |
+| getColdspotCountDistribution                      | Sequence-wise coldspot counts                                                           | None                     | Biostrings    | "SYC" are default coldspot motifs         |
+| getDistanceFromGermlineToSequenceDistribution     | Distribution of Levenshtein distances from `germline_alignment` to `sequence_alignment` | Annotations              | stringdist    |                                           |
+| getCDR3LengthDistribution                         | Distribution of CDR3 lengths, including conserved CDR3 anchors                          | Annotations              |               |                                           |
+| getGRAVYDistribution                              | Distribution of GRAVY indices                                                           | Annotations              | alakazam      |                                           |
+| getKideraFactorDistributions                      | Distributions of each of the ten Kidera factors                                         | Annotations              | Peptides      |                                           |
+| getAtchleyFactorDistributions                     | Distributions of each of the five Atchley factors                                       | Annotations              | HDMD          |                                           |
+| getPolarityDistribution                           | Distribution of sequence-wise polarity values                                           | Annotations              | alakazam      |                                           |
+| getChargeDistribution                             | Distribution of sequence-wise charge values                                             | Annotations              | alakazam      |                                           |
+| getBasicityDistribution                           | Distribution of sequence-wise basicity values                                           | Annotations              | alakazam      |                                           |
+| getAcidityDistribution                            | Distribution of sequence-wise acidity values                                            | Annotations              | alakazam      |                                           |
+| getAromaticityDistribution                        | Distribution of sequence-wise aromaticity values                                        | Annotations              | alakazam      |                                           |
+| getBulkinessDistribution                          | Distribution of sequence-wise bulkiness values                                          | Annotations              | alakazam      |                                           |
+| getCDR3PairwiseDistanceDistribution               | Pairwise Levenshtein distance of CDR3 sequences                                         | Annotations              |               |                                           |
+| getPerGeneMutationRates                           | Mutation rates of each observed germline gene                                           | Annotations              |               |                                           |
+| getPerGenePerPositionMutationRates                | Mutation rates of each position of each observed germline gene                          | Annotations              |               |                                           |
+| getSubstitutionModel                              | Inferred substitution matrix for somatically hypermutated sequences                     | Annotations              | shazam        |                                           |
+| getMutabilityModel                                | Inferred mutability matrix for somatically hypermutated sequences                       | Annotations              | shazam        |                                           |
+| getPositionalDistanceBetweenMutationsDistribution | Distribution of positional distances between mutations over all sequences               | Annotations              |               |                                           |
+| getVGene3PrimeDeletionLengthDistribution          | Distribution of V 3' intron lengths                                                     | Annotations              |               |                                           |
+| getVGene5PrimeDeletionLengthDistribution          | Distribution of V 5' intron lengths                                                     | Annotations              |               |                                           |
+| getDGene3PrimeDeletionLengthDistribution          | Distribution of D 3' intron lengths                                                     | Annotations              |               |                                           |
+| getDGene5PrimeDeletionLengthDistribution          | Distribution of D 5' intron lengths                                                     | Annotations              |               |                                           |
+| getJGene3PrimeDeletionLengthDistribution          | Distribution of J 3' intron lengths                                                     | Annotations              |               |                                           |
+| getJGene5PrimeDeletionLengthDistribution          | Distribution of J 5' intron lengths                                                     | Annotations              |               |                                           |
+| getVDInsertionLengthDistribution                  | Distribution of VD exon lengths                                                         | Annotations              |               |                                           |
+| getDJInsertionLengthDistribution                  | Distribution of DJ exon lengths                                                         | Annotations              |               |                                           |
+| getVJInsertionLengthDistribution                  | Distribution of VJ exon lengths                                                         | Annotations              |               |                                           |
+| getVDInsertionMatrix                              | Empirical transition matrix for VD exons                                                | Annotations              |               |                                           |
+| getDJInsertionMatrix                              | Empirical transition matrix for DJ exons                                                | Annotations              |               |                                           |
+| getVJInsertionMatrix                              | Empirical transition matrix for VJ exons                                                | Annotations              |               |                                           |
+| getInFramePercentage                              | Percentage of sequences whose V and J regions are in-frame                              | Annotations              |               |                                           |
+| getClusterSizeDistribution                        | Distribution of clonal family cluster sizes                                             | Clonal family clustering |               |                                           |
+| getHillNumbers                                    | Hill numbers of clonal family clusters                                                  | Clonal family clustering | alakazam      |                                           |
+| getSelectionEstimate                              | Distribution of estimated selection strengths of clonal family clusters                 | Clonal family clustering | shazam        |                                           |
+
+
 ### Comparing distributions
 Functions to compare distributions of two annotations datasets, say `dat_a` and `dat_b`, are in general of the form `compareXDistributions`, and expect two `data.tables` as input.
 For example, to compare the pairwise distance distributions of `dat_a` and `dat_b`, we would have
