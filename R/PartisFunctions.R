@@ -1,5 +1,3 @@
-require(stringr)
-
 #' Call partis
 #'
 #' \code{callPartis} calls partis from within the sumrep package.
@@ -27,7 +25,7 @@ callPartis <- function(action,
                        extra_columns
                        ) {
     shell <- Sys.getenv("SHELL")
-    script.file <- system.file("run_partis.sh", package="sumrep")
+    script.file <- system.file("bash", "run_partis.sh", package="sumrep")
     command <- paste(shell, script.file, 
                      "-p", partis_path, 
                      "-a", action, 
@@ -166,7 +164,7 @@ getFullPartisAnnotation <- function(output_path,
                                    ) {
     extended_output_filename <- "new_output.csv"
     extended_output_filepath <- file.path(output_path, extended_output_filename)
-    script_file <- system.file("process_output.py", package="sumrep")
+    script_file <- system.file("python", "process_output.py", package="sumrep")
     script_command <-  paste("python", script_file, output_file, 
                              extended_output_filepath, 
                              partis_path %>% 

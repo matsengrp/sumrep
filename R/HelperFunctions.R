@@ -2,6 +2,8 @@
 #'
 #' @param l List or vector of strings
 #' @return The given list or vector with all empty strings removed
+#'
+#' @export
 removeEmptyStrings <- function(l) {
     return(l[l != ""])
 }
@@ -14,6 +16,8 @@ maskEmptyStringWithNA <- function(s) {
 #' 
 #' @param List or vector of either strings or char vectors of DNA sequences
 #' @return Vector of strings of DNA sequences
+#'
+#' @export
 standardizeList <- function(l) {
     new_list <- l %>% 
         sapply(toString) %>%
@@ -27,6 +31,8 @@ standardizeList <- function(l) {
 #' 
 #' @param filename Name of fasta file including the sequences
 #' @return A vector of DNA sequence strings
+#'
+#' @export
 getSequenceListFromFasta <- function(filename) {
     sequences <- filename %>% 
         seqinr::read.fasta() %>% 
@@ -57,6 +63,8 @@ filterStringsForAAFunctions <- function(sequence_list) {
 #' 
 #' @param sequence String of DNA bases
 #' @return String of single-letter amino acid codes
+#'
+#' @export
 convertNucleobasesToAminoAcidsBySequence <- function(sequence) {
     aa <- ifelse(!is.na(sequence),
                  sequence %>%
@@ -75,6 +83,8 @@ convertNucleobasesToAminoAcidsBySequence <- function(sequence) {
 #'
 #' @param sequence_list Vector of string of DNA bases
 #' @return Vector of strings of single-letter amino acid codes
+#'
+#' @export
 convertNucleobasesToAminoAcids <- function(sequence_list) {
     aa_sequences <- sequence_list %>% 
         filterStringsForAAFunctions %>%
@@ -87,6 +97,8 @@ convertNucleobasesToAminoAcids <- function(sequence_list) {
 #' @param aa_sequence String of single-letter amino acid codons
 #' @return A boolean stating whether any unrecognized AA codons are present 
 #'   in \code{aa_sequence}
+#'
+#' @export
 hasUnrecognizedAminoAcids <- function(aa_sequence) {
     return(grepl("X", aa_sequence))  
 }
@@ -96,6 +108,8 @@ hasUnrecognizedAminoAcids <- function(aa_sequence) {
 #' @param aa_sequence String of single-letter amino acid codes
 #' @return A boolean stating whether any stop codons are present 
 #'   in \code{aa_sequence}
+#'
+#' @export
 hasStopCodon <- function(aa_sequence) {
     return(grepl("\\*", aa_sequence))
 }

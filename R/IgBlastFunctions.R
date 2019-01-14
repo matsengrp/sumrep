@@ -1,7 +1,3 @@
-require(data.table)
-require(dplyr)
-require(shazam)
-
 #' Get IgBLAST annotations from an input fasta file
 #'
 #' The routine changes directories to the provided igblast directory,

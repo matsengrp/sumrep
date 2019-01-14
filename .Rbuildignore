@@ -1,0 +1,7 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^Examples
+^Images
+^data-raw
+partis_env.yml
+requirements.txt

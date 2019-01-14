@@ -5,7 +5,9 @@
 Dev/*
 *output*
 tests/testthat/_output*
-*.rds
 .RData
 .RHistory
-.Rhistory
+man/*.Rd
+vignettes/*.R
+vignettes/*.html
+vignettes/*.pdf

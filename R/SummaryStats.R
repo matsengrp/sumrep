@@ -1,22 +1,5 @@
-require(alakazam)
-require(ape)
-require(Biostrings)
-require(CollessLike)
-require(data.table)
-require(dplyr)
-require(HDMD)
-require(jsonlite)
-require(magrittr)
-require(pegas)
-require(Peptides)
-require(RecordLinkage)
-require(shazam)
-require(seqinr)
-require(stringdist)
-require(textmineR)
-require(yaml)
-
-source("R/PartisFunctions.R")
+#' @include PartisFunctions.R
+NULL
 
 #' Determine the comparison method for stringdistmatrix 
 #'

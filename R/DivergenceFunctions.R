@@ -1,5 +1,3 @@
-require(entropy)
-
 #' Discretize two lists of continuous data into mutual, well-defined bins.
 #' 
 #' @param list_a First list to bin
@@ -14,7 +12,8 @@ require(entropy)
 #' names(binned)[1:2] <- c("count", "list_id")
 #' ggplot(binned, aes(x=bin_number, y=count, fill=as.factor(list_id))) + 
 #'     geom_bar(stat="identity", position="dodge")
-
+#'
+#' @export
 binContinuousListsAsDiscrete <- function(list_a, list_b) {
     tabulateData <- function(data_list) {
         result <- data_list %>%
@@ -50,6 +49,8 @@ binContinuousListsAsDiscrete <- function(list_a, list_b) {
 #' @param sample_2 Second data sample
 #' @return Approximate JS divergence of the distributions induced from sample_1
 #'   and sample_2
+#'
+#' @export
 getContinuousJSDivergenceByIntegration <- function(sample_1, sample_2) {
     m <- function(x) {
         result <- 0.5*(p(x) + q(x))
@@ -97,6 +98,8 @@ getContinuousJSDivergenceByIntegration <- function(sample_1, sample_2) {
 #' getJSDivergence(l1, l2)
 #' getJSDivergence(l2, l1)
 #' getJSDivergence(l1, l1)
+#'
+#' @export
 getJSDivergence <- function(list_a, 
                             list_b, 
                             continuous=FALSE, 
@@ -164,6 +167,8 @@ getContinuousJSDivergence <- function(list_a, list_b) {
 #' @param sequence_a First sequence, either a vector or matrix
 #' @param sequence_b Second sequence
 #' @param ignore_na Should we ignore na values when computing the mean?
+#'
+#' @export
 getSumOfAbsoluteDifferences <- function(sequence_a, sequence_b, ignore_na=TRUE) {
     difference <- (sequence_a - sequence_b) %>% 
         abs %>% 
@@ -193,6 +198,8 @@ getSumOfAbsoluteDifferences <- function(sequence_a, sequence_b, ignore_na=TRUE) 
 #' seq_2 <- c("AAAAC", "ACATG", "CGGGA", "ACATG", "GGACA")
 #' getAverageDivergence(seq_1, seq_2, getNearestNeighborDistances, 
 #'   subsample_count=3, trial_count=20, k=2)
+#'
+#' @export
 getAverageDivergence <- function(dataset_a, 
                                  dataset_b, 
                                  summary_function, 
@@ -221,6 +228,8 @@ getAverageDivergence <- function(dataset_a,
 #'   difference between iterates
 #' @return The average computed divergence across trials, used as an
 #'   estimate of the true JS divergence
+#'
+#' @export
 getAutomaticAverageDivergence <- function(dataset_a,
                                           dataset_b,
                                           summary_function,

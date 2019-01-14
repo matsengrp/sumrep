@@ -1,7 +1,7 @@
 library(sumrep)
 context("Partis annotations and partitions")
 
-test_data_path <- system.file("data/test_data.fa", package="sumrep")
+test_data_path <- system.file("extdata", "test_data.fa", package="sumrep")
 
 test_that("sumrep correctly calls partis annotate", {
     dat_a <- getPartisAnnotations(test_data_path, 

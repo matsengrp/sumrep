@@ -2,7 +2,9 @@
 #' 
 #' @inheritParams subsample
 #' @param v Vector to subsample
-#' @return A subsampled vector 
+#' @return A subsampled vector
+#' 
+#' @export
 subsampleVector <- function(v, 
                             sample_count,
                             replace=TRUE
@@ -25,6 +27,8 @@ subsampleVector <- function(v,
 #' @param sample_count Number of samples to retain in the subsampled data.
 #'   Samples refers to elements in a vector or rows in a data.table/data.frame
 #' @return A subsampled dataset of the same type given by \code{dataset}
+#'
+#' @export
 subsample <- function(dataset, 
                       sample_count,
                       replace=TRUE
@@ -60,6 +64,8 @@ subsample <- function(dataset,
 #' @param divergence_function The divergence computed between successive iterates.
 #'   This should probably be the JS divergence, specified for discrete or continuous data
 #'   depending on the nature of \code{summary_function}
+#'
+#' @export
 getApproximateDistribution <- function(dat,
                                        summary_function,
                                        sample_count=100,
@@ -96,6 +102,8 @@ getApproximateDistribution <- function(dat,
 #' @param batch_size The number of sequences sampled during each iteration.
 #' @return Approximate nearest neighbor distance distribution of sequences
 #'   given by \code{dat[[column]]}
+#'
+#' @export
 getApproximateNearestNeighborDistribution <- function(dat,
                                                       column,
                                                       tol=10e-4,
@@ -122,6 +130,8 @@ getApproximateNearestNeighborDistribution <- function(dat,
 #' @inheritParams getApproximateNearestNeighborDistribution
 #' @return Sample of \code{batch_size} nearest neighbor distances from 
 #'   \code{dat[[column]]} 
+#'
+#' @export
 doNNSubsamplingBatchStep <- function(dat,
                                      batch_size=10,
                                      column
