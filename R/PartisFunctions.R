@@ -55,8 +55,13 @@ callPartis <- function(action,
     # partis by default alters these, and it's not straightforward to
     # get both the raw and altered sequences (we need both).
     annotation_filename <- output_filename %>%
-        gsub(pattern='.csv',
-             replace='-cluster-annotations.csv')
+        ifelse(action == "partition",
+               gsub(., 
+                    pattern='.csv',
+                    replace='-cluster-annotations.csv'
+                   ),
+               .
+              )
     partis_dataset <- appendQuerySequencesToPartisAnnotationsFile(
         input_filename,
         annotation_filename
@@ -272,14 +277,11 @@ collapseClones <- function(partition_dataset) {
 #' @param collapse_clones Convert a row of colon-separated clonal families to
 #'   separate rows for each member
 readPartisAnnotations <- function(output_path,
-                                  output_filename,
+                                  annotation_filename,
                                   partis_path=Sys.getenv("PARTIS_PATH"),
                                   do_full_annotation=FALSE,
                                   collapse_clones=TRUE
                                 ) {
-    annotation_filename <- output_filename %>%
-        gsub(pattern='.csv',
-             replace='-cluster-annotations.csv')
     annotation_file <- file.path(output_path,
                                  annotation_filename)
 
@@ -414,6 +416,9 @@ getPartisAnnotations <- function(input_filename,
                                               germline_dir=germline_dir,
                                               extra_columns=extra_columns
                                              )
+        annotation_filename <- output_filename %>%
+            gsub(pattern='.csv',
+                 replace='-cluster-annotations.csv')
     } else {
         output_file <- file.path(output_path, output_filename)
         annotated_data <- callPartis(action="annotate", 
@@ -422,12 +427,14 @@ getPartisAnnotations <- function(input_filename,
                                      output_path=output_path, 
                                      partis_path=partis_path, 
                                      num_procs=num_procs,
-                                     locus=locus
+                                     locus=locus,
+                                     extra_columns=extra_columns
                                      )
+        annotation_filename <- output_filename
     }
 
     annotation_object <- readPartisAnnotations(output_path,
-                                               output_filename=output_filename,
+                                               annotation_filename=annotation_filename,
                                                partis_path=partis_path,
                                                do_full_annotation=do_full_annotation,
                                                collapse_clones=collapse_clones
@@ -492,7 +499,8 @@ getPartisSimulation <- function(parameter_dir,
                                 cleanup=TRUE,
                                 do_full_annotation=FALSE,
                                 extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq",
-                                mimic_data_read_length=TRUE
+                                mimic_data_read_length=TRUE,
+                                seed=NULL
                                ) {
     partis_command <- paste(partis_path, 
                             "simulate", 
@@ -522,6 +530,12 @@ getPartisSimulation <- function(parameter_dir,
                                 "--mimic-data-read-length")
                                 
     }   
+    if(!is.null(seed)) {
+        partis_command <- paste(partis_command,
+                                "--seed",
+                                seed
+                                )
+    }
 
     print(partis_command)
 
