@@ -128,11 +128,9 @@ doNNSubsamplingBatchStep <- function(dat,
                                     ) {
     nn_sample <- replicate(batch_size,
         {
-            unique_id <- sample(dat$unique_id, 
-                                  1
-                                 )
-            seq_dat <- dat[dat$unique_id == unique_id, ]
-            nn_dist <- stringdist::stringdist(dat[dat$unique_id != unique_id, ][[column]],
+            unique_id <- sample(nrow(dat), 1)
+            seq_dat <- dat[unique_id, ]
+            nn_dist <- stringdist::stringdist(dat[-unique_id, ][[column]],
                                               seq_dat[[column]],
                                               method="lv"
                                              ) %>%
