@@ -76,6 +76,8 @@ getIgBlastAnnotations <- function(input_filename,
                                  igblast_exec,
                                  "-o",
                                  full_output_filename,
+                                 "--nproc",
+                                 num_threads,
                                  sep=" "
                                 )
 
