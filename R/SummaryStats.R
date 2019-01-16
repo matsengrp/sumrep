@@ -2682,11 +2682,11 @@ compareAminoAcid2merDistributions <-
 
 #' @inheritParams plotUnivariateDistributions
 getUnivariateDistributionDataTable <- function(dat_list,
-                                           plot_type,
-                                           names=NULL,
-                                           plot_function_strings=NULL,
-                                           do_all_plots=FALSE
-                                          ) {
+                                               plot_type="freqpoly",
+                                               names=NULL,
+                                               plot_function_strings=NULL,
+                                               do_all_plots=FALSE
+                                              ) {
     if(plot_function_strings %>% is.null) {
         plot_function_strings <- list(
                                       "getPairwiseDistanceDistribution",
@@ -2772,22 +2772,23 @@ plotUnivariateDistributions <- function(dat_list,
                                   )) +
         facet_wrap( ~ Name, scales="free")
     if(plot_type == "freqpoly") {
-        p <- p + geom_freqpoly()
+        p <- p + geom_freqpoly(aes(y=..density..))
     } else if(plot_type == "ecdf") {
         p <- p + stat_ecdf()
     }
 
     return(p)
-    return(plots)
 }
 
 getNameFromFunctionString <- function(function_string) {
     name_hash <- list(
         getNearestNeighborDistribution="Nearest neighbor distance",
+        getNNDistanceDistribution="Nearest neighbor distance",
         getPairwiseDistanceDistribution="Pairwise distance",
+        getCDR3PairwiseDistanceDistribution="CDR3 pairwise dist.",
         getGCContentDistribution="GC content",
         getHotspotCountDistribution="Hotspot count",
-        getColdspotCountDistribution="Coldsplot count",
+        getColdspotCountDistribution="Coldspot count",
         getDistanceFromGermlineToSequenceDistribution="Dist. from germ. to seq.",
         getCDR3LengthDistribution="CDR3 length",
         getAliphaticIndexDistribution="Aliphatic index",
@@ -2798,14 +2799,44 @@ getNameFromFunctionString <- function(function_string) {
         getAcidityDistribution="Acidity",
         getAromaticityDistribution="Aromaticity",
         getBulkinessDistribution="Bulkiness",
+        getInFramePercentage="In frame %",
+        getAminoAcidDistribution="AA frequencies",
+        getAminoAcid2merDistribution="AA 2mer frequencies",
         getPositionalDistanceBetweenMutationsDistribution="Pos. dist. b/w muts.",
+        getVGeneDistribution="V usage",
+        getDGeneDistribution="D usage",
+        getJGeneDistribution="J usage",
+        getVDJDistribution="VDJ usage",
         getVGene3PrimeDeletionLengthDistribution="V 3' del. length",
         getDGene3PrimeDeletionLengthDistribution="D 3' del. length",
         getDGene5PrimeDeletionLengthDistribution="D 5' del. length",
         getJGene5PrimeDeletionLengthDistribution="J 5' del. length",
         getVDInsertionLengthDistribution="VD insertion length",
         getDJInsertionLengthDistribution="DJ insertion length",
-        getClusterSizeDistribution="Cluster size"
+        getVDInsertionMatrice="VD insertion matrix",
+        getDJInsertionMatrice="DJ insertion matrix",
+        getClusterSizeDistribution="Cluster size",
+
+        SubstitutionModelDivergence="Substitution model",
+        MutabilityModelDivergence="Mutability model",
+        getSelectionEstimate="Selection estimate",
+
+        KideraFactor1Divergence="Kidera factor 1",
+        KideraFactor2Divergence="Kidera factor 2",
+        KideraFactor3Divergence="Kidera factor 3",
+        KideraFactor4Divergence="Kidera factor 4",
+        KideraFactor5Divergence="Kidera factor 5",
+        KideraFactor6Divergence="Kidera factor 6",
+        KideraFactor7Divergence="Kidera factor 7",
+        KideraFactor8Divergence="Kidera factor 8",
+        KideraFactor9Divergence="Kidera factor 9",
+        KideraFactor10Divergence="Kidera factor 10",
+
+        AtchleyFactor1Divergence="Atchley factor 1",
+        AtchleyFactor2Divergence="Atchley factor 2",
+        AtchleyFactor3Divergence="Atchley factor 3",
+        AtchleyFactor4Divergence="Atchley factor 4",
+        AtchleyFactor5Divergence="Atchley factor 5"
     )
 
     return(name_hash[[function_string]])
