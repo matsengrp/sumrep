@@ -103,7 +103,7 @@ getIgBlastAnnotations <- function(input_filename,
             cluster_filename <-  file.path(
                                           gsub(changeo_filename,
                                           pattern=".tsv",
-                                          replace="_clustered.tsv"
+                                          replacement="_clustered.tsv"
                                          )
                                  )
             cluster_command <- paste(file.path(changeo_dir,

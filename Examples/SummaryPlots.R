@@ -32,8 +32,8 @@ scoreStatistics <- function(sim_dats, obs_dats) {
 
 shortenName <- function(string) {
     shortened_name <- string %>% 
-        gsub(pattern="compare", replace="") %>%
-        gsub(pattern="Distribution", replace="")
+        gsub(pattern="compare", replacement="") %>%
+        gsub(pattern="Distribution", replacement="")
     return(shortened_name)
 }
 

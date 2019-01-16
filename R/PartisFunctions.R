@@ -54,7 +54,7 @@ callPartis <- function(action,
     # get both the raw and altered sequences (we need both).
     annotation_filename <- output_filename %>%
         gsub(pattern='.csv',
-             replace='-cluster-annotations.csv')
+             replacement='-cluster-annotations.csv')
     partis_dataset <- appendQuerySequencesToPartisAnnotationsFile(
         input_filename,
         annotation_filename
@@ -277,7 +277,7 @@ readPartisAnnotations <- function(output_path,
                                 ) {
     annotation_filename <- output_filename %>%
         gsub(pattern='.csv',
-             replace='-cluster-annotations.csv')
+             replacement='-cluster-annotations.csv')
     annotation_file <- file.path(output_path,
                                  annotation_filename)
 
@@ -299,7 +299,7 @@ readPartisAnnotations <- function(output_path,
 
         collapsed_filename <- annotation_filename %>%
             gsub(pattern='.csv',
-                 replace='-collapsed.csv')
+                 replacement='-collapsed.csv')
         collapsed_file=file.path(output_path,
                                  collapsed_filename)
         write.csv(annotated_data,
@@ -318,8 +318,8 @@ readPartisAnnotations <- function(output_path,
 
     mutation_rates <- {}
     for(yaml_file in yaml_files) {
-        allele <- yaml_file %>% gsub(pattern=".yaml", replace='') %>%
-            gsub(pattern="_star_", replace="\\*")
+        allele <- yaml_file %>% gsub(pattern=".yaml", replacement='') %>%
+            gsub(pattern="_star_", replacement="\\*")
         mutation_rates[[allele]] <- hmm_yaml_filepath %>% 
             file.path(yaml_file) %>% 
             getMutationInfo
@@ -565,7 +565,7 @@ getPartisAnnotationsFromStrings <- function(sequences,
                                            ) {
     annotations <- tryCatch({
         filename <- Sys.time() %>%
-            gsub(pattern=' |:|-', replace='') %>%
+            gsub(pattern=' |:|-', replacement='') %>%
             paste0('tmp', ., '.fasta')
         write.fasta(sequences, names="tmp", file.out=filename)
         getPartisAnnotations(filename, 

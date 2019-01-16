@@ -44,14 +44,14 @@ getIgorAnnotations <- function(input_filename,
 
     if(chain == "beta") {
         annotations[["vd_insertion"]] <- annotations[["vd_insertion"]] %>%
-            gsub(pattern="[^A-Z]", replace="") %>%
+            gsub(pattern="[^A-Z]", replacement="") %>%
             tolower
         annotations[["dj_insertion"]] <- annotations[["dj_insertion"]] %>%
-            gsub(pattern="[^A-Z]", replace="") %>%
+            gsub(pattern="[^A-Z]", replacement="") %>%
             tolower
     } else {
         annotations[["vj_insertion"]] <- annotations[["vj_insertion"]] %>%
-            gsub(pattern="[^A-Z]", replace="") %>%
+            gsub(pattern="[^A-Z]", replacement="") %>%
             tolower
     }
 

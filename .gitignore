@@ -11,3 +11,4 @@ man/*.Rd
 vignettes/*.R
 vignettes/*.html
 vignettes/*.pdf
+

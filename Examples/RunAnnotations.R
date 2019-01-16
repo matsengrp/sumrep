@@ -33,7 +33,7 @@ writeAnnotations <- function(filename,
                                           num_leaves=num_leaves
                                          )
         saveRDS(simulation, outname %>% gsub(pattern='.rds',
-                                             replace='-sim.rds'))
+                                             replacement='-sim.rds'))
         "tmp_output" %>% unlink(recursive=TRUE)
     } else if(method == "igblast") {
         annotations <- getIgBlastAnnotations(input_filename=filename, 

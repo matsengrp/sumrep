@@ -21,7 +21,7 @@ maskEmptyStringWithNA <- function(s) {
 standardizeList <- function(l) {
     new_list <- l %>% 
         sapply(toString) %>%
-        gsub(pattern=", *", replace="") %>%
+        gsub(pattern=", *", replacement="") %>%
         sapply(paste, collapse='') %>% 
         unname
     return(new_list)
@@ -159,8 +159,8 @@ removeSequencesWithDifferentGermlineAndSequenceLengths <- function(dat) {
 loadNewDatasets <- function(data_dir) {
     for(data_file in list.files(data_dir)) {
         var_name <- data_file %>%
-            gsub(pattern="-", replace="_") %>%
-            gsub(pattern=".rds", replace="")
+            gsub(pattern="-", replacement="_") %>%
+            gsub(pattern=".rds", replacement="")
         if(!exists(var_name)) {
             assign(var_name, 
                 readRDS(file.path(data_dir, data_file)),
@@ -188,7 +188,6 @@ multiplot <- function(plotlist=NULL,
                       tall_plot=FALSE, 
                       ...
                      ) {
-    library(grid)
     plots <- c(list(...), plotlist)
     numPlots = length(plots)
 

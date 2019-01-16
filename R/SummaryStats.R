@@ -848,7 +848,7 @@ getUsageTableFromFullList <- function(factor_list,
 #' @return Vector of genes with allelic variant information discarded
 collapseAlleles <- function(gene_list) {
     collapsed_gene_list <- gene_list %>% 
-        sapply(gsub, pattern="\\*\\d+", replace="") %>%
+        sapply(gsub, pattern="\\*\\d+", replacement="") %>%
         unname %>%
         sapply(as.factor)
     return(collapsed_gene_list)

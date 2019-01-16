@@ -1,3 +1,5 @@
+#### Package Documentation and Imports ####
+
 #' The sumrep package
 #' 
 #' Description of the package.
@@ -28,4 +30,45 @@
 #' @import textmineR
 #' @import utils
 #' @import yaml
+NULL
+
+#### Data ####
+
+#' Test data
+#'
+#' Data set desription.
+#'
+#' @format Data format details.
+#' \itemize{
+#'   \item{value1}  {description 1}
+#'   \item{value2}  {description 2}
+#' }
+#' 
+#' @name test_dat
+NULL
+
+#' Test data
+#'
+#' Data set desription.
+#'
+#' @format Data format details.
+#' \itemize{
+#'   \item{value1}  {description 1}
+#'   \item{value2}  {description 2}
+#' }
+#' 
+#' @name test_dat_boot
+NULL
+
+#' Test simulations
+#'
+#' Data set desription.
+#'
+#' @format Data format details.
+#' \itemize{
+#'   \item{value1}  {description 1}
+#'   \item{value2}  {description 2}
+#' }
+#'
+#'@name test_simu
 NULL
