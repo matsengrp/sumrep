@@ -2391,7 +2391,7 @@ compareVJInsertionMatrices <- function(dat_a, dat_b) {
     return(divergence)
 }
 
-getClusterSizes <- function(dat,
+getClusterSizeDistribution <- function(dat,
                             column="clone_id"
                            ) {
     sizes <- dat[[column]] %>%
@@ -2411,27 +2411,28 @@ plotClusterSizeDistribution <- function(dat_list,
                                         show_legend=TRUE
                                        ) { 
     p <- plotDistribution(dat_list,
-                          getClusterSizes,
+                          getClusterSizeDistribution,
                           plot_type=plot_type,
                           x_label="Cluster size",
                           show_legend=show_legend,
-                          names=names
+                          names=names,
+                          binwidth=1
                          )
     return(p)
 }
 
 compareClusterSizeDistributions <- function(dat_a, dat_b) {
     dist_a <- dat_a %>% 
-        getClusterSizes
+        getClusterSizeDistribution
     dist_b <- dat_b %>% 
-        getClusterSizes
+        getClusterSizeDistribution
     divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
 
 getHillNumbers <- function(dat, diversity_orders=c(0, 1, 2)) {
     counts <- dat %>% 
-        getClusterSizes
+        getClusterSizeDistribution
     diversity <- alakazam::calcDiversity(counts, diversity_orders)
     return(diversity)
 }
