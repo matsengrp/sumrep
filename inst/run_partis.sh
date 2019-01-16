@@ -10,6 +10,7 @@ do
         l) LOCUS=${OPTARG};;
         g) GERMLINE_DIR=${OPTARG};;
         e) EXTRA_COLUMNS=${OPTARG};;
+        s) SEED=${OPTARG};;
     esac
 done
 
@@ -29,6 +30,11 @@ fi
 if [ ! -z $EXTRA_COLUMNS ]
 then
     COMMAND="$COMMAND --extra-annotation-columns $EXTRA_COLUMNS"
+fi
+
+if [ ! -z $SEED ]
+then
+    COMMAND="$COMMAND --seed $SEED"
 fi
 
 echo $COMMAND
