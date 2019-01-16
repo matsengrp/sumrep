@@ -214,13 +214,13 @@ test_that("test.getPositionalPositionalDistanceBetweenMutations", {
 test_that("getClusterSizes returns the correct cluster size distribution", {
     dat <- data.frame(clone=c(13, 14, 15, 13, 13, 14, 14, 13, 16, 17))
     cluster_sizes <- dat %>% 
-        getClusterSizes(column="clone") %>% 
+        getClusterSizeDistribution(column="clone") %>% 
         sort
     expect_equal(c(1, 1, 1, 3, 4), cluster_sizes)
 
     dat$clone_id <- dat$clone
     cluster_sizes <- dat %>% 
-        getClusterSizes %>% 
+        getClusterSizeDistribution %>% 
         sort
     expect_equal(c(1, 1, 1, 3, 4), cluster_sizes)
 
