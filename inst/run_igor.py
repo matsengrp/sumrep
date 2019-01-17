@@ -6,9 +6,7 @@ import numpy as np
 import random
 import re
 
-# May need to move this to /fh/fast/
 sys.path.insert(0, '/home/bolson2/Software/IGoR/pygor')
-
 import pygor
 from pygor import counters, aligns
 from pygor.counters import bestscenarios
@@ -41,7 +39,7 @@ def run_igor(input_file, \
     os.system(igor_command)
     
 # Get and write annotation dataframe via pygor subpackage routine
-def get_annotations(igor_wd, 
+def write_annotations(igor_wd, 
                     chain,
                     scenarios_filename,
                     output_filename):
@@ -97,12 +95,12 @@ def run_igor_analysis(input_file,
             igor_wd=igor_directory, \
             chain=chain)
     obs_scenarios_filename = "igor_output/best_scenarios_counts.csv"
-    get_annotations(igor_directory, chain, obs_scenarios_filename, output_filename)
+    write_annotations(igor_directory, chain, obs_scenarios_filename, output_filename)
     sim_scenarios_filename = "igor_generated/generated_realizations_werr.csv"
-    get_annotations(igor_directory, chain, sim_scenarios_filename, "sim.csv")
+    write_annotations(igor_directory, chain, sim_scenarios_filename, "sim.csv")
 
 if __name__ == "__main__":
-    cmv_annotations = run_igor_analysis(
+    analysis = run_igor_analysis(
         input_file=sys.argv[1],
         igor_dir_name=sys.argv[2],
         chain=sys.argv[3],
