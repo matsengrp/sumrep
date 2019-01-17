@@ -29,7 +29,7 @@ getIgorAnnotations <- function(input_filename,
                                chain,
                                output_filename="annotations.csv"
                               ) {
-    python_command <- paste("python",
+    python_command <- paste("python3",
                             "inst/run_igor.py",
                             input_filename,
                             igor_wd_name,
@@ -41,6 +41,7 @@ getIgorAnnotations <- function(input_filename,
                                                output_filename
                                               )
     )
+
 
     if(chain == "beta") {
         annotations[["vd_insertion"]] <- annotations[["vd_insertion"]] %>%
@@ -66,5 +67,24 @@ getIgorAnnotations <- function(input_filename,
         indexed_seqs[["sequence"]][1 + annotations[["seq_index"]]] %>%
         tolower
     annotations$sequence_alignment <- annotations$sequence
-    return(annotations)
+
+    simulations <- fread(file.path(igor_wd_name,
+                                   "sim.csv"
+                                   )
+    )
+
+    sim_indexed_seqs <- fread(file.path(igor_wd_name,
+                                        "igor_generated",
+                                        "generated_seqs_werr.csv"
+                                       )
+    )
+    simulations$sequence <-
+        sim_indexed_seqs[["nt_sequence"]][1 + simulations[["seq_index"]]] %>%
+        tolower
+
+    names(simulations)[which(names(simulations) == "nt_CDR3")] <- "junction"
+    return(list(annotations=annotations,
+                simulations=simulations
+               )
+    )
 }

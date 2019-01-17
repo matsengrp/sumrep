@@ -15,18 +15,6 @@ from pygor.counters import bestscenarios
 from pygor.counters.bestscenarios import bestscenarios
 from pygor.aligns import CDR3_tools
 
-def get_seqs_from_tsv(input_file, \
-                      output_file, \
-                      subsample=True, \
-                      sample_count=100000):
-    df = pd.read_csv(input_file, \
-                               sep='\t', \
-                               index_col=None)
-    df_samp = df.loc[random.sample(list(df.index), sample_count)] \
-              if subsample \
-              else df
-    seqs = df_samp.ix[:, 0]
-    seqs.to_csv(output_file, index=False, header=False)
 
 def run_igor(input_file, \
              igor_wd, \
@@ -50,30 +38,25 @@ def run_igor(input_file, \
             " -c " + chain + \
             " -s " + species 
     
-    print igor_command
     os.system(igor_command)
     
-    sim_df = pd.read_csv(os.path.join(igor_wd, \
-                                      gen_batch_name + "_generated", \
-                                      "generated_seqs_werr.csv"),
-                         sep=";")
-
 # Get and write annotation dataframe via pygor subpackage routine
-def get_annotations(igor_wd, chain, output_filename):
-    scenarios_filename = "igor_generated/generated_realizations_werr.csv"
+def get_annotations(igor_wd, 
+                    chain,
+                    scenarios_filename,
+                    output_filename):
     scenarios_file = os.path.join(igor_wd, scenarios_filename)
     model_parms_filename = "igor_evaluate/final_parms.txt"
     model_parms_file = os.path.join(igor_wd, model_parms_filename)
     annotation_dat = bestscenarios.read_bestscenarios_values(scenarios_file, model_parms_file)
 
     annotation_dat['v_call'] = annotation_dat['v_choice'].apply( \
-            lambda(x): extract_gene_from_full_string(x, chain, "V") )
+            lambda x: extract_gene_from_full_string(x, chain, "V") )
     annotation_dat['j_call'] = annotation_dat['j_choice'].apply( \
-            lambda(x): extract_gene_from_full_string(x, chain, "J") )
+            lambda x: extract_gene_from_full_string(x, chain, "J") )
 
     if chain == "beta":
-        annotation_dat['d_call'] = annotation_dat['d_choice'].apply( \
-            lambda(x): extract_gene_from_full_string(x, chain, "V") )
+        annotation_dat['d_call'] = annotation_dat['d_gene']
         annotation_dat = annotation_dat.rename(index=str, \
                 columns={"v_3_del": "v_3p_del", \
                          "d_5_del": "d_5p_del", \
@@ -113,7 +96,10 @@ def run_igor_analysis(input_file,
     run_igor(input_file=input_file, \
             igor_wd=igor_directory, \
             chain=chain)
-    get_annotations(igor_directory, chain, output_filename)
+    obs_scenarios_filename = "igor_output/best_scenarios_counts.csv"
+    get_annotations(igor_directory, chain, obs_scenarios_filename, output_filename)
+    sim_scenarios_filename = "igor_generated/generated_realizations_werr.csv"
+    get_annotations(igor_directory, chain, sim_scenarios_filename, "sim.csv")
 
 if __name__ == "__main__":
     cmv_annotations = run_igor_analysis(
