@@ -225,14 +225,17 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 comparePairwiseDistanceDistributions <- function(dat_a, 
                                                  dat_b,
                                                  column="sequence",
-                                                 approximate=TRUE
-                                                 ) {
+                                                 approximate=TRUE,
+                                                 ...
+                                                ) {
     dist_a <- dat_a %>% 
         getPairwiseDistanceDistribution(approximate=approximate,
-                                        column=column)
+                                        column=column,
+                                        ...)
     dist_b <- dat_b %>% 
         getPairwiseDistanceDistribution(approximate=approximate,
-                                        column=column)
+                                        column=column,
+                                        ...)
     divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
