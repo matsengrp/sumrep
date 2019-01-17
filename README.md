@@ -36,7 +36,9 @@ The [usage](#usage) section provides in-depth instructions on how to use `sumrep
 
 
 ### Installing annotation/simulation tools (optional)
-* Although `sumrep` can be run with any annotated dataset, several annotation and simulation tools can be invoked within `sumrep`. To use these features, follow the corresponding installation steps for each desired tool.
+* Although `sumrep` can be run with any annotated dataset, several annotation and simulation tools can be invoked within `sumrep`.
+The `sumrep` methods that run these tools are built to output `data.table`s which match the specification in the [usage](#usage) section.
+To use these features, follow the corresponding installation steps for each desired tool.
 
 #### Installing partis
 * [`partis`](https://github.com/psathyrella/partis) can be used for annotation and clonal family partitioning within `sumrep`; follow the link to its respository for specific installation directions. 
@@ -68,6 +70,32 @@ The [usage](#usage) section provides in-depth instructions on how to use `sumrep
 * `sumrep` uses [`changeo`](https://changeo.readthedocs.io/en/version-0.4.4/index.html) to process the raw `igblast` output. Installation instructions can be found [here](https://changeo.readthedocs.io/en/version-0.4.4/install.html).
 
 * Use the `getIgBlastAnnotations` function to obtain a `data.table` with annotations from a given input fasta file. You will need to include the binary directories for `igblast` and `changeo` via the arguments `igblast_dir` and `changeo_dir`, respectively.
+
+#### Installing IGoR and pygor
+* [IGoR](https://github.com/qmarcou/IGoR) is an annotation and simulation tool that can be used within `sumrep`.
+Please follow the installation instructions if you wish to access these methods.
+In particular, you must also install pygor, a Python module which is shipped with IGoR.
+Once IGoR and [pip](https://pypi.org/project/pip/) are installed, execute the command
+```
+pip install ./pygor
+```
+in IGoR's root directory.
+Since pygor depends on matplotlib which requires python3, the easiest way to get things working is to install [conda](https://conda.io/docs/) (if you haven't already), and create an environment as so:
+```
+conda create -n "pygor" python=3 pandas biopython matplotlib numpy
+```
+You will also need to set an environmental variable for pygor's path, e.g., setting `export PYGOR_PATH="/path/to/IGoR/pygor"` (you can add this line to your `.bash_profile` if you wish).
+Then, anytime you wish to run `getIgorAnnotations` you must execute the command
+```
+source activate pygor
+```
+beforehand (i.e., before running R).
+When you're finished, run
+```
+source deactivate
+```
+to exit the custom-made pygor Python environment.
+This is particuarly important if you are using other `conda` environments with `sumrep`, such as for `partis`.
 
 ## Usage
 ### Data structures
