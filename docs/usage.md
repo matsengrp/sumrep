@@ -7,7 +7,7 @@ We can read this in as a `data.table` as follows:
 ```
 dat <- data.table::fread("data/test_annotations.csv")
 ```
-The specific column names and definitions are laid out in the [extended documention]("extended_documentation.md").
+The specific column names and definitions are laid out in the [extended documention](extended_documentation.md).
 
 There are many other helper functions which take other types of data structures as input.
 These are of course available to the user but are not as polished or standardized.
@@ -28,7 +28,7 @@ To specify a different, column, say the `junction` column, if present, you would
 junction_pairwise_distances <- getPairwiseDistanceDistribution(dat, column="junction")
 ```
 Column defaults are chosen to agree with the [AIRR standard](http://docs.airr-community.org/en/latest/datarep/rearrangements.html#fields), but can be manually set via the `column` argument to many of these functions.
-A complete table of available summary functions can be found in the (extended documentation)["extended_documentation.md"].
+A complete table of available summary functions can be found in the [extended documentation](extended_documentation.md).
 
 ### Comparing distributions
 Functions to compare distributions of two annotations datasets, say `dat_a` and `dat_b`, are in general of the form `compareXDistributions`, and expect two `data.tables` as input.
