@@ -6,7 +6,7 @@ import numpy as np
 import random
 import re
 
-sys.path.insert(0, '/home/bolson2/Software/IGoR/pygor')
+sys.path.insert(0, os.environ['PYGOR_PATH'])
 import pygor
 from pygor import counters, aligns
 from pygor.counters import bestscenarios
