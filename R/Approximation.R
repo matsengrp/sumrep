@@ -98,7 +98,7 @@ getApproximateDistribution <- function(dat,
 #'   given by \code{dat[[column]]}
 getApproximateNearestNeighborDistribution <- function(dat,
                                                       column,
-                                                      tol=10e-4,
+                                                      tol=1e-4,
                                                       batch_size=50
                                                      ) {
     d <- dat %>%
