@@ -1,7 +1,7 @@
 Package: sumrep
 Type: Package
 Version: 0.0.0.9000
-Date: 2019-01-14
+Date: 2019-01-18
 Authors@R: c(person("Branden", "Olson", email = "brando6@uw.edu", role = c("aut", "cre")))
 Title: Summary statistics for B cell receptor (BCR) repertoires
 Description: What the package does (one paragraph).
@@ -24,6 +24,7 @@ Imports:
     data.table,
     dplyr,
     entropy,
+    ggplot2,
     grid,
     HDMD,
     jsonlite,

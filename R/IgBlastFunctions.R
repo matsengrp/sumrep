@@ -17,6 +17,8 @@
 #'   "path/to/bin").
 #' @param cleanup If TRUE, remove all interim files created
 #' @return A \code{list} of a \code{data.table} containing the annotations.
+#' 
+#' @export
 getIgBlastAnnotations <- function(input_filename,
                                   output_filename="igblast_out.tsv",
                                   organism="human",

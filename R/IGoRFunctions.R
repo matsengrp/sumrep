@@ -1,6 +1,8 @@
 #' Run igor shell script from R
 #'
 #' @param dir_name Absolute path to desired output directory
+#' 
+#' @export
 runIgor <- function(input_filename,
                     dir_name,
                     num_scenarios=num_scenarios,

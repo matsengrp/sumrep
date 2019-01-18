@@ -14,6 +14,7 @@
 #' @import data.table
 #' @import dplyr
 #' @import entropy
+#' @import ggplot2
 #' @import grid
 #' @import HDMD
 #' @import jsonlite

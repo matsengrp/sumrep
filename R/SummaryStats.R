@@ -9,6 +9,8 @@ NULL
 #' @param sequence_list List/vector of DNA sequences
 #' @return String-valued comparison method for use in stringdistmatrix within 
 #'   the getDistanceMatrix function
+#' 
+#' @export
 determineComparisonMethod <- function(sequence_list) {
     length_count <- sequence_list %>% 
         standardizeList %>% 
@@ -25,6 +27,8 @@ determineComparisonMethod <- function(sequence_list) {
 #' @param raw_sequences List or vector of DNA sequences
 #' @return Distance matrix of the sequences, using hamming distances if all
 #'   sequences are the same length, and levenshtein otherwise
+#' 
+#' @export
 getDistanceMatrix <- function(raw_sequences) {
     sequence_list <- raw_sequences %>% 
         standardizeList
@@ -42,6 +46,8 @@ getDistanceMatrix <- function(raw_sequences) {
 #'   vector of distance values.
 #' @param sequence_list vector of sequence strings (DNA, AA, etc.)
 #' @return Vector of pairwise distances
+#' 
+#' @export
 getDistanceVector <- function(sequence_list) {
     mat <- sequence_list %>% getDistanceMatrix
     vec <- mat[mat %>% lower.tri] %>% 
@@ -58,6 +64,8 @@ getDistanceVector <- function(sequence_list) {
 #' @param approximate if TRUE, approximate the distribution by subsampling
 #'   and averaging
 #' @return vector of integer-valued distances
+#' 
+#' @export
 getPairwiseDistanceDistribution <- function(dat,
                                             column="sequence",
                                             approximate=TRUE,
@@ -89,6 +97,8 @@ getPairwiseDistanceDistribution <- function(dat,
 #' @param x_label The text label for the x-axis
 #' @param names Strings to be displayed by the legend corresponding to the 
 #'   elements of \code{dat_list}
+#' 
+#' @export
 plotDistribution <- function(dat_list,
                              summary_function,
                              plot_type,
@@ -173,6 +183,8 @@ plotDistribution <- function(dat_list,
 #' Plot the pairwise distance distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotPairwiseDistanceDistribution <- function(dat_list,
                                              plot_type,
                                              names=NULL,
@@ -205,6 +217,8 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 #' @param approximate If TRUE, uses approximate pairwise distance distributions
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
+#' 
+#' @export
 comparePairwiseDistanceDistributions <- function(dat_a, 
                                                  dat_b,
                                                  column="sequence",
@@ -229,6 +243,8 @@ comparePairwiseDistanceDistributions <- function(dat_a,
 #'   k = 1 corresponds to the nearest neighbor, k = 2 corresponds to
 #'   the second-nearest neighbor, etc.
 #' @return Vector of kth nearest neighbor distances
+#' 
+#' @export
 getNearestNeighborDistances <- function(sequence_list, 
                                         k=1
                                         ) {
@@ -254,6 +270,8 @@ getNearestNeighborDistances <- function(sequence_list,
 #'   different definition of a "nearest neighbor"
 #' @inheritParams getNearestNeighborDistances
 #' @return vector of integer-value distances
+#' 
+#' @export
 getNearestNeighborDistribution <- function(dat,
                                            column="sequence", 
                                            k=1,
@@ -281,6 +299,8 @@ getNearestNeighborDistribution <- function(dat,
 #' Plot the nearest neighbor distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotNearestNeighborDistribution <- function(dat_list,
                                             plot_type,
                                             names=NULL,
@@ -311,6 +331,8 @@ plotNearestNeighborDistribution <- function(dat_list,
 #'   the second-nearest neighbor, etc.
 #' @return Estimated JS divergence of the distributions inferred from list_a
 #'   and list_b
+#' 
+#' @export
 compareNNDistanceDistributions <- function(dat_a, 
                                            dat_b, 
                                            column="sequence",
@@ -335,6 +357,8 @@ compareNNDistanceDistributions <- function(dat_a,
 #' 
 #' @param raw_sequences Vector of sequence strings
 #' @return Vector of GC content values
+#' 
+#' @export
 getGCContent <- function(raw_sequences) {
     sequence_list <- raw_sequences %>% 
         sapply(paste, collapse='') %>% 
@@ -356,6 +380,8 @@ getGCContent <- function(raw_sequences) {
 #'   the distribution should be computed
 #' @param approximate If TRUE, approximate distribution by subsampling.
 #' @return A vector of GC content values
+#' 
+#' @export
 getGCContentDistribution <- function(dat,
                                      column="sequence",
                                      approximate=FALSE,
@@ -380,6 +406,8 @@ getGCContentDistribution <- function(dat,
 #' Plot the GC content distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotGCContentDistribution <- function(dat_list,
                                       plot_type,
                                       names=NULL,
@@ -402,6 +430,8 @@ plotGCContentDistribution <- function(dat_list,
 #'   the distribution should be computed
 #' @return JS divergence of the GC content distributions inferred from list_a
 #'   and list_b
+#' 
+#' @export
 compareGCContentDistributions <- function(dat_a, 
                                           dat_b, 
                                           column="sequence"
@@ -420,6 +450,8 @@ compareGCContentDistributions <- function(dat_a,
 #' @param motif String representing the motif pattern 
 #' @param dna_sequences List, vector of reference sequences
 #' @return The number of occurrences of \code{motif} in \code{dna_sequences}
+#' 
+#' @export
 getMotifCount <- function(motif, 
                           dna_sequences
                          ) {
@@ -438,6 +470,8 @@ getMotifCount <- function(motif,
 #' @param spots Vector of hot or cold spots of interest
 #' @return The total number of occurrences of each motif in \code{spots}, in
 #'   \code{dna_sequences}
+#' 
+#' @export
 getSpotCount <- function(dna_sequences, 
                          spots
                         ) {
@@ -460,6 +494,8 @@ getSpotCount <- function(dna_sequences,
 #'   the distribution should be computed
 #' @param hotspots Vector of hotspots of interest
 #' @return The number of AID hotspot occurrences in \code{dna_sequences}
+#' 
+#' @export
 getHotspotCount <- function(dat,
                             column="sequence",
                             hotspots=c("WRC", "WA")
@@ -475,6 +511,8 @@ getHotspotCount <- function(dat,
 #'
 #' @inheritParams getHotspotCount
 #' @param approximate If TRUE, approximate distribution by subsampling.
+#' 
+#' @export
 getHotspotCountDistribution <- function(dat,
                                         column="sequence",
                                         hotspots=c("WRC", "WA"),
@@ -502,6 +540,8 @@ getHotspotCountDistribution <- function(dat,
 #' Plot the hotspot count distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotHotspotCountDistribution <- function(dat_list,
                                          plot_type,
                                          names=NULL,
@@ -524,6 +564,8 @@ plotHotspotCountDistribution <- function(dat_list,
 #'   the distribution should be computed
 #' @param coldspots Vector of coldspots of interest
 #' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
+#' 
+#' @export
 getColdspotCount <- function(dat,
                              column="sequence", 
                              coldspots="SYC"
@@ -537,6 +579,8 @@ getColdspotCount <- function(dat,
 #'
 #' @inheritParams getColdspotCount
 #' @param approximate If TRUE, approximate distribution by subsampling.
+#' 
+#' @export
 getColdspotCountDistribution <- function(dat,
                                          column="sequence",
                                          coldspots="SYC",
@@ -564,6 +608,8 @@ getColdspotCountDistribution <- function(dat,
 #' Plot the coldspot count distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotColdspotCountDistribution <- function(dat_list,
                                           plot_type,
                                           names=NULL,
@@ -586,6 +632,8 @@ plotColdspotCountDistribution <- function(dat_list,
 #'   coldspot counts. Must be either getHotspotCount or getColdspotCount
 #' @return The average JS divergence of the count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
+#' 
+#' @export
 compareCounts <- function(dat_a,
                           dat_b,
                           count_function,
@@ -609,6 +657,8 @@ compareCounts <- function(dat_a,
 #'   the distribution should be computed
 #' @return The JS divergence of the hotspot count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
+#' 
+#' @export
 compareHotspotCountDistributions <- function(dat_a, 
                                  dat_b,
                                  column="sequence",
@@ -630,6 +680,8 @@ compareHotspotCountDistributions <- function(dat_a,
 #'   the distribution should be computed
 #' @return The JS divergence of the coldspot count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
+#' 
+#' @export
 compareColdspotCountDistributions <- function(dat_a, 
                                   dat_b,
                                   column="sequence",
@@ -649,6 +701,8 @@ compareColdspotCountDistributions <- function(dat_a,
 #'
 #' @inheritParams getDistanceFromGermlineToSequenceDistribution
 #' @return Vector of Levenshtein distances from naive to mature
+#' 
+#' @export
 getDistancesFromGermlineToSequence <- function(dat,
                                           v_gene_only=FALSE,
                                           sequence_column=ifelse(
@@ -678,6 +732,8 @@ getDistancesFromGermlineToSequence <- function(dat,
 #' @param approximate If TRUE, approximate distribution by subsampling.
 #' @param v_gene_only If TRUE, restrict sequences to the V gene only
 #' @return Vector of Levenshtein distances from naive to mature
+#' 
+#' @export
 getDistanceFromGermlineToSequenceDistribution <- function(dat,
                                                      approximate=FALSE,
                                                      v_gene_only=FALSE
@@ -698,6 +754,8 @@ getDistanceFromGermlineToSequenceDistribution <- function(dat,
 #' Plot the distance from naive to mature distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotDistanceFromGermlineToSequenceDistribution <- function(dat_list,
                                                       plot_type,
                                                       names=NULL,
@@ -718,6 +776,8 @@ plotDistanceFromGermlineToSequenceDistribution <- function(dat_list,
 #'
 #' @inheritParams getDistanceFromGermlineToSequenceDistribution
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' 
+#' @export
 compareDistanceFromGermlineToSequenceDistributions <- function(dat_a, 
                                                           dat_b, 
                                                           approximate=FALSE,
@@ -744,6 +804,8 @@ compareDistanceFromGermlineToSequenceDistributions <- function(dat_a,
 #' @param by_amino_acid If TRUE, the length is computed in terms of amino 
 #'   acids; otherwise, the length is computed in terms of nucleotides.
 #' @return Vector of CDR3 lengths (in nt units)
+#' 
+#' @export
 getCDR3LengthDistribution <- function(dat,
                                       by_amino_acid=FALSE
                                      ) {
@@ -782,6 +844,8 @@ getCDR3LengthDistribution <- function(dat,
 #' Plot the CDR3 length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotCDR3LengthDistribution <- function(dat_list,
                                        plot_type,
                                        names=NULL,
@@ -804,6 +868,8 @@ plotCDR3LengthDistribution <- function(dat_list,
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @inheritParams getCDR3LengthDistribution
 #' @return The JS divergence of the two CDR3 length distributions
+#' 
+#' @export
 compareCDR3LengthDistributions <- function(dat_a, 
                                            dat_b,
                                            by_amino_acid=FALSE
@@ -823,6 +889,8 @@ compareCDR3LengthDistributions <- function(dat_a,
 #' @param full_factor_list Full list of reference factors under consideration
 #' @param standardize If TRUE, return relative frequencies rather than counts
 #' @return A table of usage counts of \code{factor_list}
+#' 
+#' @export
 getUsageTableFromFullList <- function(factor_list, 
                                       full_factor_list,
                                       standardize=TRUE
@@ -846,6 +914,8 @@ getUsageTableFromFullList <- function(factor_list,
 #' For example, IGHV3-13*01 and IGHV3-13*02 both become IGHV3-13.
 #' @param gene_list Vector of genes possibly broken down by allele
 #' @return Vector of genes with allelic variant information discarded
+#' 
+#' @export
 collapseAlleles <- function(gene_list) {
     collapsed_gene_list <- gene_list %>% 
         sapply(gsub, pattern="\\*\\d+", replacement="") %>%
@@ -861,6 +931,8 @@ collapseAlleles <- function(gene_list) {
 #' @param collapse_alleles Should allelic variants be ignored?
 #' @return Mean absolute difference of gene counts between \code{gene_list_a}
 #'   and \code{gene_list_b}
+#' 
+#' @export
 compareGeneUsage <- function(gene_list_a, 
                              gene_list_b, 
                              collapse_alleles,
@@ -911,6 +983,8 @@ tabulateGenes <- function(dat,
 #'   annotated datasets. Must be "v_call", "d_call", or "j_call"
 #' @inheritParams compareGeneUsage
 #' @return l1 divergence of gene counts between the two repertoires
+#' 
+#' @export
 compareGermlineGeneDistributions <- function(dat_a, 
                                              dat_b, 
                                              gene_type,
@@ -940,6 +1014,8 @@ compareGermlineGeneDistributions <- function(dat_a,
 #'
 #' @inheritParams compareGermlineGeneDistributions
 #' @return l1 divergence of V gene counts between the two repertoires
+#' 
+#' @export
 compareVGeneDistributions <- function(dat_a, 
                                       dat_b,
                                       collapse_alleles=TRUE,
@@ -958,6 +1034,8 @@ compareVGeneDistributions <- function(dat_a,
 #'
 #' @inheritParams compareGermlineGeneDistributions
 #' @return l1 divergence of D gene counts between the two repertoires
+#' 
+#' @export
 compareDGeneDistributions <- function(dat_a, 
                                       dat_b,
                                       collapse_alleles=TRUE,
@@ -976,6 +1054,8 @@ compareDGeneDistributions <- function(dat_a,
 #'
 #' @inheritParams compareGermlineGeneDistributions
 #' @return l1 divergence of D gene counts between the two repertoires
+#' 
+#' @export
 compareJGeneDistributions <- function(dat_a, 
                                       dat_b,
                                       collapse_alleles=TRUE,
@@ -997,6 +1077,8 @@ compareJGeneDistributions <- function(dat_a,
 #' @param by_frequency If true, scale table entries as relative frequencies.
 #'   Otherwise, entries will be counts.
 #' @return A table of joint gene IDs and usage counts
+#' 
+#' @export
 getJointGeneTable <- function(dat, 
                               gene_calls=c("v_call", "j_call"),
                               collapse_alleles=TRUE,
@@ -1029,6 +1111,8 @@ getJointGeneTable <- function(dat,
 #' Compare joint gene distributions of two datasets
 #'
 #' @inheritParams compareGermlineGeneDistributions
+#' 
+#' @export
 compareJointGeneDistributions <- function(dat_a,
                                           dat_b,
                                           gene_calls,
@@ -1069,6 +1153,8 @@ compareVJDistributions <- function(dat_a,
 #'
 #' @inheritParams compareGermlineGeneDistributions
 #' @return l1 divergence of counts of VDJ triples between the two repertoires
+#' 
+#' @export
 compareVDJDistributions <- function(dat_a, 
                                     dat_b, 
                                     collapse_alleles=TRUE,
@@ -1089,6 +1175,8 @@ compareVDJDistributions <- function(dat_a,
 #'
 #' @param aa_sequence An amino acid sequence string
 #' @return A named vector of the 10 Kidera factors for \code{aa_sequence}
+#' 
+#' @export
 getKideraFactorsBySequence <- function(aa_sequence) {
     kidera_factors <- aa_sequence %>% 
         Peptides::kideraFactors() %>% 
@@ -1105,6 +1193,8 @@ getKideraFactorsBySequence <- function(aa_sequence) {
 #'   return an (n)x(10) data.table, where n is the number of valid amino acid 
 #'   sequences in \code{column}
 #' @return List or data.table of Kidera factor distributions
+#' 
+#' @export
 getKideraFactorDistributions <- function(dat,
                                          column="junction_aa",
                                          as_list=TRUE
@@ -1128,6 +1218,8 @@ getKideraFactorDistributions <- function(dat,
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire 
 #'   annotations
 #' @return Vector of divergences of each Kidera factor distribution
+#' 
+#' @export
 compareKideraFactorDistributions <- function(dat_a,
                                              dat_b,
                                              column="junction_aa"
@@ -1151,6 +1243,8 @@ compareKideraFactorDistributions <- function(dat_a,
 #' @param factor_number The Atchley factor to be applied over 
 #'  \code{aa_sequences}. Must be 1, 2, 3, 4, or 5.
 #' @return A vector of Atchley factors of each amino acid in each sequence
+#' 
+#' @export
 getAtchleyFactorDistribution <- function(aa_sequences, 
                                          factor_number
                                         ) {
@@ -1168,6 +1262,8 @@ getAtchleyFactorDistribution <- function(aa_sequences,
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
 #' @return List of Atchley factor distributions
+#' 
+#' @export
 getAtchleyFactorDistributions <- function(dat,
                                           column="junction_aa"
                                          ) {
@@ -1189,6 +1285,8 @@ getAtchleyFactorDistributions <- function(dat,
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire 
 #'   annotations
 #' @return Vector of divergences of each Atchley factor distribution
+#' 
+#' @export
 compareAtchleyFactorDistributions <- function(dat_a, 
                                               dat_b,
                                               column="junction_aa"
@@ -1208,6 +1306,8 @@ compareAtchleyFactorDistributions <- function(dat_a,
 #'
 #' @param aa_sequence An amino acid sequence string
 #' @return The aliphatic index of \code{dna_sequence}, if applicable
+#' 
+#' @export
 getAliphaticIndex <- function(aa_sequence) {
     aliphatic_index <- aa_sequence %>% 
                Peptides::aIndex() %>%
@@ -1222,6 +1322,8 @@ getAliphaticIndex <- function(aa_sequence) {
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
 #' @return Vector of aliphatic indices
+#' 
+#' @export
 getAliphaticIndexDistribution <- function(dat,
                                           column="junction_aa"
                                          ) {
@@ -1240,6 +1342,8 @@ getAliphaticIndexDistribution <- function(dat,
 #' Plot the aliphatic index distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotAliphaticIndexDistribution <- function(dat_list,
                                            plot_type,
                                            names=NULL,
@@ -1259,6 +1363,8 @@ plotAliphaticIndexDistribution <- function(dat_list,
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the two distributions
+#' 
+#' @export
 compareAliphaticIndexDistributions <- function(dat_a, 
                                                dat_b,
                                                ...
@@ -1275,6 +1381,8 @@ compareAliphaticIndexDistributions <- function(dat_a,
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
 #' @return Vector of GRAVY values for \code{sequence_list}
+#' 
+#' @export
 getGRAVYDistribution <- function(dat,
                                  column="junction_aa"
                                 ) {
@@ -1293,6 +1401,8 @@ getGRAVYDistribution <- function(dat,
 #' Plot the GRAVY index distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotGRAVYDistribution <- function(dat_list,
                                   plot_type,
                                   names=NULL,
@@ -1313,6 +1423,8 @@ plotGRAVYDistribution <- function(dat_list,
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of GRAVY distributions
+#' 
+#' @export
 compareGRAVYDistributions <- function(dat_a, dat_b) {
     dist_a <- dat_a %>% 
         getGRAVYDistribution
@@ -1333,6 +1445,8 @@ compareGRAVYDistributions <- function(dat_a, dat_b) {
 #'   This is usually of the form "AA_PROPERTY" (e.g. "AA_POLARITY"),
 #'   but not always (e.g. "AA_BASIC" for basicity)
 #' @return distribution of the given amino acid property
+#' 
+#' @export
 getAminoAcidProperties <- function(dat,
                                    column="junction_aa",
                                    suffix
@@ -1351,6 +1465,8 @@ getAminoAcidProperties <- function(dat,
 #' Get a vector of polarity values for a set of an amino acid sequences
 #'
 #' @inheritParams getAminoAcidProperties
+#' 
+#' @export
 getPolarityDistribution <- function(dat,
                                     column="junction_aa"
                                    ) {
@@ -1364,6 +1480,8 @@ getPolarityDistribution <- function(dat,
 #' Compare the polarity distributions of two datasets
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' 
+#' @export
 comparePolarityDistributions <- function(dat_a,
                                          dat_b
                                         ) {
@@ -1376,6 +1494,8 @@ comparePolarityDistributions <- function(dat_a,
 #' Plot the polarity distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotPolarityDistribution <- function(dat_list,
                                      plot_type,
                                      names=NULL,
@@ -1396,6 +1516,8 @@ plotPolarityDistribution <- function(dat_list,
 #' Get a vector of charge values for a set of an amino acid sequences
 #'
 #' @inheritParams getAminoAcidProperties
+#' 
+#' @export
 getChargeDistribution <- function(dat,
                                   column="junction_aa"
                                  ) {
@@ -1409,6 +1531,8 @@ getChargeDistribution <- function(dat,
 #' Compare the charge distributions of two datasets
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' 
+#' @export
 compareChargeDistributions <- function(dat_a,
                                        dat_b
                                       ) {
@@ -1421,6 +1545,8 @@ compareChargeDistributions <- function(dat_a,
 #' Plot the charge distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotChargeDistribution <- function(dat_list,
                                      plot_type,
                                      names=NULL,
@@ -1441,6 +1567,8 @@ plotChargeDistribution <- function(dat_list,
 #' Get a vector of basicity values for a set of an amino acid sequences
 #'
 #' @inheritParams getAminoAcidProperties
+#' 
+#' @export
 getBasicityDistribution <- function(dat,
                                     column="junction_aa"
                                    ) {
@@ -1455,6 +1583,8 @@ getBasicityDistribution <- function(dat,
 #' Compare the basicity distributions of two datasets
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' 
+#' @export
 compareBasicityDistributions <- function(dat_a,
                                          dat_b
                                         ) {
@@ -1467,6 +1597,8 @@ compareBasicityDistributions <- function(dat_a,
 #' Plot the basicity distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotBasicityDistribution <- function(dat_list,
                                      plot_type,
                                      names=NULL,
@@ -1487,6 +1619,8 @@ plotBasicityDistribution <- function(dat_list,
 #' Get a vector of acidity values for a set of an amino acid sequences
 #'
 #' @inheritParams getAminoAcidProperties
+#' 
+#' @export
 getAcidityDistribution <- function(dat,
                                    column="junction_aa"
                                   ) {
@@ -1500,6 +1634,8 @@ getAcidityDistribution <- function(dat,
 #' Compare the acidity distributions of two datasets
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' 
+#' @export
 compareAcidityDistributions <- function(dat_a,
                                          dat_b
                                         ) {
@@ -1512,6 +1648,8 @@ compareAcidityDistributions <- function(dat_a,
 #' Plot the acidity distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotAcidityDistribution <- function(dat_list,
                                      plot_type,
                                      names=NULL,
@@ -1532,6 +1670,8 @@ plotAcidityDistribution <- function(dat_list,
 #' Get a vector of aromaticity values for a set of an amino acid sequences
 #'
 #' @inheritParams getAminoAcidProperties
+#' 
+#' @export
 getAromaticityDistribution <- function(dat,
                                        column="junction_aa"
                                       ) {
@@ -1546,6 +1686,8 @@ getAromaticityDistribution <- function(dat,
 #' Compare the aromaticity distributions of two datasets
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' 
+#' @export
 compareAromaticityDistributions <- function(dat_a,
                                          dat_b
                                         ) {
@@ -1558,6 +1700,8 @@ compareAromaticityDistributions <- function(dat_a,
 #' Plot the aromaticity distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotAromaticityDistribution <- function(dat_list,
                                      plot_type,
                                      names=NULL,
@@ -1578,6 +1722,8 @@ plotAromaticityDistribution <- function(dat_list,
 #' Get a vector of bulkiness values for a set of an amino acid sequences
 #'
 #' @inheritParams getAminoAcidProperties
+#' 
+#' @export
 getBulkinessDistribution <- function(dat,
                                      column="junction_aa"
                                     ) {
@@ -1591,6 +1737,8 @@ getBulkinessDistribution <- function(dat,
 #' Compare the bulkiness distributions of two datasets
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' 
+#' @export
 compareBulkinessDistributions <- function(dat_a,
                                          dat_b
                                         ) {
@@ -1603,6 +1751,8 @@ compareBulkinessDistributions <- function(dat_a,
 #' Plot the bulkiness distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotBulkinessDistribution <- function(dat_list,
                                      plot_type,
                                      names=NULL,
@@ -1630,6 +1780,8 @@ plotBulkinessDistribution <- function(dat_list,
 #'   dictionary, present in the column \code{codon_positions} of a data.table 
 #'   returned by \code{getPartisAnnotations}.
 #' @return A vector of positions of the CDR3 start codons of the BCR sequences
+#' 
+#' @export
 extractCDR3CodonStartPositions <- function(dictionary_list) {
     positions <- dictionary_list %>% 
         sapply(toString) %>% 
@@ -1650,6 +1802,8 @@ extractCDR3CodonStartPositions <- function(dictionary_list) {
 #'   \code{sequence}.
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return Vector of CDR3 strings
+#' 
+#' @export
 getCDR3PairwiseDistanceDistribution <- function(dat,
                                         by_amino_acid=TRUE,
                                         column=ifelse(by_amino_acid,
@@ -1669,6 +1823,8 @@ getCDR3PairwiseDistanceDistribution <- function(dat,
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The JS divergence of the levenshtein distance distributions of the
 #'   CDR3s of the two repertoires
+#' 
+#' @export
 compareCDR3PairwiseDistanceDistributions <- function(dat_a, 
                                                      dat_b, 
                                                      by_amino_acid=TRUE,
@@ -1695,6 +1851,8 @@ compareCDR3PairwiseDistanceDistributions <- function(dat_a,
 #' @param naive A string corresponding to a naive sequence
 #' @param mature A string corresponding to a mature sequence
 #' @return A vector of positional distances between the mutations
+#' 
+#' @export
 getPositionalDistancesBetweenMutationsBySequence <- function(naive, mature) {
     if(nchar(naive) != nchar(mature)) {
         stop(paste0("nchar(naive) [", nchar(naive), "] != ", "nchar(mature) [", 
@@ -1727,6 +1885,8 @@ getPositionalDistancesBetweenMutationsBySequence <- function(naive, mature) {
 #' @param naive_column Column containing the inferred naive/germline sequences
 #' @param mature_column Column containing the mature SHM-experienced sequences
 #' @param return Vector of positional distances
+#' 
+#' @export
 getPositionalDistanceBetweenMutationsDistribution <- function(
     dat,
     naive_column="germline_alignment",
@@ -1751,6 +1911,8 @@ getPositionalDistanceBetweenMutationsDistribution <- function(
 #' Plot the distance between mutation distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotPositionalDistanceBetweenMutationsDistribution <- function(dat_list,
                                                      plot_type,
                                                      names=NULL,
@@ -1770,6 +1932,8 @@ plotPositionalDistanceBetweenMutationsDistribution <- function(dat_list,
 #'   datasets
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
+#' 
+#' @export
 comparePositionalDistanceBetweenMutationsDistributions <- function(dat_a, dat_b) {
     dists_a <- getPositionalDistanceBetweenMutationsDistribution(dat_a)
     dists_b <- getPositionalDistanceBetweenMutationsDistribution(dat_b)
@@ -1784,6 +1948,8 @@ comparePositionalDistanceBetweenMutationsDistributions <- function(dat_a, dat_b)
 #' @param rate_dat A \code{mutation_rates} object containing, e.g. as obtained
 #'   in \code{getPartisAnnotations}
 #' return A named vector of mutation rates for each gene
+#' 
+#' @export
 getPerGeneMutationRates <- function(rate_dat) {
     rates <- rate_dat %>% 
         sapply( function(gene) { 
@@ -1797,6 +1963,8 @@ getPerGeneMutationRates <- function(rate_dat) {
 #'
 #' @param rate_dat_a,rate_dat_b A \code{mutation_rates} object
 #' @return l1 divergence of per gene mutation rates
+#' 
+#' @export
 comparePerGeneMutationRates <- function(rate_dat_a, 
                                         rate_dat_b
                                        ) {
@@ -1822,6 +1990,8 @@ comparePerGeneMutationRates <- function(rate_dat_a,
 #'   object.
 #'
 #' @inheritParams getPerGeneMutationRates
+#' 
+#' @export
 getPerGenePerPositionMutationRates <- function(rate_dat) {
     rates <- rate_dat %>% 
         sapply( function(gene) {
@@ -1834,6 +2004,8 @@ getPerGenePerPositionMutationRates <- function(rate_dat) {
 #' Compare per gene per position mutation rates of two datasets
 #'
 #' @inheritParams comparePerGeneMutationRates
+#' 
+#' @export
 comparePerGenePerPositionMutationRates <- function(rate_dat_a, 
                                                    rate_dat_b
                                                   ) {
@@ -1868,6 +2040,8 @@ comparePerGenePerPositionMutationRates <- function(rate_dat_a,
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return The default shazam substitution model 
+#' 
+#' @export
 getSubstitutionModel <- function(dat) {
     sub_mat <- dat %>% 
         removeSequencesWithDifferentGermlineAndSequenceLengths %>%
@@ -1884,6 +2058,8 @@ getSubstitutionModel <- function(dat) {
 #' @param substitution_model The inferred substitution model, which can be
 #'   obtained via \code{getSubstitutionModel}
 #' @return The default shazam mutability model
+#' 
+#' @export
 getMutabilityModel <- function(dat, 
                                substitution_model=getSubstitutionModel(dat)
                               ) {
@@ -1901,6 +2077,8 @@ getMutabilityModel <- function(dat,
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param sub_mod_a,sub_mod_b A shazam substitution model
 #' @return ell-1 divergence of mutability model matrices
+#' 
+#' @export
 compareMutabilityModels <- function(dat_a, 
                                     dat_b, 
                                     sub_mod_a=getSubstitutionModel(dat_a),
@@ -1919,6 +2097,8 @@ compareMutabilityModels <- function(dat_a,
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return List of two divergences: one for the substitution models and 
 #'   another for the mutability models
+#' 
+#' @export
 compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
     sub_model_a <- dat_a %>% 
         getSubstitutionModel
@@ -1943,6 +2123,8 @@ compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
 #' @param column the column name of \code{dat} containing the desired deletion
 #'   lengths.
 #' @return Vector of deletion lengths
+#' 
+#' @export
 getDeletionLengths <- function(dat, column) {
     lengths <- dat %>% 
         dplyr::select_(column) %>% 
@@ -1954,6 +2136,8 @@ getDeletionLengths <- function(dat, column) {
 #'
 #' @inheritParams getDeletionLengths
 #' @return Distribution of V gene 3' deletion lengths
+#' 
+#' @export
 getVGene3PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "v_3p_del"))
 }
@@ -1961,6 +2145,8 @@ getVGene3PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the V gene 3' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotVGene3PrimeDeletionLengthDistribution <- function(dat_list,
                                            plot_type,
                                            names=NULL,
@@ -1980,6 +2166,8 @@ plotVGene3PrimeDeletionLengthDistribution <- function(dat_list,
 #'
 #' @inheritParams getDeletionLengths
 #' @return Distribution of V gene 5' deletion lengths
+#' 
+#' @export
 getVGene5PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "v_5p_del"))
 }
@@ -1987,6 +2175,8 @@ getVGene5PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the V gene 5' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotVGene5PrimeDeletionLengthDistribution <- function(dat_list,
                                            plot_type,
                                            names=NULL,
@@ -2006,6 +2196,8 @@ plotVGene5PrimeDeletionLengthDistribution <- function(dat_list,
 #'
 #' @inheritParams getDeletionLengths
 #' @return Distribution of D gene 3' deletion lengths
+#' 
+#' @export
 getDGene3PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "d_3p_del"))
 }
@@ -2013,6 +2205,8 @@ getDGene3PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the D gene 3' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotDGene3PrimeDeletionLengthDistribution <- function(dat_list,
                                            plot_type,
                                            names=NULL,
@@ -2032,6 +2226,8 @@ plotDGene3PrimeDeletionLengthDistribution <- function(dat_list,
 #'
 #' @inheritParams getDeletionLengths
 #' @return Distribution of D gene 5' deletion lengths
+#' 
+#' @export
 getDGene5PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "d_5p_del"))
 }
@@ -2039,6 +2235,8 @@ getDGene5PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the D gene 5' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotDGene5PrimeDeletionLengthDistribution <- function(dat_list,
                                            plot_type,
                                            names=NULL,
@@ -2058,6 +2256,8 @@ plotDGene5PrimeDeletionLengthDistribution <- function(dat_list,
 #'
 #' @inheritParams getDeletionLengths
 #' @return Distribution of J gene 3' deletion lengths
+#' 
+#' @export
 getJGene3PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "j_3p_del"))
 }
@@ -2065,6 +2265,8 @@ getJGene3PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the J gene 3' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotJGene3PrimeDeletionLengthDistribution <- function(dat_list,
                                            plot_type,
                                            names=NULL,
@@ -2084,6 +2286,8 @@ plotJGene3PrimeDeletionLengthDistribution <- function(dat_list,
 #'
 #' @inheritParams getDeletionLengths
 #' @return Distribution of J gene 5' deletion lengths
+#' 
+#' @export
 getJGene5PrimeDeletionLengthDistribution <- function(dat) {
     return(getDeletionLengths(dat, "j_5p_del"))
 }
@@ -2091,6 +2295,8 @@ getJGene5PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the J gene 5' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotJGene5PrimeDeletionLengthDistribution <- function(dat_list,
                                            plot_type,
                                            names=NULL,
@@ -2113,6 +2319,8 @@ plotJGene5PrimeDeletionLengthDistribution <- function(dat_list,
 #' @param end The end of gene over which the deletion occured. Either "3Prime" 
 #'   or "5Prime".
 #' @return JS divergence of deletion lengths between \code{dat_a} and \code{dat_b}
+#' 
+#' @export
 compareDeletionLengths <- function(dat_a, dat_b, gene, end) {
     deletion_length_function <- paste0("get", gene, end, "DeletionLengthDistribution") %>%
         get
@@ -2127,6 +2335,8 @@ compareDeletionLengths <- function(dat_a, dat_b, gene, end) {
 #' Compare the V gene 3' deletion length distributions of two datasets
 #'
 #' @inheritParams compareDeletionLengths
+#' 
+#' @export
 compareVGene3PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "VGene", "3Prime"))
 }
@@ -2134,6 +2344,8 @@ compareVGene3PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
 #' Compare the D gene 3' deletion length distributions of two datasets
 #'
 #' @inheritParams compareDeletionLengths
+#' 
+#' @export
 compareDGene3PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "DGene", "3Prime"))
 }
@@ -2141,6 +2353,8 @@ compareDGene3PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
 #' Compare the D gene 5' deletion length distributions of two datasets
 #'
 #' @inheritParams compareDeletionLengths
+#' 
+#' @export
 compareDGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "DGene", "5Prime"))
 }
@@ -2148,6 +2362,8 @@ compareDGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
 #' Compare the J gene 5' deletion length distributions of two datasets
 #'
 #' @inheritParams compareDeletionLengths
+#' 
+#' @export
 compareJGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
     return(compareDeletionLengths(dat_a, dat_b, "JGene", "5Prime"))
 }
@@ -2156,6 +2372,8 @@ compareJGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
 #'
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
+#' 
+#' @export
 getInsertionLengths <- function(dat, column) {
     lengths <- dat %>% 
         dplyr::select_(column) %>% 
@@ -2166,6 +2384,8 @@ getInsertionLengths <- function(dat, column) {
 #' Get the distribution of VD insertion lengths of a dataset
 #'
 #' @inheritParams getInsertionLengths
+#' 
+#' @export
 getVDInsertionLengthDistribution <- function(dat) {
     return(getInsertionLengths(dat, "np1_length"))
 }
@@ -2173,6 +2393,8 @@ getVDInsertionLengthDistribution <- function(dat) {
 #' Plot the VD insertion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotVDInsertionLengthDistribution <- function(dat_list,
                                    plot_type,
                                    names=NULL,
@@ -2192,6 +2414,8 @@ plotVDInsertionLengthDistribution <- function(dat_list,
 #' Get the distribution of DJ insertion lengths of a dataset
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 getDJInsertionLengthDistribution <- function(dat) {
     return(getInsertionLengths(dat, "np2_length"))
 }
@@ -2199,6 +2423,8 @@ getDJInsertionLengthDistribution <- function(dat) {
 #' Plot the DJ insertion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotDJInsertionLengthDistribution <- function(dat_list,
                                    plot_type,
                                    names=NULL,
@@ -2219,6 +2445,8 @@ plotDJInsertionLengthDistribution <- function(dat_list,
 #'   for VD and VJ insertion lengths is the same
 #'
 #' @inheritParams getVDInsertionLengthDistribution
+#' 
+#' @export
 getVJInsertionLengthDistribution <- function(dat) {
     return(getVDInsertionLengthDistribution(dat))
 }
@@ -2227,6 +2455,8 @@ getVJInsertionLengthDistribution <- function(dat) {
 #'   for VD and VJ insertion lengths is the same
 #'
 #' @inheritParams plotVDInsertionLengthDistribution
+#' 
+#' @export
 plotVJInsertionLengthDistribution <- function(dat_list,
                                               plot_type,
                                               names=NULL,
@@ -2275,6 +2505,8 @@ compareVJInsertionLengthDistributions <- function(dat_a, dat_b) {
 #' Any transition to or from a character other than a, c, g, or t is ignored.
 #' @param seq_list Vector of DNA sequence strings
 #' @return The empirical transition matrix for each (base, base) pair. 
+#' 
+#' @export
 getMarkovMatrix <- function(seq_list) {
     counts <- matrix(0, 4, 4)
     dna_chars <- c('a', 'c', 'g', 't')
@@ -2303,6 +2535,8 @@ getMarkovMatrix <- function(seq_list) {
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @param column The name of the column corresponding to the inserted sequences
 #' @return The empirical transition matrix for each (base, base) pair.
+#' 
+#' @export
 getInsertionMatrix <- function(dat, column) {
     mat <- dat %>%
         dplyr::select_(column) %>%
@@ -2315,6 +2549,8 @@ getInsertionMatrix <- function(dat, column) {
 #'
 #' @inheritParams getInsertionMatrix
 #' @return The empirical transition matrix for each (base, base) pair.
+#' 
+#' @export
 getVDInsertionMatrix <- function(dat) {
     return(getInsertionMatrix(dat, "vd_insertion"))
 }
@@ -2323,6 +2559,8 @@ getVDInsertionMatrix <- function(dat) {
 #'
 #' @inheritParams getInsertionMatrix
 #' @return The empirical transition matrix for each (base, base) pair.
+#' 
+#' @export
 getDJInsertionMatrix <- function(dat) {
     return(getInsertionMatrix(dat, "dj_insertion"))
 }
@@ -2331,6 +2569,8 @@ getDJInsertionMatrix <- function(dat) {
 #'
 #' @inheritParams getInsertionMatrix
 #' @return The empirical transition matrix for each (base, base) pair.
+#' 
+#' @export
 getVJInsertionMatrix <- function(dat) {
     return(getInsertionMatrix(dat, "vj_insertion"))
 }
@@ -2339,6 +2579,8 @@ getVJInsertionMatrix <- function(dat) {
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The mean absolute difference of matrix entries, taken elementwise
+#' 
+#' @export
 compareVDInsertionMatrices <- function(dat_a, dat_b) {
     matrix_a <- dat_a %>% 
         getVDInsertionMatrix
@@ -2352,6 +2594,8 @@ compareVDInsertionMatrices <- function(dat_a, dat_b) {
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The mean absolute difference of matrix entries, taken elementwise
+#' 
+#' @export
 compareDJInsertionMatrices <- function(dat_a, dat_b) {
     matrix_a <- dat_a %>% 
         getDJInsertionMatrix
@@ -2365,6 +2609,8 @@ compareDJInsertionMatrices <- function(dat_a, dat_b) {
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The mean absolute difference of matrix entries, taken elementwise
+#' 
+#' @export
 compareVJInsertionMatrices <- function(dat_a, dat_b) {
     matrix_a <- dat_a %>% 
         getVJInsertionMatrix
@@ -2388,6 +2634,8 @@ getClusterSizes <- function(dat,
 #' Plot the cluster size distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
+#' 
+#' @export
 plotClusterSizeDistribution <- function(dat_list,
                                         plot_type,
                                         names=NULL,
@@ -2426,6 +2674,8 @@ getHillNumbers <- function(dat, diversity_orders=c(0, 1, 2)) {
 #' @param diversity_orders Scalar- or vector-valued list of parameters to the
 #' Hill diversity index. Can be any real value although nonnegative values are
 #' recommended as biologically meaningful.
+#' 
+#' @export
 compareHillNumbers <- function(dat_a, dat_b, diversity_orders=c(0, 1, 2)) {
     hill_numbers_a <- dat_a %>% 
         getHillNumbers(diversity_orders)
@@ -2443,6 +2693,8 @@ compareHillNumbers <- function(dat_a, dat_b, diversity_orders=c(0, 1, 2)) {
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return The percentage of in-frame sequences in \code{dat}
+#' 
+#' @export
 getInFramePercentage <- function(dat,
                                  column="vj_in_frame") {
     percentage <- 100*(dat[[column]] %>%
@@ -2454,6 +2706,8 @@ getInFramePercentage <- function(dat,
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return Absolute differences of in-frame percentages
+#' 
+#' @export
 compareInFramePercentages <- function(dat_a, 
                                       dat_b,
                                       column="vj_in_frame"
@@ -2476,6 +2730,8 @@ compareInFramePercentages <- function(dat_a,
 #'   strength. Thus, Sigma = 0 corresponds to no selection, Sigma > 0 
 #'   corresponds to positive selection, and Sigma < 0 corresponds to negative
 #'   selection
+#' 
+#' @export
 getSelectionEstimate <- function(dat) {
     baseline <- shazam::calcBaseline(dat,
                                      sequenceColumn="sequence_alignment",
@@ -2490,6 +2746,8 @@ getSelectionEstimate <- function(dat) {
 #'
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @return The estimated JS divergence of selection strength distributions
+#' 
+#' @export
 compareSelectionEstimates <- function(dat_a, dat_b) {
     baseline_a <- dat_a %>% 
         getSelectionEstimate
@@ -2503,6 +2761,8 @@ compareSelectionEstimates <- function(dat_a, dat_b) {
 #'
 #' @param tree A phylo object corresponding to a phylogeny
 #' @return Sackin's index of tree balance
+#' 
+#' @export
 getSackinIndex <- function(tree) {
     index <- tree %>% 
         CollessLike::sackin.index(norm=TRUE)
@@ -2514,6 +2774,8 @@ getSackinIndex <- function(tree) {
 #' @param tree_1 The first phylo object
 #' @param tree_2 The second phylo object
 #' @return The absolute difference of the respective Sackin's indices
+#' 
+#' @export
 compareSackinIndices <- function(tree_1, tree_2) {
     index_1 <- tree_1 %>%
         getSackinIndex
@@ -2527,6 +2789,8 @@ compareSackinIndices <- function(tree_1, tree_2) {
 #'
 #' @param tree A phylo object corresponding to a phylogeny
 #' @return Colless-like index of tree balance
+#' 
+#' @export
 getCollessLikeIndex <- function(tree) {
     index <- tree %>%
         CollessLike::colless.like.index(norm=TRUE)
@@ -2538,6 +2802,8 @@ getCollessLikeIndex <- function(tree) {
 #' @param tree_1 The first phylo object
 #' @param tree_2 The second phylo object
 #' @return The absolute difference of the respective Colless-like indices
+#' 
+#' @export
 compareCollessLikeIndices <- function(tree_1, tree_2) {
     index_1 <- tree_1 %>%
         getCollessLikeIndex
@@ -2551,6 +2817,8 @@ compareCollessLikeIndices <- function(tree_1, tree_2) {
 #'
 #' @param tree A phylo object corresponding to a phylogeny
 #' @return cophenetic index of tree balance
+#' 
+#' @export
 getCopheneticIndex <- function(tree) {
     index <- tree %>%
         CollessLike::cophen.index(norm=TRUE) 
@@ -2562,6 +2830,8 @@ getCopheneticIndex <- function(tree) {
 #' @param tree_1 The first phylo object
 #' @param tree_2 The second phylo object
 #' @return The absolute difference of the respective cophenetic indices
+#' 
+#' @export
 compareCopheneticIndices <- function(tree_1, tree_2) {
     index_1 <- tree_1 %>%
         getCopheneticIndex
@@ -2575,6 +2845,8 @@ compareCopheneticIndices <- function(tree_1, tree_2) {
 #'
 #' @param sequences Vector of amino acid sequences
 #' @return table of counts for each amino acid in \code{sequences}
+#' 
+#' @export
 getAminoAcidDistribution <- function(dat,
                                      column="junction_aa",
                                      standardize=TRUE
@@ -2596,6 +2868,8 @@ getAminoAcidDistribution <- function(dat,
 #'   \code{table} objects
 #'
 #' @param d1,d2 Table containing empirical frequencies 
+#' 
+#' @export
 compareCategoricalDistributions <- function(d1,
                                             d2
                                            ) {
@@ -2735,6 +3009,8 @@ getUnivariateDistributionDataTable <- function(dat_list,
 #' @inheritParams plotDistribution
 #' @param names Strings to be displayed by the legend corresponding to the 
 #'   elements of \code{dat_list}
+#' 
+#' @export
 plotUnivariateDistributions <- function(dat_list,
                                         plot_type,
                                         names=NULL,

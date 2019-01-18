@@ -14,6 +14,8 @@
 #' @param num_procs The number of processors to use in parallel
 #' @param cleanup Flag to delete all interim files created by partis
 #' @return A data.table object containing the output of the partis call
+#' 
+#' @export
 callPartis <- function(action, 
                        input_filename, 
                        output_filename, 
@@ -87,6 +89,8 @@ appendQuerySequencesToPartisAnnotationsFile <- function(input_filename,
 #' @param filename YAML file from partis output folder corresponding to a gene
 #' @return Object containing the gene's overall mutation rate as well as a 
 #'   vector of positional mutation rates
+#' 
+#' @export
 getMutationInfo <- function(filename) {
     getSubstitutionRate <- function(state) {
         position <- state %$% 
@@ -146,6 +150,8 @@ getMutationInfo <- function(filename) {
 #' created by partis
 #'
 #' @inheritParams callPartis
+#' 
+#' @export
 preventOutputOverwrite <- function(output_path, cleanup) {
     if(length(list.files("_output")) > 0 && 
        output_path == "_output" && cleanup) {
@@ -158,6 +164,8 @@ preventOutputOverwrite <- function(output_path, cleanup) {
 #' Do extended partis processing of annotations
 #'
 #' @inheritParams getPartisAnnotations
+#' 
+#' @export
 getFullPartisAnnotation <- function(output_path, 
                                     output_file, 
                                     partis_path
@@ -190,9 +198,9 @@ processPartisMatureSequences <- function(dat) {
     return(dat)
 }
 
-#' Here we use stringr::str_split to get empty strings after a ':', if necessary.
-#' E.g., with strsplit, '::' would yield c('', ''), whereas
-#' stringr::str_split would yield c('', '', '')
+# Here we use stringr::str_split to get empty strings after a ':', if necessary.
+# E.g., with strsplit, '::' would yield c('', ''), whereas
+# stringr::str_split would yield c('', '', '')
 collapseColonedList <- function(coloned_list,
                                 type_conversion=as.numeric
                                ) {
@@ -269,6 +277,8 @@ collapseClones <- function(partition_dataset) {
 #' @param do_full_annotation Does further processing than the default by partis
 #' @param collapse_clones Convert a row of colon-separated clonal families to
 #'   separate rows for each member
+#' 
+#' @export
 readPartisAnnotations <- function(output_path,
                                   output_filename,
                                   partis_path=Sys.getenv("PARTIS_PATH"),
@@ -382,6 +392,8 @@ processPartisSequences <- function(annotated_data) {
 #'
 #' @inheritParams callPartis
 #' @return A data.table object containing the output of the partis annotate call
+#' 
+#' @export
 getPartisAnnotations <- function(input_filename, 
                                  output_filename="partis_output.csv", 
                                  partis_path=Sys.getenv("PARTIS_PATH"), 
@@ -444,6 +456,8 @@ getPartisAnnotations <- function(input_filename,
 #' @inheritParams callPartis
 #' @return A data.table object containing the output of the partis partition 
 #'   call
+#' 
+#' @export
 getPartisPartitions <- function(input_filename, 
                                 output_filename="partition.csv", 
                                 partis_path=Sys.getenv("PARTIS_PATH"), 
@@ -482,6 +496,8 @@ getPartisPartitions <- function(input_filename,
 #'    by default. The function cd's into the params directory
 #' @param num_events The desired number of VDJ rearragement events for the
 #'    simulation
+#' 
+#' @export
 getPartisSimulation <- function(parameter_dir,
                                 partis_path=Sys.getenv("PARTIS_PATH"),
                                 output_file="simu.csv",
@@ -560,6 +576,8 @@ getPartisSimulation <- function(parameter_dir,
 #'   saving as a fasta file)
 #'
 #' @param sequences List or vector of query BCR sequences for annotation
+#' 
+#' @export
 getPartisAnnotationsFromStrings <- function(sequences, 
                                             ...
                                            ) {

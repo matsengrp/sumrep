@@ -119,6 +119,8 @@ hasStopCodon <- function(aa_sequence) {
 #'
 #' @param aa_sequences Vector or list of amino acid sequences
 #' @return Filtered list with "bad" sequences removed
+#' 
+#' @export
 filterAminoAcidSequences <- function(aa_sequences) {
     filtered_seqs <- aa_sequences %>%
         sapply(function(x) {
@@ -135,6 +137,8 @@ filterAminoAcidSequences <- function(aa_sequences) {
 #'
 #' @param dictionary String that represents a dictionary in Python's syntax
 #' @return An R list containing the same information as \code{dictionary}
+#' 
+#' @export
 parsePythonDictionary <- function(dictionary) {
     parsed <- dictionary %>% gsub(pattern="'", replacement='"') %>% 
         gsub(pattern="\\(", replacement="\\[") %>% 
@@ -156,6 +160,8 @@ removeSequencesWithDifferentGermlineAndSequenceLengths <- function(dat) {
 #'   .rds files
 #' 
 #' @param data_dir The directory which contains .rds files to be loaded
+#' 
+#' @export
 loadNewDatasets <- function(data_dir) {
     for(data_file in list.files(data_dir)) {
         var_name <- data_file %>%
@@ -171,6 +177,7 @@ loadNewDatasets <- function(data_dir) {
 
 #' Handy automatic dimension retrieval given number of grid cells 
 #'
+#' @export
 getGridDims <- function(n) {
     cols <- n %>% sqrt %>% floor 
     rows <- ceiling(n/cols) %>% floor 
@@ -181,6 +188,8 @@ getGridDims <- function(n) {
 #' @param plotlist List of plots created with ggplot
 #' @param cols Number of columns for the figure
 #' @param rows Number of rows for the figure
+#' 
+#' @export
 multiplot <- function(plotlist=NULL, 
                       cols, 
                       rows, 
