@@ -335,17 +335,20 @@ compareNNDistanceDistributions <- function(dat_a,
                                            dat_b, 
                                            column="sequence",
                                            k=1,
-                                           approximate=TRUE
+                                           approximate=TRUE,
+                                           ...
                                           ) {
     dist_a <- getNearestNeighborDistribution(dat=dat_a,
                                              column=column,
                                              k=k,
-                                             approximate=approximate
+                                             approximate=approximate,
+                                             ...
                                             )
     dist_b <- getNearestNeighborDistribution(dat=dat_b,
                                              column=column,
                                              k=k,
-                                             approximate=approximate
+                                             approximate=approximate,
+                                             ...
                                             )
     divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
@@ -594,73 +597,55 @@ plotColdspotCountDistribution <- function(dat_list,
                           plot_type=plot_type,
                           x_label="Coldspot count",
                           show_legend=show_legend,
-                          names=names
+                          names=names,
+                          binwidth=1
                          )
     return(p)
-}
-
-#' Compare hot or coldspot count distributions of two sets of mature BCR sequences
-#'
-#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
-#' @param count_function The comparison function corresponding to hotspot or 
-#'   coldspot counts. Must be either getHotspotCount or getColdspotCount
-#' @return The average JS divergence of the count distributions inferred from
-#'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
-compareCounts <- function(dat_a,
-                          dat_b,
-                          count_function,
-                          ...
-                         ) {
-    counts_a <- dat_a %>%
-        count_function(...)
-
-    counts_b <- dat_b %>%
-        count_function(...)
-    divergence <- getJSDivergence(counts_a,
-                                  counts_b
-                                 )
-    return(divergence)
 }
 
 #' Compare hotspot count distributions of two sets of mature BCR sequences
 #'
 #' @inheritParams compareCounts
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
 #' @return The JS divergence of the hotspot count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareHotspotCountDistributions <- function(dat_a, 
-                                 dat_b,
-                                 column="sequence",
-                                 ...
-                                ) {
-    divergence <- compareCounts(dat_a,
-                                dat_b,
-                                getHotspotCount,
-                                column=column,
-                                ...
-                               )
+                                             dat_b,
+                                             column="sequence",
+                                             ...
+                                            ) {
+    dist_a <- dat_a %>% getHotspotCountDistribution(column=column,
+                                                    ...
+                                                   )
+    dist_b <- dat_b %>% getHotspotCountDistribution(column=column,
+                                                    ...
+                                                   )
+    divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
 
 #' Compare coldspot count distributions of two sets of mature BCR sequences
 #'
 #' @inheritParams compareCounts
+#' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
 #' @param column the column name of \code{dat} containing the strings on which
 #'   the distribution should be computed
 #' @return The JS divergence of the coldspot count distributions inferred from
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareColdspotCountDistributions <- function(dat_a, 
-                                  dat_b,
-                                  column="sequence",
-                                  ...
-                                 ) {
-    divergence <- compareCounts(dat_a,
-                                dat_b,
-                                getColdspotCount,
-                                column=column,
-                                ...
-                               )
+                                              dat_b,
+                                              column="sequence",
+                                              ...
+                                             ) {
+    dist_a <- dat_a %>% getColdspotCountDistribution(column=column,
+                                                    ...
+                                                   )
+    dist_b <- dat_b %>% getColdspotCountDistribution(column=column,
+                                                    ...
+                                                   )
+    divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
 
@@ -699,15 +684,17 @@ getDistancesFromGermlineToSequence <- function(dat,
 #' @param v_gene_only If TRUE, restrict sequences to the V gene only
 #' @return Vector of Levenshtein distances from naive to mature
 getDistanceFromGermlineToSequenceDistribution <- function(dat,
-                                                     approximate=FALSE,
-                                                     v_gene_only=FALSE
-                                                    ) {
+                                                          approximate=FALSE,
+                                                          v_gene_only=FALSE,
+                                                          ...
+                                                         ) {
     if(approximate) {
         distribution <- dat %>%
             getApproximateDistribution(
                 summary_function=getDistancesFromGermlineToSequence,
                 divergence_function=getJSDivergence,
-                v_gene_only=v_gene_only
+                v_gene_only=v_gene_only,
+                ...
             )
     } else {
         distribution <- dat %>%
@@ -738,19 +725,23 @@ plotDistanceFromGermlineToSequenceDistribution <- function(dat_list,
 #'
 #' @inheritParams getDistanceFromGermlineToSequenceDistribution
 #' @param dat_a,dat_b A \code{data.table} corresponding to repertoire annotations
-compareDistanceFromGermlineToSequenceDistributions <- function(dat_a, 
-                                                          dat_b, 
-                                                          approximate=FALSE,
-                                                          v_gene_only=FALSE
-                                                         ) {
+compareDistanceFromGermlineToSequenceDistributions <- function(
+    dat_a, 
+    dat_b, 
+    approximate=FALSE,
+    v_gene_only=FALSE,
+    ...
+) {
     dist_a <- dat_a %>% 
         getDistanceFromGermlineToSequenceDistribution(approximate=approximate,
-                                                 v_gene_only=v_gene_only
-                                                )
+                                                      v_gene_only=v_gene_only,
+                                                      ...
+                                                     )
     dist_b <- dat_b %>% 
         getDistanceFromGermlineToSequenceDistribution(approximate=approximate,
-                                                 v_gene_only=v_gene_only
-                                                )
+                                                      v_gene_only=v_gene_only,
+                                                      ...
+                                                     )
     divergence <- getJSDivergence(dist_a, dist_b)
     return(divergence)
 }
@@ -1671,15 +1662,17 @@ extractCDR3CodonStartPositions <- function(dictionary_list) {
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return Vector of CDR3 strings
 getCDR3PairwiseDistanceDistribution <- function(dat,
-                                        by_amino_acid=TRUE,
-                                        column=ifelse(by_amino_acid,
-                                                      "junction_aa",
-                                                      "junction"),
-                                        approximate=TRUE
-                                       ) {
+                                                by_amino_acid=TRUE,
+                                                column=ifelse(by_amino_acid,
+                                                              "junction_aa",
+                                                              "junction"),
+                                                approximate=TRUE,
+                                                ...
+                                               ) {
     distances <- dat %>% 
         getPairwiseDistanceDistribution(column=column,
-                                        approximate=approximate
+                                        approximate=approximate,
+                                        ...
                                        )
     return(distances)
 }
@@ -1695,15 +1688,18 @@ compareCDR3PairwiseDistanceDistributions <- function(dat_a,
                                                      column=ifelse(by_amino_acid,
                                                                    "junction_aa",
                                                                    "junction"),
-                                                     approximate=TRUE
+                                                     approximate=TRUE,
+                                                     ...
                                                     ) {
     distances_a <- dat_a %>% 
         getCDR3PairwiseDistanceDistribution(column=column,
-                                            approximate=approximate
+                                            approximate=approximate,
+                                            ...
                                            )
     distances_b <- dat_b %>% 
         getCDR3PairwiseDistanceDistribution(column=column,
-                                            approximate=approximate
+                                            approximate=approximate,
+                                            ...
                                            )
     divergence <- getJSDivergence(distances_a, distances_b)
     return(divergence)
