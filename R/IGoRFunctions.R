@@ -42,19 +42,8 @@ getIgorAnnotations <- function(input_filename,
                                               )
     )
 
-
-    if(chain == "beta") {
-        annotations[["vd_insertion"]] <- annotations[["vd_insertion"]] %>%
-            gsub(pattern="[^A-Z]", replace="") %>%
-            tolower
-        annotations[["dj_insertion"]] <- annotations[["dj_insertion"]] %>%
-            gsub(pattern="[^A-Z]", replace="") %>%
-            tolower
-    } else {
-        annotations[["vj_insertion"]] <- annotations[["vj_insertion"]] %>%
-            gsub(pattern="[^A-Z]", replace="") %>%
-            tolower
-    }
+    annotations <- processIgorAnnotations(annotations,
+                                         chain=chain)
 
     indexed_seqs <- fread(file.path(igor_wd_name,
                                     "aligns",
@@ -73,18 +62,54 @@ getIgorAnnotations <- function(input_filename,
                                    )
     )
 
+    simulations <- processIgorAnnotations(simulations,
+                                          chain=chain)
+
     sim_indexed_seqs <- fread(file.path(igor_wd_name,
                                         "igor_generated",
                                         "generated_seqs_werr.csv"
                                        )
     )
-    simulations$sequence <-
-        sim_indexed_seqs[["nt_sequence"]][1 + simulations[["seq_index"]]] %>%
+
+    sim_aux_df <- fread(file.path(igor_wd_name,
+                                  "igor_generated",
+                                  "generated_seqs_werr_CDR3_info.csv"
+                                 )
+    )
+
+    sim_annotations <- merge(sim_aux_df, simulations)
+    sim_annotations$sequence <-
+        sim_indexed_seqs[["nt_sequence"]][1 + sim_annotations[["seq_index"]]] %>%
         tolower
 
-    names(simulations)[which(names(simulations) == "nt_CDR3")] <- "junction"
+    names(sim_annotations)[which(names(sim_annotations) == "nt_CDR3")] <- 
+        "junction"
+    sim_annotations$junction <- sim_annotations$junction %>% tolower
     return(list(annotations=annotations,
-                simulations=simulations
+                simulations=sim_annotations
                )
     )
+}
+
+processIgorAnnotations <- function(annotations,
+                                   chain
+                                  ) {
+    if(chain == "beta") {
+        annotations[["vd_insertion"]] <- annotations[["vd_insertion"]] %>%
+            gsub(pattern="[^A-Z]", replace="") %>%
+            tolower
+        annotations[["dj_insertion"]] <- annotations[["dj_insertion"]] %>%
+            gsub(pattern="[^A-Z]", replace="") %>%
+            tolower
+    } else {
+        annotations[["vj_insertion"]] <- annotations[["vj_insertion"]] %>%
+            gsub(pattern="[^A-Z]", replace="") %>%
+            tolower
+    }
+
+    if("is_inframe" %in% names(annotations)) {
+        annotations$vj_in_frame <- annotations$is_inframe %>%
+            as.logical
+    }
+    return(annotations)
 }
