@@ -8,14 +8,20 @@
 #' @param method Annotation method, currently either 'partis' or 'igblast'
 #' @param num_procs Number of cores for annotation
 writeAnnotations <- function(filename, 
-                             outname,
+                             dat_name,
                              method,
+                             outname=paste0("data/Annotations/",
+                                            dat_name,
+                                            ".rds"),
                              germline_dir=NULL,
-                             num_procs=100) {
+                             num_procs=100,
+                             chain=NULL
+                            ) {
     if(method == "partis") {
+        output_path <- paste0("_output_", dat_name)
         annotations <- getPartisAnnotations(input_filename=filename, 
                                             num_procs=num_procs,
-                                            output_path="tmp_output",
+                                            output_path=output_path,
                                             cleanup=FALSE,
                                             germline_dir=germline_dir,
                                             locus="igh"
@@ -28,12 +34,32 @@ writeAnnotations <- function(filename,
 
         num_leaves <- nrow(annotations$annotations)/num_clones
 
-        simulation <- getPartisSimulation("tmp_output",
+
+        # Get yaml simulation output for cft
+        yaml_command <- paste(Sys.getenv("PARTIS_PATH"),
+              "simulate",
+              "--parameter-dir",
+              file.path(output_path, "params"),
+              "--n-sim-events",
+              num_clones,
+              "--n-leaves",
+              num_leaves,
+              "--outfname",
+              file.path(output_path, "simu.yaml"),
+              "--seed",
+              13
+             )
+        yaml_command %>% system
+
+        simulation <- getPartisSimulation(parameter_dir=output_path,
                                           num_events=num_clones,
-                                          num_leaves=num_leaves
+                                          num_leaves=num_leaves,
+                                          cleanup=F,
+                                          seed=13
                                          )
+
         saveRDS(simulation, outname %>% gsub(pattern='.rds',
-                                             replace='-sim.rds'))
+                                            replace='-sim.rds'))
         "tmp_output" %>% unlink(recursive=TRUE)
     } else if(method == "igblast") {
         annotations <- getIgBlastAnnotations(input_filename=filename, 
@@ -43,6 +69,19 @@ writeAnnotations <- function(filename,
                                              receptor_type="BCR"
                                             )
         saveRDS(annotations, outname)
+    } else if(method == "igor") {
+        ann_sim <- getIgorAnnotations(input_filename=filename,
+                                      output_filename=paste0(dat_name, '.csv'),
+                                      igor_wd=dat_name,
+                                      chain=chain
+                                     )
+        annotations <- ann_sim$annotations
+        saveRDS(list(annotations=annotations), outname)
+        simulation <- ann_sim$simulation
+        saveRDS(list(annotations=simulation), outname %>% gsub(pattern='.rds',
+                                             replacement='-sim.rds')
+        )
+        
     }
 }
 
@@ -51,28 +90,49 @@ igb_germline_dir <- "~/Software/igblast/partis_friendly_bin"
 write_partis_annotations <- FALSE
 if(write_partis_annotations) {
     writeAnnotations("~/Data/GMC-igh-m1h.fa", 
-                     "data/Annotations/p_g1.rds", 
+                      "p_g1",
+                     "partis")
+    writeAnnotations("~/Data/GMC-igh-m8d.fa", 
+                     "p_g2",
+                     "partis")
+    writeAnnotations("~/Data/IB-igh-m1h.fa", 
+                     "p_i1",
+                     "partis")
+    writeAnnotations("~/Data/IB-igh-m8d.fa", 
+                     "p_i2",
                      "partis")
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
-                     "data/Annotations/p_f1.rds", 
+                     "p_f1",
                      "partis")
     writeAnnotations("~/Data/FV-igh-m8d.fa", 
-                     "data/Annotations/p_f2.rds", 
+                     "p_f2",
                      "partis")
 }
 
 write_partis_igb_annotations <- FALSE
 if(write_partis_igb_annotations) {
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
-                     "data/Annotations/pi_f1.rds", 
+                     "pi_f1",
                      "partis",
                      germline_dir=igb_germline_dir)
     writeAnnotations("~/Data/FV-igh-m8d.fa", 
-                     "data/Annotations/pi_f2.rds", 
+                     "pi_f2", 
                      "partis",
                      germline_dir=igb_germline_dir)
     writeAnnotations("~/Data/GMC-igh-m1h.fa", 
-                     "data/Annotations/pi_g1.rds", 
+                     "pi_g1", 
+                     "partis",
+                     germline_dir=igb_germline_dir)
+    writeAnnotations("~/Data/GMC-igh-m8d.fa", 
+                     "pi_g2", 
+                     "partis",
+                     germline_dir=igb_germline_dir)
+    writeAnnotations("~/Data/IB-igh-m1h.fa", 
+                     "pi_i1", 
+                     "partis",
+                     germline_dir=igb_germline_dir)
+    writeAnnotations("~/Data/IB-igh-m8d.fa", 
+                     "pi_i2", 
                      "partis",
                      germline_dir=igb_germline_dir)
 }
@@ -80,12 +140,45 @@ if(write_partis_igb_annotations) {
 write_igb_annotations <- FALSE
 if(write_igb_annotations) {
     writeAnnotations("~/Data/FV-igh-m1h.fa", 
-                     "data/Annotations/i_f1.rds", 
+                     "i_f1", 
                      "igblast")
     writeAnnotations("~/Data/FV-igh-m8d.fa", 
-                     "data/Annotations/i_f2.rds", 
+                     "i_f2", 
                      "igblast")
     writeAnnotations("~/Data/GMC-igh-m1h.fa", 
-                     "data/Annotations/i_g1.rds", 
+                     "i_g1", 
                      "igblast")
+    writeAnnotations("~/Data/GMC-igh-m8d.fa", 
+                     "i_g2", 
+                     "igblast")
+    writeAnnotations("~/Data/IB-igh-m1h.fa", 
+                     "i_i1", 
+                     "igblast")
+    writeAnnotations("~/Data/IB-igh-m8d.fa", 
+                     "i_i2", 
+                     "igblast")
+}
+
+write_igor_annotations <- TRUE
+if(write_igor_annotations) {
+    writeAnnotations("~/Data/Mike/hsa_tra_samp.txt",
+                     "hsa_tra",
+                     "igor",
+                     chain="alpha"
+                    )
+    writeAnnotations("~/Data/Mike/hsa_trb_samp.txt",
+                     "hsa_trb",
+                     "igor",
+                     chain="beta"
+                    )
+    writeAnnotations("~/Data/Mike/mmu_tra_samp.txt",
+                     "mmu_tra",
+                     "igor",
+                     chain="alpha"
+                    )
+    writeAnnotations("~/Data/Mike/mmu_trb_samp.txt",
+                     "mmu_trb",
+                     "igor",
+                     chain="beta"
+                    )
 }

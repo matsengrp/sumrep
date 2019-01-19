@@ -23,17 +23,28 @@ scoreStatistics <- function(sim_dats, obs_dats) {
                 unlist %>%
                 mean
             c_score <- sim_score/obs_score
+            comparison_name <- c_type %>%
+                gsub(pattern="compare", replace="get") %>%
+                ifelse(str_sub(., -1) == "s", 
+                       substr(., start=1, stop=nchar(.) - 1), 
+                       .
+                      ) %>%
+                getNameFromFunctionString
+            
             score_dat <- rbind(score_dat,
-                               data.table(Comparison=shortenName(c_type),
-                                          Score=c_score))
+                               data.table(
+                                          Comparison=comparison_name,
+                                          Score=c_score
+                                         )
+                              )
     }
     return(score_dat)
 }
 
 shortenName <- function(string) {
     shortened_name <- string %>% 
-        gsub(pattern="compare", replace="") %>%
-        gsub(pattern="Distribution", replace="")
+        gsub(pattern="compare", replace="get") %>%
+        getNameFromFunctionString
     return(shortened_name)
 }
 
@@ -70,9 +81,6 @@ plotComparisons <- function(dat, filename, cols=1, rows=1) {
 }
 
 loadNewDatasets("data/Comparisons")
-
-
-
 
 part_igb_dat <- rbind(compare_pi_f1_pi_f1_sim,
                       compare_pi_f2_pi_f2_sim,
@@ -123,39 +131,92 @@ obs_sim_dat$Type2 <- factor(obs_sim_dat$Type2,
                                "p_f2",
                                "p_g1"))
 
-sim_dats <- list(
+obs_sim_dats <- list(
                  compare_p_f1_p_f1_sim,
                  compare_p_f2_p_f2_sim,
-                 compare_p_g1_p_g1_sim
+                 compare_p_g1_p_g1_sim,
+                 compare_p_g2_p_g2_sim,
+                 compare_p_i1_p_i1_sim,
+                 compare_p_i2_p_i2_sim
                 )
 
-obs_dats <- list(
+obs_obs_dats <- list(
                  compare_p_f1_p_f2,
                  compare_p_f1_p_g1,
-                 compare_p_f2_p_g1
+                 compare_p_f1_p_g2,
+                 compare_p_f1_p_i1,
+                 compare_p_f1_p_i2,
+
+                 compare_p_f2_p_g1,
+                 compare_p_f2_p_g2,
+                 compare_p_f2_p_i1,
+                 compare_p_f2_p_i2,
+
+                 compare_p_g1_p_g2,
+                 compare_p_g1_p_i1,
+                 compare_p_g1_p_i2,
+
+                 compare_p_g2_p_i1,
+                 compare_p_g2_p_i2,
+
+                 compare_p_i1_p_i2
                 )
 
-score_dat <- scoreStatistics(sim_dats, obs_dats)
-score_dat <- score_dat[order(score_dat$Score)]
-score_plot <- score_dat %>% ggplot(aes(x=reorder(Comparison, Score), 
+sim_sim_dats <- list(
+                 compare_p_f1_sim_p_f2_sim,
+                 compare_p_f1_sim_p_g1_sim,
+                 compare_p_f1_sim_p_g2_sim,
+                 compare_p_f1_sim_p_i1_sim,
+                 compare_p_f1_sim_p_i2_sim,
+
+                 compare_p_f2_sim_p_g1_sim,
+                 compare_p_f2_sim_p_g2_sim,
+                 compare_p_f2_sim_p_i1_sim,
+                 compare_p_f2_sim_p_i2_sim,
+
+                 compare_p_g1_sim_p_g2_sim,
+                 compare_p_g1_sim_p_i1_sim,
+                 compare_p_g1_sim_p_i2_sim,
+
+                 compare_p_g2_sim_p_i1_sim,
+                 compare_p_g2_sim_p_i2_sim,
+
+                 compare_p_i1_sim_p_i2_sim
+                    )
+
+obs_score_dat <- scoreStatistics(obs_sim_dats, obs_obs_dats)
+obs_score_dat <- obs_score_dat[order(obs_score_dat$Score)]
+obs_score_plot <- obs_score_dat %>% ggplot(aes(x=reorder(Comparison, Score), 
                                        y=log(Score))) +
                                        # fill=reorder(Comparison, Score))) +
     geom_bar(stat="identity") +
-    xlab("Comparison") + ylab("log(Relative deviance)") +
-    ggtitle(paste0("Comparison scores of observations-to-simulations with ",
-                   "respect to comparisons of observations-to-observations")) +
+    xlab("Statistic") + ylab("log(Relative deviance)") +
     theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
           plot.margin=unit(c(1, 1, 1, 1.5), "cm"))
-ggsave("Images/score_plot.pdf", width=20, height=12)
+ggsave("Images/obs_score_plot.pdf", width=20, height=12)
+
+sim_score_dat <- scoreStatistics(obs_sim_dats, sim_sim_dats)
+sim_score_dat <- sim_score_dat[order(sim_score_dat$Score)]
+sim_score_plot <- sim_score_dat %>% ggplot(aes(x=reorder(Comparison, Score), 
+                                       y=log(Score))) +
+                                       # fill=reorder(Comparison, Score))) +
+    geom_bar(stat="identity") +
+    xlab("Statistic") + ylab("log(Relative deviance)") +
+    theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
+          plot.margin=unit(c(1, 1, 1, 1.5), "cm"))
+ggsave("Images/sim_score_plot.pdf", width=20, height=12)
 
 plotComparisons(obs_sim_dat, "Images/sim_obs.pdf")
 plotComparisons(part_igb_dat, "Images/partis_igb.pdf")
 
 # Save plots to sumrep ms
 sumrep_ms_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures"
-ggsave(filename=file.path(sumrep_ms_dir, "score_plot.pdf"), 
-       plot=score_plot,
-       width=10, height=6)
+ggsave(filename=file.path(sumrep_ms_dir, "obs_score_plot.pdf"), 
+       plot=obs_score_plot,
+       width=12, height=6)
+ggsave(filename=file.path(sumrep_ms_dir, "sim_score_plot.pdf"), 
+       plot=sim_score_plot,
+       width=12, height=6)
 plotComparisons(obs_sim_dat, file.path(sumrep_ms_dir, "sim_obs.pdf"))
 plotComparisons(part_igb_dat, file.path(sumrep_ms_dir, "partis_igb.pdf"))
 

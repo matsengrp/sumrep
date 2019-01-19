@@ -2812,8 +2812,10 @@ getNameFromFunctionString <- function(function_string) {
         getJGene5PrimeDeletionLengthDistribution="J 5' del. length",
         getVDInsertionLengthDistribution="VD insertion length",
         getDJInsertionLengthDistribution="DJ insertion length",
+        getVJInsertionLengthDistribution="VJ insertion length",
         getVDInsertionMatrice="VD insertion matrix",
         getDJInsertionMatrice="DJ insertion matrix",
+        getVJInsertionMatrice="VJ insertion matrix",
         getClusterSizeDistribution="Cluster size",
 
         SubstitutionModelDivergence="Substitution model",
@@ -2838,5 +2840,11 @@ getNameFromFunctionString <- function(function_string) {
         AtchleyFactor5Divergence="Atchley factor 5"
     )
 
-    return(name_hash[[function_string]])
+    name <- name_hash[[function_string]]
+
+    return(ifelse(!is.null(name),
+                  name,
+                  function_string
+                 )
+    )
 }
