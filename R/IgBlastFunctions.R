@@ -20,25 +20,37 @@ require(shazam)
 #' @param changeo_dir The path of the changeo bin folder (e.g.
 #'   "path/to/bin").
 #' @param cleanup If TRUE, remove all interim files created
+#' @param nproc The number of processors for use within the igblast and
+#'   shazam::distToNearest function calls. Defaults to 4.
+#'   Setting nproc=alakazam::cpuCount() attempts to automatically detect the
+#'   number of available cores -- see the alakazam documtation for details.
 #' @return A \code{list} of a \code{data.table} containing the annotations.
 getIgBlastAnnotations <- function(input_filename,
                                   output_filename="igblast_out.tsv",
                                   organism="human",
                                   domain_system="imgt",
                                   receptor_type,
-                                  num_threads=8,
-                                  igblast_dir,
-                                  changeo_dir,
+                                  nproc=4,
+                                  igblast_dir=Sys.getenv("IGBLAST_DIR"),
+                                  changeo_dir=Sys.getenv("CHANGEO_DIR"),
                                   cleanup=TRUE
                                  ) {
     if(receptor_type %>% missing) {
         stop("receptor_type argument must be specified.")
     }
-    if(igblast_dir %>% missing) {
-        stop("igblast_dir argument must be specified.")
+    if(igblast_dir == "") {
+        stop(paste("Empty string given as igblast_dir argument.",
+                   "Please specify the correct igblast directory,",
+                   "or make sure IGBLAST_DIR environment variable is set."
+                  )
+        )
     }
-    if(changeo_dir %>% missing) {
-        stop("changeo_dir argument must be specified.")
+    if(changeo_dir == "") {
+        stop(paste("Empty string given as changeo_dir argument.",
+                   "Please specify the correct Change-O directory,",
+                   "or make sure CHANGEO_DIR environment variable is set."
+                  )
+        )
     }
 
     input_filename <- input_filename %>% 
@@ -77,7 +89,7 @@ getIgBlastAnnotations <- function(input_filename,
                                  "-o",
                                  full_output_filename,
                                  "--nproc",
-                                 num_threads,
+                                 nproc,
                                  sep=" "
                                 )
 
@@ -96,7 +108,8 @@ getIgBlastAnnotations <- function(input_filename,
                 cluster_threshold <- annotations %>%
                     shazam::distToNearest(sequenceColumn="junction",
                                           vCallColumn="v_call",
-                                          jCallColumn="j_call"
+                                          jCallColumn="j_call",
+                                          nproc=nproc
                                          ) %$%
                     DIST_NEAREST %>%
                     shazam::findThreshold() %>%
