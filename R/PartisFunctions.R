@@ -212,7 +212,6 @@ collapseColonedList <- function(coloned_list,
     return(collapsed_vector)
 }
 
-
 collapseClones <- function(partition_dataset) {
     coloned_columns <- c("unique_ids",
                          "mut_freqs",
@@ -263,7 +262,6 @@ collapseClones <- function(partition_dataset) {
     }
 
     return(collapsed_dat)
-
 }
 
 #' Get partis annotations from the partis output directory.
@@ -381,6 +379,19 @@ processPartisSequences <- function(annotated_data) {
     return(annotated_data)
 }
 
+checkForValidLocus <- function(locus) {
+    valid_loci <- c("tra", "trb", "trd", "trg", "igl", "igk", "igh")
+    if(!(locus %in% valid_loci)) {
+        stop(paste("locus must be one of",
+                   paste(valid_loci %>%
+                            sapply(function(x) { paste0("'", x, "'") }) %>%
+                            unname, 
+                         collapse=", ")
+                  )
+        )
+    }
+}
+
 #' Perform sequence annotation with partis.
 #' This function does call partis.
 #'
@@ -403,6 +414,9 @@ getPartisAnnotations <- function(input_filename,
                                  germline_dir=NULL,
                                  extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs"
                                 ) {
+    locus <- locus %>% tolower
+    locus %>% checkForValidLocus
+
     preventOutputOverwrite(output_path, cleanup)
 
     if(partition) {
