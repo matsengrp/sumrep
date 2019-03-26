@@ -29,9 +29,12 @@ getIgorAnnotations <- function(input_filename,
                                chain,
                                output_filename="annotations.csv"
                               ) {
+    igor_input_filename <- "tmp.txt"
+    convertFastaToTxt(input_filename,
+                      output_filename=igor_input_filename)
     python_command <- paste("python3",
                             "inst/run_igor.py",
-                            input_filename,
+                            igor_input_filename,
                             igor_wd_name,
                             chain,
                             output_filename
@@ -112,4 +115,14 @@ processIgorAnnotations <- function(annotations,
             as.logical
     }
     return(annotations)
+}
+
+convertFastaToTxt <- function(input_filename,
+                              output_filename
+                             ) {
+    tmp_dat <- input_filename %>%
+        read.fasta(seqonly=TRUE, as.string=TRUE) %>%
+        data.table::data.table() %>%
+        data.table::fwrite(file=output_filename,
+                           col.names=FALSE)
 }
