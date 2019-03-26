@@ -207,3 +207,29 @@ multiplot <- function(plotlist=NULL,
         }   
     }     
 } 
+
+#' A wrapper of \code{alakazam::checkColumns} that stops execution when an
+#'   error is thrown.
+#' Checks whether \code{column} is a column name present in \code{dat},
+#'   and whether this column contains at least some non-missing values.
+#'
+#' @param dat A \code{data.table} corresponding to repertoire annotations 
+#' @param column A string naming the expected column of \code{dat}
+checkColumn <- function(dat, column) {
+    column_check <- alakazam::checkColumns(dat, column)
+    if(column_check != TRUE) {
+        stop(column_check)
+    }
+}
+
+#' A wrapper of \code{alakazam::checkColumns} that stops execution when an
+#'   error is thrown, and returns the vector of column values if available.
+#'
+#' @param dat A \code{data.table} corresponding to repertoire annotations 
+#' @param column A string naming the expected column of \code{dat}
+#' @return A vector of values given by \code{dat[[column]]}, if available
+getColumnValues <- function(dat, column) {
+    checkColumn(dat, column)
+    column_values <- dat[[column]]
+    return(column_values)
+}

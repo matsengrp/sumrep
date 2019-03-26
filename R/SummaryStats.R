@@ -80,7 +80,7 @@ getPairwiseDistanceDistribution <- function(dat,
                                             approximate=TRUE,
                                             ...
                                             ) {
-    sequence_list <- dat[[column]]
+    sequence_list <- getColumnValues(dat, column)
     if(approximate) {
         distribution <- sequence_list %>%
             getApproximateDistribution(summary_function=getDistanceVector,
@@ -280,7 +280,7 @@ getNearestNeighborDistribution <- function(dat,
                                            approximate=TRUE,
                                            ...
                                            ) {
-    sequence_list <- dat[[column]]
+    sequence_list <- getColumnValues(dat, column)
     if(approximate) {
         if(k == 1) {
             distribution <- getApproximateNearestNeighborDistribution(
@@ -384,7 +384,7 @@ getGCContentDistribution <- function(dat,
                                      approximate=FALSE,
                                      ...
                                      ) {
-    sequence_list <- dat[[column]]
+    sequence_list <- getColumnValues(dat, column)
     if(approximate) {
         distribution <- sequence_list %>%
             getApproximateDistribution(summary_function=getGCContent,
@@ -488,7 +488,7 @@ getHotspotCount <- function(dat,
                             hotspots=c("WRC", "WA")
                            ) {
     return(getSpotCount(spots=hotspots,
-                        dna_sequences=dat[[column]]
+                        dna_sequences=getColumnValues(dat, column)
                        )
     )
 }
@@ -551,7 +551,7 @@ getColdspotCount <- function(dat,
                              column="sequence", 
                              coldspots="SYC"
                             ) {
-    return(getSpotCount(dna_sequences=dat[[column]], 
+    return(getSpotCount(dna_sequences=getColumnValues(dat, column), 
                         spots=coldspots))
 }
 
@@ -760,12 +760,12 @@ getCDR3LengthDistribution <- function(dat,
                                      ) {
     if(by_amino_acid) {
         if("junction_aa" %in% names(dat)) {
-            CDR3_lengths <- dat$junction_aa %>%
+            CDR3_lengths <- dat[["junction_aa"]] %>%
                 sapply(nchar) %>%
                 unname
         } else {
             if("junction" %in% names(dat)) {
-                CDR3_lengths <- dat$junction %>%
+                CDR3_lengths <- dat[["junction"]] %>%
                     convertNucleobasesToAminoAcids %>%
                     sapply(nchar) %>%
                     unname
@@ -775,11 +775,11 @@ getCDR3LengthDistribution <- function(dat,
         }
     } else {
         if("junction_length" %in% names(dat)) {
-            CDR3_lengths <- dat$junction_length %>% 
+            CDR3_lengths <- dat[["junction_length"]] %>% 
                 na.omit
         } else {
             if("junction" %in% names(dat)) {
-                CDR3_lengths <- dat$junction %>%
+                CDR3_lengths <- dat[["junction"]] %>%
                     sapply(nchar) %>%
                     unname
             } else {
@@ -1120,7 +1120,7 @@ getKideraFactorDistributions <- function(dat,
                                          column="junction_aa",
                                          as_list=TRUE
                                         ) {
-    factor_distributions <- dat[[column]] %>% 
+    factor_distributions <- getColumnValues(dat, column) %>% 
         filterAminoAcidSequences %>%
         lapply(getKideraFactorsBySequence) %>%
         do.call("rbind", .)
@@ -1182,7 +1182,7 @@ getAtchleyFactorDistribution <- function(aa_sequences,
 getAtchleyFactorDistributions <- function(dat,
                                           column="junction_aa"
                                          ) {
-    collapsed_sequences <- dat[[column]] %>% 
+    collapsed_sequences <- getColumnValues(dat, column) %>% 
         filterAminoAcidSequences
     factor_numbers <- 1:5
     atchley_factors <- factor_numbers %>% 
@@ -1236,7 +1236,7 @@ getAliphaticIndex <- function(aa_sequence) {
 getAliphaticIndexDistribution <- function(dat,
                                           column="junction_aa"
                                          ) {
-    a_indices <- dat[[column]] %>%
+    a_indices <- getColumnValues(dat, column) %>%
         filterAminoAcidSequences %>%
         sapply(function(x) {
                    ifelse(!is.na(x),
@@ -1289,7 +1289,7 @@ compareAliphaticIndexDistributions <- function(dat_a,
 getGRAVYDistribution <- function(dat,
                                  column="junction_aa"
                                 ) {
-    dist <- dat[[column]] %>%
+    dist <- getColumnValues(dat, column) %>%
             filterAminoAcidSequences %>%
             sapply(function(x) {
                    ifelse(!is.na(x),
@@ -1348,6 +1348,7 @@ getAminoAcidProperties <- function(dat,
                                    column="junction_aa",
                                    suffix
                                   ) {
+    checkColumn(dat, column)
     properties <- dat %>%
         alakazam::aminoAcidProperties(seq=column,
                                       nt=FALSE)
@@ -1803,7 +1804,7 @@ comparePositionalDistanceBetweenMutationsDistributions <- function(dat_a, dat_b)
 getPerGeneMutationRates <- function(rate_dat) {
     rates <- rate_dat %>% 
         sapply( function(gene) { 
-                    gene$overall_mut_rate 
+                    getColumnValues(gene, "overall_mut_rate")
                 }
         )
     return(rates)
@@ -1841,7 +1842,7 @@ comparePerGeneMutationRates <- function(rate_dat_a,
 getPerGenePerPositionMutationRates <- function(rate_dat) {
     rates <- rate_dat %>% 
         sapply( function(gene) {
-                    gene$mut_rate_by_position 
+                    getColumnValues(gene, "mut_rate_by_position")
                 } 
         )
     return(rates)
@@ -1885,6 +1886,10 @@ comparePerGenePerPositionMutationRates <- function(rate_dat_a,
 #' @param dat A \code{data.table} corresponding to repertoire annotations
 #' @return The default shazam substitution model 
 getSubstitutionModel <- function(dat) {
+    checkColumn(dat, "sequence_alignment")
+    checkColumn(dat, "germline_alignment")
+    checkColumn(dat, "v_call")
+
     sub_mat <- dat %>% 
         removeSequencesWithDifferentGermlineAndSequenceLengths %>%
         shazam::createSubstitutionMatrix(sequenceColumn="sequence_alignment",
@@ -1903,6 +1908,10 @@ getSubstitutionModel <- function(dat) {
 getMutabilityModel <- function(dat, 
                                substitution_model=getSubstitutionModel(dat)
                               ) {
+    checkColumn(dat, "sequence_alignment")
+    checkColumn(dat, "germline_alignment")
+    checkColumn(dat, "v_call")
+
     mut_mat <- dat %>% 
         removeSequencesWithDifferentGermlineAndSequenceLengths %>%
         shazam::createMutabilityMatrix(substitutionModel=substitution_model,
@@ -1961,7 +1970,7 @@ compareSubstitutionAndMutabilityModels <- function(dat_a, dat_b) {
 #' @return Vector of deletion lengths
 getDeletionLengths <- function(dat, column) {
     lengths <- dat %>% 
-        dplyr::select_(column) %>% 
+        getColumnValues(column=column) %>%
         unlist(use.names=FALSE)
     return(lengths)
 }
@@ -2174,7 +2183,7 @@ compareJGene5PrimeDeletionLengthDistributions <- function(dat_a, dat_b) {
 #'   the distribution should be computed
 getInsertionLengths <- function(dat, column) {
     lengths <- dat %>% 
-        dplyr::select_(column) %>% 
+        getColumnValues(column=column) %>%
         unlist(use.names=FALSE)
     return(lengths)
 }
@@ -2321,7 +2330,7 @@ getMarkovMatrix <- function(seq_list) {
 #' @return The empirical transition matrix for each (base, base) pair.
 getInsertionMatrix <- function(dat, column) {
     mat <- dat %>%
-        dplyr::select_(column) %>%
+        getColumnValues(column=column) %>%
         sapply(tolower) %>%
         getMarkovMatrix
     return(mat)
@@ -2393,7 +2402,7 @@ compareVJInsertionMatrices <- function(dat_a, dat_b) {
 getClusterSizeDistribution <- function(dat,
                             column="clone_id"
                            ) {
-    sizes <- dat[[column]] %>%
+    sizes <- getColumnValues(dat, column) %>%
         table %>% 
         unname %>% 
         c %>% 
@@ -2462,7 +2471,7 @@ compareHillNumbers <- function(dat_a, dat_b, diversity_orders=c(0, 1, 2)) {
 #' @return The percentage of in-frame sequences in \code{dat}
 getInFramePercentage <- function(dat,
                                  column="vj_in_frame") {
-    percentage <- 100*(dat[[column]] %>%
+    percentage <- 100*(getColumnValues(dat, column) %>%
                        mean)
     return(percentage)
 }
@@ -2596,7 +2605,7 @@ getAminoAcidDistribution <- function(dat,
                                      column="junction_aa",
                                      standardize=TRUE
                                     ) {
-    sequences <- dat[[column]]
+    sequences <- getColumnValues(dat, column)
     aa_dist <- paste(sequences[!is.na(sequences)], collapse="") %>%
         strsplit(split="") %>%
         unlist %>%
@@ -2656,7 +2665,7 @@ getAminoAcid2merDistribution <- function(dat,
                                          column="junction_aa",
                                          standardize=TRUE
                                         ) {
-    sequences <- dat[[column]]
+    sequences <- getColumnValues(dat, column)
     dist <- sequences[!is.na(sequences)] %>%
         lapply(getSequence2mers) %>%
         unlist %>%
