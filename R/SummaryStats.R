@@ -75,7 +75,7 @@ getDistanceVector <- function(sequence_list) {
 #'   and averaging
 #' @return vector of integer-valued distances
 getPairwiseDistanceDistribution <- function(dat,
-                                            column="sequence",
+                                            column="sequence_alignment",
                                             approximate=TRUE,
                                             ...
                                             ) {
@@ -223,7 +223,7 @@ plotPairwiseDistanceDistribution <- function(dat_list,
 #'   and list_b
 comparePairwiseDistanceDistributions <- function(dat_a, 
                                                  dat_b,
-                                                 column="sequence",
+                                                 column="sequence_alignment",
                                                  approximate=TRUE,
                                                  ...
                                                 ) {
@@ -274,7 +274,7 @@ getNearestNeighborDistances <- function(sequence_list,
 #' @inheritParams getNearestNeighborDistances
 #' @return vector of integer-value distances
 getNearestNeighborDistribution <- function(dat,
-                                           column="sequence", 
+                                           column="sequence_alignment", 
                                            k=1,
                                            approximate=TRUE,
                                            ...
@@ -332,7 +332,7 @@ plotNearestNeighborDistribution <- function(dat_list,
 #'   and list_b
 compareNNDistanceDistributions <- function(dat_a, 
                                            dat_b, 
-                                           column="sequence",
+                                           column="sequence_alignment",
                                            k=1,
                                            approximate=TRUE,
                                            ...
@@ -379,7 +379,7 @@ getGCContent <- function(raw_sequences) {
 #' @param approximate If TRUE, approximate distribution by subsampling.
 #' @return A vector of GC content values
 getGCContentDistribution <- function(dat,
-                                     column="sequence",
+                                     column="sequence_alignment",
                                      approximate=FALSE,
                                      ...
                                      ) {
@@ -426,7 +426,7 @@ plotGCContentDistribution <- function(dat_list,
 #'   and list_b
 compareGCContentDistributions <- function(dat_a, 
                                           dat_b, 
-                                          column="sequence"
+                                          column="sequence_alignment"
                                          ) {
     density_a <- dat_a %>%
         getGCContentDistribution(column=column)
@@ -483,7 +483,7 @@ getSpotCount <- function(dna_sequences,
 #' @param hotspots Vector of hotspots of interest
 #' @return The number of AID hotspot occurrences in \code{dna_sequences}
 getHotspotCount <- function(dat,
-                            column="sequence",
+                            column="sequence_alignment",
                             hotspots=c("WRC", "WA")
                            ) {
     return(getSpotCount(spots=hotspots,
@@ -498,7 +498,7 @@ getHotspotCount <- function(dat,
 #' @inheritParams getHotspotCount
 #' @param approximate If TRUE, approximate distribution by subsampling.
 getHotspotCountDistribution <- function(dat,
-                                        column="sequence",
+                                        column="sequence_alignment",
                                         hotspots=c("WRC", "WA"),
                                         approximate=FALSE,
                                         ...
@@ -547,7 +547,7 @@ plotHotspotCountDistribution <- function(dat_list,
 #' @param coldspots Vector of coldspots of interest
 #' @return The number of AID coldhotspot occurrences in \code{dna_sequences}
 getColdspotCount <- function(dat,
-                             column="sequence", 
+                             column="sequence_alignment", 
                              coldspots="SYC"
                             ) {
     return(getSpotCount(dna_sequences=getColumnValues(dat, column), 
@@ -560,7 +560,7 @@ getColdspotCount <- function(dat,
 #' @inheritParams getColdspotCount
 #' @param approximate If TRUE, approximate distribution by subsampling.
 getColdspotCountDistribution <- function(dat,
-                                         column="sequence",
+                                         column="sequence_alignment",
                                          coldspots="SYC",
                                          approximate=FALSE,
                                          ...
@@ -612,7 +612,7 @@ plotColdspotCountDistribution <- function(dat_list,
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareHotspotCountDistributions <- function(dat_a, 
                                              dat_b,
-                                             column="sequence",
+                                             column="sequence_alignment",
                                              ...
                                             ) {
     dist_a <- dat_a %>% getHotspotCountDistribution(column=column,
@@ -635,7 +635,7 @@ compareHotspotCountDistributions <- function(dat_a,
 #'   \code{dat_a$sequence} and \code{dat_b$sequence}, respectively
 compareColdspotCountDistributions <- function(dat_a, 
                                               dat_b,
-                                              column="sequence",
+                                              column="sequence_alignment",
                                               ...
                                              ) {
     dist_a <- dat_a %>% getColdspotCountDistribution(column=column,

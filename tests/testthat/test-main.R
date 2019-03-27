@@ -41,10 +41,10 @@ test_that("test.compareDistanceFromGermlineToSequenceDistributions", {
 })
 
 test_that("test.compareGCContentDistributions", {
-    dat_a <- data.table(sequence=seq_2)
-    dat_b <- data.table(sequence=seq_7)
-    dat_c <- data.table(sequence=seq_8)
-    dat_d <- data.table(sequence=seq_9)
+    dat_a <- data.table(sequence_alignment=seq_2)
+    dat_b <- data.table(sequence_alignment=seq_7)
+    dat_c <- data.table(sequence_alignment=seq_8)
+    dat_d <- data.table(sequence_alignment=seq_9)
     expect_equal(0, compareGCContentDistributions(dat_a, dat_b))
     c1 <- compareGCContentDistributions(dat_c, dat_d)
     c2 <- compareGCContentDistributions(dat_d, dat_c)
@@ -53,10 +53,10 @@ test_that("test.compareGCContentDistributions", {
 })
 
 test_that("test.comparePairwiseDistanceDistributions", {
-    s1 <- data.table(sequence=c("AAA", "AAT", "ATT"))
-    s2 <- data.table(sequence=c("ATT", "AAA", "AAT"))
-    s3 <- data.table(sequence=c("AAA", "AAT", "TTT"))
-    s4 <- data.table(sequence=c("AAA", "ATC", "GGG"))
+    s1 <- data.table(sequence_alignment=c("AAA", "AAT", "ATT"))
+    s2 <- data.table(sequence_alignment=c("ATT", "AAA", "AAT"))
+    s3 <- data.table(sequence_alignment=c("AAA", "AAT", "TTT"))
+    s4 <- data.table(sequence_alignment=c("AAA", "ATC", "GGG"))
     expect_equal(0, 
                  comparePairwiseDistanceDistributions(s1,
                                                       s2,
