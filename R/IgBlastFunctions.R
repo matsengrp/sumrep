@@ -13,8 +13,10 @@ require(shazam)
 #' @param output_filename The desired output filename (should be a tsv file)
 #' @param organism The organism/species to which the sequences belong
 #' @param domain_system (input to IgBLAST -- alter with caution)
-#' @param receptor_type String denoting the type of receptors given in 
-#'   \code{input_filename}. Either "BCR" or "TCR".
+#' @param locus String denoting the locus for the receptors given in 
+#'   \code{input_filename}. 
+#'   Either "tra", "trb", "trd", or "trg" for TCRs,
+#'   or "igl", "igk", or "igh" for BCRs
 #' @param igblast_dir Path to parent directory of the igblast bin folder
 #'   (e.g. "path/to/parent", NOT "path/to/parent/bin").
 #' @param changeo_dir The path of the changeo bin folder (e.g.
@@ -29,15 +31,13 @@ getIgBlastAnnotations <- function(input_filename,
                                   output_filename="igblast_out.tsv",
                                   organism="human",
                                   domain_system="imgt",
-                                  receptor_type,
+                                  locus,
                                   nproc=4,
                                   igblast_dir=Sys.getenv("IGBLAST_DIR"),
                                   changeo_dir=Sys.getenv("CHANGEO_DIR"),
                                   cleanup=TRUE
                                  ) {
-    if(receptor_type %>% missing) {
-        stop("receptor_type argument must be specified.")
-    }
+    checkForValidLocus(locus)
     if(igblast_dir == "") {
         stop(paste("Empty string given as igblast_dir argument.",
                    "Please specify the correct igblast directory,",
@@ -67,10 +67,8 @@ getIgBlastAnnotations <- function(input_filename,
                                           output_filename
                                          )
 
-        loci_hash <- list(BCR="ig",
-                          TCR="tr"
-                         )
-        
+        receptor_type <- stringr::str_sub(locus, 0, 2)
+
         igblast_command <- paste(file.path(changeo_dir,
                                            "AssignGenes.py"),
                                  "igblast",
@@ -81,9 +79,9 @@ getIgBlastAnnotations <- function(input_filename,
                                  "--organism",
                                  organism,
                                  "--loci",
-                                 loci_hash[[receptor_type]],
+                                 receptor_type,
                                  "--format",
-                                 "airr",
+                                 "blast",
                                  "--exec",
                                  igblast_exec,
                                  "-o",
@@ -98,13 +96,60 @@ getIgBlastAnnotations <- function(input_filename,
         cat("\n", igblast_command, "\n")
         igblast_command %>% system
 
-        changeo_filename <- full_output_filename
+        gene_segments <- c("v", "j")
+        if(locus %in% c("igh", "trb")) {
+            gene_segments <- c(gene_segments, "d")
+        }
+
+        database_files <- gene_segments %>%
+            sapply(function(x) { 
+                       file.path(igblast_dir,
+                                 "germlines",
+                                 domain_system,
+                                 organism,
+                                 "vdj",
+                                 paste(domain_system,
+                                     organism,
+                                     paste0(locus %>% toupper,
+                                            x %>% toupper,
+                                            ".fasta"
+                                           )
+                                     ,
+                                     sep="_"
+                                 )
+                                 )
+                   }
+                ) %>%
+            paste(collapse=" ")
+                         
+        make_db_command <- paste(file.path(changeo_dir,
+                                           "MakeDb.py"),
+                                 "igblast",
+                                 "-i",
+                                 full_output_filename,
+                                 "-s",
+                                 input_filename %>% normalizePath,
+                                 "-r",
+                                 database_files,
+                                 "--regions",
+                                 "--format",
+                                 "airr"
+                                ) 
+
+        cat("\n", make_db_command, "\n")
+        make_db_command %>% system 
+
+        changeo_filename <- full_output_filename %>%
+            gsub(pattern=".tsv",
+                 replacement="_db-pass.tsv"
+                )
 
         annotations <- changeo_filename %>%
-            data.table::fread(stringsAsFactors=TRUE)
+            data.table::fread()
 
-        if(receptor_type == "BCR") {
-            try({
+
+        if(receptor_type == "ig") {
+            tryCatch({
                 cluster_threshold <- annotations %>%
                     shazam::distToNearest(sequenceColumn="junction",
                                           vCallColumn="v_call",
@@ -114,6 +159,8 @@ getIgBlastAnnotations <- function(input_filename,
                     DIST_NEAREST %>%
                     shazam::findThreshold() %>%
                     slot(name="threshold")
+            }, error = function(e) {
+                stop(e)
             })
             if(!exists("cluster_threshold")) {
                 cluster_threshold <- 0.5
@@ -133,8 +180,6 @@ getIgBlastAnnotations <- function(input_filename,
                                      "set",
                                      "--model",
                                      "ham",
-                                     "--sym",
-                                     "min",
                                      "--norm",
                                      "len",
                                      "--dist",
@@ -172,6 +217,9 @@ getIgBlastAnnotations <- function(input_filename,
                 )
         }
     })
+
+    annotations$vj_in_frame <- annotations$vj_in_frame %>%
+        as.logical
 
     initial_wd %>% setwd
 
