@@ -79,7 +79,10 @@ getPairwiseDistanceDistribution <- function(dat,
                                             approximate=TRUE,
                                             ...
                                             ) {
-    sequence_list <- getColumnValues(dat, column)
+    sequence_list <- getColumnSequences(dat, 
+                                        column,
+                                        drop_gaps=TRUE
+                                       )
     if(approximate) {
         distribution <- sequence_list %>%
             getApproximateDistribution(summary_function=getDistanceVector,
@@ -279,7 +282,10 @@ getNearestNeighborDistribution <- function(dat,
                                            approximate=TRUE,
                                            ...
                                            ) {
-    sequence_list <- getColumnValues(dat, column)
+    sequence_list <- getColumnSequences(dat, 
+                                        column,
+                                        drop_gaps=TRUE
+                                       )
     if(approximate) {
         if(k == 1) {
             distribution <- getApproximateNearestNeighborDistribution(
@@ -383,7 +389,10 @@ getGCContentDistribution <- function(dat,
                                      approximate=FALSE,
                                      ...
                                      ) {
-    sequence_list <- getColumnValues(dat, column)
+    sequence_list <- getColumnSequences(dat, 
+                                        column,
+                                        drop_gaps=FALSE
+                                       )
     if(approximate) {
         distribution <- sequence_list %>%
             getApproximateDistribution(summary_function=getGCContent,
@@ -487,7 +496,10 @@ getHotspotCount <- function(dat,
                             hotspots=c("WRC", "WA")
                            ) {
     return(getSpotCount(spots=hotspots,
-                        dna_sequences=getColumnValues(dat, column)
+                        dna_sequences=getColumnSequences(dat, 
+                                                         column,
+                                                         drop_gaps=FALSE
+                                                        )
                        )
     )
 }
@@ -550,7 +562,10 @@ getColdspotCount <- function(dat,
                              column="sequence_alignment", 
                              coldspots="SYC"
                             ) {
-    return(getSpotCount(dna_sequences=getColumnValues(dat, column), 
+    return(getSpotCount(dna_sequences=getColumnSequences(dat, 
+                                                         column,
+                                                         drop_gaps=FALSE
+                                                        ), 
                         spots=coldspots))
 }
 

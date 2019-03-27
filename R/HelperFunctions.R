@@ -130,6 +130,8 @@ parsePythonDictionary <- function(dictionary) {
 }
 
 removeSequencesWithDifferentGermlineAndSequenceLengths <- function(dat) {
+    checkColumn(dat, "germline_alignment")
+    checkColumn(dat, "sequence_alignment")
     return(dat %>% 
                subset(nchar(dat$germline_alignment) == 
                       nchar(dat$sequence_alignment)
@@ -232,4 +234,26 @@ getColumnValues <- function(dat, column) {
     checkColumn(dat, column)
     column_values <- dat[[column]]
     return(column_values)
+}
+
+getColumnSequences <- function(dat,
+                               column,
+                               drop_gaps
+                              ) {
+    sequences <- dat %>%
+        getColumnValues(column=column)
+
+    if(drop_gaps) {
+        sequences <- sequences %>%
+            sapply(function(x) { 
+                       gsub(x,
+                            pattern="\\.|\\-",
+                            replacement=""
+                           )
+                   }
+            ) %>%
+            unname
+    }
+
+    return(sequences)
 }
