@@ -13,6 +13,10 @@ require(stringr)
 #'   \code{output_filename}
 #' @param partis_path The full path to the partis executable
 #' @param num_procs The number of processors to use in parallel
+#' @param locus String denoting the locus for the receptors given in 
+#'   \code{input_filename}. 
+#'   Either "tra", "trb", "trd", or "trg" for TCRs,
+#'   or "igl", "igk", or "igh" for BCRs
 #' @param cleanup Flag to delete all interim files created by partis
 #' @return A data.table object containing the output of the partis call
 callPartis <- function(action, 
