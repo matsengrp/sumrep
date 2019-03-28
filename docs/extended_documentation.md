@@ -2,19 +2,19 @@
 
 ### Data specification
 
-The following table details the expected columns in an annotations `data.table`:
+The following table details the expected columns in an annotations `data.table`.
+Note that 
 
 | Name               | Type    | Description                                                                                                                                                       |
 |--------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-| `sequence`           | string  | The unmodified query nucleotide sequence.                                                                                                                          |
-| `vj_in_frame`        | boolean | True if the V and J segment alignments are in-frame.                                                                                                              |
+| `sequence_alignment` | string  | Aligned portion of query sequence. By default constrained to variable region, but not required. Synonymous with "mature" sequence in sumrep.                      |
+| `germline_alignment` | string  | Assembled, aligned, fully length inferred germline sequence spanning the same region as the sequence_alignment field. Synonymous with "naive" sequence in sumrep. |
 | `v_call`             | string  | V gene with or without allele. For example, IGHV4-59\*01.                                                                                                          |
 | `d_call`             | string  | D gene with or without allele. For example, IGHD3-10\*01.                                                                                                          |
 | `j_call`             | string  | J gene with or without allele. For example, IGHJ4\*02.                                                                                                             |
-| `sequence_alignment` | string  | Aligned portion of query sequence. By default constrained to variable region, but not required. Synonymous with "mature" sequence in sumrep.                      |
-| `germline_alignment` | string  | Assembled, aligned, fully length inferred germline sequence spanning the same region as the sequence_alignment field. Synonymous with "naive" sequence in sumrep. |
 | `junction`           | string  | Junction region nucleotide sequence, where the junction is defined as the CDR3 plus the two flanking conserved codons.                                            |
 | `junction_aa`        | string  | Junction region amino acid sequence.                                                                                                                              |
+| `vj_in_frame`        | boolean | True if the V and J segment alignments are in-frame.                                                                                                              |
 | `v_3p_del`           | integer | Number of nucleotides in the V 3' deletion.                                                                                                                        |
 | `d_5p_del`           | integer | Number of nucleotides in the D 5' deletion.                                                                                                                        |
 | `d_3p_del`           | integer | Number of nucleotides in the D 3' deletion.                                                                                                                        |
