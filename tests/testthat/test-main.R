@@ -19,8 +19,8 @@ test_that("test.compareDistanceFromGermlineToSequenceDistributions", {
     m3 <- c("GAAAAA")
     m4 <- c("AAAGGG")
     m5 <- c("GGGG")
-    dat_a <- data.table(germline_alignment=naive_a, sequence_alignment=list(m1, m2, m3))
-    dat_b <- data.table(germline_alignment=naive_b, sequence_alignment=list(m2, m3, m4))
+    dat_a <- data.table(germline_alignment=naive_a, sequence_alignment=list(m1, m2, m3), stop_codon=F, vj_in_frame=T)
+    dat_b <- data.table(germline_alignment=naive_b, sequence_alignment=list(m2, m3, m4), stop_codon=F, vj_in_frame=T)
     c1 <- compareDistanceFromGermlineToSequenceDistributions(dat_a, 
                                             dat_a, 
                                             approximate=FALSE,
@@ -41,10 +41,10 @@ test_that("test.compareDistanceFromGermlineToSequenceDistributions", {
 })
 
 test_that("test.compareGCContentDistributions", {
-    dat_a <- data.table(sequence_alignment=seq_2)
-    dat_b <- data.table(sequence_alignment=seq_7)
-    dat_c <- data.table(sequence_alignment=seq_8)
-    dat_d <- data.table(sequence_alignment=seq_9)
+    dat_a <- data.table(sequence_alignment=seq_2, stop_codon=F, vj_in_frame=T)
+    dat_b <- data.table(sequence_alignment=seq_7, stop_codon=F, vj_in_frame=T)
+    dat_c <- data.table(sequence_alignment=seq_8, stop_codon=F, vj_in_frame=T)
+    dat_d <- data.table(sequence_alignment=seq_9, stop_codon=F, vj_in_frame=T)
     expect_equal(0, compareGCContentDistributions(dat_a, dat_b))
     c1 <- compareGCContentDistributions(dat_c, dat_d)
     c2 <- compareGCContentDistributions(dat_d, dat_c)
@@ -53,10 +53,10 @@ test_that("test.compareGCContentDistributions", {
 })
 
 test_that("test.comparePairwiseDistanceDistributions", {
-    s1 <- data.table(sequence_alignment=c("AAA", "AAT", "ATT"))
-    s2 <- data.table(sequence_alignment=c("ATT", "AAA", "AAT"))
-    s3 <- data.table(sequence_alignment=c("AAA", "AAT", "TTT"))
-    s4 <- data.table(sequence_alignment=c("AAA", "ATC", "GGG"))
+    s1 <- data.table(sequence_alignment=c("AAA", "AAT", "ATT"), stop_codon=F, vj_in_frame=T)
+    s2 <- data.table(sequence_alignment=c("ATT", "AAA", "AAT"), stop_codon=F, vj_in_frame=T)
+    s3 <- data.table(sequence_alignment=c("AAA", "AAT", "TTT"), stop_codon=F, vj_in_frame=T)
+    s4 <- data.table(sequence_alignment=c("AAA", "ATC", "GGG"), stop_codon=F, vj_in_frame=T)
     expect_equal(0, 
                  comparePairwiseDistanceDistributions(s1,
                                                       s2,
@@ -80,13 +80,25 @@ test_that("test.getColdspotCountDistribution", {
     seq_b <- c("GCC", "AAA", "AAAA")
     seq_c <- c("AAA", "CTC")
     seq_d <- "SYCSYC"
-    expect_equal(0, getColdspotCountDistribution(data.table(junction=seq_a), 
+    expect_equal(0, getColdspotCountDistribution(data.table(junction=seq_a,
+                                                            stop_codon=F,
+                                                            vj_in_frame=T
+                                                           ), 
                                                  column="junction"))
-    expect_equal(c(1, 0, 0), getColdspotCountDistribution(data.table(junction=seq_b), 
+    expect_equal(c(1, 0, 0), getColdspotCountDistribution(data.table(junction=seq_b,
+                                                                     stop_codon=F,
+                                                                     vj_in_frame=T
+                                                                    ), 
                                                  column="junction"))
-    expect_equal(c(0, 1), getColdspotCountDistribution(data.table(junction=seq_c), 
+    expect_equal(c(0, 1), getColdspotCountDistribution(data.table(junction=seq_c,
+                                                                  stop_codon=F,
+                                                                  vj_in_frame=T
+                                                                 ), 
                                                  column="junction"))
-    expect_equal(4, getColdspotCountDistribution(data.table(junction=seq_d), 
+    expect_equal(4, getColdspotCountDistribution(data.table(junction=seq_d,
+                                                            stop_codon=F,
+                                                            vj_in_frame=T
+                                                           ), 
                                                  column="junction"))
 })
 
@@ -107,7 +119,7 @@ test_that("test.getDistanceFromGermlineToSequenceDistribution", {
     m2 <- c("CGCAAA")
     m3 <- c("GGGGGG")
     m4 <- c("AAAAAA")
-    dat <- data.table(germline_alignment=naives, sequence_alignment=c(m1, m2, m3, m4))
+    dat <- data.table(germline_alignment=naives, sequence_alignment=c(m1, m2, m3, m4), stop_codon=F, vj_in_frame=T)
     expect_equal(c(0, 1, 3, 6), getDistanceFromGermlineToSequenceDistribution(dat,
                                                               v_gene_only=FALSE
                                                               ))
@@ -130,7 +142,10 @@ test_that("test.getDistanceVector", {
 
 test_that("CDR3 pairwise distances functions", {
     dat <- data.table(junction=c("AAACCC", "AAACCC", "ACTCAT"), 
-                        junction_aa=c("KP", "KP", "TH"))
+                      junction_aa=c("KP", "KP", "TH"),
+                      stop_codon=F,
+                      vj_in_frame=T
+                     )
     dist_1 <- dat %>% 
         getCDR3PairwiseDistanceDistribution(
             approximate=FALSE,
@@ -155,9 +170,18 @@ test_that("test.getGCContentDistribution", {
 test_that("test.getGRAVYDistribution", {
     # Sample GRAVY values for a few particular amino acids obtained from 
     # https://github.com/PRIDE-Utilities/pride-utilities/wiki/1.2-GRAVY-Calculations 
-    alanine <- data.table(junction_aa=convertNucleobasesToAminoAcids("GCC"))
-    glutamine <- data.table(junction_aa=convertNucleobasesToAminoAcids("CAA"))
-    isoleucine <- data.table(junction_aa=convertNucleobasesToAminoAcids("ATT"))
+    alanine <- data.table(junction_aa=convertNucleobasesToAminoAcids("GCC"),
+                          stop_codon=F,
+                          vj_in_frame=T
+                         )
+    glutamine <- data.table(junction_aa=convertNucleobasesToAminoAcids("CAA"),
+                            stop_codon=F,
+                            vj_in_frame=T
+                           )
+    isoleucine <- data.table(junction_aa=convertNucleobasesToAminoAcids("ATT"),
+                             stop_codon=F,
+                             vj_in_frame=T
+                            )
     expect_equal(1.8, getGRAVYDistribution(alanine))
     expect_equal(-3.5, getGRAVYDistribution(glutamine))
     expect_equal(4.5, getGRAVYDistribution(isoleucine))
@@ -170,13 +194,25 @@ test_that("test.getHotspotCountDistribution", {
     seq_b <- c("AAC", "TTTT")
     seq_c <- "NWRC"
     seq_d <- c("WRC", "WRC", "WGC")
-    expect_equal(0, getHotspotCountDistribution(data.table(junction=seq_a), 
+    expect_equal(0, getHotspotCountDistribution(data.table(junction=seq_a,
+                                                           stop_codon=F,
+                                                           vj_in_frame=T
+                                                          ), 
                                                 column="junction"))
-    expect_equal(c(2, 0), getHotspotCountDistribution(data.table(junction=seq_b), 
+    expect_equal(c(2, 0), getHotspotCountDistribution(data.table(junction=seq_b,
+                                                                 stop_codon=F,
+                                                                 vj_in_frame=T
+                                                                ), 
                                                 column="junction"))
-    expect_equal(3, getHotspotCountDistribution(data.table(junction=seq_c), 
+    expect_equal(3, getHotspotCountDistribution(data.table(junction=seq_c,
+                                                           stop_codon=F,
+                                                           vj_in_frame=T
+                                                          ), 
                                                 column="junction"))
-    expect_equal(c(2, 2, 1), getHotspotCountDistribution(data.table(junction=seq_d), 
+    expect_equal(c(2, 2, 1), getHotspotCountDistribution(data.table(junction=seq_d,
+                                                                    stop_codon=F,
+                                                                    vj_in_frame=T
+                                                                   ), 
                                                 column="junction"))
 })
 
@@ -205,7 +241,9 @@ test_that("test.getPositionalPositionalDistanceBetweenMutations", {
                  c(2, 3))
     expect_equal(getPositionalDistanceBetweenMutationsDistribution(
                      data.table(germline_alignment=germline_alignment, 
-                                sequence_alignment=sequence_alignment
+                                sequence_alignment=sequence_alignment,
+                                stop_codon=F, 
+                                vj_in_frame=T
                                )
                  ) %>% sort, 
                  c(2, 2, 3))

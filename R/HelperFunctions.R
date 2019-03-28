@@ -254,16 +254,16 @@ getColumnValues <- function(dat, column) {
 getColumnSequences <- function(dat,
                                column,
                                drop_gaps,
-                               remove_stop_codon_seqs,
-                               in_frame_only
+                               remove_stop_codon_seqs=TRUE,
+                               in_frame_only=TRUE
                               ) {
     if(remove_stop_codon_seqs) {
         tryCatch({
             checkColumn(dat, "stop_codon")
             dat <- dat[!dat[["stop_codon"]], ]
         }, error=function(e) {
-            print(e)
-            print("Unable to remove sequences with stop codons")
+            cat("\nWarning: stop_codon column not present.\n")
+            cat("  Unable to remove sequences with stop codons.\n\n")
         })
     }
 
@@ -272,8 +272,8 @@ getColumnSequences <- function(dat,
             checkColumn(dat, "vj_in_frame")
             dat <- dat[dat[["vj_in_frame"]], ]
         }, error=function(e) {
-            print(e)
-            print("Unable to remove sequences with out-of-frame V or J segments.")
+            cat("Warning: vj_in_frame column not present.\n")
+            cat("  Unable to remove sequences with out-of-frame V or J segments.\n\n")
         })
     }
 

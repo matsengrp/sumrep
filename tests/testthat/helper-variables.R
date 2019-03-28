@@ -9,5 +9,5 @@ seq_8 <- c("AAAAAA", "TTTTTT", "AAAA", "AAAAACC", "AAAAAAATTTT", "GGGCCCCCGG")
 seq_9 <- list("AAAAAC", c("T", "T", "T", "C", "C", "T"), "AAAAGGGG", "AAAAACCCC", "CCCCTTTC", 
               list("G", "G", "G", "C", "C", "C", "C", "C", "G", "G"))
 
-dat_1 <- data.frame(sequence_alignment=seq_5)
-dat_2 <- data.frame(sequence_alignment=seq_6)
+dat_1 <- data.frame(sequence_alignment=seq_5, stop_codon=F, vj_in_frame=T)
+dat_2 <- data.frame(sequence_alignment=seq_6, stop_codon=F, vj_in_frame=T)
