@@ -3,7 +3,6 @@ require(stringr)
 #' Call partis
 #'
 #' \code{callPartis} calls partis from within the sumrep package.
-#' This is done through the bash script run_partis.sh.
 #' It is assumed that a "SHELL" environmental variable is set to run the above 
 #' script.
 #' @param action The desired partis command
@@ -24,30 +23,45 @@ callPartis <- function(action,
                        num_procs, 
                        locus,
                        germline_dir,
-                       extra_columns
+                       extra_columns,
+                       seed=NULL
                        ) {
-    shell <- Sys.getenv("SHELL")
-    script.file <- system.file("run_partis.sh", package="sumrep")
-    command <- paste(shell, script.file, 
-                     "-p", partis_path, 
-                     "-a", action, 
-                     "-i", input_filename, 
-                     "-o", output_filename, 
-                     "-n", num_procs,
-                     "-l", locus,
-                     "-h", file.path(output_path, "params"))
+    command <- paste(partis_path,
+                     action,
+                     "--infname",
+                     input_filename,
+                     "--outfname",
+                     output_filename,
+                     "--n-procs",
+                     num_procs,
+                     "--locus",
+                     locus,
+                     "--parameter-dir",
+                     file.path(output_path, "params")
+                    )
+                     
     if(!missing(germline_dir) && !is.null(germline_dir)) {
         command <- paste(command,
-                         "-g",
-                         germline_dir)
+                         "--initial-germline-dir",
+                         germline_dir
+                        )
     }
 
     if(!missing(extra_columns) && !is.null(extra_columns)) {
         command <- paste(command,
-                         "-e",
-                         extra_columns)
+                         "--extra-annotation-columns",
+                         extra_columns
+                        )
     }
 
+    if(!is.null(seed)) {
+        command <- paste(command,
+                         "--seed",
+                         seed
+                        )
+    }
+
+    command %>% cat
     command %>% 
         system
 
@@ -544,11 +558,12 @@ getPartisSimulation <- function(parameter_dir,
                                 "--mimic-data-read-length")
                                 
     }   
+
     if(!is.null(seed)) {
         partis_command <- paste(partis_command,
                                 "--seed",
                                 seed
-                                )
+                               )
     }
 
     print(partis_command)
