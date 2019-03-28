@@ -128,27 +128,19 @@ doComparison <- function(function_string, input_list) {
 #'    \code{annotations} and optionally a list called \code{mutation_rates}
 #' @param rep_1_bootstrap Annotated repertoire based on bootstrapping the DNA
 #'   sequences from the first repertoire
-#' @param receptor_type A string denoting the type of immune receptor to which
-#'   \code{repertoire_1} and \code{repertoire_2} correspond.
-#'   Either "BCR" or "TCR".
-#' @param chain_type The locus from which the sequences were sampled. Either
-#'   "heavy", "light", "beta", or "alpha".
+#' @param locus String denoting the locus for the receptors given in 
+#'   \code{input_filename}. 
+#'   Either "tra", "trb", "trd", or "trg" for TCRs,
+#'   or "igl", "igk", or "igh" for BCRs
 #' @param do_full_comparison If TRUE, performs all available comparisons for
-#'   the given receptor_type/chain_type combo, including comparisons for the 
-#'   slower summaries
+#'   the given locus, including comparisons for the slower summaries
 compareRepertoires <- function(repertoire_1, 
                                repertoire_2, 
                                rep_1_bootstrap=NULL,
-                               receptor_type,
-                               chain_type,
+                               locus,
                                do_full_comparison=FALSE
                               ) {
-    if(!(receptor_type %in% c("BCR", "TCR"))) {
-        stop('receptor_type must be either "BCR" or "TCR"')
-    }
-    if(!(chain_type %in% c("heavy", "light", "beta", "alpha"))) {
-        stop('chain_type must be either "heavy", "light", "beta", or "alpha"')
-    }
+    checkForValidLocus(locus)
 
     annotations_1 <- repertoire_1$annotations
     annotations_2 <- repertoire_2$annotations
@@ -217,7 +209,7 @@ compareRepertoires <- function(repertoire_1,
                                       "compareVJInsertionMatrices"
                                      )
 
-    if(chain_type %in% c("heavy", "beta")) {
+    if(locus %in% c("igh", "trb")) {
         function_strings <- c(function_strings,
                               big_chain_function_strings
                              ) 
@@ -243,7 +235,8 @@ compareRepertoires <- function(repertoire_1,
                                  )
     }
 
-    if(receptor_type == "BCR") {
+    receptor_type <- stringr::str_sub(locus, 0, 2)
+    if(receptor_type == "ig") {
         function_strings <- c(function_strings,
                               bcr_function_strings
                              )
