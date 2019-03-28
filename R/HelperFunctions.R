@@ -236,10 +236,47 @@ getColumnValues <- function(dat, column) {
     return(column_values)
 }
 
+#' This function attempts to access the provided column from the provided
+#'   dat, perfoming any optional filters that were specified, and returns
+#'   a vector of the relevant sequence strings.
+#'
+#' @param dat A \code{data.table} corresponding to repertoire annotations 
+#' @param column A string naming the expected column of \code{dat}
+#' @param drop_gaps If TRUE, removes '.' and '-' gap characters from each
+#'   sequence
+#' @param remove_stop_codon_seqs If TRUE, removes any sequence with a 
+#'   stop codon. This assumes the \code{stop_codon} column is present in
+#'   \code{dat}, as defined by the AIRR rearrangement schema.
+#' @param in_frame_only If TRUE, removes any sequence with an
+#'   out-of-frame V or J segment.
+#' @return A vector of filtered strings from by \code{dat[[column]]}, 
+#'   if available
 getColumnSequences <- function(dat,
                                column,
-                               drop_gaps
+                               drop_gaps,
+                               remove_stop_codon_seqs,
+                               in_frame_only
                               ) {
+    if(remove_stop_codon_seqs) {
+        tryCatch({
+            checkColumn(dat, "stop_codon")
+            dat <- dat[!dat[["stop_codon"]], ]
+        }, error=function(e) {
+            print(e)
+            print("Unable to remove sequences with stop codons")
+        })
+    }
+
+    if(in_frame_only) {
+        tryCatch({
+            checkColumn(dat, "vj_in_frame")
+            dat <- dat[dat[["vj_in_frame"]], ]
+        }, error=function(e) {
+            print(e)
+            print("Unable to remove sequences with out-of-frame V or J segments.")
+        })
+    }
+
     sequences <- dat %>%
         getColumnValues(column=column)
 
