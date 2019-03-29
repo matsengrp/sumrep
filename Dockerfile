@@ -1,5 +1,33 @@
 FROM continuumio/anaconda
 
+# Install IGoR
+RUN apt-get update -y && \
+  apt-get install -y \
+  build-essential \
+  autotools-dev \
+  autoconf \
+  doxygen \
+  vim-latexsuite
+
+RUN wget https://github.com/qmarcou/IGoR/releases/download/1.3.0/igor_1-3-0.zip
+RUN unzip igor_1-3-0.zip
+RUN rm igor_1-3-0.zip
+WORKDIR /igor_1-3-0
+RUN ./configure && \
+  make && \
+  make install
+RUN conda update -y conda
+RUN conda create -n \
+  "pygor" \
+  python=3 \
+  pandas \
+  biopython \
+  matplotlib \
+  numpy
+ENV PYGOR_PATH="/igor_1-3-0/pygor"
+
+WORKDIR ..
+
 # Install Change-O
 RUN apt-get update -y && \
   apt-get install python3-pip idle3 -y && \
@@ -21,6 +49,7 @@ RUN wget ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/LATEST/ncbi-ig
   && tar -zxf ncbi-igblast-1.13.0-x64-linux.tar.gz
 ENV IGBLAST_DIR="/ncbi-igblast-1.13.0"
 ENV PATH="${IGBLAST_DIR}/bin:${PATH}"
+RUN ls /
 
 # This builds the IMGT database for IgBlast + Change-O
 RUN wget https://bitbucket.org/kleinstein/immcantation/raw/41165c9b9cd10ddf8f27ec80fae799491d6db2db/scripts/fetch_igblastdb.sh
@@ -70,7 +99,7 @@ RUN conda install -y -cbioconda -cbiocore -cr \
   mafft \
   r-essentials \
   r-devtools \
-  r-roxygen2
+  r-roxygen2 
 
 RUN pip install \
   colored-traceback \
