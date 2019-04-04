@@ -15,7 +15,7 @@ writeAnnotations <- function(filename,
                                             ".rds"),
                              germline_dir=NULL,
                              num_procs=100,
-                             chain=NULL
+                             locus=NULL
                             ) {
     if(method == "partis") {
         output_path <- paste0("_output_", dat_name)
@@ -73,7 +73,7 @@ writeAnnotations <- function(filename,
         ann_sim <- getIgorAnnotations(input_filename=filename,
                                       output_filename=paste0(dat_name, '.csv'),
                                       igor_wd=dat_name,
-                                      chain=chain
+                                      locus=locus
                                      )
         annotations <- ann_sim$annotations
         saveRDS(list(annotations=annotations), outname)
@@ -161,24 +161,35 @@ if(write_igb_annotations) {
 
 write_igor_annotations <- TRUE
 if(write_igor_annotations) {
-    writeAnnotations("~/Data/Mike/hsa_tra_samp.txt",
-                     "hsa_tra",
+    tcr_dir <- "/fh/fast/matsen_e/bolson2/mike_aging/converted"
+    writeAnnotations(file.path(tcr_dir, "A5-S22_R2.fa"),
+                     "A5_S22",
                      "igor",
-                     chain="alpha"
+                     locus="trb"
                     )
-    writeAnnotations("~/Data/Mike/hsa_trb_samp.txt",
-                     "hsa_trb",
+    writeAnnotations(file.path(tcr_dir, "A5-S9_R2.fa"),
+                     "A5_S9",
                      "igor",
-                     chain="beta"
+                     locus="trb"
                     )
-    writeAnnotations("~/Data/Mike/mmu_tra_samp.txt",
-                     "mmu_tra",
+    writeAnnotations(file.path(tcr_dir, "A5-S10_R2.fa"),
+                     "A5_S10",
                      "igor",
-                     chain="alpha"
+                     locus="trb"
                     )
-    writeAnnotations("~/Data/Mike/mmu_trb_samp.txt",
-                     "mmu_trb",
+    writeAnnotations(file.path(tcr_dir, "A5-S15_R2.fa"),
+                     "A5_S15",
                      "igor",
-                     chain="beta"
+                     locus="trb"
+                    )
+    writeAnnotations(file.path(tcr_dir, "A4-i194_R2.fa"),
+                     "A4_i194",
+                     "igor",
+                     locus="trb"
+                    )
+    writeAnnotations(file.path(tcr_dir, "A4-i107_R2.fa"),
+                     "A4_i107",
+                     "igor",
+                     locus="trb"
                     )
 }
