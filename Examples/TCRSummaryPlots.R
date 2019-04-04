@@ -23,7 +23,6 @@ scoreStatistics <- function(sim_dats, obs_dats) {
                 unlist %>%
                 mean
             c_score <- sim_score/obs_score
-            print(c_type)
             comparison_name <- c_type %>%
                 gsub(pattern="compare", replace="get") %>%
                 ifelse(str_sub(., -1) == "s", 
