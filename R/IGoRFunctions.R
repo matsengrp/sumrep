@@ -182,6 +182,8 @@ getIgorAnnotations <- function(input_filename,
     sim_annotations[["sequence"]] <-
         sim_indexed_seqs[["nt_sequence"]][1 + sim_annotations[["seq_index"]]] %>%
         tolower
+        
+    sim_annotations[["sequence_alignment"]] <- sim_annotations[["sequence"]]
 
     names(sim_annotations)[which(names(sim_annotations) == "nt_CDR3")] <- 
         "junction"
