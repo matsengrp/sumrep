@@ -111,11 +111,11 @@ getIgorAnnotations <- function(input_filename,
     )
 
     # Get query sequences from an igor alignment file. Add one to indices 
-    # since annotations$seq_index contains zero-based positions
-    annotations$sequence <- 
+    # since annotations[["seq_index"]] contains zero-based positions
+    annotations[["sequence"]] <- 
         indexed_seqs[["sequence"]][1 + annotations[["seq_index"]]] %>%
         tolower
-    annotations$sequence_alignment <- annotations$sequence
+    annotations[["sequence_alignment"]] <- annotations[["sequence"]]
 
     seq_align_file <- file.path(igor_wd_name, "seq_align.fa")
     write.fasta(annotations[["sequence_alignment"]] %>% as.list,
@@ -179,13 +179,16 @@ getIgorAnnotations <- function(input_filename,
     )
 
     sim_annotations <- merge(sim_aux_df, simulations)
-    sim_annotations$sequence <-
+    sim_annotations[["sequence"]] <-
         sim_indexed_seqs[["nt_sequence"]][1 + sim_annotations[["seq_index"]]] %>%
         tolower
 
     names(sim_annotations)[which(names(sim_annotations) == "nt_CDR3")] <- 
         "junction"
-    sim_annotations$junction <- sim_annotations$junction %>% tolower
+    sim_annotations[["junction"]] <- sim_annotations[["junction"]] %>% 
+        tolower
+    sim_annotations[["junction_aa"]] <- sim_annotations[["junction"]] %>%
+        convertNucleobasesToAminoAcids
 
     if(cleanup) {
         igor_wd_name %>% 
@@ -215,7 +218,7 @@ processIgorAnnotations <- function(annotations,
     }
 
     if("is_inframe" %in% names(annotations)) {
-        annotations$vj_in_frame <- annotations$is_inframe %>%
+        annotations[["vj_in_frame"]] <- annotations[["is_inframe"]] %>%
             as.logical
     }
     return(annotations)
