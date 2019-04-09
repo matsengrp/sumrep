@@ -354,8 +354,10 @@ readPartisAnnotations <- function(output_path,
 }
 
 processPartisSequences <- function(annotated_data) {
-    annotated_data[["sequence"]] <- annotated_data[["sequence"]] %>%
-        sapply(toString)
+    if("sequence" %in% names(annotated_data)) {
+        annotated_data[["sequence"]] <- annotated_data[["sequence"]] %>%
+            sapply(toString)
+    }
 
     annotated_data[["germline_alignment"]] <- 
         annotated_data[["naive_seq"]] %>% 
