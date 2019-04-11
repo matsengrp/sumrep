@@ -191,6 +191,8 @@ getIgorAnnotations <- function(input_filename,
         tolower
     sim_annotations[["junction_aa"]] <- sim_annotations[["junction"]] %>%
         convertNucleobasesToAminoAcids
+    sim_annotations[["vj_in_frame"]] <- sim_annotations[["is_inframe"]] %>%
+        as.logical
 
     if(cleanup) {
         igor_wd_name %>% 
