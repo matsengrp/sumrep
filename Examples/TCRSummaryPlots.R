@@ -83,27 +83,56 @@ plotComparisons <- function(dat, filename, cols=1, rows=1) {
 loadNewDatasets("data/Comparisons")
 
 obs_sim_dats <- list(
-                 compare_hsa_tra_hsa_tra_sim,
-                 compare_hsa_trb_hsa_trb_sim,
-                 compare_mmu_tra_mmu_tra_sim,
-                 compare_mmu_trb_mmu_trb_sim
+                     compare_A4_i107_A4_i107_sim,
+                     compare_A4_i194_A4_i194_sim,
+                     compare_A5_S10_A5_S10_sim,
+                     compare_A5_S15_A5_S15_sim,
+                     compare_A5_S22_A5_S22_sim,
+                     compare_A5_S9_A5_S9_sim
                 )
 
+
 obs_obs_dats <- list(
-                     compare_hsa_tra_mmu_tra,
-                     compare_hsa_trb_mmu_trb
+                     compare_A4_i194_A4_i107,
+                     compare_A5_S10_A4_i107,
+                     compare_A5_S10_A4_i194,
+                     compare_A5_S10_A5_S15,
+                     compare_A5_S15_A4_i107,
+                     compare_A5_S15_A4_i194,
+                     compare_A5_S22_A4_i107,
+                     compare_A5_S22_A4_i194,
+                     compare_A5_S22_A5_S10,
+                     compare_A5_S22_A5_S15,
+                     compare_A5_S22_A5_S9,
+                     compare_A5_S9_A4_i107,
+                     compare_A5_S9_A4_i194,
+                     compare_A5_S9_A5_S10,
+                     compare_A5_S9_A5_S15
                 )
 
 sim_sim_dats <- list(
-                     compare_hsa_tra_sim_mmu_tra_sim,
-                     compare_hsa_trb_sim_mmu_trb_sim
+                     compare_A4_i194_sim_A4_i107_sim,
+                     compare_A5_S10_sim_A4_i107_sim,
+                     compare_A5_S10_sim_A4_i194_sim,
+                     compare_A5_S10_sim_A5_S15_sim,
+                     compare_A5_S15_sim_A4_i107_sim,
+                     compare_A5_S15_sim_A4_i194_sim,
+                     compare_A5_S22_sim_A4_i107_sim,
+                     compare_A5_S22_sim_A4_i194_sim,
+                     compare_A5_S22_sim_A5_S10_sim,
+                     compare_A5_S22_sim_A5_S15_sim,
+                     compare_A5_S22_sim_A5_S9_sim,
+                     compare_A5_S9_sim_A4_i107_sim,
+                     compare_A5_S9_sim_A4_i194_sim,
+                     compare_A5_S9_sim_A5_S10_sim,
+                     compare_A5_S9_sim_A5_S15_sim
                     )
 
 obs_score_dat <- scoreStatistics(obs_sim_dats, obs_obs_dats)
 obs_score_dat <- obs_score_dat[order(obs_score_dat$Score)]
-obs_score_plot <- obs_score_dat %>% ggplot(aes(x=reorder(Comparison, Score), 
+obs_score_plot <- obs_score_dat[!is.na(obs_score_dat[["Score"]]), ] %>% 
+    ggplot(aes(x=reorder(Comparison, Score), 
                                        y=log(Score))) +
-                                       # fill=reorder(Comparison, Score))) +
     geom_bar(stat="identity") +
     xlab("Statistic") + ylab("log(Relative deviance)") +
     theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
@@ -112,9 +141,9 @@ ggsave("Images/obs_score_plot-tcr.pdf", width=20, height=12)
 
 sim_score_dat <- scoreStatistics(obs_sim_dats, sim_sim_dats)
 sim_score_dat <- sim_score_dat[order(sim_score_dat$Score)]
-sim_score_plot <- sim_score_dat %>% ggplot(aes(x=reorder(Comparison, Score), 
-                                       y=log(Score))) +
-                                       # fill=reorder(Comparison, Score))) +
+sim_score_plot <- sim_score_dat[!is.na(sim_score_dat[["Score"]]), ] %>% 
+    ggplot(aes(x=reorder(Comparison, Score), 
+               y=log(Score))) +
     geom_bar(stat="identity") +
     xlab("Statistic") + ylab("log(Relative deviance)") +
     theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
