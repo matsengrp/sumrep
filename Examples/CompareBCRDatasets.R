@@ -1,6 +1,6 @@
 loadNewDatasets("data/Annotations")
 
-do_bcr <- FALSE
+do_bcr <- TRUE
 if(do_bcr) {
     data_to_compare <- list(
                             # Compare partis annotations to
@@ -81,10 +81,6 @@ if(do_bcr) {
                            )
 }
 
-if(do_tcr) {
-
-}
-
 
 for(dats in data_to_compare) {
     comparison_name <- dats %>% 
@@ -94,9 +90,8 @@ for(dats in data_to_compare) {
         comparison <-
                compareRepertoires(eval(parse(text=dats[1])), 
                                   eval(parse(text=dats[2])),
-                                  receptor_type="BCR",
-                                  chain_type="heavy",
-                                  do_full_comparison=TRUE
+                                  locus="igh",
+                                  do_full_comparison=FALSE
                                  ) %>%
                cbind(Type1=dats[1],
                      Type2=dats[2])
