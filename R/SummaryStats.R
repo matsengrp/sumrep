@@ -913,7 +913,8 @@ tabulateGenes <- function(dat,
                           collapse_alleles,
                           standardize
                          ) {
-    gene_table <- dat[[gene_type]] %>%
+    gene_table <- dat %>%
+        getColumnValues(gene_type) %>%
         (function(x) { 
              if(collapse_alleles) { 
                  x %>% collapseAlleles 
