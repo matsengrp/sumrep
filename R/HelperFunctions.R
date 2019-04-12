@@ -129,12 +129,14 @@ parsePythonDictionary <- function(dictionary) {
     return(parsed)
 }
 
-removeSequencesWithDifferentGermlineAndSequenceLengths <- function(dat) {
-    checkColumn(dat, "germline_alignment")
-    checkColumn(dat, "sequence_alignment")
+removeSequencesWithDifferentGermlineAndSequenceLengths <- 
+    function(dat,
+             germline_column="germline_alignment",
+             sequence_column="sequence_alignment"
+            ) {
     return(dat %>% 
-               subset(nchar(dat$germline_alignment) == 
-                      nchar(dat$sequence_alignment)
+               subset(nchar(getColumnValues(dat, germline_column)) == 
+                      nchar(getColumnValues(dat, sequence_column))
                      )
           )
 }
@@ -204,8 +206,8 @@ multiplot <- function(plotlist=NULL,
         pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
         for(i in 1:numPlots) {
             matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-            print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                            layout.pos.col = matchidx$col))
+            print(plots[[i]], vp = viewport(layout.pos.row = matchidx[["row"]],
+                                            layout.pos.col = matchidx[["col"]]))
         }   
     }     
 } 

@@ -73,8 +73,8 @@ getContinuousJSDivergenceByIntegration <- function(sample_1, sample_2) {
         approxfun
     lower <- max(min(sample_1), min(sample_2))
     upper <- min(max(sample_1), max(sample_2))
-    KL_div_1 <- integrate(integrand(p, m), lower, upper)$value
-    KL_div_2 <- integrate(integrand(q, m), lower, upper)$value
+    KL_div_1 <- integrate(integrand(p, m), lower, upper)[["value"]]
+    KL_div_2 <- integrate(integrand(q, m), lower, upper)[["value"]]
     JS_divergence <- 0.5*(KL_div_1 + KL_div_2)
     return(JS_divergence)
 }
