@@ -106,7 +106,7 @@ doComparison <- function(function_string, input_list) {
                              function_string)
     if(length(input_list) == 3) {
         input_1_boot <- input_list[[3]]
-        comparison_object$BootstrapDivergence <- 
+        comparison_object[["BootstrapDivergence"]] <- 
             getAndPrintComparison(f, input_1, input_1_boot, 
                                   string_header="    Bootstrapped result: ",
                                   color=crayon::yellow,
@@ -140,14 +140,21 @@ compareRepertoires <- function(repertoire_1,
                                locus,
                                do_full_comparison=FALSE
                               ) {
+    if(!("annotations" %in% names(repertoire_1)) ||
+       !("annotations" %in% names(repertoire_2))) {
+        stop(paste("annotations attribute must be present in both",
+                   "repertoire_1 and repertoire_2.")
+        )
+    }
+        
     checkForValidLocus(locus)
 
-    annotations_1 <- repertoire_1$annotations
-    annotations_2 <- repertoire_2$annotations
+    annotations_1 <- repertoire_1[["annotations"]]
+    annotations_2 <- repertoire_2[["annotations"]]
     annotations_list <- list(annotations_1, annotations_2)
 
     if(hasArg(rep_1_bootstrap)) {
-        annotations_1_boot <- rep_1_bootstrap$annotations
+        annotations_1_boot <- rep_1_bootstrap[["annotations"]]
 
         if(!identical(names(annotations_1), names(annotations_1_boot))) {
             stop("Bootstrapped repertoire annotations do not match the original's.")
@@ -267,8 +274,8 @@ compareRepertoires <- function(repertoire_1,
                                 as.data.table(comparison_object))
     }
 
-    mutation_rates_1 <- repertoire_1$mutation_rates
-    mutation_rates_2 <- repertoire_2$mutation_rates
+    mutation_rates_1 <- repertoire_1[["mutation_rates"]]
+    mutation_rates_2 <- repertoire_2[["mutation_rates"]]
     if(!is.null(mutation_rates_1) && !is.null(mutation_rates_2)) {
         mutation_function_strings <- 
             list(
