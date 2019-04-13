@@ -44,7 +44,7 @@ def write_annotations(igor_wd,
                     scenarios_filename,
                     output_filename):
     scenarios_file = os.path.join(igor_wd, scenarios_filename)
-    model_parms_filename = "igor_evaluate/final_parms.txt"
+    model_parms_filename = "igor_inference/final_parms.txt"
     model_parms_file = os.path.join(igor_wd, model_parms_filename)
     annotation_dat = bestscenarios.read_bestscenarios_values(scenarios_file, model_parms_file)
 
