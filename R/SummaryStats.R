@@ -2706,18 +2706,18 @@ compareAminoAcid2merDistributions <-
 #' @inheritParams plotUnivariateDistributions
 getUnivariateDistributionDataTable <- function(dat_list,
                                                plot_type="freqpoly",
+                                               locus,
                                                names=NULL,
                                                plot_function_strings=NULL,
                                                do_all_plots=FALSE
                                               ) {
+    checkForValidLocus(locus)
     if(plot_function_strings %>% is.null) {
         plot_function_strings <- list(
                                       "getPairwiseDistanceDistribution",
                                       "getGCContentDistribution",
-                                      "getHotspotCountDistribution",
-                                      "getColdspotCountDistribution",
-                                      "getDistanceFromGermlineToSequenceDistribution",
                                       "getCDR3LengthDistribution",
+                                      "getCDR3PairwiseDistanceDistribution",
                                       "getAliphaticIndexDistribution",
                                       "getGRAVYDistribution",
                                       "getPolarityDistribution",
@@ -2726,15 +2726,42 @@ getUnivariateDistributionDataTable <- function(dat_list,
                                       "getAcidityDistribution",
                                       "getAromaticityDistribution",
                                       "getBulkinessDistribution",
-                                      "getPositionalDistanceBetweenMutationsDistribution",
                                       "getVGene3PrimeDeletionLengthDistribution",
-                                      "getDGene3PrimeDeletionLengthDistribution",
-                                      "getDGene5PrimeDeletionLengthDistribution",
-                                      "getJGene5PrimeDeletionLengthDistribution",
-                                      "getVDInsertionLengthDistribution",
-                                      "getDJInsertionLengthDistribution",
-                                      "getClusterSizeDistribution"
+                                      "getJGene5PrimeDeletionLengthDistribution"
                                      )
+        if(locus %in% c("igh", "trb")) {
+            plot_function_strings <-
+                c(plot_function_strings,
+                  c(
+                    "getDGene3PrimeDeletionLengthDistribution",
+                    "getDGene5PrimeDeletionLengthDistribution",
+                    "getVDInsertionLengthDistribution",
+                    "getDJInsertionLengthDistribution"
+                   )
+                 )
+        } else {
+            plot_function_strings <-
+                c(plot_function_strings,
+                    c(
+                      "getVJInsertionLengthDistribution" 
+                     )
+                 )
+            
+        }
+
+        if(stringr::str_sub(locus, 0, 2) == "ig") {
+            plot_function_strings <-
+                c(plot_function_strings,
+                    c(
+                      "getDistanceFromGermlineToSequenceDistribution",
+                      "getHotspotCountDistribution",
+                      "getColdspotCountDistribution",
+                      "getPositionalDistanceBetweenMutationsDistribution",
+                      "getClusterSizeDistribution"
+                     )
+                 )
+        }
+
         if(do_all_plots) {
             plot_function_strings <- c(plot_function_strings,
                                        "getNearestNeighborDistribution"
@@ -2778,13 +2805,16 @@ getUnivariateDistributionDataTable <- function(dat_list,
 #'   elements of \code{dat_list}
 plotUnivariateDistributions <- function(dat_list,
                                         plot_type,
+                                        locus,
                                         names=NULL,
                                         plot_function_strings=NULL,
                                         do_all_plots=FALSE
                                        ) {
+    checkForValidLocus(locus)
     distribution_dat <- getUnivariateDistributionDataTable(
         dat_list,
         plot_type=plot_type,
+        locus=locus,
         names=names,
         plot_function_strings=plot_function_strings,
         do_all_plots=do_all_plots
