@@ -151,7 +151,8 @@ sim_score_plot <- sim_score_dat[!is.na(sim_score_dat[["Score"]]), ] %>%
 ggsave("Images/sim_score_plot-tcr.pdf", width=20, height=12)
 
 # Save plots to sumrep ms
-sumrep_ms_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures"
+sumrep_ms_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures/IgorScores"
+sumrep_ms_dir %>% dir.create(showWarnings=FALSE)
 ggsave(filename=file.path(sumrep_ms_dir, "obs_score_plot-tcr.pdf"), 
        plot=obs_score_plot,
        width=12, height=6)
