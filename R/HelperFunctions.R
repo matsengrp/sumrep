@@ -146,8 +146,12 @@ removeSequencesWithDifferentGermlineAndSequenceLengths <-
 #'   .rds files
 #' 
 #' @param data_dir The directory which contains .rds files to be loaded
-loadNewDatasets <- function(data_dir) {
-    for(data_file in list.files(data_dir)) {
+loadNewDatasets <- function(data_dir,
+                            pattern=""
+                           ) {
+    for(data_file in list.files(data_dir,
+                                pattern=pattern
+                               )) {
         var_name <- data_file %>%
             gsub(pattern="-", replace="_") %>%
             gsub(pattern=".rds", replace="")

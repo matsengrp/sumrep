@@ -1,4 +1,5 @@
-loadNewDatasets("data/Annotations")
+loadNewDatasets("data/Annotations",
+                pattern="A")
 
 data_to_compare <- list(
     # Compage IGoR annotations to simulations
