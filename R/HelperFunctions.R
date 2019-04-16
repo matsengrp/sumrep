@@ -300,3 +300,19 @@ getColumnSequences <- function(dat,
 
     return(sequences)
 }
+
+subsampleToUniqueClones <- function(dat,
+                                    clone_id_column="clone_id"
+                                   ) {
+    clone_list <- dat$clone_id %>% unique
+    clone_sample_ids <- {}
+    for(clone in clone_list) {
+        clone_sample_ids <-
+            c(clone_sample_ids,
+              which(getColumnValues(dat, clone_id_column) == clone) %>%
+              subsample(1)
+             )
+    }
+    unique_clone_dat <- dat[clone_sample_ids, ]
+    return(unique_clone_dat)
+}
