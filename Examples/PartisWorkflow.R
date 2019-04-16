@@ -4,7 +4,7 @@ devtools::load_all()
 source("Examples/RunAnnotations.R")
 
 # Load each annotation object and run compareRepertoires for each pair
-source("Examples/CompareDatasets.R")
+source("Examples/CompareBCRDatasets.R")
 
 # Make some plots based on the above comparisons
-source("Examples/SummaryPlots.R")
+source("Examples/BCRSummaryPlots.R")

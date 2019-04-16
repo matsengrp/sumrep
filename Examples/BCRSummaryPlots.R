@@ -211,7 +211,7 @@ plotComparisons(part_igb_dat, "Images/partis_igb.pdf")
 
 # Save plots to sumrep ms
 sumrep_ms_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures/PartisScores"
-sumrep_ms_dir %>% file.create
+sumrep_ms_dir %>% dir.create
 ggsave(filename=file.path(sumrep_ms_dir, "obs_score_plot.pdf"), 
        plot=obs_score_plot,
        width=12, height=6)
