@@ -536,7 +536,6 @@ getPartisSimulation <- function(parameter_dir,
                                 cleanup=TRUE,
                                 do_full_annotation=FALSE,
                                 extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq",
-                                mimic_data_read_length=TRUE,
                                 seed=NULL
                                ) {
     partis_command <- paste(partis_path, 
@@ -561,12 +560,6 @@ getPartisSimulation <- function(parameter_dir,
         partis_command <- paste(partis_command,
                                 "--extra-annotation-columns", extra_columns)
     }
-
-    if(mimic_data_read_length) {
-        partis_command <- paste(partis_command,
-                                "--mimic-data-read-length")
-                                
-    }   
 
     if(!is.null(seed)) {
         partis_command <- paste(partis_command,
@@ -599,8 +592,9 @@ getPartisSimulation <- function(parameter_dir,
     sim_annotations <- sim_annotations %>% 
         processPartisSequences
 
-    sim_annotations[["clone_id"]] <- sim_annotations[["reco_id"]] %>% sapply(as.numeric)
-    sim_annotations[["reco_id"]] <- NULL
+    sim_annotations[["clone_id"]] <- sim_annotations[["reco_id"]] %>% 
+        sapply(as.numeric) %>%
+        rank
     sim_annotations[["sequence"]] <- sim_annotations[["sequence_alignment"]]
 
     names(sim_annotations)[which(names(sim_annotations) == "cdr3_length")] <- 
