@@ -97,7 +97,7 @@ getIgBlastAnnotations <- function(input_filename,
         igblast_command %>% system
 
         gene_segments <- c("v", "j")
-        if(locus %in% c("igh", "trb")) {
+        if(locus %in% c("igh", "trb", "trd")) {
             gene_segments <- c(gene_segments, "d")
         }
 

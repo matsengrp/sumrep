@@ -216,7 +216,7 @@ compareRepertoires <- function(repertoire_1,
                                       "compareVJInsertionMatrices"
                                      )
 
-    if(locus %in% c("igh", "trb")) {
+    if(locus %in% c("igh", "trb", "trd")) {
         function_strings <- c(function_strings,
                               big_chain_function_strings
                              ) 

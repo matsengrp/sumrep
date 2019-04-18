@@ -2729,7 +2729,7 @@ getUnivariateDistributionDataTable <- function(dat_list,
                                       "getVGene3PrimeDeletionLengthDistribution",
                                       "getJGene5PrimeDeletionLengthDistribution"
                                      )
-        if(locus %in% c("igh", "trb")) {
+        if(locus %in% c("igh", "trb", "trd")) {
             plot_function_strings <-
                 c(plot_function_strings,
                   c(
