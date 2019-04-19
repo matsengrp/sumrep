@@ -43,7 +43,7 @@ callPartis <- function(action,
                      "--parameter-dir",
                      file.path(output_path, "params")
                     )
-                     
+    
     if(!missing(germline_dir) && !is.null(germline_dir)) {
         command <- paste(command,
                          "--initial-germline-dir",
@@ -524,26 +524,41 @@ getPartisPartitions <- function(input_filename,
 
 #' Simulate a dataset based on parameters from partis annotations
 #'
+#' @inheritParams callPartis
 #' @param parameter_dir The parent output folder for partis (which is '_output'
 #'    by default. The function cd's into the params directory
 #' @param num_events The desired number of VDJ rearragement events for the
 #'    simulation
+#' @param num_leaves The exponent a of the zipf p.m.f, which is of the form
+#'    x^(-a). Thus, a higher value of a leads to fewer leaves in a given 
+#'    clonal family, since the probability mass will be highly distributed near
+#'    zero. a = 2 leads to larger clonal families, and this can be very, very
+#'    slow if num_events is high.
+#' @param seed The random generator seed to be supplied to 
+#'    \code{partis simulate}
+#' @param subsample_to_unique_clones If TRUE, one member of each clonal family
+#'    is subsampled, and the function returns the resultant dataset of unique
+#'    clones
 getPartisSimulation <- function(parameter_dir,
                                 partis_path=Sys.getenv("PARTIS_PATH"),
-                                output_file="simu.csv",
+                                output_file=file.path(parameter_dir,
+                                                      "simu.csv"),
                                 num_events=NULL,
                                 num_leaves=NULL,
                                 cleanup=TRUE,
                                 do_full_annotation=FALSE,
                                 extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq",
-                                seed=NULL
+                                seed=NULL,
+                                subsample_to_unique_clones=FALSE
                                ) {
     partis_command <- paste(partis_path, 
                             "simulate", 
                             "--parameter-dir", 
                             file.path(parameter_dir, "params"),
                             "--outfname", 
-                            output_file
+                            output_file,
+                            "--n-leaf-distribution",
+                            "zipf"
                            )
 
     if(!missing(num_events)) {
@@ -599,6 +614,11 @@ getPartisSimulation <- function(parameter_dir,
 
     names(sim_annotations)[which(names(sim_annotations) == "cdr3_length")] <- 
         "junction_length"
+    
+    if(subsample_to_unique_clones) {
+        sim_annotations <- sim_annotations %>%
+            subsampleToUniqueClones
+    }
 
     sim_data <- list(annotations=sim_annotations)
     return(sim_data)
