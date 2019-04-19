@@ -87,9 +87,11 @@ for(dats in data_to_compare) {
         paste(collapse="_") %>%
         paste0("compare_", .)
     if(!exists(comparison_name)) {
+        dat_1 <- eval(parse(text=dats[1]))
+        dat_2 <- eval(parse(text=dats[2]))
         comparison <-
-               compareRepertoires(eval(parse(text=dats[1])), 
-                                  eval(parse(text=dats[2])),
+               compareRepertoires(dat_1, 
+                                  dat_2,
                                   locus="igh",
                                   do_full_comparison=FALSE
                                  ) %>%
