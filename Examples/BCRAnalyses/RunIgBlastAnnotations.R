@@ -1,0 +1,20 @@
+source("Examples/RunAnnotations.R")
+
+writeAnnotations("~/Data/FV-igh-m1h.fa", 
+                 "i_f1", 
+                 "igblast")
+writeAnnotations("~/Data/FV-igh-m8d.fa", 
+                 "i_f2", 
+                 "igblast")
+writeAnnotations("~/Data/GMC-igh-m1h.fa", 
+                 "i_g1", 
+                 "igblast")
+writeAnnotations("~/Data/GMC-igh-m8d.fa", 
+                 "i_g2", 
+                 "igblast")
+writeAnnotations("~/Data/IB-igh-m1h.fa", 
+                 "i_i1", 
+                 "igblast")
+writeAnnotations("~/Data/IB-igh-m8d.fa", 
+                 "i_i2", 
+                 "igblast")
