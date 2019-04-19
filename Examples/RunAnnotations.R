@@ -32,48 +32,30 @@ writeAnnotations <- function(filename,
             unique %>% 
             length
 
-        num_leaves <- nrow(annotations$annotations)/num_clones
-
-
-        # Get yaml simulation output for cft
-        yaml_command <- paste(Sys.getenv("PARTIS_PATH"),
-              "simulate",
-              "--parameter-dir",
-              file.path(output_path, "params"),
-              "--n-sim-events",
-              num_clones,
-              "--n-leaves",
-              num_leaves,
-              "--outfname",
-              file.path(output_path, "simu.yaml"),
-              "--seed",
-              13
-             )
-        yaml_command %>% system
+        num_leaves <- 4
 
         simulation <- getPartisSimulation(parameter_dir=output_path,
                                           num_events=num_clones,
                                           num_leaves=num_leaves,
                                           cleanup=F,
-                                          seed=13
+                                          seed=13,
+                                          subsample_to_unique_clones=TRUE
                                          )
 
         saveRDS(simulation, outname %>% gsub(pattern='.rds',
                                             replace='-sim.rds'))
-        "tmp_output" %>% unlink(recursive=TRUE)
     } else if(method == "igblast") {
         annotations <- getIgBlastAnnotations(input_filename=filename, 
-                                             num_threads=num_procs,
-                                             igblast_dir="~/Software/igblast",
-                                             changeo_dir="~/.local/bin",
-                                             receptor_type="BCR"
+                                             nproc=16,
+                                             locus="igh"
                                             )
         saveRDS(annotations, outname)
     } else if(method == "igor") {
         ann_sim <- getIgorAnnotations(input_filename=filename,
                                       output_filename=paste0(dat_name, '.csv'),
                                       igor_wd=dat_name,
-                                      locus=locus
+                                      locus=locus,
+                                      cleanup=FALSE
                                      )
         annotations <- ann_sim$annotations
         saveRDS(list(annotations=annotations), outname)
