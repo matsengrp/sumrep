@@ -28,7 +28,7 @@ writeAnnotations <- function(filename,
                                            )
         saveRDS(annotations, outname)
 
-        num_clones <- annotations$annotations$clone %>% 
+        num_clones <- annotations[["annotations"]][["clone"]] %>% 
             unique %>% 
             length
 
@@ -38,8 +38,7 @@ writeAnnotations <- function(filename,
                                           num_events=num_clones,
                                           num_leaves=num_leaves,
                                           cleanup=F,
-                                          seed=13,
-                                          subsample_to_unique_clones=TRUE
+                                          seed=13
                                          )
 
         saveRDS(simulation, outname %>% gsub(pattern='.rds',
@@ -57,9 +56,9 @@ writeAnnotations <- function(filename,
                                       locus=locus,
                                       cleanup=FALSE
                                      )
-        annotations <- ann_sim$annotations
+        annotations <- ann_sim[["annotations"]]
         saveRDS(list(annotations=annotations), outname)
-        simulation <- ann_sim$simulation
+        simulation <- ann_sim[["simulation"]]
         saveRDS(list(annotations=simulation), outname %>% gsub(pattern='.rds',
                                              replacement='-sim.rds')
         )
