@@ -2703,13 +2703,35 @@ compareAminoAcid2merDistributions <-
     return(divergence)    
 }
 
+#' Subset a distribution to a given quantile range (mostly for plotting
+#'   aesthetics)
+#'
+#' @param distribution The distribution of values to be subsetted
+#' @param lower The lower quantile cutoff for values in \code{distribution}
+#' @param upper The upper quantile cutoff for values in \code{distribution}
+#' @return A vector of values of \code{distribution} within the given quantiles
+subsetToQuantileRange <- function(
+                                  distribution,
+                                  lower=0.025,
+                                  upper=0.975
+                                 )  {
+    quantiles <- quantile(distribution, 
+                          c(lower, upper), 
+                          na.rm=TRUE
+                         )
+    return(distribution[distribution >= quantiles[1] & 
+           distribution <= quantiles[2]])
+}
+
 #' @inheritParams plotUnivariateDistributions
 getUnivariateDistributionDataTable <- function(dat_list,
                                                plot_type="freqpoly",
                                                locus,
                                                names=NULL,
                                                plot_function_strings=NULL,
-                                               do_all_plots=FALSE
+                                               do_all_plots=FALSE,
+                                               color,
+                                               lty
                                               ) {
     checkForValidLocus(locus)
     if(plot_function_strings %>% is.null) {
@@ -2774,14 +2796,17 @@ getUnivariateDistributionDataTable <- function(dat_list,
 
     distribution_df <- dat_list %>%
         Map(
-            function(dat, dat_name) {
+            function(dat, color, lty) {
                 dat_df <- Map(
                     function(f_string, name) {
                         f <- eval(parse(text=f_string))
-                        distribution <- f(dat=dat)
+                        distribution <- f(dat=dat) %>%
+                            subsetToQuantileRange
                         dist_dat <- data.table(Value=distribution, 
-                                               Dataset=dat_name,
-                                               Name=name)
+                                               Name=name,
+                                               Color=color,
+                                               Linetype=lty
+                                              )
                         return(dist_dat)
                     },
                     plot_function_strings,
@@ -2791,7 +2816,8 @@ getUnivariateDistributionDataTable <- function(dat_list,
                return(dat_df)
             },
             .,
-            names
+            color,
+            lty
         ) %>%
             do.call("rbind", .)
 
@@ -2806,9 +2832,11 @@ getUnivariateDistributionDataTable <- function(dat_list,
 plotUnivariateDistributions <- function(dat_list,
                                         plot_type,
                                         locus,
-                                        names=NULL,
+                                        names=1:length(dat_list),
                                         plot_function_strings=NULL,
-                                        do_all_plots=FALSE
+                                        do_all_plots=FALSE,
+                                        color=factor(names),
+                                        lty=factor(1)
                                        ) {
     checkForValidLocus(locus)
     distribution_dat <- getUnivariateDistributionDataTable(
@@ -2817,13 +2845,18 @@ plotUnivariateDistributions <- function(dat_list,
         locus=locus,
         names=names,
         plot_function_strings=plot_function_strings,
-        do_all_plots=do_all_plots
+        do_all_plots=do_all_plots,
+        color=color,
+        lty=lty
     )
     p <- distribution_dat %>% ggplot(aes(x=Value,
-                                   group=Dataset,
-                                   colour=Dataset
+                                   colour=Color,
+                                   lty=Linetype
                                   )) +
-        facet_wrap( ~ Name, scales="free")
+        facet_wrap( ~ Name, scales="free") +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray")
+             )
     if(plot_type == "freqpoly") {
         p <- p + geom_freqpoly(aes(y=..density..))
     } else if(plot_type == "ecdf") {
