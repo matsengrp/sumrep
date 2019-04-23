@@ -28,7 +28,7 @@ writeAnnotations <- function(filename,
                                            )
         saveRDS(annotations, outname)
 
-        num_clones <- annotations[["annotations"]][["clone"]] %>% 
+        num_clones <- annotations[["annotations"]][["clone_id"]] %>% 
             unique %>% 
             length
 
@@ -38,7 +38,8 @@ writeAnnotations <- function(filename,
                                           num_events=num_clones,
                                           num_leaves=num_leaves,
                                           cleanup=F,
-                                          seed=13
+                                          seed=13,
+                                          do_multi_hmm=TRUE
                                          )
 
         saveRDS(simulation, outname %>% gsub(pattern='.rds',
