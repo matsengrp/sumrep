@@ -218,7 +218,9 @@ getIgBlastAnnotations <- function(input_filename,
         }
     })
 
-    annotations$vj_in_frame <- annotations$vj_in_frame %>%
+    annotations[["vj_in_frame"]] <- annotations[["vj_in_frame"]] %>%
+        as.logical
+    annotations[["stop_codon"]] <- annotations[["stop_codon"]] %>%
         as.logical
 
     initial_wd %>% setwd
