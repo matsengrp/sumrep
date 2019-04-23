@@ -64,6 +64,12 @@ callPartis <- function(action,
                          seed
                         )
     }
+    
+    if(action == "partition") {
+        command <- paste(command,
+                         "--count-parameters"
+                        )
+    }
 
     command %>% cat
     command %>% 
@@ -549,7 +555,8 @@ getPartisSimulation <- function(parameter_dir,
                                 do_full_annotation=FALSE,
                                 extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq",
                                 seed=NULL,
-                                subsample_to_unique_clones=FALSE
+                                subsample_to_unique_clones=FALSE,
+                                do_multi_hmm=FALSE
                                ) {
     partis_command <- paste(partis_path, 
                             "simulate", 
@@ -580,6 +587,13 @@ getPartisSimulation <- function(parameter_dir,
         partis_command <- paste(partis_command,
                                 "--seed",
                                 seed
+                               )
+    }
+
+    if(do_multi_hmm) {
+        partis_command <- paste(partis_command,
+                                "--parameter-type",
+                                "multi-hmm"
                                )
     }
 
