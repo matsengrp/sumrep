@@ -99,7 +99,49 @@ plotSummaryScores <- function(
               panel.grid.major=element_line(colour="lightgray")
              )
         
-    
+    ggsave(filename,
+           width=plot_width,
+           height=plot_height
+          )
+}
+
+plotSummaryScoreDifferences <- function(
+                                       partis_obs_sim_dats,
+                                       partis_obs_obs_dats,
+                                       igblast_obs_sim_dats,
+                                       igblast_obs_obs_dats,
+                                       filename,
+                                       plot_width=12,
+                                       plot_height=6
+                                      ) { 
+    partis_score_dat <- scoreStatistics(partis_obs_sim_dats,
+                                        partis_obs_obs_dats)
+    names(partis_score_dat)[which(names(partis_score_dat) == "Score")] <-
+        "PartisScore"
+    igblast_score_dat <- scoreStatistics(igblast_obs_sim_dats,
+                                         igblast_obs_obs_dats
+                                        )
+    names(igblast_score_dat)[which(names(igblast_score_dat) == "Score")] <-
+        "IgBlastScore"
+    score_dat <- merge(partis_score_dat, igblast_score_dat)
+
+    score_dat[["Difference"]] <- 
+        score_dat[["PartisScore"]] - score_dat[["IgBlastScore"]]
+    score_dat <- score_dat[order(score_dat[["Difference"]])]
+    score_plot <- score_dat %>%
+        ggplot(aes(x=reorder(Comparison, -Difference), 
+                   y=Difference
+                  )
+              ) +
+        geom_bar(stat="identity") +
+        xlab("Summary statistic") +
+        ylab("Difference of scores") +
+        theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
+              plot.margin=unit(c(1, 1, 1, 1.5), "cm"),
+              panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray")
+             )
+
     ggsave(filename,
            width=plot_width,
            height=plot_height

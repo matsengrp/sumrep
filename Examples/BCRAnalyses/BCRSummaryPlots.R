@@ -163,10 +163,19 @@ plotSummaryScores(dats_1=obs_sim_igb_dats,
                                     )
                  )
 
+plotSummaryScoreDifferences(obs_sim_partis_dats,
+                            obs_obs_partis_dats,
+                            obs_sim_igb_dats,
+                            obs_obs_igb_dats,
+                            filename=file.path(sumrep_ms_partis_dir,
+                                               "score_diff.pdf"
+                                              )
+                           )
+
 plotComparisons(obs_sim_partis_dat, "Images/sim_obs.pdf")
 plotComparisons(part_igb_dat, "Images/partis_igb.pdf")
 
 # Save plots to sumrep ms
-plotComparisons(obs_sim_partis_dat, file.path(sumrep_ms_dir, "sim_obs.pdf"))
-plotComparisons(part_igb_dat, file.path(sumrep_ms_dir, "partis_igb.pdf"))
+plotComparisons(obs_sim_partis_dat, file.path(sumrep_ms_partis_dir, "sim_obs.pdf"))
+plotComparisons(part_igb_dat, file.path(sumrep_ms_partis_dir, "partis_igb.pdf"))
 
