@@ -52,6 +52,8 @@ sim_sim_igor_dats <- list(
                     )
 
 sumrep_ms_igor_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures/IgorScores"
+sumrep_ms_igor_dir %>% dir.create
+
 plotSummaryScores(dats_1=obs_sim_igor_dats,
                   dats_2=obs_obs_igor_dats,
                   filename=file.path(sumrep_ms_igor_dir,

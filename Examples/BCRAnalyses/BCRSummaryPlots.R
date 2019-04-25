@@ -140,7 +140,7 @@ sim_sim_partis_dats <- list(
                     )
 
 sumrep_ms_partis_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures/PartisScores"
-sumrep_ms_dir %>% dir.create
+sumrep_ms_partis_dir %>% dir.create
 
 plotSummaryScores(dats_1=obs_sim_partis_dats,
                   dats_2=obs_obs_partis_dats,
