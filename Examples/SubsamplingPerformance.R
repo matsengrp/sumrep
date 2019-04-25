@@ -38,7 +38,7 @@ getTrueDistributionDatasetInfo <- function(dat,
 }
 
 getNaiveNNDistribution <- function(dat,
-                                column="sequence",
+                                column="sequence_alignment",
                                 approximate=TRUE,
                                 ...
                                ) {
@@ -57,7 +57,7 @@ getNaiveNNDistribution <- function(dat,
     return(distribution) 
 }
 
-loadNewDatasets("data/Annotations")
+loadNewDatasets("data/Annotations", pattern="p_f1")
 
 runPerformanceAnalysis <- function(dat,
                                    distribution_function,
@@ -74,8 +74,8 @@ runPerformanceAnalysis <- function(dat,
                                                 distribution_function,
                                                 ...
                                                ) 
-    true_dat <- true_info$true_dat
-    true_time <- true_info$true_time
+    true_dat <- true_info[["true_dat"]]
+    true_time <- true_info[["true_time"]]
 
     # Get subsampled distributions for various tolerances
     times <- {}
@@ -99,7 +99,7 @@ runPerformanceAnalysis <- function(dat,
                                                        )
             times[i] <- (proc.time() - pt)["elapsed"]
             divergences[i] <- getJSDivergence(distributions[[i]], 
-                                              true_dat$Value,
+                                              true_dat[["Value"]],
                                               continuous=continuous,
                                               KL=TRUE
                                              )
@@ -119,16 +119,16 @@ runPerformanceAnalysis <- function(dat,
         do.call(rbind, .) %>%
         rbind(., true_dat)
 
-    dist_dat$Value <- as.numeric(dist_dat$Value)
+    dist_dat[["Value"]] <- as.numeric(dist_dat[["Value"]])
 
-    summary_table <- dist_dat$Setting %>% 
+    summary_table <- dist_dat[["Setting"]] %>% 
         unique %>% 
         lapply(function(x) { 
-                  dist_dat[dist_dat$Setting == x, ]$Value %>% summary 
+                  dist_dat[dist_dat[["Setting"]] == x, ][["Value"]] %>% summary 
                }) %>% 
         do.call(rbind, .) %>%
         as.data.table %>%
-        cbind(Distribution=dist_dat$Setting %>% unique, .)
+        cbind(Distribution=dist_dat[["Setting"]] %>% unique, .)
 
     return(list(Distributions=dist_dat,
                 Metrics=metric_dat,
@@ -155,28 +155,36 @@ runSingleSummaryAnalysis <- function(dat,
                            continuous=continuous,
                            column=column
                           )
-    dist_dat <- perf_list$Distributions
-    metric_dat <- perf_list$Metrics
-    true_time <- perf_list$TrueTime
-    summary_table <- perf_list$Summary
+    dist_dat <- perf_list[["Distributions"]]
+    metric_dat <- perf_list[["Metrics"]]
+    true_time <- perf_list[["TrueTime"]]
+    summary_table <- perf_list[["Summary"]]
 
     dir.create(out_dir)
     
     freq_plot <- ggplot(dist_dat,
            aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
         geom_freqpoly(aes(y=..density..), binwidth=1) +
-        xlim(quantile(dist_dat$Value, c(0.01, 0.99), na.rm=T))  +
+        xlim(quantile(dist_dat[["Value"]], c(0.01, 0.99), na.rm=T))  +
         xlab(xlab) +
-        ylab("Density")
-    ggsave(file.path(out_dir, "freqpoly_by_tol.pdf"), width=10)
+        ylab("Density") +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
+              )
+    ggsave(file.path(out_dir, "freqpoly_by_tol.pdf"), width=6, height=4)
     
     density_plot <- ggplot(dist_dat,
            aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
         geom_density(adjust=4) +
-        xlim(quantile(dist_dat$Value, c(0.01, 0.99), na.rm=T))  +
+        xlim(quantile(dist_dat[["Value"]], c(0.01, 0.99), na.rm=T))  +
         xlab(xlab) +
-        ylab("Density")
-    ggsave(file.path(out_dir, "density_by_tol.pdf"), width=10)
+        ylab("Density") +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
+             )
+    ggsave(file.path(out_dir, "density_by_tol.pdf"), width=6, height=4)
     
     ecdf_plot <- ggplot(dist_dat,
            aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
@@ -184,8 +192,12 @@ runSingleSummaryAnalysis <- function(dat,
         xlab(xlab) +
         ylab("Density") +
         # We don't want outliers to stretch the x-axis too much
-        xlim(quantile(dist_dat$Value, c(0.01, 0.99), na.rm=T)) 
-    ggsave(file.path(out_dir, "ecdf_by_tol.pdf"), width=10)
+        xlim(quantile(dist_dat[["Value"]], c(0.01, 0.99), na.rm=T))  +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
+             )
+    ggsave(file.path(out_dir, "ecdf_by_tol.pdf"), width=6, height=4)
     
     time_plot <- ggplot(d=metric_dat, 
                         aes(x=log10(Tolerance), y=Time, group=log10(Tolerance))) +
@@ -195,8 +207,12 @@ runSingleSummaryAnalysis <- function(dat,
                       vjust=-1)) +
         xlab("Log_10(tolerance)") +
         ylab("Time (seconds)") +
-        ggtitle("Time complexity of distribution subsampling by tolerance")
-    ggsave(file.path(out_dir, "time_by_tol.pdf"), width=10)
+        ggtitle("Time complexity of distribution subsampling by tolerance") +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
+             )
+    ggsave(file.path(out_dir, "time_by_tol.pdf"), width=6, height=4)
     
     log_time_plot <- ggplot(d=metric_dat, 
                             aes(x=log10(Tolerance), y=log(Time), group=log10(Tolerance))) +
@@ -208,17 +224,25 @@ runSingleSummaryAnalysis <- function(dat,
         ylab("Log(time) (log-seconds)") +
         ggtitle(
          "Time complexity (in log-seconds) of distribution subsampling by tolerance"
-        )
-    ggsave(file.path(out_dir, "log_time_by_tol.pdf"), width=10)
+        ) +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
+             )
+    ggsave(file.path(out_dir, "log_time_by_tol.pdf"), width=6, height=4)
     
     div_plot <- ggplot(d=metric_dat, 
                        aes(x=log10(Tolerance), y=Divergence, group=log10(Tolerance))) +
         geom_boxplot() +
         xlab("Log_10(tolerance)") +
         ylab("KL-divergence") +
-        ylim(0, max(metric_dat$Divergence))
-        ggtitle("KL-divergence to true distribution by tolerance")
-    ggsave(file.path(out_dir, "div_by_tol.pdf"), width=10)
+        ylim(0, max(metric_dat[["Divergence"]])) +
+        ggtitle("KL-divergence to true distribution by tolerance") +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
+             )
+    ggsave(file.path(out_dir, "div_by_tol.pdf"), width=6, height=4)
     
     summary_table %>%
         printTable(filename=file.path(out_dir, "summary_by_tol.tex"),
@@ -227,11 +251,11 @@ runSingleSummaryAnalysis <- function(dat,
                   )
 }
 
-test_dat <- p_f1$annotations %>%
+test_dat <- p_f1[["annotations"]] %>%
     subsample(10000, replace=FALSE)
 
-rbind(test_dat$cdr3_length %>% summary,
-                     test_dat$sequence %>% sapply(nchar) %>% summary
+rbind(test_dat[["junction_length"]] %>% summary,
+                     test_dat[["sequence_alignment"]] %>% sapply(nchar) %>% summary
                     ) %>%
     printTable("~/Manuscripts/sumrep-ms/Tables/sequence_lengths.tex",
                digits=c(0,0,0, 0, 1, 0, 0)
@@ -243,10 +267,12 @@ pairwise_dist_analysis <- runSingleSummaryAnalysis(
     tols=10^seq(-1, -7),
     trial_count=10,
     continuous=FALSE,
-    column="sequence",
+    column="sequence_alignment",
     out_dir="~/Manuscripts/sumrep-ms/Figures/PairwiseDistance",
     xlab="Pairwise distance"
 )
+
+stop()
 
 
 nn_dist_analysis_cdr3 <- runSingleSummaryAnalysis(
@@ -266,7 +292,7 @@ nn_dist_analysis_sequence <- runSingleSummaryAnalysis(
     tols=10^seq(-1, -7),
     trial_count=5,
     continuous=FALSE,
-    column="sequence",
+    column="sequence_alignment",
     out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor/Sequence",
     xlab="NN distance"
 )
@@ -279,7 +305,7 @@ naive_nn_dist_analysis <- runSingleSummaryAnalysis(
     tols=10^seq(-1, -7),
     trial_count=10,
     continuous=FALSE,
-    column="sequence",
+    column="sequence_alignment",
     out_dir="~/Manuscripts/sumrep-ms/Figures/NaiveNearestNeighbor",
     xlab="NN distance"
 )
@@ -311,16 +337,16 @@ runAnalysisBySampleSize <- function(
                             column=column
                 )
 
-                dist_dat <- cbind(perf$Metrics,
+                dist_dat <- cbind(perf[["Metrics"]],
                                   Size=nrow(dat),
-                                  TrueTime=perf$TrueTime
+                                  TrueTime=perf[["TrueTime"]]
                                  )
                 return(dist_dat)
                }) %>%
         do.call(rbind, .)
 
-    metric_dat$Tolerance <- metric_dat$Tolerance %>% as.factor
-    metric_dat$Efficiency <- metric_dat$TrueTime/metric_dat$Time
+    metric_dat[["Tolerance"]] <- metric_dat[["Tolerance"]] %>% as.factor
+    metric_dat[["Efficiency"]] <- metric_dat[["TrueTime"]]/metric_dat[["Time"]]
 
     size_plot <- metric_dat %>%
         ggplot(aes(x=log(Size), 
@@ -332,10 +358,14 @@ runAnalysisBySampleSize <- function(
         geom_boxplot() +
         xlab("log(Size)") +
         ylab("KL-divergence") +
-        ylim(0, max(metric_dat$Divergence))
+        ylim(0, max(metric_dat[["Divergence"]])) +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
+             )
 
     ggsave(file.path(out_dir,
-                     "div_by_size_and_tol.pdf"), width=10)
+                     "div_by_size_and_tol.pdf"), width=6, height=4)
 
     time_plot <- ggplot(d=metric_dat, 
                         aes(x=log(Size), 
@@ -347,8 +377,12 @@ runAnalysisBySampleSize <- function(
         geom_boxplot() +
         xlab("log(Size)") +
         ylab("Time (seconds)") +
-        ggtitle("Time complexity of distribution subsampling by tolerance")
-    ggsave(file.path(out_dir, "time_by_size_and_tol.pdf"), width=10)
+        ggtitle("Time complexity of distribution subsampling by tolerance") +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
+             )
+    ggsave(file.path(out_dir, "time_by_size_and_tol.pdf"), width=6, height=4)
 
     efficiency_plot <- ggplot(d=metric_dat, 
                         aes(x=log(Size), 
@@ -360,12 +394,16 @@ runAnalysisBySampleSize <- function(
         geom_boxplot() +
         xlab("log(Size)") +
         ylab("log(Efficiency)") +
-        ggtitle("Time efficiency of distribution subsampling by tolerance")
-    ggsave(file.path(out_dir, "efficiency_by_size_and_tol.pdf"), width=10)
+        ggtitle("Time efficiency of distribution subsampling by tolerance") +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
+             )
+    ggsave(file.path(out_dir, "efficiency_by_size_and_tol.pdf"), width=6, height=4)
 }
 
 pairwise_dist_size_analysis <- runAnalysisBySampleSize(
-    dat=p_f1$annotations,
+    dat=p_f1[["annotations"]],
     sample_sizes=c(6, 7, 8, 9, 10) %>% exp,
     distribution_function=getPairwiseDistanceDistribution,
     tols=10^seq(-1, -3),
@@ -376,13 +414,13 @@ pairwise_dist_size_analysis <- runAnalysisBySampleSize(
 )
 
 nn_size_analysis <- runAnalysisBySampleSize(
-    dat=p_f1$annotations,
+    dat=p_f1[["annotations"]],
     sample_sizes=c(6, 7, 8, 9, 10) %>% exp,
     distribution_function=getNearestNeighborDistribution,
     tols=10^seq(-1, -5),
     trial_count=5,
     continuous=FALSE,
-    column="sequence",
+    column="sequence_alignment_alignment",
     out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor"
 )
 
@@ -407,7 +445,7 @@ runMultipleSummaryAnalysis <- function(
                                            continuous=continuous,
                                            column=column
                                           )
-                    dist_dat <- cbind(perf$Metrics, Summary=summary_name)
+                    dist_dat <- cbind(perf[["Metrics"]], Summary=summary_name)
                     return(dist_dat)
                 },
                 summaries,
@@ -417,7 +455,7 @@ runMultipleSummaryAnalysis <- function(
             ) %>%
         do.call(rbind, .)
 
-    distribution_dat$Tolerance <- distribution_dat$Tolerance %>% as.factor
+    distribution_dat[["Tolerance"]] <- distribution_dat[["Tolerance"]] %>% as.factor
 
     dir.create(out_dir)
 
@@ -427,14 +465,18 @@ runMultipleSummaryAnalysis <- function(
                    group=interaction(Summary, Tolerance),
                    fill=Tolerance
                    )) +
-               geom_boxplot()
+               geom_boxplot() +
+               theme(panel.background=element_blank(),
+                     panel.grid.major=element_line(colour="lightgray"),
+                     panel.grid.minor=element_line(colour="lightgray")
+                    )
     ggsave(file.path(out_dir,
                      "div_by_summary_and_tol.pdf"),
-           width=10)
+           width=6, height=4)
 }
 
 multiple_summary_analysis <- runMultipleSummaryAnalysis(
-    dat=p_f1$annotations %>% subsample(5000, replace=FALSE),
+    dat=p_f1[["annotations"]] %>% subsample(5000, replace=FALSE),
     summaries=c(getPairwiseDistanceDistribution,
                 getGCContentDistribution,
                 getHotspotCountDistribution,
