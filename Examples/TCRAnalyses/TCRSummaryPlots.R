@@ -54,6 +54,39 @@ sim_sim_igor_dats <- list(
 sumrep_ms_igor_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures/IgorScores"
 sumrep_ms_igor_dir %>% dir.create
 
+igor_plots <- plotUnivariateDistributions(
+    list(
+         A4_i194[["annotations"]],
+         A4_i194_sim[["annotations"]],
+         A5_S10[["annotations"]],
+         A5_S10_sim[["annotations"]],
+         A5_S9[["annotations"]],
+         A5_S9_sim[["annotations"]]
+    ),
+    locus="igh",
+    color=c(rep("Donor 1", 2),
+            rep("Donor 2", 2),
+            rep("Donor 3", 2)
+           ),
+    lty=rep(c("Observed", "Simulated"), 3)
+)
+
+ggsave(file.path(sumrep_ms_igor_dir,
+                 "igor_freqpoly.pdf"
+                ),
+       plot=igor_plots[["freqpoly"]],
+       width=14,
+       height=14
+)
+
+ggsave(file.path(sumrep_ms_igor_dir,
+                 "igor_ecdf.pdf"
+                ),
+       plot=igor_plots[["ecdf"]],
+       width=14,
+       height=14
+)
+
 plotSummaryScores(dats_1=obs_sim_igor_dats,
                   dats_2=obs_obs_igor_dats,
                   filename=file.path(sumrep_ms_igor_dir,
