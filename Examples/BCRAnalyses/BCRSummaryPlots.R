@@ -142,6 +142,70 @@ sim_sim_partis_dats <- list(
 sumrep_ms_partis_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures/PartisScores"
 sumrep_ms_partis_dir %>% dir.create
 
+partis_plots <- plotUnivariateDistributions(
+    list(
+         p_f1[["annotations"]] %>% subsampleToUniqueClones,
+         p_f1_sim[["annotations"]] %>% subsampleToUniqueClones,
+         p_g1[["annotations"]] %>% subsampleToUniqueClones,
+         p_g1_sim[["annotations"]] %>% subsampleToUniqueClones,
+         p_i1[["annotations"]] %>% subsampleToUniqueClones,
+         p_i1_sim[["annotations"]] %>% subsampleToUniqueClones
+    ),
+    locus="igh",
+    color=c(rep("Donor 1", 2),
+            rep("Donor 2", 2),
+            rep("Donor 3", 2)
+           ),
+    lty=rep(c("Observed", "Simulated"), 3)
+)
+
+ggsave(file.path(sumrep_ms_partis_dir,
+                 "partis_freqpoly.pdf"
+                ),
+       plot=partis_plots[["freqpoly"]],
+       width=14,
+       height=14
+)
+
+ggsave(file.path(sumrep_ms_partis_dir,
+                 "partis_ecdf.pdf"
+                ),
+       plot=partis_plots[["ecdf"]],
+       width=14,
+       height=14
+)
+
+pi_plots <- plotUnivariateDistributions(
+    list(
+         p_f1[["annotations"]] %>% subsampleToUniqueClones,
+         i_f1[["annotations"]] %>% subsampleToUniqueClones,
+         p_g1[["annotations"]] %>% subsampleToUniqueClones,
+         i_g1[["annotations"]] %>% subsampleToUniqueClones,
+         p_i1[["annotations"]] %>% subsampleToUniqueClones,
+         i_i1[["annotations"]] %>% subsampleToUniqueClones
+    ),
+    locus="igh",
+    color=c(rep("Donor 1", 2),
+            rep("Donor 2", 2),
+            rep("Donor 3", 2)
+           ),
+    lty=rep(c("Partis (obs)", "IgBlast (obs)"), 3)
+)
+ggsave(file.path(sumrep_ms_partis_dir,
+                 "pi_freqpoly.pdf"
+                ),
+       plot=pi_plots[["freqpoly"]],
+       width=14,
+       height=14
+)
+ggsave(file.path(sumrep_ms_partis_dir,
+                 "pi_ecdf.pdf"
+                ),
+       plot=pi_plots[["ecdf"]],
+       width=14,
+       height=14
+)
+
 plotSummaryScores(dats_1=obs_sim_partis_dats,
                   dats_2=obs_obs_partis_dats,
                   filename=file.path(sumrep_ms_partis_dir,

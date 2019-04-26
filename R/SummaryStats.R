@@ -2727,9 +2727,9 @@ subsetToQuantileRange <- function(
 getUnivariateDistributionDataTable <- function(dat_list,
                                                plot_type="freqpoly",
                                                locus,
-                                               names=NULL,
                                                plot_function_strings=NULL,
                                                do_all_plots=FALSE,
+                                               dat_names=factor(1:length(dat_list)),
                                                color,
                                                lty
                                               ) {
@@ -2796,17 +2796,23 @@ getUnivariateDistributionDataTable <- function(dat_list,
 
     distribution_df <- dat_list %>%
         Map(
-            function(dat, color, lty) {
+            function(dat, color, lty, dat_name) {
                 dat_df <- Map(
                     function(f_string, name) {
+                        dist_dat <- NULL
                         f <- eval(parse(text=f_string))
-                        distribution <- f(dat=dat) %>%
-                            subsetToQuantileRange
-                        dist_dat <- data.table(Value=distribution, 
-                                               Name=name,
-                                               Color=color,
-                                               Linetype=lty
-                                              )
+                        tryCatch({
+                            distribution <- f(dat=dat) %>%
+                                subsetToQuantileRange
+                            dist_dat <- data.table(Value=distribution, 
+                                                   Name=name,
+                                                   Color=color,
+                                                   Linetype=lty,
+                                                   Dataset=dat_name
+                                                  )
+                        }, error=function(e) {
+                        }
+                        )
                         return(dist_dat)
                     },
                     plot_function_strings,
@@ -2817,7 +2823,8 @@ getUnivariateDistributionDataTable <- function(dat_list,
             },
             .,
             color,
-            lty
+            lty,
+            dat_names
         ) %>%
             do.call("rbind", .)
 
@@ -2826,46 +2833,54 @@ getUnivariateDistributionDataTable <- function(dat_list,
 #' Generate a gridded plot of each univariate distribution corresponding to
 #'   one or more annotations datasets
 #'
-#' @inheritParams plotDistribution
-#' @param names Strings to be displayed by the legend corresponding to the 
-#'   elements of \code{dat_list}
+#' @param dat_list List of datasets
+#' @param plot_types Vector of plot types for each distribution.
+#'   Currently, only "freqpoly" and "ecdf" are supported.
+#' @param locus The locus to which the datasets in \code{dat_list} correspond
 plotUnivariateDistributions <- function(dat_list,
-                                        plot_type,
+                                        plot_types=c("freqpoly", "ecdf"),
                                         locus,
-                                        names=1:length(dat_list),
                                         plot_function_strings=NULL,
                                         do_all_plots=FALSE,
-                                        color=factor(names),
-                                        lty=factor(1)
+                                        color=factor(1:length(dat_list)),
+                                        lty=1
                                        ) {
     checkForValidLocus(locus)
     distribution_dat <- getUnivariateDistributionDataTable(
         dat_list,
         plot_type=plot_type,
         locus=locus,
-        names=names,
         plot_function_strings=plot_function_strings,
         do_all_plots=do_all_plots,
         color=color,
         lty=lty
     )
+    plot_list <- list()
     p <- distribution_dat %>% ggplot(aes(x=Value,
+                                         group=Dataset,
                                    colour=Color,
                                    lty=Linetype
                                   )) +
         facet_wrap( ~ Name, scales="free") +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray")
+              panel.grid.major=element_line(colour="lightgray"),
+              panel.grid.minor=element_line(colour="lightgray")
              )
-    if(plot_type == "freqpoly") {
-        p <- p + geom_freqpoly(aes(y=..density..))
-    } else if(plot_type == "ecdf") {
-        p <- p + stat_ecdf()
+    if("freqpoly" %in% plot_types) {
+        p_freqpoly <- p + geom_freqpoly(aes(y=..density..))
+        plot_list[["freqpoly"]] <- p_freqpoly
     }
 
-    return(p)
+    if("ecdf" %in% plot_types) {
+        p_ecdf <- p + stat_ecdf()
+        plot_list[["ecdf"]] <- p_ecdf
+    }
+
+    return(plot_list)
 }
 
+#' Helper function to get abbreviated summary names from getter function names
+#'   or divergence object names
 getNameFromFunctionString <- function(function_string) {
     name_hash <- list(
         getNearestNeighborDistribution="Nearest neighbor distance",
