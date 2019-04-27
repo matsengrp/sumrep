@@ -18,7 +18,6 @@ printTable <- function(dat, filename, digits=4, hline_pos=0, label=NULL) {
     cat(paste0("\\label{", label, "}\n"))
     cat("\\end{figure}", '\n')
     sink()
-    print(label)
 }
 
 getTrueDistributionDatasetInfo <- function(dat,
@@ -163,71 +162,63 @@ runSingleSummaryAnalysis <- function(dat,
     dir.create(out_dir)
     
     freq_plot <- ggplot(dist_dat,
-           aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
+           aes(x=as.numeric(Value), group=Setting, color=Setting)) +
         geom_freqpoly(aes(y=..density..), binwidth=1) +
         xlim(quantile(dist_dat[["Value"]], c(0.01, 0.99), na.rm=T))  +
         xlab(xlab) +
         ylab("Density") +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray"),
-              panel.grid.minor=element_line(colour="lightgray")
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
               )
     ggsave(file.path(out_dir, "freqpoly_by_tol.pdf"), width=6, height=4)
     
     density_plot <- ggplot(dist_dat,
-           aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
+           aes(x=as.numeric(Value), group=Setting, color=Setting)) +
         geom_density(adjust=4) +
         xlim(quantile(dist_dat[["Value"]], c(0.01, 0.99), na.rm=T))  +
         xlab(xlab) +
         ylab("Density") +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray"),
-              panel.grid.minor=element_line(colour="lightgray")
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
              )
     ggsave(file.path(out_dir, "density_by_tol.pdf"), width=6, height=4)
     
     ecdf_plot <- ggplot(dist_dat,
-           aes(x=as.numeric(Value), group=Setting, colour=Setting)) +
+           aes(x=as.numeric(Value), group=Setting, color=Setting)) +
         stat_ecdf() +
         xlab(xlab) +
         ylab("Density") +
         # We don't want outliers to stretch the x-axis too much
         xlim(quantile(dist_dat[["Value"]], c(0.01, 0.99), na.rm=T))  +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray"),
-              panel.grid.minor=element_line(colour="lightgray")
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
              )
     ggsave(file.path(out_dir, "ecdf_by_tol.pdf"), width=6, height=4)
     
     time_plot <- ggplot(d=metric_dat, 
                         aes(x=log10(Tolerance), y=Time, group=log10(Tolerance))) +
         geom_boxplot() +
-        geom_hline(yintercept=true_time, colour="red") +
-        geom_text(aes(0, true_time, label="Time for full dataset", hjust=1, 
-                      vjust=-1)) +
+        geom_hline(aes(yintercept=true_time, color="Full distribution")) +
         xlab("Log_10(tolerance)") +
-        ylab("Time (seconds)") +
-        ggtitle("Time complexity of distribution subsampling by tolerance") +
+        ylab("Time in log(seconds)") +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray"),
-              panel.grid.minor=element_line(colour="lightgray")
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
              )
     ggsave(file.path(out_dir, "time_by_tol.pdf"), width=6, height=4)
     
     log_time_plot <- ggplot(d=metric_dat, 
                             aes(x=log10(Tolerance), y=log(Time), group=log10(Tolerance))) +
         geom_boxplot() +
-        geom_hline(yintercept=log(true_time), colour="red") +
-        geom_text(aes(0, log(true_time), label="Log(Time) for full dataset", 
-                      hjust=1, vjust=-1)) +
+        geom_hline(aes(yintercept=log(true_time), color="Full distribution")) +
         xlab("Log_10(Tolerance)") +
         ylab("Log(time) (log-seconds)") +
-        ggtitle(
-         "Time complexity (in log-seconds) of distribution subsampling by tolerance"
-        ) +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray"),
-              panel.grid.minor=element_line(colour="lightgray")
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
              )
     ggsave(file.path(out_dir, "log_time_by_tol.pdf"), width=6, height=4)
     
@@ -237,10 +228,9 @@ runSingleSummaryAnalysis <- function(dat,
         xlab("Log_10(tolerance)") +
         ylab("KL-divergence") +
         ylim(0, max(metric_dat[["Divergence"]])) +
-        ggtitle("KL-divergence to true distribution by tolerance") +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray"),
-              panel.grid.minor=element_line(colour="lightgray")
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
              )
     ggsave(file.path(out_dir, "div_by_tol.pdf"), width=6, height=4)
     
@@ -272,9 +262,6 @@ pairwise_dist_analysis <- runSingleSummaryAnalysis(
     xlab="Pairwise distance"
 )
 
-stop()
-
-
 nn_dist_analysis_cdr3 <- runSingleSummaryAnalysis(
     dat=test_dat,
     distribution_function=getNearestNeighborDistribution,
@@ -296,8 +283,6 @@ nn_dist_analysis_sequence <- runSingleSummaryAnalysis(
     out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor/Sequence",
     xlab="NN distance"
 )
-
-stop()
 
 naive_nn_dist_analysis <- runSingleSummaryAnalysis(
     dat=test_dat,
@@ -360,8 +345,8 @@ runAnalysisBySampleSize <- function(
         ylab("KL-divergence") +
         ylim(0, max(metric_dat[["Divergence"]])) +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray"),
-              panel.grid.minor=element_line(colour="lightgray")
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
              )
 
     ggsave(file.path(out_dir,
@@ -369,18 +354,17 @@ runAnalysisBySampleSize <- function(
 
     time_plot <- ggplot(d=metric_dat, 
                         aes(x=log(Size), 
-                            y=Time, 
+                            y=log(Time), 
                             group=interaction(log(Size), Tolerance),
                             fill=Tolerance
                             )
                         )  +
         geom_boxplot() +
         xlab("log(Size)") +
-        ylab("Time (seconds)") +
-        ggtitle("Time complexity of distribution subsampling by tolerance") +
+        ylab("Time in log(seconds)") +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray"),
-              panel.grid.minor=element_line(colour="lightgray")
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
              )
     ggsave(file.path(out_dir, "time_by_size_and_tol.pdf"), width=6, height=4)
 
@@ -394,10 +378,9 @@ runAnalysisBySampleSize <- function(
         geom_boxplot() +
         xlab("log(Size)") +
         ylab("log(Efficiency)") +
-        ggtitle("Time efficiency of distribution subsampling by tolerance") +
         theme(panel.background=element_blank(),
-              panel.grid.major=element_line(colour="lightgray"),
-              panel.grid.minor=element_line(colour="lightgray")
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
              )
     ggsave(file.path(out_dir, "efficiency_by_size_and_tol.pdf"), width=6, height=4)
 }
@@ -420,12 +403,10 @@ nn_size_analysis <- runAnalysisBySampleSize(
     tols=10^seq(-1, -5),
     trial_count=5,
     continuous=FALSE,
-    column="sequence_alignment_alignment",
+    column="sequence_alignment",
     out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor"
 )
 
-stop()
- 
 runMultipleSummaryAnalysis <- function(
     dat,
     summaries,
@@ -467,8 +448,8 @@ runMultipleSummaryAnalysis <- function(
                    )) +
                geom_boxplot() +
                theme(panel.background=element_blank(),
-                     panel.grid.major=element_line(colour="lightgray"),
-                     panel.grid.minor=element_line(colour="lightgray")
+                     panel.grid.major=element_line(color="lightgray"),
+                     panel.grid.minor=element_line(color="lightgray")
                     )
     ggsave(file.path(out_dir,
                      "div_by_summary_and_tol.pdf"),
