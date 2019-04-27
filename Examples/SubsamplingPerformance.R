@@ -203,7 +203,7 @@ runSingleSummaryAnalysis <- function(dat,
         geom_boxplot() +
         geom_hline(aes(yintercept=true_time, color="Full distribution")) +
         xlab("Log_10(tolerance)") +
-        ylab("Time in log(seconds)") +
+        ylab("Time (seconds)") +
         theme(panel.background=element_blank(),
               panel.grid.major=element_line(color="lightgray"),
               panel.grid.minor=element_line(color="lightgray")
@@ -215,7 +215,7 @@ runSingleSummaryAnalysis <- function(dat,
         geom_boxplot() +
         geom_hline(aes(yintercept=log(true_time), color="Full distribution")) +
         xlab("Log_10(Tolerance)") +
-        ylab("Log(time) (log-seconds)") +
+        ylab("Time (log-seconds)") +
         theme(panel.background=element_blank(),
               panel.grid.major=element_line(color="lightgray"),
               panel.grid.minor=element_line(color="lightgray")
