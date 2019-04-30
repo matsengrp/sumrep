@@ -62,7 +62,7 @@ subsample <- function(dataset,
 #'   depending on the nature of \code{summary_function}
 getApproximateDistribution <- function(dat,
                                        summary_function,
-                                       sample_count=100,
+                                       sample_count=30,
                                        tol=0.001,
                                        divergence_function=getContinuousJSDivergence,
                                        ...

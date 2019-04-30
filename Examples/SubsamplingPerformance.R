@@ -56,8 +56,6 @@ getNaiveNNDistribution <- function(dat,
     return(distribution) 
 }
 
-loadNewDatasets("data/Annotations", pattern="p_f1")
-
 runPerformanceAnalysis <- function(dat,
                                    distribution_function,
                                    tols,
@@ -110,6 +108,8 @@ runPerformanceAnalysis <- function(dat,
                                 )
         }
     }
+
+    metric_dat[["Efficiency"]] <- true_time/metric_dat[["Time"]]
     
     dist_dat <- distributions %>%
         lapply(data.frame) %>%
@@ -241,60 +241,6 @@ runSingleSummaryAnalysis <- function(dat,
                   )
 }
 
-test_dat <- p_f1[["annotations"]] %>%
-    subsample(10000, replace=FALSE)
-
-rbind(test_dat[["junction_length"]] %>% summary,
-                     test_dat[["sequence_alignment"]] %>% sapply(nchar) %>% summary
-                    ) %>%
-    printTable("~/Manuscripts/sumrep-ms/Tables/sequence_lengths.tex",
-               digits=c(0,0,0, 0, 1, 0, 0)
-              )
-
-pairwise_dist_analysis <- runSingleSummaryAnalysis(
-    dat=test_dat,
-    distribution_function=getPairwiseDistanceDistribution,
-    tols=10^seq(-1, -7),
-    trial_count=10,
-    continuous=FALSE,
-    column="sequence_alignment",
-    out_dir="~/Manuscripts/sumrep-ms/Figures/PairwiseDistance",
-    xlab="Pairwise distance"
-)
-
-nn_dist_analysis_cdr3 <- runSingleSummaryAnalysis(
-    dat=test_dat,
-    distribution_function=getNearestNeighborDistribution,
-    tols=10^seq(-1, -7),
-    trial_count=10,
-    continuous=FALSE,
-    column="junction",
-    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor/CDR3",
-    xlab="NN distance"
-)
-
-nn_dist_analysis_sequence <- runSingleSummaryAnalysis(
-    dat=test_dat,
-    distribution_function=getNearestNeighborDistribution,
-    tols=10^seq(-1, -7),
-    trial_count=5,
-    continuous=FALSE,
-    column="sequence_alignment",
-    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor/Sequence",
-    xlab="NN distance"
-)
-
-naive_nn_dist_analysis <- runSingleSummaryAnalysis(
-    dat=test_dat,
-    distribution_function=getNaiveNNDistribution,
-    tols=10^seq(-1, -7),
-    trial_count=10,
-    continuous=FALSE,
-    column="sequence_alignment",
-    out_dir="~/Manuscripts/sumrep-ms/Figures/NaiveNearestNeighbor",
-    xlab="NN distance"
-)
-
 runAnalysisBySampleSize <- function(
     dat,
     sample_sizes,
@@ -385,28 +331,6 @@ runAnalysisBySampleSize <- function(
     ggsave(file.path(out_dir, "efficiency_by_size_and_tol.pdf"), width=6, height=4)
 }
 
-pairwise_dist_size_analysis <- runAnalysisBySampleSize(
-    dat=p_f1[["annotations"]],
-    sample_sizes=c(6, 7, 8, 9, 10) %>% exp,
-    distribution_function=getPairwiseDistanceDistribution,
-    tols=10^seq(-1, -3),
-    trial_count=10,
-    continuous=FALSE,
-    column="junction",
-    out_dir="~/Manuscripts/sumrep-ms/Figures/PairwiseDistance"
-)
-
-nn_size_analysis <- runAnalysisBySampleSize(
-    dat=p_f1[["annotations"]],
-    sample_sizes=c(6, 7, 8, 9, 10) %>% exp,
-    distribution_function=getNearestNeighborDistribution,
-    tols=10^seq(-1, -5),
-    trial_count=5,
-    continuous=FALSE,
-    column="sequence_alignment",
-    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor"
-)
-
 runMultipleSummaryAnalysis <- function(
     dat,
     summaries,
@@ -436,6 +360,8 @@ runMultipleSummaryAnalysis <- function(
             ) %>%
         do.call(rbind, .)
 
+        print(names(distribution_dat))
+
     distribution_dat[["Tolerance"]] <- distribution_dat[["Tolerance"]] %>% as.factor
 
     dir.create(out_dir)
@@ -454,10 +380,121 @@ runMultipleSummaryAnalysis <- function(
     ggsave(file.path(out_dir,
                      "div_by_summary_and_tol.pdf"),
            width=6, height=4)
+
+    time_plot <- ggplot(d=distribution_dat, 
+                        aes(x=Summary, 
+                            y=log(Time), 
+                            group=interaction(Summary, Tolerance),
+                            fill=Tolerance
+                            )
+                        )  +
+        geom_boxplot() +
+        xlab("Summary") +
+        ylab("Time in log(seconds)") +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
+             )
+    ggsave(file.path(out_dir, "time_by_summary_and_tol.pdf"), width=6, height=4)
+
+    efficiency_plot <- ggplot(d=distribution_dat, 
+                        aes(x=Summary, 
+                            y=log(Efficiency), 
+                            group=interaction(Summary, Tolerance),
+                            fill=Tolerance
+                            )
+                        )  +
+        geom_boxplot() +
+        xlab("Summary") +
+        ylab("log(Efficiency)") +
+        theme(panel.background=element_blank(),
+              panel.grid.major=element_line(color="lightgray"),
+              panel.grid.minor=element_line(color="lightgray")
+             )
+    ggsave(file.path(out_dir, "efficiency_by_summary_and_tol.pdf"), width=6, height=4)
 }
 
+loadNewDatasets("data/Annotations", pattern="p_f1")
+
+test_dat <- p_f1[["annotations"]] %>%
+    subsample(10000, replace=FALSE)
+
+rbind(test_dat[["junction_length"]] %>% summary,
+      test_dat[["sequence_alignment"]] %>% sapply(nchar) %>% summary
+     ) %>%
+    printTable("~/Manuscripts/sumrep-ms/Tables/sequence_lengths.tex",
+               digits=c(0,0,0, 0, 1, 0, 0)
+              )
+
+pairwise_dist_analysis <- runSingleSummaryAnalysis(
+    dat=test_dat,
+    distribution_function=getPairwiseDistanceDistribution,
+    tols=10^seq(-1, -7),
+    trial_count=10,
+    continuous=FALSE,
+    column="sequence_alignment",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/PairwiseDistance",
+    xlab="Pairwise distance"
+)
+
+nn_dist_analysis_cdr3 <- runSingleSummaryAnalysis(
+    dat=test_dat,
+    distribution_function=getNearestNeighborDistribution,
+    tols=10^seq(-1, -7),
+    trial_count=10,
+    continuous=FALSE,
+    column="junction",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor/CDR3",
+    xlab="NN distance"
+)
+
+nn_dist_analysis_sequence <- runSingleSummaryAnalysis(
+    dat=test_dat,
+    distribution_function=getNearestNeighborDistribution,
+    tols=10^seq(-1, -7),
+    trial_count=5,
+    continuous=FALSE,
+    column="sequence_alignment",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor/Sequence",
+    xlab="NN distance"
+)
+
+naive_nn_dist_analysis <- runSingleSummaryAnalysis(
+    dat=test_dat,
+    distribution_function=getNaiveNNDistribution,
+    tols=10^seq(-1, -7),
+    trial_count=10,
+    continuous=FALSE,
+    column="sequence_alignment",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/NaiveNearestNeighbor",
+    xlab="NN distance"
+)
+
+pairwise_dist_size_analysis <- runAnalysisBySampleSize(
+    dat=p_f1[["annotations"]],
+    sample_sizes=c(6, 7, 8, 9, 10) %>% exp,
+    distribution_function=getPairwiseDistanceDistribution,
+    tols=10^seq(-1, -5),
+    trial_count=10,
+    continuous=FALSE,
+    column="junction",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/PairwiseDistance"
+)
+
+nn_size_analysis <- runAnalysisBySampleSize(
+    dat=p_f1[["annotations"]],
+    sample_sizes=c(6, 7, 8, 9, 10) %>% exp,
+    distribution_function=getNearestNeighborDistribution,
+    tols=10^seq(-1, -5),
+    trial_count=5,
+    continuous=FALSE,
+    column="sequence_alignment",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor"
+)
+
+
 multiple_summary_analysis <- runMultipleSummaryAnalysis(
-    dat=p_f1[["annotations"]] %>% subsample(5000, replace=FALSE),
+    dat=p_f1[["annotations"]] %>% subsample(1000, replace=FALSE),
     summaries=c(getPairwiseDistanceDistribution,
                 getGCContentDistribution,
                 getHotspotCountDistribution,
@@ -470,7 +507,7 @@ multiple_summary_analysis <- runMultipleSummaryAnalysis(
                     "Coldspot count"
                     ),
     continuous=c(FALSE, TRUE, FALSE, FALSE),
-    tols=10^seq(-1, -7),
+    tols=10^seq(-1, -5),
     trial_count=10,
     column="junction",
     out_dir="~/Manuscripts/sumrep-ms/Figures/Multiple"
