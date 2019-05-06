@@ -142,6 +142,10 @@ sim_sim_partis_dats <- list(
 sumrep_ms_partis_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures/PartisScores"
 sumrep_ms_partis_dir %>% dir.create
 
+# Since we subsample to unique clones for these analyses, let's omit the
+#   cluster size distribution, which will always be a unit point mass at one
+summaries_to_omit <- c("getClusterSizeDistribution")
+
 partis_plots <- plotUnivariateDistributions(
     list(
          p_f1[["annotations"]] %>% subsampleToUniqueClones,
@@ -156,7 +160,8 @@ partis_plots <- plotUnivariateDistributions(
             rep("Donor 2", 2),
             rep("Donor 3", 2)
            ),
-    lty=rep(c("Observed", "Simulated"), 3)
+    lty=rep(c("Observed", "Simulated"), 3),
+    functions_to_omit=summaries_to_omit
 )
 
 ggsave(file.path(sumrep_ms_partis_dir,
