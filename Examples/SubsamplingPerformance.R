@@ -488,8 +488,20 @@ nn_size_analysis <- runAnalysisBySampleSize(
     tols=10^seq(-1, -5),
     trial_count=5,
     continuous=FALSE,
+    column="junction",
+    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor/CDR3"
+)
+
+
+nn_size_analysis <- runAnalysisBySampleSize(
+    dat=p_f1[["annotations"]],
+    sample_sizes=c(6, 7, 8, 9, 10) %>% exp,
+    distribution_function=getNearestNeighborDistribution,
+    tols=10^seq(-1, -5),
+    trial_count=5,
+    continuous=FALSE,
     column="sequence_alignment",
-    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor"
+    out_dir="~/Manuscripts/sumrep-ms/Figures/NearestNeighbor/Sequence"
 )
 
 
