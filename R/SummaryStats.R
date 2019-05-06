@@ -114,6 +114,8 @@ plotDistribution <- function(dat_list,
                              x_label="Value",
                              names,
                              show_legend=TRUE,
+                             color=1:length(dat_list),
+                             lty=1:length(dat_list),
                              ...
                             ) {
     distribution_list <- dat_list %>%
@@ -2728,6 +2730,7 @@ getUnivariateDistributionDataTable <- function(dat_list,
                                                plot_type="freqpoly",
                                                locus,
                                                plot_function_strings=NULL,
+                                               functions_to_omit=NULL,
                                                do_all_plots=FALSE,
                                                dat_names=factor(1:length(dat_list)),
                                                color,
@@ -2791,6 +2794,10 @@ getUnivariateDistributionDataTable <- function(dat_list,
         }
     } 
 
+    plot_function_strings <- plot_function_strings[!(plot_function_strings %in%
+                                                     functions_to_omit)]
+    
+
     plot_names <- plot_function_strings %>%
         sapply(getNameFromFunctionString)
 
@@ -2841,9 +2848,11 @@ plotUnivariateDistributions <- function(dat_list,
                                         plot_types=c("freqpoly", "ecdf"),
                                         locus,
                                         plot_function_strings=NULL,
+                                        functions_to_omit=NULL,
                                         do_all_plots=FALSE,
                                         color=factor(1:length(dat_list)),
-                                        lty=1
+                                        lty=factor(rep(1, length(dat_list))),
+                                        bins=15
                                        ) {
     checkForValidLocus(locus)
     distribution_dat <- getUnivariateDistributionDataTable(
@@ -2851,6 +2860,7 @@ plotUnivariateDistributions <- function(dat_list,
         plot_type=plot_type,
         locus=locus,
         plot_function_strings=plot_function_strings,
+        functions_to_omit=functions_to_omit,
         do_all_plots=do_all_plots,
         color=color,
         lty=lty
@@ -2867,7 +2877,9 @@ plotUnivariateDistributions <- function(dat_list,
               panel.grid.minor=element_line(colour="lightgray")
              )
     if("freqpoly" %in% plot_types) {
-        p_freqpoly <- p + geom_freqpoly(aes(y=..density..))
+        p_freqpoly <- p + geom_freqpoly(aes(y=..density..),
+                                        bins=bins
+                                       )
         plot_list[["freqpoly"]] <- p_freqpoly
     }
 

@@ -54,6 +54,19 @@ sim_sim_igor_dats <- list(
 sumrep_ms_igor_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures/IgorScores"
 sumrep_ms_igor_dir %>% dir.create
 
+# Since IGoR does not output a "sequence_alignment" column (or any column
+#   for the full variable-region sequence), or a "vj_in_frame" column
+#   for annotations, let's omit the corresponding summaries from the
+#   analysis
+summaries_to_omit <- c("getPairwiseDistanceDistribution",
+                       "getGCContentDistribution",
+                       "getInFramePercentage"
+                      )
+comparisons_to_omit <- c("comparePairwiseDistanceDistributions",
+                         "compareGCContentDistributions",
+                         "compareInFramePercentages"
+                        )
+
 igor_plots <- plotUnivariateDistributions(
     list(
          A4_i194[["annotations"]],
@@ -63,12 +76,13 @@ igor_plots <- plotUnivariateDistributions(
          A5_S9[["annotations"]],
          A5_S9_sim[["annotations"]]
     ),
-    locus="igh",
+    locus="trb",
     color=c(rep("Donor 1", 2),
             rep("Donor 2", 2),
             rep("Donor 3", 2)
            ),
-    lty=rep(c("Observed", "Simulated"), 3)
+    lty=rep(c("Observed", "Simulated"), 3),
+    functions_to_omit=summaries_to_omit
 )
 
 ggsave(file.path(sumrep_ms_igor_dir,
@@ -91,11 +105,13 @@ plotSummaryScores(dats_1=obs_sim_igor_dats,
                   dats_2=obs_obs_igor_dats,
                   filename=file.path(sumrep_ms_igor_dir,
                                      "obs_score_plot.pdf"
-                                    )
+                                    ),
+                  comparisons_to_omit=comparisons_to_omit
                  )
 plotSummaryScores(dats_1=obs_sim_igor_dats,
                   dats_2=sim_sim_igor_dats,
                   filename=file.path(sumrep_ms_igor_dir,
                                      "sim_score_plot.pdf"
-                                    )
+                                    ),
+                  comparisons_to_omit=comparisons_to_omit
                  )

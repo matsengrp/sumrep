@@ -5,8 +5,14 @@ getComparisonValue <- function(dat, comparison) {
     return(value)
 }
 
-scoreStatistics <- function(dats_1, dats_2) {
-    comparison_types <- dats_1[[1]]$Comparison %>% unique
+scoreStatistics <- function(dats_1, 
+                            dats_2,
+                            comparisons_to_omit=NULL
+                           ) {
+    comparison_types <- dats_1[[1]][["Comparison"]] %>% 
+        unique
+    comparison_types <- comparison_types[!(comparison_types %in% comparisons_to_omit)]
+        
     score_dat <- matrix(NA, nrow=0, ncol=2) %>% 
         data.table %>%
         setNames(c("Comparison", "Score"))
@@ -47,10 +53,10 @@ shortenName <- function(string) {
 
 
 plotComparisons <- function(dat, filename, cols=1, rows=1) {
-    comparison_types <- dat$Comparison %>% unique
+    comparison_types <- dat[["Comparison"]] %>% unique
     plot_list <- list()
     for(c_type in comparison_types) {
-        dat_sub <- dat[dat$Comparison == c_type, ]
+        dat_sub <- dat[dat[["Comparison"]] == c_type, ]
         plot_list[[c_type]] <- ggplot(dat_sub, aes(Type1, Type2)) +
             geom_tile(aes(fill=Divergence)) +
             ggtitle(c_type %>% shortenName) +
@@ -76,15 +82,23 @@ plotComparisons <- function(dat, filename, cols=1, rows=1) {
     dev.off()
 }
 
+filterScores <- function(dat,
+                         comparisons_to_omit
+                        ) {
+    return(dat[!(dat[["Comparison"]] %in% comparisons_to_omit), ])
+}
+
 plotSummaryScores <- function(
                               dats_1, 
                               dats_2,
                               filename,
                               plot_width=12,
-                              plot_height=6
+                              plot_height=6,
+                              comparisons_to_omit=NULL
                              ) {
-    score_dat <- scoreStatistics(dats_1, dats_2)
+    score_dat <- scoreStatistics(dats_1, dats_2, comparisons_to_omit=comparisons_to_omit)
     score_dat <- score_dat[order(score_dat[["Score"]])]
+
     score_plot <- score_dat %>%
         ggplot(aes(x=reorder(Comparison, -Score), 
                    y=Score
