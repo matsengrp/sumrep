@@ -194,7 +194,8 @@ pi_plots <- plotUnivariateDistributions(
             rep("Donor 2", 2),
             rep("Donor 3", 2)
            ),
-    lty=rep(c("Partis (obs)", "IgBlast (obs)"), 3)
+    lty=rep(c("Partis (obs)", "IgBlast (obs)"), 3),
+    functions_to_omit=summaries_to_omit
 )
 ggsave(file.path(sumrep_ms_partis_dir,
                  "pi_freqpoly.pdf"
