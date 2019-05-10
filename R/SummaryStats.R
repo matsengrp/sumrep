@@ -2858,6 +2858,7 @@ getUnivariateDistributionDataTable <- function(dat_list,
 #' @param plot_types Vector of plot types for each distribution.
 #'   Currently, only "freqpoly" and "ecdf" are supported.
 #' @param locus The locus to which the datasets in \code{dat_list} correspond
+#' @return A list of ggplot objects containing the specified plots
 plotUnivariateDistributions <- function(dat_list,
                                         plot_types=c("freqpoly", "ecdf"),
                                         locus,
@@ -2866,7 +2867,7 @@ plotUnivariateDistributions <- function(dat_list,
                                         do_all_plots=FALSE,
                                         color=factor(1:length(dat_list)),
                                         lty=factor(rep(1, length(dat_list))),
-                                        bins=15
+                                        bins=10
                                        ) {
     checkForValidLocus(locus)
     distribution_dat <- getUnivariateDistributionDataTable(
