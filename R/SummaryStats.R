@@ -210,19 +210,17 @@ plotDistribution <- function(dat_list,
 #'
 #' @inheritParams plotDistribution
 plotPairwiseDistanceDistribution <- function(dat_list,
-                                             plot_type,
-                                             names=NULL,
-                                             show_legend=TRUE,
+                                             plot_types=c("freqpoly", "ecdf"),
                                              ...
                                             ) {
-    p <- plotDistribution(dat_list=dat_list,
-                          summary_function=getPairwiseDistanceDistribution,
-                          plot_type=plot_type,
-                          x_label="Pairwise distance",
-                          names=names,
-                          show_legend=show_legend,
-                          ...
-                         )
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getPairwiseDistanceDistribution",
+              x_label="Pairwise distance",
+              ...
+         )
+                                    
     return(p)
 }
 
@@ -324,19 +322,17 @@ getNearestNeighborDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotNearestNeighborDistribution <- function(dat_list,
-                                            plot_type,
-                                            names=NULL,
-                                            show_legend=TRUE,
+                                            plot_types=c("freqpoly", "ecdf"),
                                             ...
                                            ) {
-    p <- plotDistribution(dat_list=dat_list,
-                          summary_function=getNearestNeighborDistribution,
-                          plot_type=plot_type,
-                          x_label="Nearest neighbor distance",
-                          names=names,
-                          show_legend=show_legend,
-                          ...
-                         )
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getNearestNeighborDistribution",
+              x_label="Nearest neighbor distance",
+              ...
+         )
+                                    
     return(p)
 }
 
@@ -429,17 +425,16 @@ getGCContentDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotGCContentDistribution <- function(dat_list,
-                                      plot_type,
-                                      names=NULL,
-                                      show_legend=TRUE
+                                      plot_types=c("freqpoly", "ecdf"),
+                                      ...
                                      ) {
-    p <- plotDistribution(dat_list,
-                          getGCContentDistribution,
-                          plot_type=plot_type,
-                          x_label="GC content",
-                          show_legend=show_legend,
-                          names=names
-                         )
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getGCContentDistribution",
+              x_label="GC content",
+              ...
+    )
     return(p)
 }
 
@@ -554,17 +549,16 @@ getHotspotCountDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotHotspotCountDistribution <- function(dat_list,
-                                         plot_type,
-                                         names=NULL,
-                                         show_legend=TRUE
+                                         plot_types=c("freqpoly", "ecdf"),
+                                         ...
                                         ) {
-    p <- plotDistribution(dat_list,
-                          getHotspotCountDistribution,
-                          plot_type=plot_type,
-                          x_label="Hotspot count",
-                          show_legend=show_legend,
-                          names=names
-                         )
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getHotspotCountDistribution",
+              x_label="Hotspot counts",
+              ...
+    )
     return(p)
 }
 
@@ -619,18 +613,16 @@ getColdspotCountDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotColdspotCountDistribution <- function(dat_list,
-                                          plot_type,
-                                          names=NULL,
-                                          show_legend=TRUE
+                                          plot_types=c("freqpoly", "ecdf"),
+                                          ...
                                          ) {
-    p <- plotDistribution(dat_list,
-                          getColdspotCountDistribution,
-                          plot_type=plot_type,
-                          x_label="Coldspot count",
-                          show_legend=show_legend,
-                          names=names,
-                          binwidth=1
-                         )
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getColdspotCountDistribution",
+              x_label="Coldspot counts",
+              ...
+    )
     return(p)
 }
 
@@ -736,18 +728,18 @@ getDistanceFromGermlineToSequenceDistribution <- function(dat,
 #' Plot the distance from naive to mature distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotDistanceFromGermlineToSequenceDistribution <- function(dat_list,
-                                                      plot_type,
-                                                      names=NULL,
-                                                      show_legend=TRUE
-                                                     ) {
-    p <- plotDistribution(dat_list,
-                          getDistanceFromGermlineToSequenceDistribution,
-                          plot_type=plot_type,
-                          x_label="Dist. from germ. to seq.",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotDistanceFromGermlineToSequenceDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getDistanceFromGermlineToSequenceDistribution",
+              x_label="Distance from germline to sequence",
+              ...
+    )
     return(p)
 }
 
@@ -825,19 +817,16 @@ getCDR3LengthDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotCDR3LengthDistribution <- function(dat_list,
-                                       plot_type,
-                                       names=NULL,
-                                       show_legend=TRUE,
+                                       plot_types=c("freqpoly", "ecdf"),
                                        ...
                                       ) {
-    p <- plotDistribution(dat_list,
-                          getCDR3LengthDistribution,
-                          plot_type=plot_type,
-                          x_label="CDR3 length",
-                          show_legend=show_legend,
-                          names=names,
-                          ...
-                         )
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getCDR3LengthDistribution",
+              x_label="CDR3 length",
+              ...
+    )
     return(p)
 }
 
@@ -1284,17 +1273,16 @@ getAliphaticIndexDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotAliphaticIndexDistribution <- function(dat_list,
-                                           plot_type,
-                                           names=NULL,
-                                           show_legend=TRUE
+                                           plot_types=c("freqpoly", "ecdf"),
+                                           ...
                                           ) {
-    p <- plotDistribution(dat_list,
-                          getAliphaticIndexDistribution,
-                          plot_type=plot_type,
-                          x_label="Aliphatic index",
-                          show_legend=show_legend,
-                          names=names
-                         )
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getAliphaticIndexDistribution",
+              x_label="Aliphatic index",
+              ...
+    )
     return(p)
 }
 
@@ -1337,20 +1325,18 @@ getGRAVYDistribution <- function(dat,
 #'
 #' @inheritParams plotDistribution
 plotGRAVYDistribution <- function(dat_list,
-                                  plot_type,
-                                  names=NULL,
-                                  show_legend=TRUE
-                                 ) { 
-    p <- plotDistribution(dat_list,
-                          getGRAVYDistribution,
-                          plot_type=plot_type,
-                          x_label="GRAVY index",
-                          show_legend=show_legend,
-                          names=names
-                         )
+                                  plot_types=c("freqpoly", "ecdf"),
+                                  ...
+                                 ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getGRAVYDistribution",
+              x_label="GRAVY index",
+              ...
+    )
     return(p)
 }
-
 
 #' Compare the GRAVY distributions of two datasets
 #'
@@ -1421,19 +1407,16 @@ comparePolarityDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotPolarityDistribution <- function(dat_list,
-                                     plot_type,
-                                     names=NULL,
-                                     show_legend=TRUE,
+                                     plot_types=c("freqpoly", "ecdf"),
                                      ...
                                     ) {
-    p <- plotDistribution(dat_list,
-                          getPolarityDistribution,
-                          plot_type=plot_type,
-                          x_label="Polarity",
-                          show_legend=show_legend,
-                          names=names
-                         )
-
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getPolarityDistribution",
+              x_label="Polarity",
+              ...
+    )
     return(p)
 }
 
@@ -1466,19 +1449,16 @@ compareChargeDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotChargeDistribution <- function(dat_list,
-                                     plot_type,
-                                     names=NULL,
-                                     show_legend=TRUE,
-                                     ...
-                                    ) {
-    p <- plotDistribution(dat_list,
-                          getChargeDistribution,
-                          plot_type=plot_type,
-                          x_label="Charge",
-                          show_legend=show_legend,
-                          names=names
-                         )
-
+                                   plot_types=c("freqpoly", "ecdf"),
+                                   ...
+                                  ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getChargeDistribution",
+              x_label="Charge",
+              ...
+    )
     return(p)
 }
 
@@ -1512,19 +1492,16 @@ compareBasicityDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotBasicityDistribution <- function(dat_list,
-                                     plot_type,
-                                     names=NULL,
-                                     show_legend=TRUE,
+                                     plot_types=c("freqpoly", "ecdf"),
                                      ...
                                     ) {
-    p <- plotDistribution(dat_list,
-                          getBasicityDistribution,
-                          plot_type=plot_type,
-                          x_label="Basicity",
-                          show_legend=show_legend,
-                          names=names
-                         )
-
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getBasicityDistribution",
+              x_label="Basicity",
+              ...
+    )
     return(p)
 }
 
@@ -1557,19 +1534,16 @@ compareAcidityDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotAcidityDistribution <- function(dat_list,
-                                     plot_type,
-                                     names=NULL,
-                                     show_legend=TRUE,
-                                     ...
-                                    ) {
-    p <- plotDistribution(dat_list,
-                          getAcidityDistribution,
-                          plot_type=plot_type,
-                          x_label="Acidity",
-                          show_legend=show_legend,
-                          names=names
-                         )
-
+                                    plot_types=c("freqpoly", "ecdf"),
+                                    ...
+                                   ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getAcidityDistribution",
+              x_label="Acidity",
+              ...
+    )
     return(p)
 }
 
@@ -1603,19 +1577,16 @@ compareAromaticityDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotAromaticityDistribution <- function(dat_list,
-                                     plot_type,
-                                     names=NULL,
-                                     show_legend=TRUE,
-                                     ...
-                                    ) {
-    p <- plotDistribution(dat_list,
-                          getAromaticityDistribution,
-                          plot_type=plot_type,
-                          x_label="Aromaticity",
-                          show_legend=show_legend,
-                          names=names
-                         )
-
+                                        plot_types=c("freqpoly", "ecdf"),
+                                        ...
+                                       ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getAromaticityDistribution",
+              x_label="Aromaticity",
+              ...
+    )
     return(p)
 }
 
@@ -1648,19 +1619,16 @@ compareBulkinessDistributions <- function(dat_a,
 #'
 #' @inheritParams plotDistribution
 plotBulkinessDistribution <- function(dat_list,
-                                     plot_type,
-                                     names=NULL,
-                                     show_legend=TRUE,
-                                     ...
-                                    ) {
-    p <- plotDistribution(dat_list,
-                          getBulkinessDistribution,
-                          plot_type=plot_type,
-                          x_label="Bulkiness",
-                          show_legend=show_legend,
-                          names=names
-                         )
-
+                                      plot_types=c("freqpoly", "ecdf"),
+                                      ...
+                                     ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getBulkinessDistribution",
+              x_label="Bulkiness",
+              ...
+    )
     return(p)
 }
 
@@ -1708,6 +1676,25 @@ getCDR3PairwiseDistanceDistribution <- function(dat,
                                         ...
                                        )
     return(distances)
+}
+
+#' Plot the CDR3 pairwise distance distribution of one or more datasets
+#'
+#' @inheritParams plotDistribution
+plotCDR3PairwiseDistanceDistribution <- function(dat_list,
+                                                 plot_types=c("freqpoly", 
+                                                              "ecdf"),
+                                                 ...
+                                                ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getPairwiseDistanceDistribution",
+              column="junction",
+              x_label="Pairwise distance",
+              ...
+    )
+    return(p)
 }
 
 #' Compare levenshtein distance distributions of two CDR3 repertoires
@@ -1800,18 +1787,19 @@ getPositionalDistanceBetweenMutationsDistribution <- function(
 #' Plot the distance between mutation distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotPositionalDistanceBetweenMutationsDistribution <- function(dat_list,
-                                                     plot_type,
-                                                     names=NULL,
-                                                     show_legend=TRUE
-                                                    ) { 
-    p <- plotDistribution(dat_list,
-                          getPositionalDistanceBetweenMutationsDistribution,
-                          plot_type=plot_type,
-                          x_label="Pos. dist. between mutations",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotPositionalDistanceBetweenMutationsDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getPositionalDistanceBetweenMutationsDistribution",
+              x_label="Positional distance between mutations",
+              ...
+    )
     return(p)
 }
 
@@ -2018,18 +2006,19 @@ getVGene3PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the V gene 3' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotVGene3PrimeDeletionLengthDistribution <- function(dat_list,
-                                           plot_type,
-                                           names=NULL,
-                                           show_legend=TRUE
-                                          ) { 
-    p <- plotDistribution(dat_list,
-                          getVGene3PrimeDeletionLengthDistribution,
-                          plot_type=plot_type,
-                          x_label="V gene 3' deletion length",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotVGene3PrimeDeletionLengthDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getVGene3PrimeDeletionLengthDistribution",
+              x_label="Deletion length",
+              ...
+    )
     return(p)
 }
 
@@ -2044,18 +2033,19 @@ getVGene5PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the V gene 5' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotVGene5PrimeDeletionLengthDistribution <- function(dat_list,
-                                           plot_type,
-                                           names=NULL,
-                                           show_legend=TRUE
-                                          ) { 
-    p <- plotDistribution(dat_list,
-                          getVGene5PrimeDeletionLengthDistribution,
-                          plot_type=plot_type,
-                          x_label="V gene 5' deletion length",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotVGene5PrimeDeletionLengthDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getVGene5PrimeDeletionLengthDistribution",
+              x_label="Deletion length",
+              ...
+    )
     return(p)
 }
 
@@ -2070,18 +2060,19 @@ getDGene3PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the D gene 3' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotDGene3PrimeDeletionLengthDistribution <- function(dat_list,
-                                           plot_type,
-                                           names=NULL,
-                                           show_legend=TRUE
-                                          ) { 
-    p <- plotDistribution(dat_list,
-                          getDGene3PrimeDeletionLengthDistribution,
-                          plot_type=plot_type,
-                          x_label="D gene 3' deletion length",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotDGene3PrimeDeletionLengthDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getDGene3PrimeDeletionLengthDistribution",
+              x_label="Deletion length",
+              ...
+    )
     return(p)
 }
 
@@ -2096,18 +2087,19 @@ getDGene5PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the D gene 5' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotDGene5PrimeDeletionLengthDistribution <- function(dat_list,
-                                           plot_type,
-                                           names=NULL,
-                                           show_legend=TRUE
-                                          ) { 
-    p <- plotDistribution(dat_list,
-                          getDGene5PrimeDeletionLengthDistribution,
-                          plot_type=plot_type,
-                          x_label="D gene 5' deletion length",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotDGene5PrimeDeletionLengthDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getDGene5PrimeDeletionLengthDistribution",
+              x_label="Deletion length",
+              ...
+    )
     return(p)
 }
 
@@ -2122,18 +2114,19 @@ getJGene3PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the J gene 3' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotJGene3PrimeDeletionLengthDistribution <- function(dat_list,
-                                           plot_type,
-                                           names=NULL,
-                                           show_legend=TRUE
-                                          ) { 
-    p <- plotDistribution(dat_list,
-                          getJGene3PrimeDeletionLengthDistribution,
-                          plot_type=plot_type,
-                          x_label="J gene 3' deletion length",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotJGene3PrimeDeletionLengthDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getJGene3PrimeDeletionLengthDistribution",
+              x_label="Deletion length",
+              ...
+    )
     return(p)
 }
 
@@ -2148,18 +2141,19 @@ getJGene5PrimeDeletionLengthDistribution <- function(dat) {
 #' Plot the J gene 5' deletion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotJGene5PrimeDeletionLengthDistribution <- function(dat_list,
-                                           plot_type,
-                                           names=NULL,
-                                           show_legend=TRUE
-                                          ) { 
-    p <- plotDistribution(dat_list,
-                          getJGene5PrimeDeletionLengthDistribution,
-                          plot_type=plot_type,
-                          x_label="J gene 5' deletion length",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotJGene5PrimeDeletionLengthDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getJGene5PrimeDeletionLengthDistribution",
+              x_label="Deletion length",
+              ...
+    )
     return(p)
 }
 
@@ -2230,21 +2224,21 @@ getVDInsertionLengthDistribution <- function(dat) {
 #' Plot the VD insertion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotVDInsertionLengthDistribution <- function(dat_list,
-                                   plot_type,
-                                   names=NULL,
-                                   show_legend=TRUE
-                                  ) { 
-    p <- plotDistribution(dat_list,
-                          getVDInsertionLengthDistribution,
-                          plot_type=plot_type,
-                          x_label="VD insertion length",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotVDInsertionLengthDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getVDInsertionLengthDistribution",
+              x_label="Insertion length",
+              ...
+    )
     return(p)
 }
-
 
 #' Get the distribution of DJ insertion lengths of a dataset
 #'
@@ -2256,21 +2250,21 @@ getDJInsertionLengthDistribution <- function(dat) {
 #' Plot the DJ insertion length distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotDJInsertionLengthDistribution <- function(dat_list,
-                                   plot_type,
-                                   names=NULL,
-                                   show_legend=TRUE
-                                  ) { 
-    p <- plotDistribution(dat_list,
-                          getDJInsertionLengthDistribution,
-                          plot_type=plot_type,
-                          x_label="DJ insertion length",
-                          show_legend=show_legend,
-                          names=names
-                         )
+plotDJInsertionLengthDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getDJInsertionLengthDistribution",
+              x_label="Insertion length",
+              ...
+    )
     return(p)
 }
-
 
 #' This calls the function for VD insertions since the AIRR field
 #'   for VD and VJ insertion lengths is the same
@@ -2285,14 +2279,12 @@ getVJInsertionLengthDistribution <- function(dat) {
 #'
 #' @inheritParams plotVDInsertionLengthDistribution
 plotVJInsertionLengthDistribution <- function(dat_list,
-                                              plot_type,
-                                              names=NULL,
-                                              show_legend=TRUE
+                                              plot_types=c("freqpoly", "ecdf"),
+                                              ...
                                              ) {
     return(plotVDInsertionLengthDistribution(dat,
-                                             plot_type=plot_type,
-                                             names=names,
-                                             show_legend=show_legend
+                                             plot_types=plot_types,
+                                             ...
                                             )
           )
 }
@@ -2445,19 +2437,19 @@ getClusterSizeDistribution <- function(dat,
 #' Plot the cluster size distribution of one or more datasets
 #'
 #' @inheritParams plotDistribution
-plotClusterSizeDistribution <- function(dat_list,
-                                        plot_type,
-                                        names=NULL,
-                                        show_legend=TRUE
-                                       ) { 
-    p <- plotDistribution(dat_list,
-                          getClusterSizeDistribution,
-                          plot_type=plot_type,
-                          x_label="Cluster size",
-                          show_legend=show_legend,
-                          names=names,
-                          binwidth=1
-                         )
+plotClusterSizeDistribution <- function(
+     dat_list,
+     plot_types=c("freqpoly", 
+                  "ecdf"),
+     ...
+    ) {
+    p <- plotDistribution(
+              dat_list,
+              plot_types=plot_types,
+              summary_function="getClusterSizeDistribution",
+              x_label="Cluster size",
+              ...
+    )
     return(p)
 }
 
