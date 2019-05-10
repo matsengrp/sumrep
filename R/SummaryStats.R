@@ -482,7 +482,8 @@ getMotifCount <- function(motif,
 #' @return The total number of occurrences of each motif in \code{spots}, in
 #'   \code{dna_sequences}
 getSpotCount <- function(dna_sequences, 
-                         spots
+                         spots,
+                         average_over_sequence_length=TRUE
                         ) {
     spot_counts <- spots %>% 
         # Get a length(dna_sequences) x length(spots) matrix of counts
@@ -493,6 +494,12 @@ getSpotCount <- function(dna_sequences,
     } else {
         total_count <- spot_counts %>% apply(1, sum)
     }
+    
+    if(average_over_sequence_length) {
+        lens <- dna_sequences %>% sapply(nchar)
+        total_count <- total_count/lens
+    }
+
     return(total_count)
 }
 
