@@ -104,90 +104,105 @@ getPairwiseDistanceDistribution <- function(dat,
 #'    repertoire annotations
 #' @param summary_function A function that is applied to each dataset in 
 #'   \code{dat_list} and whose output values are plotted
-#' @param do_exact Display exact distribution plots rather than histograms
+#' @param plot_types Vector of plot types to return. Can include "freqpoly",
+#'   "ecdf", or both
 #' @param x_label The text label for the x-axis
-#' @param names Strings to be displayed by the legend corresponding to the 
-#'   elements of \code{dat_list}
+#' @param color Vector of names by which to group \code{dat_list} by color
+#' @param lty Vector of names by which to group \code{dat_list} by linetype
+#' @param bins Number of bins to group the frequency polygon
+#' @return List of plots of the given summary for each given dataset
 plotDistribution <- function(dat_list,
                              summary_function,
-                             plot_type,
+                             plot_types,
                              x_label="Value",
-                             names,
-                             show_legend=TRUE,
-                             color=1:length(dat_list),
-                             lty=1:length(dat_list),
+                             color=NULL,
+                             lty=NULL,
+                             bins=15,
                              ...
                             ) {
-    distribution_list <- dat_list %>%
-        lapply(summary_function,
-               ...)
-    if(is.null(names)) {
-        names <- paste("Dataset",
-                       1:length(distribution_list)
-                      )
+    if(length(dat_list) > 1 && 
+       is.null(color) &&
+       is.null(lty)) {
+        color <- paste("Dataset", 1:length(dat_list)) 
     }
-    if(plot_type == "barplot") {
-        # Actually plot the frequency of each value (which can be >= 200 bars)
-        distance_table <- table(distribution_list)
-        distribution <- distance_table/sum(distance_table) 
-        d <- distribution %>%
-            data.frame %>%
-            setNames(c("Value", "Frequency"))
-        p <- ggplot(d) +
-            geom_bar(aes(x=as.numeric(Value), y=Frequency), stat="identity") 
-    } else if(plot_type == "histogram") {
-        # Combine distributions (of various lengths) into a common data.frame
-        # with corresponding IDs
-        dat <- distribution_list %>%
-            Map(function(x, y) {
-                    data.frame(Value=x, Dataset=y)
-                },
-                .,
-                names
-               ) %>%
-            do.call("rbind", .)
-        # Just plot a histogram
-        p <- ggplot(dat,
-                    aes(x=Value, 
-                        y=c(..count..[..group..==1]/sum(..count..[..group..==1]),
-                            ..count..[..group..==2]/sum(..count..[..group..==2]),
-                            ..count..[..group..==3]/sum(..count..[..group..==3])
-                           ),
-                        group=Dataset,
-                        fill=Dataset
-                       )
-                    ) +
-            geom_histogram(alpha=0.6, position="identity")
-    } else if(plot_type == "freqpoly") {
-        dat <- distribution_list %>%
-            Map(function(x, y) {
-                    data.frame(Value=x, Dataset=y)
-                },
-                .,
-                names
-               ) %>%
-            do.call("rbind", .)
 
-        p <- ggplot(dat,
-                    aes(x=Value,
-                        y=..density..,
-                        group=Dataset,
-                        colour=Dataset
-                        )
-                    ) +
-            geom_freqpoly()
+    if(is.null(color)) {
+        colors <- rep(NA, length(dat_list))
+    } else {
+        colors <- color
     }
-    p <- p + 
-        theme(panel.background=element_blank(),
-                  panel.grid.major=element_blank(),
-                  panel.grid.minor=element_blank(),
-                  axis.line=element_line(colour="grey")) +
-        xlab(x_label) +
-        ylab("Frequency")
-    if(!show_legend) {
-        p <- p + theme(legend.position="none")
+    if(is.null(lty)) {
+        ltys <- rep(NA, length(dat_list))
+    } else {
+        ltys <- lty
     }
-    return(p)
+
+    distribution_dat <- 
+        dat_list %>%
+        lapply(summary_function,
+               ...) %>%
+        Map(function(x, color, lty, group) {
+                data.frame(Value=x, 
+                           Color=color,
+                           Linetype=lty,
+                           Group=group
+                          )
+            },
+            .,
+            colors,
+            ltys,
+            1:length(dat_list)
+           ) %>%
+        do.call("rbind", .)
+
+    plot_list <- list()
+    if(!is.null(color)) {
+        if(!is.null(lty)) {
+            p <- distribution_dat %>% ggplot(aes(x=Value,
+                                                 group=Group,
+                                                 colour=Color,
+                                                 lty=Linetype
+                                                )
+                                            ) 
+        } else {
+            p <- distribution_dat %>% ggplot(aes(x=Value,
+                                                 group=Group,
+                                                 colour=Color
+                                                )
+            )
+       }
+   } else if(!is.null(lty)) {
+       p <- distribution_dat %>% ggplot(aes(x=Value,
+                                            group=Group,
+                                            lty=Linetype
+                                           )
+       )
+   } else {
+       p <- distribution_dat %>% ggplot(aes(x=Value))
+   }
+         
+   p <- p + theme(panel.background=element_blank(),
+                  panel.grid.major=element_line(colour="lightgray"),
+                  panel.grid.minor=element_line(colour="lightgray")
+                 ) +
+        xlab(x_label)
+    if("freqpoly" %in% plot_types) {
+        p_freqpoly <- p +
+            geom_freqpoly(aes(y=..density..),
+                          bins=bins
+                         ) +
+            ylab("Density")
+        plot_list[["freqpoly"]] <- p_freqpoly
+    }
+
+    if("ecdf" %in% plot_types) {
+        p_ecdf <- p + 
+            stat_ecdf() +
+            ylab("Empirical cumulative density")
+        plot_list[["ecdf"]] <- p_ecdf
+    }
+
+    return(plot_list)
 }
                                      
 
