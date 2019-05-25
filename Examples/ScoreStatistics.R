@@ -13,9 +13,9 @@ scoreStatistics <- function(dats_1,
         unique
     comparison_types <- comparison_types[!(comparison_types %in% comparisons_to_omit)]
         
-    score_dat <- matrix(NA, nrow=0, ncol=2) %>% 
+    score_dat <- matrix(NA, nrow=0, ncol=3) %>% 
         data.table %>%
-        setNames(c("Comparison", "Score"))
+        setNames(c("Comparison", "Score", "Group"))
     for(c_type in comparison_types) {
             score_1 <- dats_1 %>% 
                 sapply(getComparisonValue, c_type) %>% 
@@ -33,11 +33,13 @@ scoreStatistics <- function(dats_1,
                        .
                       ) %>%
                 getNameFromFunctionString
+            summary_group <- c_type %>% getSummaryGroup
             
             score_dat <- rbind(score_dat,
                                data.table(
                                           Comparison=comparison_name,
-                                          Score=c_score
+                                          Score=c_score,
+                                          Group=summary_group
                                          )
                               )
     }
@@ -99,12 +101,20 @@ plotSummaryScores <- function(
     score_dat <- scoreStatistics(dats_1, dats_2, comparisons_to_omit=comparisons_to_omit)
     score_dat <- score_dat[order(score_dat[["Score"]])]
 
+    score_dat[["Group"]] <- factor(score_dat[["Group"]],
+                                   levels=c("Sequence",
+                                            "Rearrangement",
+                                            "Physiochemical (CDR3aa)"
+                                           )
+                                  )
+
     score_plot <- score_dat %>%
         ggplot(aes(x=reorder(Comparison, -Score), 
                    y=Score
                   )
               ) +
         geom_bar(stat="identity") +
+        facet_grid( ~ Group, scales="free_x", space="free_x") +
         xlab("Summary statistic") +
         ylab("log(Relative average divergence)") +
         theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
@@ -142,6 +152,13 @@ plotSummaryScoreDifferences <- function(
     score_dat[["Difference"]] <- 
         score_dat[["PartisScore"]] - score_dat[["IgBlastScore"]]
     score_dat <- score_dat[order(score_dat[["Difference"]])]
+
+    score_dat[["Group"]] <- factor(score_dat[["Group"]],
+                                   levels=c("Sequence",
+                                            "Rearrangement",
+                                            "Physiochemical (CDR3aa)"
+                                           )
+                                  )
     score_plot <- score_dat %>%
         ggplot(aes(x=reorder(Comparison, -Difference), 
                    y=Difference
@@ -150,6 +167,7 @@ plotSummaryScoreDifferences <- function(
         geom_bar(stat="identity") +
         xlab("Summary statistic") +
         ylab("Difference of scores") +
+        facet_grid( ~ Group, scales="free_x", space="free_x") +
         theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
               plot.margin=unit(c(1, 1, 1, 1.5), "cm"),
               panel.background=element_blank(),
@@ -160,4 +178,85 @@ plotSummaryScoreDifferences <- function(
            width=plot_width,
            height=plot_height
           )
+}
+
+getSummaryGroup <- function(comparison) {
+    group <- {}
+    if(comparison %in%
+       c("compareCDR3LengthDistributions",
+         "compareVGeneDistributions",
+         "compareJGeneDistributions",
+         "compareVGene3PrimeDeletionLengthDistributions",
+         "compareJGene5PrimeDeletionLengthDistributions",
+         "compareDGene3PrimeDeletionLengthDistributions",
+         "compareDGene5PrimeDeletionLengthDistributions",
+         "compareDGeneDistributions",
+         "compareVDJDistributions",
+         "compareVDInsertionLengthDistributions",
+         "compareDJInsertionLengthDistributions",
+         "compareVDInsertionMatrices",
+         "compareDJInsertionMatrices",
+         "compareInFramePercentages"
+        ) ) {
+        group <- "Rearrangement"
+    } else if (comparison %in%
+               c("comparePairwiseDistanceDistributions",
+                 "compareGCContentDistributions",
+                 "compareHotspotCountDistributions",
+                 "compareColdspotCountDistributions",
+                 "compareCDR3PairwiseDistanceDistributions",
+                 "compareDistanceFromGermlineToSequenceDistributions",
+                 "comparePositionalDistanceBetweenMutationsDistributions",
+                 "comparePerGeneMutationRates",
+                 "comparePerGenePerPositionMutationRates",
+                 "compareAminoAcidDistributions",
+                 "compareAminoAcid2merDistributions"
+                ) )
+    {
+        group <- "Sequence"
+    } else if (comparison %in%
+               c("KideraFactor1Divergence",
+                 "KideraFactor2Divergence",
+                 "KideraFactor3Divergence",
+                 "KideraFactor4Divergence",
+                 "KideraFactor5Divergence",
+                 "KideraFactor6Divergence",
+                 "KideraFactor7Divergence",
+                 "KideraFactor8Divergence",
+                 "KideraFactor9Divergence",
+                 "KideraFactor10Divergence",
+                 "AtchleyFactor1Divergence",
+                 "AtchleyFactor2Divergence",
+                 "AtchleyFactor3Divergence",
+                 "AtchleyFactor4Divergence",
+                 "AtchleyFactor5Divergence",
+                 "compareAliphaticIndexDistributions",
+                 "compareGRAVYDistributions",
+                 "comparePolarityDistributions",
+                 "compareChargeDistributions",
+                 "compareBasicityDistributions",
+                 "compareAcidityDistributions",
+                 "compareAromaticityDistributions",
+                 "compareBulkinessDistributions",
+                 "compareAminoAcidDistributions",
+                 "compareAminoAcid2merDistributions",
+                 "compareAliphaticIndexDistributions",
+                 "compareGRAVYDistributions",
+                 "comparePolarityDistributions",
+                 "compareChargeDistributions",
+                 "compareBasicityDistributions",
+                 "compareAcidityDistributions",
+                 "compareAromaticityDistributions",
+                 "compareBulkinessDistributions",
+                 "compareInFramePercentages"
+               ) ) {
+        group <- "Physiochemical (CDR3aa)"
+    } else {
+        stop(paste("Invalid comparison string",
+                   comparison
+                  )
+        )
+    } 
+
+    return(group)
 }

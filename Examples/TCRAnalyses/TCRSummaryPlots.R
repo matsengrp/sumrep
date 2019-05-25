@@ -3,6 +3,7 @@ ggplot2::theme_set(theme_gray(base_size = 14))
 
 source("Examples/ScoreStatistics.R")
 
+loadNewDatasets("data/Annotations", pattern="A")
 loadNewDatasets("data/Comparisons")
 
 obs_sim_igor_dats <- list(

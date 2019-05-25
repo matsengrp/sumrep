@@ -3,6 +3,9 @@ ggplot2::theme_set(theme_gray(base_size = 14))
 
 source("Examples/ScoreStatistics.R")
 
+loadNewDatasets("data/Annotations", pattern="p_")
+loadNewDatasets("data/Annotations", pattern="pi_")
+loadNewDatasets("data/Annotations", pattern="i_")
 loadNewDatasets("data/Comparisons")
 
 part_igb_dat <- rbind(compare_pi_f1_pi_f1_sim,
