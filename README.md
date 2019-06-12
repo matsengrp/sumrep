@@ -1,4 +1,4 @@
-# *Sum*mary Statistics for BCR and TCR *Rep*ertoires
+# `sumrep`: A *sum*mary statistic framework for BCR and TCR *rep*ertoires
 
 `sumrep` is a package for summarizing, visualizing, and comparing immune receptor repertoires.
 It contains dozens of different summary statistics to be applied on various levels of assumptions, from raw query reads to  inferred phylogenies, as well as easy and principled ways to plot and compare repertoires.
