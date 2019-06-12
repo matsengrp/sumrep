@@ -4,8 +4,8 @@
 \alias{multiplot}
 \title{Display an array of ggplots within one figure}
 \usage{
-multiplot(plotlist = NULL, cols, rows, layout = NULL, tall_plot = FALSE,
-  ...)
+multiplot(plotlist = NULL, cols, rows, layout = NULL,
+  tall_plot = FALSE, ...)
 }
 \arguments{
 \item{plotlist}{List of plots created with ggplot}

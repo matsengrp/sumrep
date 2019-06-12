@@ -4,7 +4,8 @@
 \alias{getKideraFactorDistributions}
 \title{Get distributions for each of the ten Kidera factors for a dataset}
 \usage{
-getKideraFactorDistributions(dat, column = "junction_aa", as_list = TRUE)
+getKideraFactorDistributions(dat, column = "junction_aa",
+  as_list = TRUE)
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

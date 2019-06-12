@@ -4,12 +4,11 @@
 \alias{compareColdspotCountDistributions}
 \title{Compare coldspot count distributions of two sets of mature BCR sequences}
 \usage{
-compareColdspotCountDistributions(dat_a, dat_b, column = "sequence", ...)
+compareColdspotCountDistributions(dat_a, dat_b,
+  column = "sequence_alignment", ...)
 }
 \arguments{
-\item{dat_a}{A \code{data.table} corresponding to repertoire annotations}
-
-\item{dat_b}{A \code{data.table} corresponding to repertoire annotations}
+\item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}
 
 \item{column}{the column name of \code{dat} containing the strings on which
 the distribution should be computed}

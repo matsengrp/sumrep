@@ -5,8 +5,8 @@
 \title{Get full or approximate distribution of coldspot counts for a column of
   a given dataset}
 \usage{
-getColdspotCountDistribution(dat, column = "sequence", coldspots = "SYC",
-  approximate = FALSE, ...)
+getColdspotCountDistribution(dat, column = "sequence_alignment",
+  coldspots = "SYC", approximate = FALSE, ...)
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

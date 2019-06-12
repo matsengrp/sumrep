@@ -5,8 +5,8 @@
 \title{Get full or approximate distribution of coldspot counts for a column of
   a given dataset}
 \usage{
-getHotspotCountDistribution(dat, column = "sequence", hotspots = c("WRC",
-  "WA"), approximate = FALSE, ...)
+getHotspotCountDistribution(dat, column = "sequence_alignment",
+  hotspots = c("WRC", "WA"), approximate = FALSE, ...)
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

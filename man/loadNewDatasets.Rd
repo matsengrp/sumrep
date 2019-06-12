@@ -6,7 +6,7 @@
   The variable names are taken to be exactly the name of the corresponding
   .rds files}
 \usage{
-loadNewDatasets(data_dir)
+loadNewDatasets(data_dir, pattern = "")
 }
 \arguments{
 \item{data_dir}{The directory which contains .rds files to be loaded}

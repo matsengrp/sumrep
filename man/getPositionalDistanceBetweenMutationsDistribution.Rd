@@ -9,7 +9,8 @@
   don't match)}
 \usage{
 getPositionalDistanceBetweenMutationsDistribution(dat,
-  naive_column = "germline_alignment", mature_column = "sequence_alignment")
+  naive_column = "germline_alignment",
+  mature_column = "sequence_alignment")
 }
 \arguments{
 \item{dat}{}

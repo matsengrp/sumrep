@@ -5,7 +5,8 @@
 \title{Perform sequence annotation with partis.
 This function does call partis.}
 \usage{
-getPartisAnnotations(input_filename, output_filename = "partis_output.csv",
+getPartisAnnotations(input_filename,
+  output_filename = "partis_output.csv",
   partis_path = Sys.getenv("PARTIS_PATH"), num_procs = 16, locus,
   partition = ifelse(stringr::str_sub(locus, 0, 2) == "ig", TRUE, FALSE),
   collapse_clones = TRUE, cleanup = TRUE, do_full_annotation = FALSE,
@@ -21,6 +22,11 @@ argument}
 \item{partis_path}{The full path to the partis executable}
 
 \item{num_procs}{The number of processors to use in parallel}
+
+\item{locus}{String denoting the locus for the receptors given in 
+\code{input_filename}. 
+Either "tra", "trb", "trd", or "trg" for TCRs,
+or "igl", "igk", or "igh" for BCRs}
 
 \item{cleanup}{Flag to delete all interim files created by partis}
 

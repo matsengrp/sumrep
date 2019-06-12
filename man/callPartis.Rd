@@ -4,8 +4,9 @@
 \alias{callPartis}
 \title{Call partis}
 \usage{
-callPartis(action, input_filename, output_filename, output_path, partis_path,
-  num_procs, locus, germline_dir, extra_columns)
+callPartis(action, input_filename, output_filename, output_path,
+  partis_path, num_procs, locus, germline_dir, extra_columns,
+  seed = NULL)
 }
 \arguments{
 \item{action}{The desired partis command}
@@ -22,6 +23,11 @@ argument}
 
 \item{num_procs}{The number of processors to use in parallel}
 
+\item{locus}{String denoting the locus for the receptors given in 
+\code{input_filename}. 
+Either "tra", "trb", "trd", or "trg" for TCRs,
+or "igl", "igk", or "igh" for BCRs}
+
 \item{cleanup}{Flag to delete all interim files created by partis}
 }
 \value{
@@ -29,7 +35,6 @@ A data.table object containing the output of the partis call
 }
 \description{
 \code{callPartis} calls partis from within the sumrep package.
-This is done through the bash script run_partis.sh.
 It is assumed that a "SHELL" environmental variable is set to run the above 
 script.
 }

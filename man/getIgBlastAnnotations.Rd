@@ -4,9 +4,11 @@
 \alias{getIgBlastAnnotations}
 \title{Get IgBLAST annotations from an input fasta file}
 \usage{
-getIgBlastAnnotations(input_filename, output_filename = "igblast_out.tsv",
-  organism = "human", domain_system = "imgt", receptor_type,
-  num_threads = 8, igblast_dir, changeo_dir, cleanup = TRUE)
+getIgBlastAnnotations(input_filename,
+  output_filename = "igblast_out.tsv", organism = "human",
+  domain_system = "imgt", locus, nproc = 4,
+  igblast_dir = Sys.getenv("IGBLAST_DIR"),
+  changeo_dir = Sys.getenv("CHANGEO_DIR"), cleanup = TRUE)
 }
 \arguments{
 \item{input_filename}{The path to the input fasta file}
@@ -17,8 +19,15 @@ getIgBlastAnnotations(input_filename, output_filename = "igblast_out.tsv",
 
 \item{domain_system}{(input to IgBLAST -- alter with caution)}
 
-\item{receptor_type}{String denoting the type of receptors given in 
-\code{input_filename}. Either "BCR" or "TCR".}
+\item{locus}{String denoting the locus for the receptors given in 
+\code{input_filename}. 
+Either "tra", "trb", "trd", or "trg" for TCRs,
+or "igl", "igk", or "igh" for BCRs}
+
+\item{nproc}{The number of processors for use within the igblast and
+shazam::distToNearest function calls. Defaults to 4.
+Setting nproc=alakazam::cpuCount() attempts to automatically detect the
+number of available cores -- see the alakazam documtation for details.}
 
 \item{igblast_dir}{Path to parent directory of the igblast bin folder
 (e.g. "path/to/parent", NOT "path/to/parent/bin").}

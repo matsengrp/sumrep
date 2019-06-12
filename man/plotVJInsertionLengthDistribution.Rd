@@ -5,15 +5,15 @@
 \title{This calls the function for VD insertions since the AIRR field
   for VD and VJ insertion lengths is the same}
 \usage{
-plotVJInsertionLengthDistribution(dat_list, plot_type, names = NULL,
-  show_legend = TRUE)
+plotVJInsertionLengthDistribution(dat_list, plot_types = c("freqpoly",
+  "ecdf"), ...)
 }
 \arguments{
 \item{dat_list}{A \code{list} of \code{data.table} objects corresponding to 
 repertoire annotations}
 
-\item{names}{Strings to be displayed by the legend corresponding to the 
-elements of \code{dat_list}}
+\item{plot_types}{Vector of plot types to return. Can include "freqpoly",
+"ecdf", or both}
 }
 \description{
 This calls the function for VD insertions since the AIRR field

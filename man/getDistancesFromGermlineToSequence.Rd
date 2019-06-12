@@ -6,8 +6,9 @@
   naive sequences to the observed mature ones, sequence by sequence}
 \usage{
 getDistancesFromGermlineToSequence(dat, v_gene_only = FALSE,
-  sequence_column = ifelse(v_gene_only, "v_qr_seqs", "sequence_alignment"),
-  germline_column = ifelse(v_gene_only, "v_gl_seq", "germline_alignment"))
+  sequence_column = ifelse(v_gene_only, "v_qr_seqs",
+  "sequence_alignment"), germline_column = ifelse(v_gene_only,
+  "v_gl_seq", "germline_alignment"))
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

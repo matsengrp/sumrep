@@ -5,8 +5,9 @@
 \title{Run igor shell script from R}
 \usage{
 runIgor(input_filename, dir_name, num_scenarios = num_scenarios,
-  num_gen_sequences = num_gen_sequences, eval_batch_name = "eval_batch",
-  gen_batch_name = "gen_batch", species = species, chain = chain)
+  num_gen_sequences = num_gen_sequences,
+  eval_batch_name = "eval_batch", gen_batch_name = "gen_batch",
+  species = species, chain = chain)
 }
 \arguments{
 \item{dir_name}{Absolute path to desired output directory}
