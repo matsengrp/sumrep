@@ -131,7 +131,6 @@ getIgBlastAnnotations <- function(input_filename,
                                  input_filename %>% normalizePath,
                                  "-r",
                                  database_files,
-                                 "--regions",
                                  "--format",
                                  "airr"
                                 ) 
