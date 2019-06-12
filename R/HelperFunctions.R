@@ -114,7 +114,7 @@ filterAminoAcidSequences <- function(aa_sequences) {
                             )
         })
 
-    return(filtered_seqs[!is.na(filtered_seqs)])
+    return(filtered_seqs)
 }
 
 #' Parse a python dictionary string into an R list
