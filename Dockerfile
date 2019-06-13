@@ -1,36 +1,23 @@
-FROM continuumio/anaconda
+FROM continuumio/anaconda:5.3.0
 
-# Install IGoR
+# Install IGoR version 1.3.0
 RUN apt-get update -y && \
-  apt-get install -y \
-  build-essential \
-  autotools-dev \
-  autoconf \
-  doxygen \
-  vim-latexsuite
-
-RUN wget https://github.com/qmarcou/IGoR/releases/download/1.3.0/igor_1-3-0.zip
-RUN unzip igor_1-3-0.zip
-RUN rm igor_1-3-0.zip
+  apt-get install -y build-essential unzip python3-pip && \
+  wget https://github.com/qmarcou/IGoR/releases/download/1.3.0/igor_1-3-0.zip && \
+  unzip igor_1-3-0.zip
 WORKDIR /igor_1-3-0
 RUN ./configure && \
   make && \
-  make install
+  make install 
+RUN pip3 install ./pygor
 RUN conda update -y conda
-RUN conda create -n \
-  "pygor" \
-  python=3 \
-  pandas \
-  biopython \
-  matplotlib \
-  numpy
+RUN conda create -n pygor python=3 pandas biopython matplotlib numpy scipy
 ENV PYGOR_PATH="/igor_1-3-0/pygor"
-
 WORKDIR ..
 
+
 # Install Change-O
-RUN apt-get update -y && \
-  apt-get install python3-pip idle3 -y && \
+RUN apt-get install idle3 -y && \
   pip3 install --no-cache-dir --upgrade pip && \
   \
   # delete cache and tmp files
@@ -44,12 +31,11 @@ RUN apt-get update -y && \
 RUN pip3 install hg+https://bitbucket.org/kleinstein/changeo#default --user
 ENV CHANGEO_DIR="~/.local/bin"
 
-# Install IgBlast
-RUN wget ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/LATEST/ncbi-igblast-1.13.0-x64-linux.tar.gz \
-  && tar -zxf ncbi-igblast-1.13.0-x64-linux.tar.gz
+# Install IgBlast version 1.13.0
+RUN wget ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.13.0/ncbi-igblast-1.13.0-x64-linux.tar.gz 
+RUN tar -zxf ncbi-igblast-1.13.0-x64-linux.tar.gz
 ENV IGBLAST_DIR="/ncbi-igblast-1.13.0"
 ENV PATH="${IGBLAST_DIR}/bin:${PATH}"
-RUN ls /
 
 # This builds the IMGT database for IgBlast + Change-O
 RUN wget https://bitbucket.org/kleinstein/immcantation/raw/41165c9b9cd10ddf8f27ec80fae799491d6db2db/scripts/fetch_igblastdb.sh
@@ -84,7 +70,6 @@ RUN apt-get update && apt-get install -y \
     libyaml-dev \
     libz-dev
 
-RUN conda update -y conda
 RUN conda install -y -cbioconda -cbiocore -cr \
   python=2.7 \
   biopython \
@@ -99,7 +84,7 @@ RUN conda install -y -cbioconda -cbiocore -cr \
   mafft \
   r-essentials \
   r-devtools \
-  r-roxygen2 
+  r-roxygen2
 
 RUN pip install \
   colored-traceback \
@@ -120,3 +105,4 @@ RUN R --vanilla --slave -e \
 WORKDIR ..
 RUN git clone https://github.com/matsengrp/sumrep.git
 COPY . /sumrep
+ENV SUMREP_PATH="/sumrep"
