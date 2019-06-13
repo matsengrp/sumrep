@@ -4,7 +4,8 @@
 \alias{compareMutabilityModels}
 \title{Compare the mutability models of two datasets}
 \usage{
-compareMutabilityModels(dat_a, dat_b, sub_mod_a = getSubstitutionModel(dat_a),
+compareMutabilityModels(dat_a, dat_b,
+  sub_mod_a = getSubstitutionModel(dat_a),
   sub_mod_b = getSubstitutionModel(dat_b))
 }
 \arguments{

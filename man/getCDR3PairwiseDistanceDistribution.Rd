@@ -6,7 +6,7 @@
 \usage{
 getCDR3PairwiseDistanceDistribution(dat, by_amino_acid = TRUE,
   column = ifelse(by_amino_acid, "junction_aa", "junction"),
-  approximate = TRUE)
+  approximate = TRUE, ...)
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

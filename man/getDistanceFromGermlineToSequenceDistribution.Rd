@@ -6,7 +6,7 @@
   the inferred naive sequences to the observed mature ones}
 \usage{
 getDistanceFromGermlineToSequenceDistribution(dat, approximate = FALSE,
-  v_gene_only = FALSE)
+  v_gene_only = FALSE, ...)
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

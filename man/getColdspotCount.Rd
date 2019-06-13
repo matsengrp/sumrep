@@ -4,7 +4,7 @@
 \alias{getColdspotCount}
 \title{Get the number of occurrences of AID coldspots in a column of a dataset}
 \usage{
-getColdspotCount(dat, column = "sequence", coldspots = "SYC")
+getColdspotCount(dat, column = "sequence_alignment", coldspots = "SYC")
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

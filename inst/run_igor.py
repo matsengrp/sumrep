@@ -26,7 +26,10 @@ def run_igor(input_file, \
     df.columns = ['Sequence']
     generated_seq_count = df.shape[0]
     
-    igor_command = "sh inst/run_igor.sh" + \
+    igor_script_filename = os.environ['SUMREP_PATH'] + \
+            "/inst/run_igor.sh"
+    igor_command = "sh " + \
+            igor_script_filename + \
             " -w " + igor_wd + \
             " -i " + str(input_file) + \
             " -n " + str(num_scenarios) + \
@@ -36,6 +39,7 @@ def run_igor(input_file, \
             " -c " + chain + \
             " -s " + species 
     
+    print(igor_command)
     os.system(igor_command)
     
 # Get and write annotation dataframe via pygor subpackage routine

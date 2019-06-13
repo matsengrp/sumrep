@@ -4,8 +4,8 @@
 \alias{comparePairwiseDistanceDistributions}
 \title{Compare pairwise distance distributions of two lists of sequences}
 \usage{
-comparePairwiseDistanceDistributions(dat_a, dat_b, column = "sequence",
-  approximate = TRUE)
+comparePairwiseDistanceDistributions(dat_a, dat_b,
+  column = "sequence_alignment", approximate = TRUE, ...)
 }
 \arguments{
 \item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}

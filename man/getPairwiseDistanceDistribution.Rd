@@ -4,7 +4,7 @@
 \alias{getPairwiseDistanceDistribution}
 \title{Get an exact or approximate distribution of pairwise distances}
 \usage{
-getPairwiseDistanceDistribution(dat, column = "sequence",
+getPairwiseDistanceDistribution(dat, column = "sequence_alignment",
   approximate = TRUE, ...)
 }
 \arguments{

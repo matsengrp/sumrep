@@ -73,11 +73,10 @@ Once IGoR and [pip](https://pypi.org/project/pip/) are installed, execute the co
 pip install ./pygor
 ```
 in IGoR's root directory.
-Since pygor depends on matplotlib which requires python3, the easiest way to get things working is to install [conda](https://conda.io/docs/) (if you haven't already), and create an environment as so:
+To get this working, you may or may not need to install [conda](https://conda.io/docs/) (if you haven't already), and create an environment as so:
 ```
-conda create -n "pygor" python=3 pandas biopython matplotlib numpy
+conda create -n "pygor" python=3 pandas biopython matplotlib numpy scipy
 ```
-You will also need to set an environmental variable for pygor's path, e.g., setting `export PYGOR_PATH="/path/to/IGoR/pygor"` (you can add this line to your `.bash_profile` if you wish).
 Then, anytime you wish to run `getIgorAnnotations` you must execute the command
 ```
 source activate pygor
@@ -89,4 +88,7 @@ source deactivate
 ```
 to exit the custom-made pygor Python environment.
 This is particuarly important if you are using other `conda` environments with `sumrep`, such as for `partis`.
+
+Finally, you will need to an environmental variable `SUMREP_PATH` specifying the parent `sumrep` folder (e.g. `export SUMREP_PATH="/path/to/sumrep/"`), as well as an environmental variable `PYGOR_PATH` specifying the `pygor` directory (e.g., `export PYGOR_PATH="/path/to/IGoR/pygor"`).
+You can add the above lines to your `.bash_profile` if you wish, and may need to resource this file or reset the terminal.
 

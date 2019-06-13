@@ -19,6 +19,11 @@ argument}
 
 \item{num_procs}{The number of processors to use in parallel}
 
+\item{locus}{String denoting the locus for the receptors given in 
+\code{input_filename}. 
+Either "tra", "trb", "trd", or "trg" for TCRs,
+or "igl", "igk", or "igh" for BCRs}
+
 \item{cleanup}{Flag to delete all interim files created by partis}
 
 \item{output_path}{Desired output directory, which will contain 

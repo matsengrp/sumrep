@@ -4,8 +4,8 @@
 \alias{plotDistribution}
 \title{Plot a summary distribution of one or more datasets}
 \usage{
-plotDistribution(dat_list, summary_function, plot_type, x_label = "Value",
-  names, show_legend = TRUE, ...)
+plotDistribution(dat_list, summary_function, plot_types,
+  x_label = "Value", color = NULL, lty = NULL, bins = 15, ...)
 }
 \arguments{
 \item{dat_list}{A \code{list} of \code{data.table} objects corresponding to 
@@ -14,12 +14,19 @@ repertoire annotations}
 \item{summary_function}{A function that is applied to each dataset in 
 \code{dat_list} and whose output values are plotted}
 
+\item{plot_types}{Vector of plot types to return. Can include "freqpoly",
+"ecdf", or both}
+
 \item{x_label}{The text label for the x-axis}
 
-\item{names}{Strings to be displayed by the legend corresponding to the 
-elements of \code{dat_list}}
+\item{color}{Vector of names by which to group \code{dat_list} by color}
 
-\item{do_exact}{Display exact distribution plots rather than histograms}
+\item{lty}{Vector of names by which to group \code{dat_list} by linetype}
+
+\item{bins}{Number of bins to group the frequency polygon}
+}
+\value{
+List of plots of the given summary for each given dataset
 }
 \description{
 Plot a summary distribution of one or more datasets

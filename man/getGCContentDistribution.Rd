@@ -4,7 +4,8 @@
 \alias{getGCContentDistribution}
 \title{Get the GC content distribution of a list of DNA sequences}
 \usage{
-getGCContentDistribution(dat, column = "sequence", approximate = FALSE, ...)
+getGCContentDistribution(dat, column = "sequence_alignment",
+  approximate = FALSE, ...)
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

@@ -6,8 +6,8 @@
   not a regular distribution for subsampling. (Since the nearest neighbor
   distance of a sample is necessarily larger than that of the population)}
 \usage{
-getApproximateNearestNeighborDistribution(dat, column, tol = 0.001,
-  batch_size = 50)
+getApproximateNearestNeighborDistribution(dat, column, tol = 1e-04,
+  batch_size = 30)
 }
 \arguments{
 \item{dat}{}

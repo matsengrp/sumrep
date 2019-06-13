@@ -4,18 +4,38 @@
 \alias{getPartisSimulation}
 \title{Simulate a dataset based on parameters from partis annotations}
 \usage{
-getPartisSimulation(parameter_dir, partis_path = Sys.getenv("PARTIS_PATH"),
-  output_file = "simu.csv", num_events = NULL, num_leaves = NULL,
-  cleanup = TRUE, do_full_annotation = FALSE,
+getPartisSimulation(parameter_dir,
+  partis_path = Sys.getenv("PARTIS_PATH"),
+  output_file = file.path(parameter_dir, "simu.csv"),
+  num_events = NULL, num_leaves = NULL, cleanup = TRUE,
+  do_full_annotation = FALSE,
   extra_columns = "v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq",
-  mimic_data_read_length = TRUE)
+  seed = NULL, subsample_to_unique_clones = FALSE,
+  do_multi_hmm = FALSE)
 }
 \arguments{
 \item{parameter_dir}{The parent output folder for partis (which is '_output'
 by default. The function cd's into the params directory}
 
+\item{partis_path}{The full path to the partis executable}
+
 \item{num_events}{The desired number of VDJ rearragement events for the
 simulation}
+
+\item{num_leaves}{The exponent a of the zipf p.m.f, which is of the form
+x^(-a). Thus, a higher value of a leads to fewer leaves in a given 
+clonal family, since the probability mass will be highly distributed near
+zero. a = 2 leads to larger clonal families, and this can be very, very
+slow if num_events is high.}
+
+\item{cleanup}{Flag to delete all interim files created by partis}
+
+\item{seed}{The random generator seed to be supplied to 
+\code{partis simulate}}
+
+\item{subsample_to_unique_clones}{If TRUE, one member of each clonal family
+is subsampled, and the function returns the resultant dataset of unique
+clones}
 }
 \description{
 Simulate a dataset based on parameters from partis annotations

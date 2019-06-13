@@ -4,9 +4,9 @@
 \alias{compareCDR3PairwiseDistanceDistributions}
 \title{Compare levenshtein distance distributions of two CDR3 repertoires}
 \usage{
-compareCDR3PairwiseDistanceDistributions(dat_a, dat_b, by_amino_acid = TRUE,
-  column = ifelse(by_amino_acid, "junction_aa", "junction"),
-  approximate = TRUE)
+compareCDR3PairwiseDistanceDistributions(dat_a, dat_b,
+  by_amino_acid = TRUE, column = ifelse(by_amino_acid, "junction_aa",
+  "junction"), approximate = TRUE, ...)
 }
 \arguments{
 \item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}

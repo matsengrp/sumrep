@@ -7,7 +7,7 @@
   distribution. The function stops when \code{divergence_function} between two
   distribution iterates is sufficiently small.}
 \usage{
-getApproximateDistribution(dat, summary_function, sample_count = 100,
+getApproximateDistribution(dat, summary_function, sample_count = 30,
   tol = 0.001, divergence_function = getContinuousJSDivergence, ...)
 }
 \arguments{
