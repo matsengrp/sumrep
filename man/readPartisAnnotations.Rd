@@ -6,13 +6,11 @@
 Some column names are changed to match the AIRR standard, including:
 This function does NOT run partis from R.}
 \usage{
-readPartisAnnotations(output_path, output_filename,
+readPartisAnnotations(output_path, annotation_filename,
   partis_path = Sys.getenv("PARTIS_PATH"), do_full_annotation = FALSE,
   collapse_clones = TRUE)
 }
 \arguments{
-\item{output_filename}{The --infname argument to partis}
-
 \item{partis_path}{The path to the partis binary}
 
 \item{do_full_annotation}{Does further processing than the default by partis}
@@ -21,6 +19,8 @@ readPartisAnnotations(output_path, output_filename,
 separate rows for each member}
 
 \item{filepath}{The output directory from the partis call}
+
+\item{output_filename}{The --infname argument to partis}
 }
 \description{
 Get partis annotations from the partis output directory.

@@ -4,7 +4,8 @@
 \alias{compareGCContentDistributions}
 \title{Compare the GC distributions of two lists of DNA sequences}
 \usage{
-compareGCContentDistributions(dat_a, dat_b, column = "sequence")
+compareGCContentDistributions(dat_a, dat_b,
+  column = "sequence_alignment")
 }
 \arguments{
 \item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}

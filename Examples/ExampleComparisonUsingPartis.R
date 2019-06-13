@@ -5,16 +5,17 @@ path_to_sumrep <- getwd()
 # Make sure sumrep is loaded
 devtools::load_all(path_to_sumrep)
 
-# Get annnotation and clonal partition dataset
+# Get annnotation and clonal partition dataset for IgH sequences
 test_dat <- getPartisAnnotations(file.path(path_to_sumrep,
-                                           "data/compare_data.fa"),
+                                           "data/test_dat.fa"),
+                                 locus="igh",
                                  cleanup=FALSE,
                                  output_path="tmp_output"
                                 )
 
 # Simulate a dataset based on the observed DNA sequences
 test_simu <- getPartisSimulation(parameter_dir="tmp_output",
-                                 num_events=round(nrow(test_dat$annotations)/4)
+                                 num_events=nrow(test_dat[["annotations"]])
                                 )
 
 # Delete partis output folder
@@ -28,6 +29,7 @@ test_dat_boot <- bootstrapFasta(file.path(path_to_sumrep,
 
 # Get annotation and clonal partition dataset from resampled sequences
 test_dat_boot <- getPartisAnnotations("boot.fa",
+                                      locus="igh",
                                       output_path="tmp_output_boot"
                                      )
 
@@ -39,5 +41,5 @@ test_dat_boot <- getPartisAnnotations("boot.fa",
 comparison <- compareRepertoires(test_dat, 
                                  test_simu, 
                                  test_dat_boot,
-                                 receptor_type="BCR"
+                                 locus="igh"
                                 )

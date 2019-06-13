@@ -5,7 +5,7 @@
 \title{Get number of times a set of motif (hot/cold)spots occur in a set of 
   reference sequences}
 \usage{
-getSpotCount(dna_sequences, spots)
+getSpotCount(dna_sequences, spots, average_over_sequence_length = TRUE)
 }
 \arguments{
 \item{dna_sequences}{List, vector of reference sequences}

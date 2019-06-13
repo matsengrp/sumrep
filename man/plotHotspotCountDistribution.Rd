@@ -4,15 +4,15 @@
 \alias{plotHotspotCountDistribution}
 \title{Plot the hotspot count distribution of one or more datasets}
 \usage{
-plotHotspotCountDistribution(dat_list, plot_type, names = NULL,
-  show_legend = TRUE)
+plotHotspotCountDistribution(dat_list, plot_types = c("freqpoly",
+  "ecdf"), ...)
 }
 \arguments{
 \item{dat_list}{A \code{list} of \code{data.table} objects corresponding to 
 repertoire annotations}
 
-\item{names}{Strings to be displayed by the legend corresponding to the 
-elements of \code{dat_list}}
+\item{plot_types}{Vector of plot types to return. Can include "freqpoly",
+"ecdf", or both}
 }
 \description{
 Plot the hotspot count distribution of one or more datasets

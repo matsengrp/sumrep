@@ -5,7 +5,8 @@
 \title{Get usage table from full list of categorical variables, such as
   genes or amino acids, setting zero to unused ones}
 \usage{
-getUsageTableFromFullList(factor_list, full_factor_list, standardize = TRUE)
+getUsageTableFromFullList(factor_list, full_factor_list,
+  standardize = TRUE)
 }
 \arguments{
 \item{factor_list}{List of factors}

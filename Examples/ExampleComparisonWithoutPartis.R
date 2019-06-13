@@ -25,5 +25,5 @@ test_dat_boot <- readRDS(file.path(path_to_sumrep,
 comparison <- compareRepertoires(test_dat, 
                                  test_simu, 
                                  test_dat_boot,
-                                 receptor_type="BCR"
+                                 locus="igh"
                                 )

@@ -97,7 +97,7 @@ getIgBlastAnnotations <- function(input_filename,
         igblast_command %>% system
 
         gene_segments <- c("v", "j")
-        if(locus %in% c("igh", "trb")) {
+        if(locus %in% c("igh", "trb", "trd")) {
             gene_segments <- c(gene_segments, "d")
         }
 
@@ -131,7 +131,6 @@ getIgBlastAnnotations <- function(input_filename,
                                  input_filename %>% normalizePath,
                                  "-r",
                                  database_files,
-                                 "--regions",
                                  "--format",
                                  "airr"
                                 ) 
@@ -218,7 +217,18 @@ getIgBlastAnnotations <- function(input_filename,
         }
     })
 
-    annotations$vj_in_frame <- annotations$vj_in_frame %>%
+    annotations[["v_call"]] <- annotations[["v_call"]] %>%
+        sapply(function(x) { gsub(x, pattern=",.*", replacement="") })
+    annotations[["j_call"]] <- annotations[["j_call"]] %>%
+        sapply(function(x) { gsub(x, pattern=",.*", replacement="") })
+    if(locus %in% c("igh", "trb", "trd")) {
+        annotations[["d_call"]] <- annotations[["d_call"]] %>%
+            sapply(function(x) { gsub(x, pattern=",.*", replacement="") })
+    }
+
+    annotations[["vj_in_frame"]] <- annotations[["vj_in_frame"]] %>%
+        as.logical
+    annotations[["stop_codon"]] <- annotations[["stop_codon"]] %>%
         as.logical
 
     initial_wd %>% setwd

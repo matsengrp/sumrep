@@ -4,7 +4,8 @@
 \alias{getHotspotCount}
 \title{Get the number of occurrences of AID hotspots in a column of a dataset}
 \usage{
-getHotspotCount(dat, column = "sequence", hotspots = c("WRC", "WA"))
+getHotspotCount(dat, column = "sequence_alignment", hotspots = c("WRC",
+  "WA"))
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

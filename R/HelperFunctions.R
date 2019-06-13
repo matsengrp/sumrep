@@ -114,7 +114,7 @@ filterAminoAcidSequences <- function(aa_sequences) {
                             )
         })
 
-    return(filtered_seqs[!is.na(filtered_seqs)])
+    return(filtered_seqs)
 }
 
 #' Parse a python dictionary string into an R list
@@ -129,12 +129,14 @@ parsePythonDictionary <- function(dictionary) {
     return(parsed)
 }
 
-removeSequencesWithDifferentGermlineAndSequenceLengths <- function(dat) {
-    checkColumn(dat, "germline_alignment")
-    checkColumn(dat, "sequence_alignment")
+removeSequencesWithDifferentGermlineAndSequenceLengths <- 
+    function(dat,
+             germline_column="germline_alignment",
+             sequence_column="sequence_alignment"
+            ) {
     return(dat %>% 
-               subset(nchar(dat$germline_alignment) == 
-                      nchar(dat$sequence_alignment)
+               subset(nchar(getColumnValues(dat, germline_column)) == 
+                      nchar(getColumnValues(dat, sequence_column))
                      )
           )
 }
@@ -144,8 +146,12 @@ removeSequencesWithDifferentGermlineAndSequenceLengths <- function(dat) {
 #'   .rds files
 #' 
 #' @param data_dir The directory which contains .rds files to be loaded
-loadNewDatasets <- function(data_dir) {
-    for(data_file in list.files(data_dir)) {
+loadNewDatasets <- function(data_dir,
+                            pattern=""
+                           ) {
+    for(data_file in list.files(data_dir,
+                                pattern=pattern
+                               )) {
         var_name <- data_file %>%
             gsub(pattern="-", replace="_") %>%
             gsub(pattern=".rds", replace="")
@@ -204,8 +210,8 @@ multiplot <- function(plotlist=NULL,
         pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
         for(i in 1:numPlots) {
             matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-            print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                            layout.pos.col = matchidx$col))
+            print(plots[[i]], vp = viewport(layout.pos.row = matchidx[["row"]],
+                                            layout.pos.col = matchidx[["col"]]))
         }   
     }     
 } 
@@ -293,4 +299,20 @@ getColumnSequences <- function(dat,
     }
 
     return(sequences)
+}
+
+subsampleToUniqueClones <- function(dat,
+                                    clone_id_column="clone_id"
+                                   ) {
+    clone_list <- dat$clone_id %>% unique
+    clone_sample_ids <- {}
+    for(clone in clone_list) {
+        clone_sample_ids <-
+            c(clone_sample_ids,
+              which(getColumnValues(dat, clone_id_column) == clone) %>%
+              subsample(1)
+             )
+    }
+    unique_clone_dat <- dat[clone_sample_ids, ]
+    return(unique_clone_dat)
 }

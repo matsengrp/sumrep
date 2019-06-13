@@ -4,8 +4,8 @@
 \alias{getNearestNeighborDistribution}
 \title{Get exact or approximate nearest neighbor distance distribution}
 \usage{
-getNearestNeighborDistribution(dat, column = "sequence", k = 1,
-  approximate = TRUE, ...)
+getNearestNeighborDistribution(dat, column = "sequence_alignment",
+  k = 1, approximate = TRUE, ...)
 }
 \arguments{
 \item{dat}{A \code{data.table} corresponding to repertoire annotations}

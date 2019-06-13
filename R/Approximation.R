@@ -62,7 +62,7 @@ subsample <- function(dataset,
 #'   depending on the nature of \code{summary_function}
 getApproximateDistribution <- function(dat,
                                        summary_function,
-                                       sample_count=100,
+                                       sample_count=30,
                                        tol=0.001,
                                        divergence_function=getContinuousJSDivergence,
                                        ...
@@ -99,7 +99,7 @@ getApproximateDistribution <- function(dat,
 getApproximateNearestNeighborDistribution <- function(dat,
                                                       column,
                                                       tol=1e-4,
-                                                      batch_size=50
+                                                      batch_size=30
                                                      ) {
     d <- dat %>%
         doNNSubsamplingBatchStep(column=column)
@@ -108,7 +108,9 @@ getApproximateNearestNeighborDistribution <- function(dat,
         dist_prev <- d
         d <- c(dist_prev, 
                dat %>% 
-                   doNNSubsamplingBatchStep(column=column)
+                   doNNSubsamplingBatchStep(column=column,
+                                            batch_size=batch_size
+                                           )
                )
         error <- getJSDivergence(dist_prev, d)
     }

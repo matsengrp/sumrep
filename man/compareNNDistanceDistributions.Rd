@@ -8,8 +8,8 @@
   the kth nearest neighbor distance distribution of two lists of
   DNA sequences}
 \usage{
-compareNNDistanceDistributions(dat_a, dat_b, column = "sequence", k = 1,
-  approximate = TRUE)
+compareNNDistanceDistributions(dat_a, dat_b,
+  column = "sequence_alignment", k = 1, approximate = TRUE, ...)
 }
 \arguments{
 \item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}

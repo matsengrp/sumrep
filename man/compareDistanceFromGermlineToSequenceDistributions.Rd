@@ -5,7 +5,7 @@
 \title{Compare Levenshtein distance distributions from naive sequences to}
 \usage{
 compareDistanceFromGermlineToSequenceDistributions(dat_a, dat_b,
-  approximate = FALSE, v_gene_only = FALSE)
+  approximate = FALSE, v_gene_only = FALSE, ...)
 }
 \arguments{
 \item{dat_a, dat_b}{A \code{data.table} corresponding to repertoire annotations}

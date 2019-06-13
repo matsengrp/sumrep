@@ -43,7 +43,7 @@ callPartis <- function(action,
                      "--parameter-dir",
                      file.path(output_path, "params")
                     )
-                     
+    
     if(!missing(germline_dir) && !is.null(germline_dir)) {
         command <- paste(command,
                          "--initial-germline-dir",
@@ -62,6 +62,12 @@ callPartis <- function(action,
         command <- paste(command,
                          "--seed",
                          seed
+                        )
+    }
+    
+    if(action == "partition") {
+        command <- paste(command,
+                         "--count-parameters"
                         )
     }
 
@@ -97,7 +103,7 @@ appendQuerySequencesToPartisAnnotationsFile <- function(input_filename,
         read.fasta(as.string=TRUE, seqonly=TRUE) %>%
         unlist %>%
         tolower
-    partis_dataset$sequence <- query_seqs[partis_dataset$unique_ids]
+    partis_dataset[["sequence"]] <- query_seqs[partis_dataset[["unique_ids"]]]
     partis_dataset %>%
         data.table::fwrite(file=annotation_filename)
     return(partis_dataset)
@@ -114,8 +120,7 @@ appendQuerySequencesToPartisAnnotationsFile <- function(input_filename,
 #'   vector of positional mutation rates
 getMutationInfo <- function(filename) {
     getSubstitutionRate <- function(state) {
-        position <- state %$% 
-            name %>% 
+        position <- state[["name"]] %>%
             strsplit("_") %>% 
             unlist %>% 
             last
@@ -126,19 +131,16 @@ getMutationInfo <- function(filename) {
         } else {
             # Partis returns zero-based position values, so add one
             position <- as.numeric(position) + 1
-            germline_base <- state %$%
-                extras %$%
-                germline
-            pos_emissions <- state$emissions
-            highest_base_sub <- pos_emissions %$%
-                probs %>% 
+            germline_base <- state[["extras"]][["germline"]]
+            pos_emissions <- state[["emissions"]]
+            highest_base_sub <- pos_emissions[["probs"]] %>%
                 which.max %>% 
                 names
 
             # If the germline is not the most frequent base, the rate is 
             # unreliable, so treat as missing info
             result <- ifelse(highest_base_sub == germline_base,
-                             1 - get(highest_base_sub, pos_emissions$probs),
+                             1 - get(highest_base_sub, pos_emissions[["probs"]]),
                              NA)
         }
         names(result) <- position
@@ -147,23 +149,20 @@ getMutationInfo <- function(filename) {
 
     result <- list()
     yaml_object <- yaml.load_file(filename)
-    gene_info <- yaml_object %$%
-        name %>% 
+    gene_info <- yaml_object[["name"]] %>%
         strsplit("_star_") %>% 
         unlist
-    result$gene <- gene_info[1]
-    result$allele <- gene_info[2]
-    states <- yaml_object$states[-(1:2)]
+    result[["gene"]] <- gene_info[1]
+    result[["allele"]] <- gene_info[2]
+    states <- yaml_object[["states"]][-(1:2)]
 
-    overall_substitution_rate <- yaml_object %$%
-        extras %$%
-        per_gene_mute_freq
+    overall_substitution_rate <- yaml_object[["extras"]][["per_gene_mute_freq"]]
     position_substitution_rates <- states %>% 
         sapply(getSubstitutionRate) %>% 
         subset(!is.na(.))
-    substitution_rates <- {}
-    substitution_rates$overall_mut_rate <- overall_substitution_rate
-    substitution_rates$mut_rate_by_position <- position_substitution_rates
+    substitution_rates <- list()
+    substitution_rates[["overall_mut_rate"]] <- overall_substitution_rate
+    substitution_rates[["mut_rate_by_position"]] <- position_substitution_rates
     return(substitution_rates)
 }
 
@@ -205,12 +204,18 @@ getFullPartisAnnotation <- function(output_path,
     return(annotated_data)
 }
 
+# partis' output contains an indel_reversed_seqs column which best corresponds
+# to the sequence_alignment field in the AIRR schema. However, this column is 
+# the empty string if no indels were detected. Thus, we must manually construct 
+# the sequence_alignment column to contain the indel_reversed_seqs string if 
+# there was an indel, and the input_seqs string if there was not an indel.
 processPartisMatureSequences <- function(dat) {
-    names(dat)[which(names(dat) == "input_seqs")] <- 
-        "sequence_alignment"
-    dat$sequence_alignment <- dat %$%
-        sequence_alignment %>%
+    indel_seqs <- which(dat[["indel_reversed_seqs"]] != "")
+    dat[["sequence_alignment"]] <- dat[["input_seqs"]] %>%
         sapply(toString) %>%
+        tolower
+    dat[indel_seqs, ][["sequence_alignment"]] <- 
+        dat[["indel_reversed_seqs"]][indel_seqs] %>%
         tolower
     return(dat)
 }
@@ -245,7 +250,7 @@ collapseClones <- function(partition_dataset) {
                          "v_qr_seqs",
                          "cdr3_seqs"
                          )
-    partition_dataset$clone_id <- 0
+    partition_dataset[["clone_id"]] <- 0
     all_columns <- partition_dataset %>% names
 
     clone_count <- partition_dataset %>% nrow
@@ -256,7 +261,7 @@ collapseClones <- function(partition_dataset) {
 
     for(clone in 1:clone_count) {
         clone_annotations <- partition_dataset[clone, ]
-        unique_ids <- clone_annotations$unique_ids %>% 
+        unique_ids <- clone_annotations[["unique_ids"]] %>% 
             collapseColonedList
 
         if(length(unique_ids) > 1) {
@@ -271,10 +276,10 @@ collapseClones <- function(partition_dataset) {
             }
 
             clone_dat <- clone_list %>% as.data.table
-            clone_dat$clone_id <- clone
+            clone_dat[["clone_id"]] <- clone
         }  else {
             clone_dat <- clone_annotations
-            clone_dat$clone_id <- clone
+            clone_dat[["clone_id"]] <- clone
         }
         collapsed_dat <- rbind(collapsed_dat, clone_dat)
     }
@@ -306,7 +311,7 @@ readPartisAnnotations <- function(output_path,
                                                   annotation_file, 
                                                   partis_path
                                                  )
-        annotated_data$junction <- annotated_data %>% 
+        annotated_data[["junction"]] <- annotated_data %>% 
             getCDR3s
     } else {
         annotated_data <- annotation_file %>%
@@ -349,43 +354,46 @@ readPartisAnnotations <- function(output_path,
         processPartisSequences
 
     annotation_object <- {}
-    annotation_object$annotations <- annotated_data
-    annotation_object$mutation_rates <- mutation_rates
+    annotation_object[["annotations"]] <- annotated_data
+    annotation_object[["mutation_rates"]] <- mutation_rates
     return(annotation_object)
 }
 
 processPartisSequences <- function(annotated_data) {
-    annotated_data$sequence <- annotated_data$sequence %>%
-        sapply(toString)
+    if("sequence" %in% names(annotated_data)) {
+        annotated_data[["sequence"]] <- annotated_data[["sequence"]] %>%
+            sapply(toString)
+    }
 
-    annotated_data$germline_alignment <- annotated_data$naive_seq %>% 
+    annotated_data[["germline_alignment"]] <- 
+        annotated_data[["naive_seq"]] %>% 
         sapply(toString) %>% 
         tolower
 
-    annotated_data$v_qr_seqs <- annotated_data$v_qr_seqs %>%
+    annotated_data[["v_qr_seqs"]] <- annotated_data[["v_qr_seqs"]] %>%
         sapply(toString) %>% 
         tolower
 
-    annotated_data$v_gl_seq <- annotated_data$v_gl_seq %>%
+    annotated_data[["v_gl_seq"]] <- annotated_data[["v_gl_seq"]] %>%
         sapply(toString) %>% 
         tolower
 
-    annotated_data$junction <- annotated_data$cdr3_seqs %>%
+    annotated_data[["junction"]] <- annotated_data[["cdr3_seqs"]] %>%
         sapply(toString) %>%
         tolower
 
-    annotated_data$junction_aa <- annotated_data$junction %>%
+    annotated_data[["junction_aa"]] <- annotated_data[["junction"]] %>%
         convertNucleobasesToAminoAcids
 
     annotated_data <- annotated_data %>% 
         processPartisMatureSequences
 
-    annotated_data$vj_in_frame <- annotated_data$in_frames %>% 
+    annotated_data[["vj_in_frame"]] <- annotated_data[["in_frames"]] %>% 
         as.logical
 
-    annotated_data$np1_length <- annotated_data$vd_insertion %>%
+    annotated_data[["np1_length"]] <- annotated_data[["vd_insertion"]] %>%
         sapply(nchar)
-    annotated_data$np2_length <- annotated_data$dj_insertion %>%
+    annotated_data[["np2_length"]] <- annotated_data[["dj_insertion"]] %>%
         sapply(nchar)
 
     names(annotated_data)[which(names(annotated_data) == "cdr3_length")] <- 
@@ -393,7 +401,9 @@ processPartisSequences <- function(annotated_data) {
     names(annotated_data)[which(names(annotated_data) == "v_gene")] <- "v_call"
     names(annotated_data)[which(names(annotated_data) == "d_gene")] <- "d_call"
     names(annotated_data)[which(names(annotated_data) == "j_gene")] <- "j_call"
-    names(annotated_data)[which(names(annotated_data) == "stops")] <- "stop_codon"
+    names(annotated_data)[which(names(annotated_data) == "stops")] <- "stop_codon" 
+    annotated_data[["stop_codon"]] <- annotated_data[["stop_codon"]] %>%
+        sapply(as.logical)
 
     return(annotated_data)
 }
@@ -520,27 +530,42 @@ getPartisPartitions <- function(input_filename,
 
 #' Simulate a dataset based on parameters from partis annotations
 #'
+#' @inheritParams callPartis
 #' @param parameter_dir The parent output folder for partis (which is '_output'
 #'    by default. The function cd's into the params directory
 #' @param num_events The desired number of VDJ rearragement events for the
 #'    simulation
+#' @param num_leaves The exponent a of the zipf p.m.f, which is of the form
+#'    x^(-a). Thus, a higher value of a leads to fewer leaves in a given 
+#'    clonal family, since the probability mass will be highly distributed near
+#'    zero. a = 2 leads to larger clonal families, and this can be very, very
+#'    slow if num_events is high.
+#' @param seed The random generator seed to be supplied to 
+#'    \code{partis simulate}
+#' @param subsample_to_unique_clones If TRUE, one member of each clonal family
+#'    is subsampled, and the function returns the resultant dataset of unique
+#'    clones
 getPartisSimulation <- function(parameter_dir,
                                 partis_path=Sys.getenv("PARTIS_PATH"),
-                                output_file="simu.csv",
+                                output_file=file.path(parameter_dir,
+                                                      "simu.csv"),
                                 num_events=NULL,
                                 num_leaves=NULL,
                                 cleanup=TRUE,
                                 do_full_annotation=FALSE,
                                 extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq",
-                                mimic_data_read_length=TRUE,
-                                seed=NULL
+                                seed=NULL,
+                                subsample_to_unique_clones=FALSE,
+                                do_multi_hmm=FALSE
                                ) {
     partis_command <- paste(partis_path, 
                             "simulate", 
                             "--parameter-dir", 
                             file.path(parameter_dir, "params"),
                             "--outfname", 
-                            output_file
+                            output_file,
+                            "--n-leaf-distribution",
+                            "zipf"
                            )
 
     if(!missing(num_events)) {
@@ -558,16 +583,17 @@ getPartisSimulation <- function(parameter_dir,
                                 "--extra-annotation-columns", extra_columns)
     }
 
-    if(mimic_data_read_length) {
-        partis_command <- paste(partis_command,
-                                "--mimic-data-read-length")
-                                
-    }   
-
     if(!is.null(seed)) {
         partis_command <- paste(partis_command,
                                 "--seed",
                                 seed
+                               )
+    }
+
+    if(do_multi_hmm) {
+        partis_command <- paste(partis_command,
+                                "--parameter-type",
+                                "multi-hmm"
                                )
     }
 
@@ -583,7 +609,7 @@ getPartisSimulation <- function(parameter_dir,
                                                    output_path=".",
                                                    partis_path
                                                   )
-        sim_annotations$junction <- sim_annotations %>% 
+        sim_annotations[["junction"]] <- sim_annotations %>% 
             getCDR3s
     }
 
@@ -595,12 +621,18 @@ getPartisSimulation <- function(parameter_dir,
     sim_annotations <- sim_annotations %>% 
         processPartisSequences
 
-    sim_annotations$clone_id <- sim_annotations$reco_id %>% sapply(as.numeric)
-    sim_annotations$reco_id <- NULL
-    sim_annotations$sequence <- sim_annotations$sequence_alignment
+    sim_annotations[["clone_id"]] <- sim_annotations[["reco_id"]] %>% 
+        sapply(as.numeric) %>%
+        rank
+    sim_annotations[["sequence"]] <- sim_annotations[["sequence_alignment"]]
 
     names(sim_annotations)[which(names(sim_annotations) == "cdr3_length")] <- 
         "junction_length"
+    
+    if(subsample_to_unique_clones) {
+        sim_annotations <- sim_annotations %>%
+            subsampleToUniqueClones
+    }
 
     sim_data <- list(annotations=sim_annotations)
     return(sim_data)

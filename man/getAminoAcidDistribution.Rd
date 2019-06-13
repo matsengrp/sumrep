@@ -4,7 +4,8 @@
 \alias{getAminoAcidDistribution}
 \title{Compute a table of counts for each amino acid in the list of sequences}
 \usage{
-getAminoAcidDistribution(dat, column = "junction_aa", standardize = TRUE)
+getAminoAcidDistribution(dat, column = "junction_aa",
+  standardize = TRUE)
 }
 \arguments{
 \item{sequences}{Vector of amino acid sequences}

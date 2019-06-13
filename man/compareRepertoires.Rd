@@ -5,7 +5,7 @@
 \title{Run through a full repertoire comparison}
 \usage{
 compareRepertoires(repertoire_1, repertoire_2, rep_1_bootstrap = NULL,
-  receptor_type, chain_type, do_full_comparison = FALSE)
+  locus, do_full_comparison = FALSE)
 }
 \arguments{
 \item{repertoire_1, repertoire_2}{List including a \code{data.table} named
@@ -14,16 +14,13 @@ compareRepertoires(repertoire_1, repertoire_2, rep_1_bootstrap = NULL,
 \item{rep_1_bootstrap}{Annotated repertoire based on bootstrapping the DNA
 sequences from the first repertoire}
 
-\item{receptor_type}{A string denoting the type of immune receptor to which
-\code{repertoire_1} and \code{repertoire_2} correspond.
-Either "BCR" or "TCR".}
-
-\item{chain_type}{The locus from which the sequences were sampled. Either
-"heavy", "light", "beta", or "alpha".}
+\item{locus}{String denoting the locus for the receptors given in 
+\code{input_filename}. 
+Either "tra", "trb", "trd", or "trg" for TCRs,
+or "igl", "igk", or "igh" for BCRs}
 
 \item{do_full_comparison}{If TRUE, performs all available comparisons for
-the given receptor_type/chain_type combo, including comparisons for the 
-slower summaries}
+the given locus, including comparisons for the slower summaries}
 }
 \description{
 \code{compareRepertoires} iterates through the various comparison functions

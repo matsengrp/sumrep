@@ -5,15 +5,22 @@
 \title{Generate a gridded plot of each univariate distribution corresponding to
   one or more annotations datasets}
 \usage{
-plotUnivariateDistributions(dat_list, tall_plot = FALSE, plot_type,
-  names = NULL, plot_function_strings = NULL)
+plotUnivariateDistributions(dat_list, plot_types = c("freqpoly", "ecdf"),
+  locus, plot_function_strings = NULL, functions_to_omit = NULL,
+  do_all_plots = FALSE, color = factor(1:length(dat_list)),
+  lty = factor(rep(1, length(dat_list))), bins = 10,
+  use_viridis = FALSE)
 }
 \arguments{
-\item{dat_list}{A \code{list} of \code{data.table} objects corresponding to 
-repertoire annotations}
+\item{dat_list}{List of datasets}
 
-\item{names}{Strings to be displayed by the legend corresponding to the 
-elements of \code{dat_list}}
+\item{plot_types}{Vector of plot types for each distribution.
+Currently, only "freqpoly" and "ecdf" are supported.}
+
+\item{locus}{The locus to which the datasets in \code{dat_list} correspond}
+}
+\value{
+A list of ggplot objects containing the specified plots
 }
 \description{
 Generate a gridded plot of each univariate distribution corresponding to

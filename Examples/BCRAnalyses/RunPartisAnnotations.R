@@ -1,0 +1,20 @@
+source("Examples/RunAnnotations.R")
+
+writeAnnotations("~/Data/FV-igh-m1h.fa", 
+                 "p_f1",
+                 "partis")
+writeAnnotations("~/Data/FV-igh-m8d.fa", 
+                 "p_f2",
+                 "partis")
+writeAnnotations("~/Data/GMC-igh-m1h.fa", 
+                  "p_g1",
+                 "partis")
+writeAnnotations("~/Data/GMC-igh-m8d.fa", 
+                 "p_g2",
+                 "partis")
+writeAnnotations("~/Data/IB-igh-m1h.fa", 
+                 "p_i1",
+                 "partis")
+writeAnnotations("~/Data/IB-igh-m8d.fa", 
+                 "p_i2",
+                 "partis")

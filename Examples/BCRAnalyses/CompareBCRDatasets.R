@@ -1,17 +1,8 @@
 loadNewDatasets("data/Annotations")
 
-do_bcr <- FALSE
+do_bcr <- TRUE
 if(do_bcr) {
     data_to_compare <- list(
-                            # Compare partis annotations to
-                            # simulations using imgt database
-                            c("pi_f1", "pi_f1_sim"),
-                            c("pi_f2", "pi_f2_sim"),
-                            c("pi_g1", "pi_g1_sim"),
-                            c("pi_g2", "pi_g2_sim"),
-                            c("pi_i1", "pi_i1_sim"),
-                            c("pi_i2", "pi_i2_sim"),
-    
                             # Compare partis annotations to simulations
                             c("p_f1", "p_f1_sim"),
                             c("p_f2", "p_f2_sim"),
@@ -20,7 +11,7 @@ if(do_bcr) {
                             c("p_i1", "p_i1_sim"),
                             c("p_i2", "p_i2_sim"),
     
-                            # Compare partis annotations to annotations
+                            # Compare partis annotations to partis annotations
                             c("p_f1", "p_f2"),
                             c("p_f1", "p_g1"),
                             c("p_f1", "p_g2"),
@@ -41,7 +32,7 @@ if(do_bcr) {
                             
                             c("p_i1", "p_i2"),
     
-                            # Compare partis simulations to simulations
+                            # Compare partis simulations to partis simulations
                             c("p_f1_sim", "p_f2_sim"),
                             c("p_f1_sim", "p_g1_sim"),
                             c("p_f1_sim", "p_g2_sim"),
@@ -61,28 +52,69 @@ if(do_bcr) {
                             c("p_g2_sim", "p_i2_sim"),
                             
                             c("p_i1_sim", "p_i2_sim"),
+
+                            # Compare partis annotations to
+                            # simulations using imgt database
+                            c("pi_f1", "pi_f1_sim"),
+                            c("pi_f2", "pi_f2_sim"),
+                            c("pi_g1", "pi_g1_sim"),
+                            c("pi_g2", "pi_g2_sim"),
+                            c("pi_i1", "pi_i1_sim"),
+                            c("pi_i2", "pi_i2_sim"),
+    
     
                             # Compare partis annotations using imgt database
                             # to other partis annotations using imgt database
                             c("pi_f1", "pi_f2"),
                             c("pi_f1", "pi_g1"),
+                            c("pi_f1", "pi_g2"),
+                            c("pi_f1", "pi_i1"),
+                            c("pi_f1", "pi_i2"),
+    
                             c("pi_f2", "pi_g1"),
+                            c("pi_f2", "pi_g2"),
+                            c("pi_f2", "pi_i1"),
+                            c("pi_f2", "pi_i2"),
+    
+                            c("pi_g1", "pi_g2"),
+                            c("pi_g1", "pi_i1"),
+                            c("pi_g1", "pi_i2"),
+    
+                            c("pi_g2", "pi_i1"),
+                            c("pi_g2", "pi_i2"),
+                            
+                            c("pi_i1", "pi_i2"),
     
                             # Compare igblast annotations to annotations
                             c("i_f1", "i_f2"),
                             c("i_f1", "i_g1"),
+                            c("i_f1", "i_g2"),
+                            c("i_f1", "i_i1"),
+                            c("i_f1", "i_i2"),
+    
                             c("i_f2", "i_g1"),
+                            c("i_f2", "i_g2"),
+                            c("i_f2", "i_i1"),
+                            c("i_f2", "i_i2"),
+    
+                            c("i_g1", "i_g2"),
+                            c("i_g1", "i_i1"),
+                            c("i_g1", "i_i2"),
+    
+                            c("i_g2", "i_i1"),
+                            c("i_g2", "i_i2"),
+                            
+                            c("i_i1", "i_i2"),
     
                             # Compare igblast annotations to partis
                             # simulations using imgt database
                             c("i_f1", "pi_f1_sim"),
                             c("i_f2", "pi_f2_sim"),
-                            c("i_g1", "pi_g1_sim")
+                            c("i_g1", "pi_g1_sim"),
+                            c("i_g2", "pi_g2_sim"),
+                            c("i_i1", "pi_i1_sim"),
+                            c("i_i2", "pi_i2_sim")
                            )
-}
-
-if(do_tcr) {
-
 }
 
 
@@ -91,12 +123,17 @@ for(dats in data_to_compare) {
         paste(collapse="_") %>%
         paste0("compare_", .)
     if(!exists(comparison_name)) {
+        dat_1 <- eval(parse(text=dats[1]))
+        dat_1[["annotations"]] <- dat_1[["annotations"]] %>%
+            subsampleToUniqueClones
+        dat_2 <- eval(parse(text=dats[2]))
+        dat_2[["annotations"]] <- dat_2[["annotations"]] %>%
+            subsampleToUniqueClones
         comparison <-
-               compareRepertoires(eval(parse(text=dats[1])), 
-                                  eval(parse(text=dats[2])),
-                                  receptor_type="BCR",
-                                  chain_type="heavy",
-                                  do_full_comparison=TRUE
+               compareRepertoires(dat_1, 
+                                  dat_2,
+                                  locus="igh",
+                                  do_full_comparison=FALSE
                                  ) %>%
                cbind(Type1=dats[1],
                      Type2=dats[2])

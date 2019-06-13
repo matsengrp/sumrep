@@ -26,7 +26,10 @@ def run_igor(input_file, \
     df.columns = ['Sequence']
     generated_seq_count = df.shape[0]
     
-    igor_command = "sh inst/run_igor.sh" + \
+    igor_script_filename = os.environ['SUMREP_PATH'] + \
+            "/inst/run_igor.sh"
+    igor_command = "sh " + \
+            igor_script_filename + \
             " -w " + igor_wd + \
             " -i " + str(input_file) + \
             " -n " + str(num_scenarios) + \
@@ -36,6 +39,7 @@ def run_igor(input_file, \
             " -c " + chain + \
             " -s " + species 
     
+    print(igor_command)
     os.system(igor_command)
     
 # Get and write annotation dataframe via pygor subpackage routine
@@ -44,7 +48,7 @@ def write_annotations(igor_wd,
                     scenarios_filename,
                     output_filename):
     scenarios_file = os.path.join(igor_wd, scenarios_filename)
-    model_parms_filename = "igor_evaluate/final_parms.txt"
+    model_parms_filename = "igor_inference/final_parms.txt"
     model_parms_file = os.path.join(igor_wd, model_parms_filename)
     annotation_dat = bestscenarios.read_bestscenarios_values(scenarios_file, model_parms_file)
 

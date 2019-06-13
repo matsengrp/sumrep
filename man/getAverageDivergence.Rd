@@ -5,8 +5,9 @@
 \title{Estimate a divergence by subsampling and averaging over the comparison
   function output}
 \usage{
-getAverageDivergence(dataset_a, dataset_b, summary_function, subsample_count,
-  trial_count, divergenceFunction = getJSDivergence, ...)
+getAverageDivergence(dataset_a, dataset_b, summary_function,
+  subsample_count, trial_count, divergenceFunction = getJSDivergence,
+  ...)
 }
 \arguments{
 \item{dataset_a}{First dataset (vector, matrix, or data.table) input to 
