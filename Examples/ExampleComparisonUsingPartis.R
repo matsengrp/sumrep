@@ -7,7 +7,7 @@ devtools::load_all(path_to_sumrep)
 
 # Get annnotation and clonal partition dataset for IgH sequences
 test_dat <- getPartisAnnotations(file.path(path_to_sumrep,
-                                           "data/test_dat.fa"),
+                                           "data/test_data.fa"),
                                  locus="igh",
                                  cleanup=FALSE,
                                  output_path="tmp_output"
