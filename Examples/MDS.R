@@ -24,24 +24,6 @@ colors <- c(rep("purple", 4),
             rep("orange", 4))
 ltys <- rep(c("1", "2", "7", "28"), 4) %>% as.factor
 
-compare <- function(dat_a, dat_b) {
-    res <- list(
-        "cdr3_len"=sumrep::compareCDR3LengthDistributions,
-        "cdr3_dist"=sumrep::compareCDR3PairwiseDistanceDistributions,
-        "aa_profile"=sumrep::compareAminoAcidDistributions,
-        "vd.ins"=sumrep::compareVDInsertionLengthDistributions,
-        "dj.ins"=sumrep::compareDJInsertionLengthDistributions,
-        "v.usage"=sumrep::compareVGeneDistributions,
-        "d.usage"=sumrep::compareDGeneDistributions,
-        "j.usage"=sumrep::compareJGeneDistributions
-    ) %>%
-        lapply(function(f) f(dat_a[["annotations"]], dat_b[["annotations"]]))
-
-    res %>%
-        as.data.frame %>%
-        melt()
-}
-
 div_matrix <- matrix(0, nrow=num_dats, ncol=num_dats)
 for(i in 1:num_dats) {
     for(j in 1:num_dats) {
