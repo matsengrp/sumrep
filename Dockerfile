@@ -99,8 +99,8 @@ RUN R --vanilla --slave -e 'install.packages(c("TreeSim", "TreeSimGM"), repos="h
 
 # Next let's install sumrep dependencies
 RUN R --vanilla --slave -e \
-  'install.packages(c("alakazam", "ape", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"), repos = "http://cran.us.r-project.org")' && \
-  R --vanilla --slave -e 'source("https://bioconductor.org/biocLite.R"); biocLite("Biostrings")'
+  'install.packages(c("alakazam", "ape", "BiocManager", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"), repos = "http://cran.us.r-project.org")' && \
+  R --vanilla --slave -e 'BiocManager::install()'
 
 WORKDIR ..
 RUN git clone https://github.com/matsengrp/sumrep.git
