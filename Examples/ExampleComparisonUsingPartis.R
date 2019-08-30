@@ -21,25 +21,9 @@ test_simu <- getPartisSimulation(parameter_dir="tmp_output",
 # Delete partis output folder
 "tmp_output" %>% unlink(recursive=TRUE)
 
-# Resample original fasta sequences and save to fasta file
-test_dat_boot <- bootstrapFasta(file.path(path_to_sumrep,
-                                          "data/compare_data.fa"),
-                                output_filename="boot.fa"
-                               )
-
-# Get annotation and clonal partition dataset from resampled sequences
-test_dat_boot <- getPartisAnnotations("boot.fa",
-                                      locus="igh",
-                                      output_path="tmp_output_boot"
-                                     )
-
-# Delete resampled fasta file
-"boot.fa" %>% file.remove
-
 # Run repertoire comparison for the observed and simulated data,
 # and also compare the observed to bootstrapped data for refernce
 comparison <- compareRepertoires(test_dat, 
                                  test_simu, 
-                                 test_dat_boot,
                                  locus="igh"
                                 )

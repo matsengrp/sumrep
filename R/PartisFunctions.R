@@ -556,7 +556,8 @@ getPartisSimulation <- function(parameter_dir,
                                 extra_columns="v_gl_seq:v_qr_seqs:cdr3_seqs:naive_seq",
                                 seed=NULL,
                                 subsample_to_unique_clones=FALSE,
-                                do_multi_hmm=FALSE
+                                do_multi_hmm=FALSE,
+                                extra_command_args=""
                                ) {
     partis_command <- paste(partis_path, 
                             "simulate", 
@@ -596,6 +597,10 @@ getPartisSimulation <- function(parameter_dir,
                                 "multi-hmm"
                                )
     }
+
+    partis_command <- paste(partis_command,
+                            extra_command_args
+                           )
 
     print(partis_command)
 
