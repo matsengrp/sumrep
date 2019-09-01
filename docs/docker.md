@@ -22,7 +22,7 @@ docker run -it sumrep
 to start an interactive container in which `sumrep` as well as all of its required and optional dependencies are available.
 
 ### Building `sumrep` manually
-`sumrep` can be built manually according to the [Dockerfile](Dockerfile).
+`sumrep` can be built manually according to the [Dockerfile](../Dockerfile).
 Simply run the following command in the directory of the Docker file to build the Docker image:
 
 ```
