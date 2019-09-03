@@ -44,5 +44,7 @@ to start an interactive container in which `sumrep` as well as all of its requir
 If you wish to link a local directory at `/path/to/local/dir` to a corresponding directory in the Docker image at `/path/to/docker/dir`, simply run
 
 ```
-docker run -it -v /path/to/local/dir:/path/to/docker/dir sumrep
+docker run -it -v /path/to/local/dir:/path/to/docker/dir brandenolson/sumrep
 ```
+
+(If you built manually, replace `brandenolson/sumrep` with `sumrep`)
