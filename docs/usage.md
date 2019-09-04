@@ -6,7 +6,7 @@ Most functions to retrieve and compare distributions between repertoires expect 
 For example, the `data` folder contains an annotations dataset (which was obtained via `getPartisAnnotations("data/test_data.fa") %$% annotations %>% fwrite("data/test_annotations.csv")`.
 We can read this in as a `data.table` as follows:
 ```
-dat <- data.table::fread("data/test_annotations.csv")
+dat_a <- data.table::fread("data/test_annotations.csv")
 ```
 
 While `sumrep` is able to handle rather general annotations datasets, things work best when the annotations dataset is a `data.table` object with specific defaults chosen by members of the [AIRR software working group](http://airr.irmacs.sfu.ca/node/35).
@@ -43,19 +43,25 @@ This object may be of auxiliary interest to the user but is not directly useful 
 Functions for retrieving distributions are generally of the form `getXDistribution`.
 For example, the pairwise distance distribution of `dat` can be obtained via
 ```
-pairwise_distances <- getPairwiseDistanceDistribution(dat)
+pairwise_distances <- getPairwiseDistanceDistribution(dat_a)
 ```
 This returns a vector of pairwise distances rather than a matrix, which is more practical for plotting and comparison.
 This function will by default compute this distribution on the `sequence` column.
 To specify a different, column, say the `junction` column, if present, you would instead want:
 ```
-junction_pairwise_distances <- getPairwiseDistanceDistribution(dat, column="junction")
+junction_pairwise_distances <- getPairwiseDistanceDistribution(dat_a, column="junction")
 ```
 A complete table of available summary functions can be found in the [extended documentation](extended_documentation.md).
 
 ### Comparing distributions
 Functions to compare distributions of two annotations datasets, say `dat_a` and `dat_b`, are in general of the form `compareXDistributions`, and expect two `data.tables` as input.
-For example, to compare the pairwise distance distributions of `dat_a` and `dat_b`, we would have
+Let's read in another dataset, this time a post-processed annotations dataset in a previously-saved RDS file:
+
+```
+dat_b <- readRDS("data/test_dat_boot.rds")
+```
+
+Then, to compare the pairwise distance distributions of `dat_a` and `dat_b`, we simply run
 ```
 divergence <- comparePairwiseDistanceDistributions(dat_a, dat_b)
 ```
@@ -69,13 +75,28 @@ For example, the following would do the trick:
 ```
 repertoire_a <- list(annotations=dat_a)
 repertoire_b <- list(annotations=dat_b)
-compareRepertoires(repertoire_a, repertoire_b)
+compareRepertoires(repertoire_a, repertoire_b, locus="igh")
 ```
 This would perform every comparison sans `comparePerGeneMutationRates` and `comparePerGenePerPositionMutationRates`.
 Note that by default `getPartisAnnotations` and `getIgBlastAnnotations` return lists of this sort, although only `getPartisAnnotations` includes the `mutation_rates` object.
 
 The `mutation_rates` object should be equivalent to a data structure returned by `getMutationInfo`, which is called within `getPartisAnnotations`.
 This structure includes a field for each gene name (e.g. `` `IGHD2-21\*01` ``), which then includes subfields `overall_mut_rate` and `mut_rate_by_position`.
+
+### Plotting distributions
+The function `plotUnivariateDistributions` takes in a list of annotations datasets as well as a locus, and returns a plot of as many summaries are as relevant to the locus and data. For example, using our datasets above, we can run
+
+```
+plotUnivariateDistributions(list(dat_a, dat_b), locus="igh")
+```
+
+By default, this creates two plots: a frequency polygon of each distribution, as well as an empirical CDF of each distribution.
+
+This function is easy to modify; for example, if we wish to only plot frequency polygons of the pairwise distance distribution and aromaticity distribution, we could run
+
+```
+plotUnivariateDistributions(list(dat_a, dat_b), locus="igh", plot_types="freqpoly", plot_function_strings=c("getPairwiseDistanceDistribution", "getAromaticityDistribution"))
+```
 
 ### Examples
 The `Examples` folder includes two scripts that demonstrate basic `sumrep` usage.
