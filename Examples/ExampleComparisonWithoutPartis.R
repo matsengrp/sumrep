@@ -15,15 +15,9 @@ test_simu <- readRDS(file.path(path_to_sumrep,
                                "data/test_simu.rds")
                     )
 
-# Load an annotation/partition dataset from a resampled fasta file
-test_dat_boot <- readRDS(file.path(path_to_sumrep, 
-                                   "data/test_dat_boot.rds")
-                        )
-
 # Run repertoire comparison for the observed and simulated data,
 # and also compare the observed to bootstrapped data for refernce
 comparison <- compareRepertoires(test_dat, 
                                  test_simu, 
-                                 test_dat_boot,
                                  locus="igh"
                                 )
