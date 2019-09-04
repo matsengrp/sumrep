@@ -100,9 +100,14 @@ RUN R --vanilla --slave -e 'install.packages(c("TreeSim", "TreeSimGM"), repos="h
 # Next let's install sumrep dependencies
 RUN R --vanilla --slave -e \
   'install.packages(c("alakazam", "ape", "BiocManager", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"), repos = "http://cran.us.r-project.org")' && \
-  R --vanilla --slave -e 'BiocManager::install()'
+  R --vanilla --slave -e 'BiocManager::install("Biostrings")'
 
 WORKDIR ..
 RUN git clone https://github.com/matsengrp/sumrep.git
 COPY . /sumrep
 ENV SUMREP_PATH="/sumrep"
+
+# Download partis annotations for MDS example
+RUN mkdir /sumrep/data/flu
+RUN wget https://zenodo.org/record/3381680/files/flu_rds.tar
+RUN tar -C /sumrep/data/flu -xvf flu_rds.tar
