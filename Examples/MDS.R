@@ -2,28 +2,31 @@ devtools::load_all()
 
 # Need to pull the data from zenodo, and place them in `flu_dir`
 flu_dir <- "data/flu"
-p_f1 <- readRDS(file.path(flu_dir, "p_fv_igh_m1h.rds"))
-p_f2 <- readRDS(file.path(flu_dir, "p_fv_igh_m8d.rds"))
-p_f7 <- readRDS(file.path(flu_dir, "p_fv_igh_p7d.rds"))
-p_f28 <- readRDS(file.path(flu_dir, "p_fv_igh_p28d.rds"))
-p_g1 <- readRDS(file.path(flu_dir, "p_gmc_igh_m1h.rds"))
-p_g2 <- readRDS(file.path(flu_dir, "p_gmc_igh_m8d.rds"))
-p_g7 <- readRDS(file.path(flu_dir, "p_gmc_igh_p7d.rds"))
-p_g28 <- readRDS(file.path(flu_dir, "p_gmc_igh_p28d.rds"))
-p_i1 <- readRDS(file.path(flu_dir, "p_ib_igh_m1h.rds"))
-p_i2 <- readRDS(file.path(flu_dir, "p_ib_igh_m8d.rds"))
-p_i7 <- readRDS(file.path(flu_dir, "p_ib_igh_p7d.rds"))
-p_i28 <- readRDS(file.path(flu_dir, "p_ib_igh_p28d.rds"))
+p_f_m1h <- readRDS(file.path(flu_dir, "p_fv_igh_m1h.rds"))
+p_f_m8d <- readRDS(file.path(flu_dir, "p_fv_igh_m8d.rds"))
+p_f_p7d <- readRDS(file.path(flu_dir, "p_fv_igh_p7d.rds"))
+p_f_p28d <- readRDS(file.path(flu_dir, "p_fv_igh_p28d.rds"))
+p_g_m1h <- readRDS(file.path(flu_dir, "p_gmc_igh_m1h.rds"))
+p_g_m8d <- readRDS(file.path(flu_dir, "p_gmc_igh_m8d.rds"))
+p_g_p7d <- readRDS(file.path(flu_dir, "p_gmc_igh_p7d.rds"))
+p_g_p28d <- readRDS(file.path(flu_dir, "p_gmc_igh_p28d.rds"))
+p_i_m1h <- readRDS(file.path(flu_dir, "p_ib_igh_m1h.rds"))
+p_i_m8d <- readRDS(file.path(flu_dir, "p_ib_igh_m8d.rds"))
+p_i_p7d <- readRDS(file.path(flu_dir, "p_ib_igh_p7d.rds"))
+p_i_p28d <- readRDS(file.path(flu_dir, "p_ib_igh_p28d.rds"))
 
-dat_list <- list(p_f1, p_f2, p_f7, p_f28,
-                 p_g1, p_g2, p_g7, p_g28,
-                 p_i1, p_i2, p_i7, p_i28)
+# Combine and label datasets
+dat_list <- list(p_f_m1h, p_f_m8d, p_f_p7d, p_f_p28d,
+                 p_g_m1h, p_g_m8d, p_g_p7d, p_g_p28d,
+                 p_i_m1h, p_i_m8d, p_i_p7d, p_i_p28d)
 num_dats <- length(dat_list)
 colors <- c(rep("purple", 4),
             rep("green", 4),
             rep("orange", 4))
 ltys <- rep(c("-8d", "-1hr", "+7d", "+28d"), 4) %>% as.factor
 
+# Compare CDR3 length distribution of each pairwise dataset,
+# and store in matrix of divergences (distances)
 div_matrix <- matrix(0, nrow=num_dats, ncol=num_dats)
 for(i in 1:num_dats) {
     for(j in 1:num_dats) {
@@ -34,6 +37,7 @@ for(i in 1:num_dats) {
     }
 }
 
+# Plot MDS coordinates 1 and 2 of div_matrix
 pdf("mds.pdf")
 div_matrix %>%
     cmdscale %>%
