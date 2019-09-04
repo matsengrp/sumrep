@@ -53,14 +53,31 @@ data_to_compare <- list(
     c("A4_i194_sim", "A4_i107_sim")
 )
 
+# Only the IGoR simulations have a 'vj_in_frame' column since IGoR
+#   doesn't include this in annotations.
+# So, just check if there is such a column and subset to in-frame sequences
+#   when possible.
+subsetToInFrame <- function(dat) {
+    if("vj_in_frame" %in% names(dat[['annotations']])) {
+        dat[['annotations']] <- 
+            dat[['annotations']][dat[['annotations']][["vj_in_frame"]], ]
+    }
+
+    return(dat)
+}
+
 for(dats in data_to_compare) {
     comparison_name <- dats %>% 
         paste(collapse="_") %>%
         paste0("compare_", .)
     if(!exists(comparison_name)) {
+        dat_1 <- eval(parse(text=dats[1])) %>%
+            subsetToInFrame
+        dat_2 <- eval(parse(text=dats[2])) %>%
+            subsetToInFrame
         comparison <-
-            compareRepertoires(eval(parse(text=dats[1])), 
-                               eval(parse(text=dats[2])),
+            compareRepertoires(dat_1, 
+                               dat_2,
                                locus="trb",
                                do_full_comparison=FALSE
                               ) %>%

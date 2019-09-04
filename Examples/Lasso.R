@@ -6,6 +6,8 @@ loadNewDatasets("data/Annotations", pattern="p_")
 loadNewDatasets("data/Annotations", pattern="pi_")
 loadNewDatasets("data/Annotations", pattern="A")
 
+set.seed(1)
+
 getSummaryDataTable <- function(dat) {
     summary_df <- data.frame(matrix(NA, nrow=nrow(dat), ncol=0))
     summary_df['cdr3_length'] <- dat %>% getCDR3LengthDistribution
@@ -21,8 +23,8 @@ getSummaryDataTable <- function(dat) {
     summary_df['bulkiness'] <- dat %>% getBulkinessDistribution
     summary_df['aromaticity'] <- dat %>% getAromaticityDistribution
     summary_df['acidity'] <- dat %>% getAcidityDistribution
-    # summary_df['gravy'] <- dat %>% getGRAVYDistribution
-    # summary_df['aliphatic_index'] <- dat %>% getAliphaticIndexDistribution
+    summary_df['gravy'] <- dat %>% getGRAVYDistribution
+    summary_df['aliphatic_index'] <- dat %>% getAliphaticIndexDistribution
 
     return(summary_df)
 }
@@ -77,6 +79,7 @@ getLassoModel <- function(dat_list) {
     model <- glmnet::glmnet(summary_dat,
                             ids,
                             family="multinomial",
+                            type.multinomial="grouped",
                             intercept=FALSE # No need for intercept due to scaling
                            )
 
@@ -99,72 +102,115 @@ plotAllBCRLassoPaths <- function(dat_lists) {
     }
 }
 
-if(F) {
-p_dat_list <- list(p_f1, p_f2, p_g1, p_g2, p_i1, p_i2) %>%
-    getSubsampledBCRDatasets
-p_sim_dat_list <- list(p_f1_sim, p_f2_sim, p_g1_sim, p_g2_sim, p_i1_sim, p_i2_sim) %>%
-    getSubsampledBCRDatasets
-pi_dat_list <- list(pi_f1, pi_f2, pi_g1, pi_g2, pi_i1, pi_i2) %>%
-    getSubsampledBCRDatasets
-pi_sim_dat_list <- list(pi_f1_sim, pi_f2_sim, pi_g1_sim, pi_g2_sim, pi_i1_sim, 
-                        pi_i2_sim) %>%
-    getSubsampledBCRDatasets
-dat_lists <- list("partis"=p_dat_list,
-                  "partis sim"=p_sim_dat_list,
-                  "imgt"=pi_dat_list,
-                  "imgt sim"=pi_sim_dat_list
-                 )
-
-igor_dat_list <- list(A5_S9[['annotations']],
-                      A4_i107[['annotations']],
-                      A4_i194[['annotations']],
-                      A5_S10[['annotations']],
-                      A5_S15[['annotations']],
-                      A5_S22[['annotations']]
-                     )
-}
-
-
-#model <- p_dat_list %>% 
-#    getLassoModel
-
-ranks <- list()
-for(i in 1:length(coef(model))) {
-    coef_mat <- coef(model)[[i]]
-    first_nonzero_indices <- list()
-    # First row is for intercept which we don't care about
-    for(s in rownames(coef_mat)[-1]) {
-        first_nonzero_indices[s] <- which(coef_mat[s, ] != 0)[1] %>%
-            ifelse(is.na(.), Inf, .) # If coefficient is always zero, 
-                                     # set its branching time to Inf
+getSummaryRanks <- function(model) {
+    ranks <- list()
+    for(i in 1:length(coef(model))) {
+        coef_mat <- coef(model)[[i]]
+        first_nonzero_indices <- list()
+        # First row is for intercept which we don't care about
+        for(s in rownames(coef_mat)[-1]) {
+            nonzero_index <- which(coef_mat[s, ] != 0)[1] %>%
+                ifelse(is.na(.), Inf, .) # If coefficient is always zero, 
+                                         # set its branching time to Inf
+            first_nonzero_indices[s] <- ifelse(nonzero_index < Inf,
+                                               -log(model$lambda[ nonzero_index]),
+                                               -Inf
+                                              )
+        }
+        
+        index_dat <- first_nonzero_indices %>% as.data.table
+        order_dat <- index_dat
+        order_dat <- rank(index_dat[1, ],
+                               ties.method="random"
+                              )
+        ranks[[i]] <- first_nonzero_indices %>% unlist
     }
     
-    index_dat <- first_nonzero_indices %>% as.data.table
-    order_dat <- index_dat
-    order_dat <- rank(index_dat[1, ],
-                           ties.method="random"
-                          )
-    ranks[[i]] <- order_dat
+    rank_df <- ranks %>%
+        do.call("rbind", .)
+    
+    melted_ranks <- rank_df %>% 
+        melt %>%
+        setNames(c("Response",
+                   "Summary",
+                   "Rank"
+                  )
+        )
+    return(melted_ranks)
 }
 
-rank_df <- ranks %>%
-    do.call("rbind", .)
+if(F) {
+    p_dat_list <- list(p_f1, p_f2, p_g1, p_g2, p_i1, p_i2) %>%
+        getSubsampledBCRDatasets
+    p_sim_dat_list <- list(p_f1_sim, p_f2_sim, p_g1_sim, p_g2_sim, p_i1_sim, p_i2_sim) %>%
+        getSubsampledBCRDatasets
+    pi_dat_list <- list(pi_f1, pi_f2, pi_g1, pi_g2, pi_i1, pi_i2) %>%
+        getSubsampledBCRDatasets
+    pi_sim_dat_list <- list(pi_f1_sim, pi_f2_sim, pi_g1_sim, pi_g2_sim, pi_i1_sim, 
+                            pi_i2_sim) %>%
+        getSubsampledBCRDatasets
+    dat_lists <- list("partis"=p_dat_list,
+                      "partis sim"=p_sim_dat_list,
+                      "imgt"=pi_dat_list,
+                      "imgt sim"=pi_sim_dat_list
+                     )
+    
+    igor_dat_list <- list(A5_S9[['annotations']],
+                          A4_i107[['annotations']],
+                          A4_i194[['annotations']],
+                          A5_S10[['annotations']],
+                          A5_S15[['annotations']],
+                          A5_S22[['annotations']]
+                         )
+}
 
-melted_ranks <- rank_df %>% 
-    melt %>%
-    setNames(c("Response",
-               "Summary",
-               "Rank"
+
+if(F) {
+}
+
+    igor_model <- igor_dat_list %>% 
+        getLassoModel
+    partis_model <- pi_dat_list %>% 
+        getLassoModel
+
+plotSummaryRanks <- function(model,
+                             filepath
+                            ) {
+    ranks <- model %>% getSummaryRanks
+    p <- ggplot(ranks, 
+                aes(x=reorder(Summary, Rank, median), y=Rank)) + 
+        geom_boxplot() +
+        xlab("Summary") +
+        theme_minimal() +
+        theme(axis.text.x=element_text(angle=45, hjust=1))
+    p
+    ggsave(filepath, width=8, height=4,
+           plot=p)
+}
+
+sumrep_ms_dir <- "/home/bolson2/Manuscripts/sumrep-ms/Figures/Lasso"
+plotSummaryRanks(partis_model,
+                 file.path(sumrep_ms_dir, "partis_lasso_scores.pdf")
+                )
+plotSummaryRanks(igor_model,
+                 file.path(sumrep_ms_dir, "igor_lasso_scores.pdf")
+                )
+
+plotLassoPaths <- function(model, filepath) {
+    pdf(filepath, width=10, height=6)
+    par(mfrow=c(2, 3), cex=0.9)
+    for(i in 1:6) {
+        lasso_plot <- plot_glmnet(model,
+                                  nresponse=i,
+                                  label=T
+                                 )
+    }
+    dev.off()
+}
+
+plotLassoPaths(partis_model, 
+               file.path(sumrep_ms_dir, "partis_lasso_paths.pdf")
               )
-    )
-
-
-p <- ggplot(melted_ranks, aes(x=reorder(Summary, Rank, mean), y=Rank)) + geom_boxplot()
-p
-
-stop()
-
-igor_summary_dat <- igor_dat_list %>%
-    getSummaryDesignMatrix %>%
-    scale
-
+plotLassoPaths(igor_model, 
+               file.path(sumrep_ms_dir, "igor_lasso_paths.pdf")
+              )

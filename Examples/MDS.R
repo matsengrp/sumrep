@@ -1,6 +1,8 @@
 devtools::load_all()
 
-# Need to pull the data from zenodo, and place them in `flu_dir`
+# Need to pull the data from zenodo, e.g. via the following:
+# wget https://zenodo.org/record/3381680/files/flu_rds.tar
+# tar -C /path/to/sumrep/data/flu -xvf flu_rds.tar 
 flu_dir <- "data/flu"
 p_f1 <- readRDS(file.path(flu_dir, "p_fv_igh_m1h.rds"))
 p_f2 <- readRDS(file.path(flu_dir, "p_fv_igh_m8d.rds"))
