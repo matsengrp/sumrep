@@ -24,7 +24,7 @@ num_dats <- length(dat_list)
 colors <- c(rep("purple", 4),
             rep("green", 4),
             rep("orange", 4))
-ltys <- rep(c("1", "2", "7", "28"), 4) %>% as.factor
+ltys <- rep(c("-8d", "-1hr", "+7d", "+28d"), 4) %>% as.factor
 
 div_matrix <- matrix(0, nrow=num_dats, ncol=num_dats)
 for(i in 1:num_dats) {
@@ -36,6 +36,7 @@ for(i in 1:num_dats) {
     }
 }
 
+pdf("mds.pdf")
 div_matrix %>%
     cmdscale %>%
     plot(col=colors, 
@@ -55,3 +56,4 @@ legend(x=-0.03,
        legend=c("1h", "2h", "7d", "28d"), 
        pch=c(1, 2, 3, 4)
       )
+dev.off()
