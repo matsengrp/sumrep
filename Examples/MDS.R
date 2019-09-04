@@ -3,6 +3,7 @@ devtools::load_all()
 # Need to pull the data from zenodo, and place them in `flu_dir`
 flu_dir <- "data/flu"
 p_f1 <- readRDS(file.path(flu_dir, "p_fv_igh_m1h.rds"))
+p_f1 <- readRDS(file.path(flu_dir, "p_fv_igh_m1h.rds"))
 p_f2 <- readRDS(file.path(flu_dir, "p_fv_igh_m8d.rds"))
 p_f7 <- readRDS(file.path(flu_dir, "p_fv_igh_p7d.rds"))
 p_f28 <- readRDS(file.path(flu_dir, "p_fv_igh_p28d.rds"))
@@ -22,7 +23,7 @@ num_dats <- length(dat_list)
 colors <- c(rep("purple", 4),
             rep("green", 4),
             rep("orange", 4))
-ltys <- rep(c("1", "2", "7", "28"), 4) %>% as.factor
+ltys <- rep(c("-8d", "-1hr", "+7d", "+28d"), 4) %>% as.factor
 
 div_matrix <- matrix(0, nrow=num_dats, ncol=num_dats)
 for(i in 1:num_dats) {
@@ -34,6 +35,7 @@ for(i in 1:num_dats) {
     }
 }
 
+pdf("mds.pdf")
 div_matrix %>%
     cmdscale %>%
     plot(col=colors, 
@@ -53,3 +55,4 @@ legend(x=-0.03,
        legend=c("1h", "2h", "7d", "28d"), 
        pch=c(1, 2, 3, 4)
       )
+dev.off()
