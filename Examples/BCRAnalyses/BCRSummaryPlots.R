@@ -1,3 +1,4 @@
+library(ggplot2)
 library(viridis)
 ggplot2::theme_set(theme_gray(base_size = 14))
 
@@ -149,7 +150,7 @@ sumrep_ms_partis_dir %>% dir.create
 #   cluster size distribution, which will always be a unit point mass at one
 summaries_to_omit <- c("getClusterSizeDistribution")
 
-partis_plots <- plotUnivariateDistributions(
+partis_dat_list <- 
     list(
          p_f1[["annotations"]] %>% subsampleToUniqueClones,
          p_f1_sim[["annotations"]] %>% subsampleToUniqueClones,
@@ -157,11 +158,14 @@ partis_plots <- plotUnivariateDistributions(
          p_g1_sim[["annotations"]] %>% subsampleToUniqueClones,
          p_i1[["annotations"]] %>% subsampleToUniqueClones,
          p_i1_sim[["annotations"]] %>% subsampleToUniqueClones
-    ),
+    )
+
+partis_plots <- plotUnivariateDistributions(
+    partis_dat_list,
     locus="igh",
-    color=c(rep("Donor 1", 2),
-            rep("Donor 2", 2),
-            rep("Donor 3", 2)
+    color=c(rep("FV", 2),
+            rep("GMC", 2),
+            rep("IB", 2)
            ),
     lty=rep(c("Observed", "Simulated"), 3),
     functions_to_omit=summaries_to_omit
@@ -193,9 +197,9 @@ pi_plots <- plotUnivariateDistributions(
          i_i1[["annotations"]] %>% subsampleToUniqueClones
     ),
     locus="igh",
-    color=c(rep("Donor 1", 2),
-            rep("Donor 2", 2),
-            rep("Donor 3", 2)
+    color=c(rep("FV", 2),
+            rep("GMC", 2),
+            rep("IB", 2)
            ),
     lty=rep(c("Partis (obs)", "IgBlast (obs)"), 3),
     functions_to_omit=summaries_to_omit
