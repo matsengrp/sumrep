@@ -79,6 +79,7 @@ RUN conda install -y -cbioconda -cbiocore -cr \
   scons \
   seaborn \
   zlib \
+  pyyaml \
   scikit-learn \
   pysam \
   mafft \
@@ -92,6 +93,7 @@ RUN pip install \
 COPY . /partis
 WORKDIR /partis
 RUN ./bin/build.sh
+CMD ./test/test.py --quick
 ENV PARTIS_PATH="/partis/bin/partis"
 
 RUN unset R_LIBS_SITE
@@ -109,5 +111,5 @@ ENV SUMREP_PATH="/sumrep"
 
 # Download partis annotations for MDS example
 RUN mkdir /sumrep/data/flu
-RUN wget https://zenodo.org/record/3381680/files/flu_rds.tar
+RUN wget https://zenodo.org/record/3385364/files/flu_rds.tar
 RUN tar -C /sumrep/data/flu -xvf flu_rds.tar
