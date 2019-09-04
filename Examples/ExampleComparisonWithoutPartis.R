@@ -21,3 +21,22 @@ comparison <- compareRepertoires(test_dat,
                                  test_simu, 
                                  locus="igh"
                                 )
+
+# Just compare the pairwise distance distributions
+pd_comparison <- comparePairwiseDistanceDistributions(test_dat[["annotations"]], 
+                                                      test_simu[["annotations"]]
+                                                     )
+
+# Plot a few distributions for test_dat and test_simu, using frequency polygons
+pdf("distribution_plot.pdf")
+plotUnivariateDistributions(list(test_dat, test_simu),
+                            plot_types="freqpoly",
+                            locus="igh",
+                            plot_function_strings=c(
+                                                    "getPairwiseDistanceDistribution",
+                                                    "getGCContentDistribution",
+                                                    "getAromaticityDistribution",
+                                                    "getChargeDistribution"
+                                                   )
+                           )
+dev.off()
