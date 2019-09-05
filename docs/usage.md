@@ -99,9 +99,10 @@ plotUnivariateDistributions(list(dat_a, dat_b), locus="igh", plot_types="freqpol
 ```
 
 ### Examples
-The `Examples` folder includes two scripts that demonstrate basic `sumrep` usage.
+The `Examples` folder includes a few scripts that demonstrate basic `sumrep` usage:
 
 * `ExampleComparisonUsingPartis.R` shows how to obtain `partis` annotations and parameters from `sumrep`; how to simulate from these parameters using `partis` from `sumrep`; and how to compare these observed and simulated annotations datasets with the `compareRepertoires` function.
 
 * `ExampleComparisonWithoutPartis.R` loads pre-computed annotations, so that `partis` need not be installed, and shows how to compare these observed and simulated annotations datasets with the `compareRepertoires` function.
 
+* `MDS.R` downloads many post-processed IgH datasets from [Gupta et al. (2017)](https://www.jimmunol.org/content/198/6/2489), computes divergences of each pairwise CDR3 length distribution, performs an multidimensional scaling of these divergences, and plots the first 2 coordinates.
