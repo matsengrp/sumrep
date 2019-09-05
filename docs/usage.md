@@ -87,15 +87,16 @@ This structure includes a field for each gene name (e.g. `` `IGHD2-21\*01` ``), 
 The function `plotUnivariateDistributions` takes in a list of annotations datasets as well as a locus, and returns a plot of as many summaries are as relevant to the locus and data. For example, using our datasets above, we can run
 
 ```
-plotUnivariateDistributions(list(dat_a, dat_b), locus="igh")
+plot_1 <- plotUnivariateDistributions(list(dat_a, dat_b), locus="igh")
 ```
 
 By default, this creates two plots: a frequency polygon of each distribution, as well as an empirical CDF of each distribution.
+You can access these plots by calling `plot_1[["freqpoly"]]` and `plot_1[["ecdf"]]` respectively.
 
 This function is easy to modify; for example, if we wish to only plot frequency polygons of the pairwise distance distribution and aromaticity distribution, we could run
 
 ```
-plotUnivariateDistributions(list(dat_a, dat_b), locus="igh", plot_types="freqpoly", plot_function_strings=c("getPairwiseDistanceDistribution", "getAromaticityDistribution"))
+plot_2 <- plotUnivariateDistributions(list(dat_a, dat_b), locus="igh", plot_types="freqpoly", plot_function_strings=c("getPairwiseDistanceDistribution", "getAromaticityDistribution"))
 ```
 
 ### Examples
