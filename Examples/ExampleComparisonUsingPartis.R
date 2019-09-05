@@ -16,7 +16,8 @@ test_dat <- getPartisAnnotations(file.path(path_to_sumrep,
 # Simulate a dataset based on the observed DNA sequences
 test_simu <- getPartisSimulation(parameter_dir="tmp_output",
                                  num_events=nrow(test_dat[["annotations"]]),
-                                 extra_command_args="--min-observations-per-gene 15"
+                                 seed=123,
+                                 extra_command_args="--min-observations-per-gene 1"
                                  # ^ partis has troubles simulating from small
                                  # datasets, so give it some wiggle room
                                 )
