@@ -1,6 +1,3 @@
-library(glmnet)
-library(plotmo)
-
 devtools::load_all()
 loadNewDatasets("data/Annotations", pattern="p_")
 loadNewDatasets("data/Annotations", pattern="pi_")

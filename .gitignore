@@ -3,9 +3,9 @@
 .nfs*
 .Rproj.user
 Dev/*
+man/*
 *output*
 tests/testthat/_output*
 *.rds
 .RData
 .RHistory
-.Rhistory

@@ -10,7 +10,7 @@
 writeAnnotations <- function(filename, 
                              dat_name,
                              method,
-                             outname=paste0("data/Annotations/",
+                             outname=paste0("data-raw/Annotations/",
                                             dat_name,
                                             ".rds"),
                              germline_dir=NULL,

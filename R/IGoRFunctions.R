@@ -87,8 +87,7 @@ getIgorAnnotations <- function(input_filename,
     igor_input_filename <- "tmp.txt"
     convertFastaToTxt(input_filename,
                       output_filename=igor_input_filename)
-    igor_script <- system.file("run_igor.py",
-                               package="sumrep")
+    igor_script <- system.file("exec", "run_igor.py", package="sumrep")
     python_command <- paste("python3",
                             igor_script,
                             igor_input_filename,
@@ -210,14 +209,14 @@ processIgorAnnotations <- function(annotations,
                                   ) {
     if(chain == "beta") {
         annotations[["vd_insertion"]] <- annotations[["vd_insertion"]] %>%
-            gsub(pattern="[^A-Z]", replace="") %>%
+            gsub(pattern="[^A-Z]", replacement="") %>%
             tolower
         annotations[["dj_insertion"]] <- annotations[["dj_insertion"]] %>%
-            gsub(pattern="[^A-Z]", replace="") %>%
+            gsub(pattern="[^A-Z]", replacement="") %>%
             tolower
     } else {
         annotations[["vj_insertion"]] <- annotations[["vj_insertion"]] %>%
-            gsub(pattern="[^A-Z]", replace="") %>%
+            gsub(pattern="[^A-Z]", replacement="") %>%
             tolower
     }
 
