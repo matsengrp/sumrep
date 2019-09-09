@@ -93,7 +93,6 @@ RUN pip install \
 COPY . /partis
 WORKDIR /partis
 RUN ./bin/build.sh
-CMD ./test/test.py --quick
 ENV PARTIS_PATH="/partis/bin/partis"
 
 RUN unset R_LIBS_SITE
