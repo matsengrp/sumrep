@@ -95,3 +95,16 @@ These levels are hierarchical in that each level depends on the assumptions of t
 For example, to obtain annotations, you would have first needed to pairwise align the sequences.
 Level 0 includes raw query sequences and, while supported, does not comprise the default level for any sumrep function.
 Level 4 includes tree statistics for clonal family trees of BCR sequences; while sumrep currently contains some tree functions, these functions have not yet been tested on experimental data or incorporated in comparison routines.
+
+#### Gene usage summaries and comparisons
+
+Comparisons involving gene usage distributions, in particular `compareVGeneDistributions`, `compareDGeneDistributions`, `compareJGeneDistributions`, and `compareVDJDistributions`, do not have corresponding getter functions in the form of `getXDistribution`.
+This is due to the logic behind computing these divergences, which relies on contingency (frequency) tables rather than distribution vectors like the other summaries.
+The following table details the analogous getter functions driving these comparison functions.
+
+| `sumrep` comparison function | `sumrep` getter function | Default column(s) |
+| ---------------------------- | ------------------------ | ----------------- |
+| `compareVGeneDistributions` | `compareGermlineGeneDistributions` | `v_call` |
+| `compareDGeneDistributions` | `compareGermlineGeneDistributions` | `d_call` |
+| `compareJGeneDistributions` | `compareGermlineGeneDistributions` | `j_call` |
+| `compareVDJDistributions` | `compareJointGeneDistributions` | `v_call`, `d_call`, `j_call` |
