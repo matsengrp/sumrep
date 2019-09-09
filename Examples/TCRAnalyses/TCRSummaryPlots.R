@@ -1,3 +1,4 @@
+library(viridis)
 ggplot2::theme_set(theme_gray(base_size = 14))
 
 source("Examples/ScoreStatistics.R")

@@ -1,3 +1,5 @@
+library(viridis)
+
 plotDistribution <- function(function_string,
                              datasets,
                              column_name,
