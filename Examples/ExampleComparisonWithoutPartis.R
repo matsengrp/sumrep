@@ -17,4 +17,4 @@ test_simu <- readRDS(file.path(path_to_sumrep,
 # and also compare the observed to bootstrapped data for refernce
 comparison <- compareRepertoires(test_dat, 
                                  test_simu, 
-                                 locus="igh"
+                                 locus="igh")
