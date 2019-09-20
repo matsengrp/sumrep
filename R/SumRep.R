@@ -6,33 +6,35 @@
 #' 
 #' @name     sumrep
 #' 
-#' @import alakazam
-#' @import ape
-#' @import Biostrings
-#' @import CollessLike
-#' @import crayon
-#' @import data.table
-#' @import dplyr
-#' @import entropy
 #' @import ggplot2
-#' @import grid
-#' @import HDMD
-#' @import jsonlite
-#' @import magrittr
 #' @import methods
-#' @import pegas
-#' @import Peptides
-#' @import RecordLinkage
-#' @import seqinr
-#' @import shazam
 #' @import stats
-#' @import stringdist
-#' @import stringr
-#' @import textmineR
 #' @import utils
-#' @import viridis
-#' @import yaml
+#' @importFrom  alakazam     checkColumns gravy aminoAcidProperties calcDiversity
+#' @importFrom  ape          as.DNAbin GC.content
+#' @importFrom  Biostrings   DNAStringSet vcountPattern
+#' @importFrom  CollessLike  sackin.index colless.like.index cophen.index
+#' @importFrom  crayon       green yellow
+#' @importFrom  data.table   data.table fread fwrite as.data.table
+#' @importFrom  dplyr        last
+#' @importFrom  entropy      KL.empirical
+#' @importFrom  grid         grid.newpage grid.layout pushViewport viewport
+#' @importFrom  HDMD         FactorTransform
+#' @importFrom  jsonlite     fromJSON
+#' @importFrom  magrittr     %>% %$% extract
+#' @importFrom  Peptides     kideraFactors aIndex
+#' @importFrom  seqinr       read.fasta write.fasta translate
+#' @importFrom  shazam       distToNearest findThreshold calcBaseline summarizeBaseline
+#'                           createSubstitutionMatrix createMutabilityMatrix
+#' @importFrom  stringdist   stringdistmatrix
+#' @importFrom  stringr      str_sub str_split
+#' @importFrom  textmineR    CalcJSDivergence
+#' @importFrom  yaml         yaml.load yaml.load_file
 NULL
+
+# @import pegas
+# @import RecordLinkage
+# @import viridis
 
 #### Data ####
 

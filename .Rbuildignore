@@ -2,5 +2,7 @@
 ^\.Rproj\.user$
 ^Examples
 ^data-raw
+^docs
 partis_env.yml
 requirements.txt
+Dockerfile
