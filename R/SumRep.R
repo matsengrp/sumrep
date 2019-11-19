@@ -32,9 +32,6 @@
 #' @importFrom  yaml         yaml.load yaml.load_file
 NULL
 
-# @import pegas
-# @import RecordLinkage
-# @import viridis
 
 #### Data ####
 

@@ -319,8 +319,7 @@ readPartisAnnotations <- function(output_path,
                                                   annotation_file, 
                                                   partis_path
                                                  )
-        annotated_data[["junction"]] <- annotated_data %>% 
-            getCDR3s
+        # annotated_data[["junction"]] <- annotated_data %>% getCDR3s
     } else {
         annotated_data <- annotation_file %>%
             data.table::fread()
@@ -628,8 +627,7 @@ getPartisSimulation <- function(parameter_dir,
                                                    output_path=".",
                                                    partis_path
                                                   )
-        sim_annotations[["junction"]] <- sim_annotations %>% 
-            getCDR3s
+        # sim_annotations[["junction"]] <- sim_annotations %>% getCDR3s
     }
 
     if(cleanup) {
