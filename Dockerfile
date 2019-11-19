@@ -101,7 +101,7 @@ RUN R --vanilla --slave -e 'install.packages(c("TreeSim", "TreeSimGM"), repos="h
 
 # Next let's install sumrep dependencies
 RUN R --vanilla --slave -e \
-  'install.packages(c("alakazam", "ape", "BiocManager", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"), repos = "http://cran.us.r-project.org")' && \
+  'install.packages(c("alakazam", "ape", "BiocManager", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "Peptides", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"), repos = "http://cran.us.r-project.org")' && \
   R --vanilla --slave -e 'BiocManager::install("Biostrings")'
 
 WORKDIR ..
@@ -110,6 +110,12 @@ COPY . /sumrep
 ENV SUMREP_PATH="/sumrep"
 
 # Download partis annotations for MDS example
-RUN mkdir /sumrep/data/flu
+RUN mkdir /sumrep/Examples/flu
 RUN wget https://zenodo.org/record/3385364/files/flu_rds.tar
-RUN tar -C /sumrep/data/flu -xvf flu_rds.tar
+RUN tar -C /sumrep/Examples/flu -xvf flu_rds.tar
+
+# Install sumrep
+ARG R_DEPS="c('Rcpp', 'devtools', 'roxygen2', 'testthat', 'rmarkdown', 'knitr', 'optparse')"
+ARG R_BUILD="library(devtools); install_deps(dependencies=TRUE, upgrade=TRUE); document(); install(build_vignettes=TRUE)"
+RUN Rscript -e "install.packages(${R_DEPS})" \
+  && Rscript -e "setwd('/sumrep'); ${R_BUILD}"

@@ -53,17 +53,23 @@ For example, the `getDistanceMatrix` function returns the pairwise distance matr
 This object may be of auxiliary interest to the user but is not directly useful for plotting or comparison functions within the package.
 
 ### Retrieving distributions
+
 Functions for retrieving distributions are generally of the form `getXDistribution`.
 For example, the pairwise distance distribution of `dat` can be obtained via
+
 ```
+library(sumrep)
 pairwise_distances <- getPairwiseDistanceDistribution(dat_a)
 ```
+
 This returns a vector of pairwise distances rather than a matrix, which is more practical for plotting and comparison.
 This function will by default compute this distribution on the `sequence` column.
 To specify a different, column, say the `junction` column, if present, you would instead want:
+
 ```
 junction_pairwise_distances <- getPairwiseDistanceDistribution(dat_a, column="junction")
 ```
+
 A complete table of available summary functions can be found in the [extended documentation](extended_documentation.md).
 
 ### Comparing distributions
