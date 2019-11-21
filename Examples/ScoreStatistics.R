@@ -27,7 +27,7 @@ scoreStatistics <- function(dats_1,
                 mean
             c_score <- log(score_2/score_1)
             comparison_name <- c_type %>%
-                gsub(pattern="compare", replace="get") %>%
+                gsub(pattern="compare", replacement="get") %>%
                 ifelse(str_sub(., -1) == "s", 
                        substr(., start=1, stop=nchar(.) - 1), 
                        .
@@ -48,7 +48,7 @@ scoreStatistics <- function(dats_1,
 
 shortenName <- function(string) {
     shortened_name <- string %>% 
-        gsub(pattern="compare", replace="get") %>%
+        gsub(pattern="compare", replacement="get") %>%
         getNameFromFunctionString
     return(shortened_name)
 }

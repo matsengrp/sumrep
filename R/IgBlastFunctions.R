@@ -1,7 +1,3 @@
-require(data.table)
-require(dplyr)
-require(shazam)
-
 #' Get IgBLAST annotations from an input fasta file
 #'
 #' The routine changes directories to the provided igblast directory,
@@ -27,6 +23,8 @@ require(shazam)
 #'   Setting nproc=alakazam::cpuCount() attempts to automatically detect the
 #'   number of available cores -- see the alakazam documtation for details.
 #' @return A \code{list} of a \code{data.table} containing the annotations.
+#' 
+#' @export
 getIgBlastAnnotations <- function(input_filename,
                                   output_filename="igblast_out.tsv",
                                   organism="human",
@@ -168,7 +166,7 @@ getIgBlastAnnotations <- function(input_filename,
             cluster_filename <-  file.path(
                                           gsub(changeo_filename,
                                           pattern=".tsv",
-                                          replace="_clustered.tsv"
+                                          replacement="_clustered.tsv"
                                          )
                                  )
             cluster_command <- paste(file.path(changeo_dir,

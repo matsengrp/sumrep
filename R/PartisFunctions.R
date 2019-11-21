@@ -1,5 +1,3 @@
-require(stringr)
-
 #' Call partis
 #'
 #' \code{callPartis} calls partis from within the sumrep package.
@@ -19,6 +17,8 @@ require(stringr)
 #'   or "igl", "igk", or "igh" for BCRs
 #' @param cleanup Flag to delete all interim files created by partis
 #' @return A data.table object containing the output of the partis call
+#' 
+#' @export
 callPartis <- function(action, 
                        input_filename, 
                        output_filename, 
@@ -82,7 +82,7 @@ callPartis <- function(action,
         ifelse(action == "partition",
                gsub(., 
                     pattern='.csv',
-                    replace='-cluster-annotations.csv'
+                    replacement='-cluster-annotations.csv'
                    ),
                .
               )
@@ -118,6 +118,8 @@ appendQuerySequencesToPartisAnnotationsFile <- function(input_filename,
 #' @param filename YAML file from partis output folder corresponding to a gene
 #' @return Object containing the gene's overall mutation rate as well as a 
 #'   vector of positional mutation rates
+#'   
+#' @export
 getMutationInfo <- function(filename) {
     getSubstitutionRate <- function(state) {
         position <- state[["name"]] %>%
@@ -170,6 +172,8 @@ getMutationInfo <- function(filename) {
 #' created by partis
 #'
 #' @inheritParams callPartis
+#' 
+#' @export
 preventOutputOverwrite <- function(output_path, cleanup) {
     if(length(list.files("_output")) > 0 && 
        output_path == "_output" && cleanup) {
@@ -182,13 +186,15 @@ preventOutputOverwrite <- function(output_path, cleanup) {
 #' Do extended partis processing of annotations
 #'
 #' @inheritParams getPartisAnnotations
+#' 
+#' @export
 getFullPartisAnnotation <- function(output_path, 
                                     output_file, 
                                     partis_path
                                    ) {
     extended_output_filename <- "new_output.csv"
     extended_output_filepath <- file.path(output_path, extended_output_filename)
-    script_file <- system.file("process_output.py", package="sumrep")
+    script_file <- system.file("exec", "process_output.py", package="sumrep")
     script_command <-  paste("python", script_file, output_file, 
                              extended_output_filepath, 
                              partis_path %>% 
@@ -220,9 +226,9 @@ processPartisMatureSequences <- function(dat) {
     return(dat)
 }
 
-#' Here we use stringr::str_split to get empty strings after a ':', if necessary.
-#' E.g., with strsplit, '::' would yield c('', ''), whereas
-#' stringr::str_split would yield c('', '', '')
+# Here we use stringr::str_split to get empty strings after a ':', if necessary.
+# E.g., with strsplit, '::' would yield c('', ''), whereas
+# stringr::str_split would yield c('', '', '')
 collapseColonedList <- function(coloned_list,
                                 type_conversion=as.numeric
                                ) {
@@ -297,6 +303,8 @@ collapseClones <- function(partition_dataset) {
 #' @param do_full_annotation Does further processing than the default by partis
 #' @param collapse_clones Convert a row of colon-separated clonal families to
 #'   separate rows for each member
+#'   
+#' @export
 readPartisAnnotations <- function(output_path,
                                   annotation_filename,
                                   partis_path=Sys.getenv("PARTIS_PATH"),
@@ -311,8 +319,7 @@ readPartisAnnotations <- function(output_path,
                                                   annotation_file, 
                                                   partis_path
                                                  )
-        annotated_data[["junction"]] <- annotated_data %>% 
-            getCDR3s
+        # annotated_data[["junction"]] <- annotated_data %>% getCDR3s
     } else {
         annotated_data <- annotation_file %>%
             data.table::fread()
@@ -324,7 +331,7 @@ readPartisAnnotations <- function(output_path,
 
         collapsed_filename <- annotation_filename %>%
             gsub(pattern='.csv',
-                 replace='-collapsed.csv')
+                 replacement='-collapsed.csv')
         collapsed_file=file.path(output_path,
                                  collapsed_filename)
         write.csv(annotated_data,
@@ -343,8 +350,8 @@ readPartisAnnotations <- function(output_path,
 
     mutation_rates <- {}
     for(yaml_file in yaml_files) {
-        allele <- yaml_file %>% gsub(pattern=".yaml", replace='') %>%
-            gsub(pattern="_star_", replace="\\*")
+        allele <- yaml_file %>% gsub(pattern=".yaml", replacement='') %>%
+            gsub(pattern="_star_", replacement="\\*")
         mutation_rates[[allele]] <- hmm_yaml_filepath %>% 
             file.path(yaml_file) %>% 
             getMutationInfo
@@ -426,6 +433,8 @@ checkForValidLocus <- function(locus) {
 #'
 #' @inheritParams callPartis
 #' @return A data.table object containing the output of the partis annotate call
+#' 
+#' @export
 getPartisAnnotations <- function(input_filename, 
                                  output_filename="partis_output.csv", 
                                  partis_path=Sys.getenv("PARTIS_PATH"), 
@@ -461,7 +470,7 @@ getPartisAnnotations <- function(input_filename,
                                              )
         annotation_filename <- output_filename %>%
             gsub(pattern='.csv',
-                 replace='-cluster-annotations.csv')
+                 replacement='-cluster-annotations.csv')
     } else {
         output_file <- file.path(output_path, output_filename)
         annotated_data <- callPartis(action="annotate", 
@@ -496,6 +505,8 @@ getPartisAnnotations <- function(input_filename,
 #' @inheritParams callPartis
 #' @return A data.table object containing the output of the partis partition 
 #'   call
+#'   
+#' @export
 getPartisPartitions <- function(input_filename, 
                                 output_filename="partition.csv", 
                                 partis_path=Sys.getenv("PARTIS_PATH"), 
@@ -545,6 +556,8 @@ getPartisPartitions <- function(input_filename,
 #' @param subsample_to_unique_clones If TRUE, one member of each clonal family
 #'    is subsampled, and the function returns the resultant dataset of unique
 #'    clones
+#'    
+#' @export
 getPartisSimulation <- function(parameter_dir,
                                 partis_path=Sys.getenv("PARTIS_PATH"),
                                 output_file=file.path(parameter_dir,
@@ -614,8 +627,7 @@ getPartisSimulation <- function(parameter_dir,
                                                    output_path=".",
                                                    partis_path
                                                   )
-        sim_annotations[["junction"]] <- sim_annotations %>% 
-            getCDR3s
+        # sim_annotations[["junction"]] <- sim_annotations %>% getCDR3s
     }
 
     if(cleanup) {
@@ -647,12 +659,14 @@ getPartisSimulation <- function(parameter_dir,
 #'   saving as a fasta file)
 #'
 #' @param sequences List or vector of query BCR sequences for annotation
+#' 
+#' @export
 getPartisAnnotationsFromStrings <- function(sequences, 
                                             ...
                                            ) {
     annotations <- tryCatch({
         filename <- Sys.time() %>%
-            gsub(pattern=' |:|-', replace='') %>%
+            gsub(pattern=' |:|-', replacement='') %>%
             paste0('tmp', ., '.fasta')
         write.fasta(sequences, names="tmp", file.out=filename)
         getPartisAnnotations(filename, 

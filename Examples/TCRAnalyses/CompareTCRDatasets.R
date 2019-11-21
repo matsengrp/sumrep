@@ -84,7 +84,7 @@ for(dats in data_to_compare) {
             cbind(Type1=dats[1],
                   Type2=dats[2])
         saveRDS(comparison, 
-                file.path("data/Comparisons", 
+                file.path("data-raw/Comparisons", 
                           comparison_name %>% paste0('.rds')))
     }
 }
