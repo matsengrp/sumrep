@@ -15,6 +15,7 @@ BuildVignettes: true
 VignetteBuilder: knitr
 Encoding: UTF-8
 SystemRequirements: Python 2.7
+biocViews:
 Depends: 
     R (>= 3.3.3),
     ggplot2 (>= 3.2.0)
