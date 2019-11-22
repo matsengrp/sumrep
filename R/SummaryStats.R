@@ -532,13 +532,15 @@ getSpotCount <- function(dna_sequences,
 #' @export
 getHotspotCount <- function(dat,
                             column="sequence_alignment",
-                            hotspots=c("WRC", "WA")
+                            hotspots=c("WRC", "WA"),
+                            ...
                            ) {
     return(getSpotCount(spots=hotspots,
                         dna_sequences=getColumnSequences(dat, 
                                                          column,
                                                          drop_gaps=FALSE
-                                                        )
+                                                        ),
+                        ...
                        )
     )
 }
@@ -567,7 +569,8 @@ getHotspotCountDistribution <- function(dat,
     } else {
         counts <- dat %>% 
             getHotspotCount(column=column,
-                            hotspots=hotspots
+                            hotspots=hotspots,
+                            ...
                            )
     }
 
@@ -604,13 +607,17 @@ plotHotspotCountDistribution <- function(dat_list,
 #' @export
 getColdspotCount <- function(dat,
                              column="sequence_alignment", 
-                             coldspots="SYC"
+                             coldspots="SYC",
+                             ...
                             ) {
     return(getSpotCount(dna_sequences=getColumnSequences(dat, 
                                                          column,
                                                          drop_gaps=FALSE
                                                         ), 
-                        spots=coldspots))
+                        spots=coldspots,
+                        ...
+                       )
+    )
 }
 
 #' Get full or approximate distribution of coldspot counts for a column of
@@ -637,7 +644,8 @@ getColdspotCountDistribution <- function(dat,
     } else {
         counts <- dat %>% 
             getColdspotCount(column=column,
-                             coldspots=coldspots
+                             coldspots=coldspots,
+                             ...
                             )
     }
 
