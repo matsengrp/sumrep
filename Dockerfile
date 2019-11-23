@@ -112,6 +112,6 @@ RUN mkdir -p /sumrep/Examples/flu \
 
 # Install sumrep
 ARG R_DEPS="c('Rcpp', 'devtools', 'roxygen2', 'testthat', 'rmarkdown', 'knitr', 'optparse', 'BiocManager')"
-ARG R_BUILD="library(devtools); install_deps(dependencies=TRUE, upgrade=TRUE); document(); install(build_vignettes=TRUE)"
-RUN Rscript -e "install.packages(${R_DEPS}, repos='http://cran.rstudio.com')"
-RUN Rscript -e "setwd('/sumrep'); ${R_BUILD}"
+RUN Rscript -e "install.packages(${R_DEPS}, repos='http://cran.rstudio.com')" \
+  && Rscript -e "setwd('/sumrep'); library(devtools); install_deps(dependencies=TRUE, upgrade=TRUE)" \
+  && Rscript -e "setwd('/sumrep'); library(devtools); document(); install(build_vignettes=TRUE)"
