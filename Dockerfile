@@ -95,27 +95,23 @@ WORKDIR /partis
 RUN ./bin/build.sh
 CMD ./test/test.py --quick
 ENV PARTIS_PATH="/partis/bin/partis"
+WORKDIR ..
 
 RUN unset R_LIBS_SITE
-RUN R --vanilla --slave -e 'install.packages(c("TreeSim", "TreeSimGM"), repos="http://cran.rstudio.com/")'
+RUN Rscript -e 'install.packages(c("TreeSim", "TreeSimGM"), repos="http://cran.rstudio.com")'
 
-# Next let's install sumrep dependencies
-RUN R --vanilla --slave -e \
-  'install.packages(c("alakazam", "ape", "BiocManager", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "Peptides", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"), repos = "http://cran.us.r-project.org")' && \
-  R --vanilla --slave -e 'BiocManager::install("Biostrings")'
-
-WORKDIR ..
-RUN git clone https://github.com/matsengrp/sumrep.git
-COPY . /sumrep
+# Download sumrep
+RUN git clone --single-branch --branch packagify-again https://github.com/matsengrp/sumrep.git /sumrep
 ENV SUMREP_PATH="/sumrep"
 
 # Download partis annotations for MDS example
-RUN mkdir /sumrep/Examples/flu
-RUN wget https://zenodo.org/record/3385364/files/flu_rds.tar
-RUN tar -C /sumrep/Examples/flu -xvf flu_rds.tar
+RUN mkdir -p /sumrep/Examples/flu \
+  && wget --no-check-certificate https://zenodo.org/record/3385364/files/flu_rds.tar \
+  && tar -C /sumrep/Examples/flu -xvf flu_rds.tar \
+  && rm flu_rds.tar
 
 # Install sumrep
-ARG R_DEPS="c('Rcpp', 'devtools', 'roxygen2', 'testthat', 'rmarkdown', 'knitr', 'optparse')"
+ARG R_DEPS="c('Rcpp', 'devtools', 'roxygen2', 'testthat', 'rmarkdown', 'knitr', 'optparse', 'BiocManager')"
 ARG R_BUILD="library(devtools); install_deps(dependencies=TRUE, upgrade=TRUE); document(); install(build_vignettes=TRUE)"
-RUN Rscript -e "install.packages(${R_DEPS})" \
-  && Rscript -e "setwd('/sumrep'); ${R_BUILD}"
+RUN Rscript -e "install.packages(${R_DEPS}, repos='http://cran.rstudio.com')"
+RUN Rscript -e "setwd('/sumrep'); ${R_BUILD}"
