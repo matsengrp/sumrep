@@ -2,6 +2,8 @@
 #'
 #' @param l List or vector of strings
 #' @return The given list or vector with all empty strings removed
+#' 
+#' @export
 removeEmptyStrings <- function(l) {
     return(l[l != ""])
 }
@@ -14,10 +16,12 @@ maskEmptyStringWithNA <- function(s) {
 #' 
 #' @param List or vector of either strings or char vectors of DNA sequences
 #' @return Vector of strings of DNA sequences
+#' 
+#' @export
 standardizeList <- function(l) {
     new_list <- l %>% 
         sapply(toString) %>%
-        gsub(pattern=", *", replace="") %>%
+        gsub(pattern=", *", replacement="") %>%
         sapply(paste, collapse='') %>% 
         unname
     return(new_list)
@@ -27,6 +31,8 @@ standardizeList <- function(l) {
 #' 
 #' @param filename Name of fasta file including the sequences
 #' @return A vector of DNA sequence strings
+#' 
+#' @export
 getSequenceListFromFasta <- function(filename) {
     sequences <- filename %>% 
         seqinr::read.fasta() %>% 
@@ -57,6 +63,8 @@ filterStringsForAAFunctions <- function(sequence_list) {
 #' 
 #' @param sequence String of DNA bases
 #' @return String of single-letter amino acid codes
+#' 
+#' @export
 convertNucleobasesToAminoAcidsBySequence <- function(sequence) {
     aa <- ifelse(!is.na(sequence),
                  sequence %>%
@@ -75,6 +83,8 @@ convertNucleobasesToAminoAcidsBySequence <- function(sequence) {
 #'
 #' @param sequence_list Vector of string of DNA bases
 #' @return Vector of strings of single-letter amino acid codes
+#' 
+#' @export
 convertNucleobasesToAminoAcids <- function(sequence_list) {
     aa_sequences <- sequence_list %>% 
         filterStringsForAAFunctions %>%
@@ -87,6 +97,8 @@ convertNucleobasesToAminoAcids <- function(sequence_list) {
 #' @param aa_sequence String of single-letter amino acid codons
 #' @return A boolean stating whether any unrecognized AA codons are present 
 #'   in \code{aa_sequence}
+#'   
+#' @export
 hasUnrecognizedAminoAcids <- function(aa_sequence) {
     return(grepl("X", aa_sequence))  
 }
@@ -96,6 +108,8 @@ hasUnrecognizedAminoAcids <- function(aa_sequence) {
 #' @param aa_sequence String of single-letter amino acid codes
 #' @return A boolean stating whether any stop codons are present 
 #'   in \code{aa_sequence}
+#'   
+#' @export
 hasStopCodon <- function(aa_sequence) {
     return(grepl("\\*", aa_sequence))
 }
@@ -105,6 +119,8 @@ hasStopCodon <- function(aa_sequence) {
 #'
 #' @param aa_sequences Vector or list of amino acid sequences
 #' @return Filtered list with "bad" sequences removed
+#' 
+#' @export
 filterAminoAcidSequences <- function(aa_sequences) {
     filtered_seqs <- aa_sequences %>%
         sapply(function(x) {
@@ -121,6 +137,8 @@ filterAminoAcidSequences <- function(aa_sequences) {
 #'
 #' @param dictionary String that represents a dictionary in Python's syntax
 #' @return An R list containing the same information as \code{dictionary}
+#' 
+#' @export
 parsePythonDictionary <- function(dictionary) {
     parsed <- dictionary %>% gsub(pattern="'", replacement='"') %>% 
         gsub(pattern="\\(", replacement="\\[") %>% 
@@ -146,6 +164,8 @@ removeSequencesWithDifferentGermlineAndSequenceLengths <-
 #'   .rds files
 #' 
 #' @param data_dir The directory which contains .rds files to be loaded
+#' 
+#' @export
 loadNewDatasets <- function(data_dir,
                             pattern=""
                            ) {
@@ -153,8 +173,8 @@ loadNewDatasets <- function(data_dir,
                                 pattern=pattern
                                )) {
         var_name <- data_file %>%
-            gsub(pattern="-", replace="_") %>%
-            gsub(pattern=".rds", replace="")
+            gsub(pattern="-", replacement="_") %>%
+            gsub(pattern=".rds", replacement="")
         if(!exists(var_name)) {
             assign(var_name, 
                 readRDS(file.path(data_dir, data_file)),
@@ -165,6 +185,7 @@ loadNewDatasets <- function(data_dir,
 
 #' Handy automatic dimension retrieval given number of grid cells 
 #'
+#' @export
 getGridDims <- function(n) {
     cols <- n %>% sqrt %>% floor 
     rows <- ceiling(n/cols) %>% floor 
@@ -175,6 +196,8 @@ getGridDims <- function(n) {
 #' @param plotlist List of plots created with ggplot
 #' @param cols Number of columns for the figure
 #' @param rows Number of rows for the figure
+#' 
+#' @export
 multiplot <- function(plotlist=NULL, 
                       cols, 
                       rows, 
@@ -182,7 +205,6 @@ multiplot <- function(plotlist=NULL,
                       tall_plot=FALSE, 
                       ...
                      ) {
-    library(grid)
     plots <- c(list(...), plotlist)
     numPlots = length(plots)
 
@@ -223,6 +245,8 @@ multiplot <- function(plotlist=NULL,
 #'
 #' @param dat A \code{data.table} corresponding to repertoire annotations 
 #' @param column A string naming the expected column of \code{dat}
+#' 
+#' @export
 checkColumn <- function(dat, column) {
     column_check <- alakazam::checkColumns(dat, column)
     if(column_check != TRUE) {
@@ -236,6 +260,8 @@ checkColumn <- function(dat, column) {
 #' @param dat A \code{data.table} corresponding to repertoire annotations 
 #' @param column A string naming the expected column of \code{dat}
 #' @return A vector of values given by \code{dat[[column]]}, if available
+#' 
+#' @export
 getColumnValues <- function(dat, column) {
     checkColumn(dat, column)
     column_values <- dat[[column]]
@@ -257,6 +283,8 @@ getColumnValues <- function(dat, column) {
 #'   out-of-frame V or J segment.
 #' @return A vector of filtered strings from by \code{dat[[column]]}, 
 #'   if available
+#'   
+#' @export
 getColumnSequences <- function(dat,
                                column,
                                drop_gaps,

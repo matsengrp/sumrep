@@ -80,26 +80,38 @@ test_that("test.getColdspotCountDistribution", {
     seq_b <- c("GCC", "AAA", "AAAA")
     seq_c <- c("AAA", "CTC")
     seq_d <- "SYCSYC"
-    expect_equal(0, getColdspotCountDistribution(data.table(junction=seq_a,
+    expect_equal(0, 
+                 getColdspotCountDistribution(data.table(junction=seq_a,
                                                             stop_codon=F,
                                                             vj_in_frame=T
                                                            ), 
-                                                 column="junction"))
-    expect_equal(c(1, 0, 0), getColdspotCountDistribution(data.table(junction=seq_b,
-                                                                     stop_codon=F,
-                                                                     vj_in_frame=T
-                                                                    ), 
-                                                 column="junction"))
-    expect_equal(c(0, 1), getColdspotCountDistribution(data.table(junction=seq_c,
-                                                                  stop_codon=F,
-                                                                  vj_in_frame=T
-                                                                 ), 
-                                                 column="junction"))
-    expect_equal(4, getColdspotCountDistribution(data.table(junction=seq_d,
-                                                            stop_codon=F,
-                                                            vj_in_frame=T
-                                                           ), 
-                                                 column="junction"))
+                                                 column="junction") %>% unname)
+    expect_equal(c(1/3, 0, 0), 
+                 getColdspotCountDistribution(data.table(junction=seq_b,
+                                                          stop_codon=F,
+                                                          vj_in_frame=T
+                                                        ), 
+                                              column="junction") %>% unname)
+    expect_equal(c(1, 0, 0), 
+                 getColdspotCountDistribution(data.table(junction=seq_b,
+                                                          stop_codon=F,
+                                                          vj_in_frame=T
+                                                        ), 
+                                              column="junction",
+                                              average_over_sequence_length=FALSE
+                                             ) %>% unname)
+    expect_equal(c(0, 1/3), 
+                 getColdspotCountDistribution(data.table(junction=seq_c,
+                                                          stop_codon=F,
+                                                          vj_in_frame=T
+                                                        ), 
+                                              column="junction") %>% unname)
+    expect_equal(4/6, 
+                 getColdspotCountDistribution(data.table(junction=seq_d,
+                                                          stop_codon=F,
+                                                          vj_in_frame=T
+                                                        ), 
+                                               column="junction") %>% unname)
 })
 
 test_that("test.getDistanceMatrix", {
@@ -198,22 +210,29 @@ test_that("test.getHotspotCountDistribution", {
                                                            stop_codon=F,
                                                            vj_in_frame=T
                                                           ), 
-                                                column="junction"))
+                                                column="junction") %>% unname)
+    expect_equal(c(2/3, 0), getHotspotCountDistribution(data.table(junction=seq_b,
+                                                                 stop_codon=F,
+                                                                 vj_in_frame=T
+                                                                ), 
+                                                column="junction") %>% unname)
     expect_equal(c(2, 0), getHotspotCountDistribution(data.table(junction=seq_b,
                                                                  stop_codon=F,
                                                                  vj_in_frame=T
                                                                 ), 
-                                                column="junction"))
-    expect_equal(3, getHotspotCountDistribution(data.table(junction=seq_c,
+                                                column="junction",
+                                                average_over_sequence_length=FALSE
+                                               ) %>% unname)
+    expect_equal(3/4, getHotspotCountDistribution(data.table(junction=seq_c,
                                                            stop_codon=F,
                                                            vj_in_frame=T
                                                           ), 
-                                                column="junction"))
-    expect_equal(c(2, 2, 1), getHotspotCountDistribution(data.table(junction=seq_d,
+                                                column="junction") %>% unname)
+    expect_equal(c(2/3, 2/3, 1/3), getHotspotCountDistribution(data.table(junction=seq_d,
                                                                     stop_codon=F,
                                                                     vj_in_frame=T
                                                                    ), 
-                                                column="junction"))
+                                                column="junction") %>% unname)
 })
 
 test_that("test.getNearestNeighborDistances", {

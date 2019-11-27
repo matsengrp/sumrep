@@ -2,15 +2,28 @@
 ## Usage
 
 ### Data structures
-Most functions to retrieve and compare distributions between repertoires expect `data.table` objects as input.
-For example, the `data` folder contains an annotations dataset (which was obtained via `getPartisAnnotations("data/test_data.fa") %$% annotations %>% fwrite("data/test_annotations.csv")`.
-We can read this in as a `data.table` as follows:
+
+Most functions to retrieve and compare distributions between repertoires expect `data.table` 
+objects as input. For example, the package contains an annotations dataset in the `extdata` 
+folder, which can be read in as a `data.table` as follows:
+
 ```
-dat_a <- data.table::fread("data/test_annotations.csv")
+f <- system.file("extdata/test_annotations.csv", package="sumrep")
+dat_a <- data.table::fread(f)
 ```
 
-While `sumrep` is able to handle rather general annotations datasets, things work best when the annotations dataset is a `data.table` object with specific defaults chosen by members of the [AIRR software working group](http://airr.irmacs.sfu.ca/node/35).
-In particular, by default, `sumrep` adheres to the [AIRR standard](http://docs.airr-community.org/en/latest/datarep/rearrangements.html#fields), with specific default column names and definitions laid out in the [extended documention](extended_documentation.md).
+This file was generate via the following commands:
+
+```
+library(magrittr)
+f <- system.file("extdata/test_annotations.csv", package="sumrep")
+getPartisAnnotations(f, locus="igh") %$% 
+    annotations %>% 
+    fwrite("test_annotations.csv")
+```
+
+While `sumrep` is able to handle rather general annotations datasets, things work best when the annotations dataset is a `data.table` object with specific defaults chosen by members of the [AIRR Community Software Working Group](http://airr.irmacs.sfu.ca/node/35).
+In particular, by default, `sumrep` adheres to the [AIRR Rearrangement standard](http://docs.airr-community.org/en/latest/datarep/rearrangements.html#fields), with specific default column names and definitions laid out in the [extended documention](extended_documentation.md).
 Columns can be manually set via the `column` argument to any function which acts on a single column; functions acting on more than one column have similar arguments for each column involved.
 An example of this is shown [below](#retrieving-distributions).
 
@@ -40,25 +53,33 @@ For example, the `getDistanceMatrix` function returns the pairwise distance matr
 This object may be of auxiliary interest to the user but is not directly useful for plotting or comparison functions within the package.
 
 ### Retrieving distributions
+
 Functions for retrieving distributions are generally of the form `getXDistribution`.
 For example, the pairwise distance distribution of `dat` can be obtained via
+
 ```
+library(sumrep)
 pairwise_distances <- getPairwiseDistanceDistribution(dat_a)
 ```
+
 This returns a vector of pairwise distances rather than a matrix, which is more practical for plotting and comparison.
 This function will by default compute this distribution on the `sequence` column.
 To specify a different, column, say the `junction` column, if present, you would instead want:
+
 ```
 junction_pairwise_distances <- getPairwiseDistanceDistribution(dat_a, column="junction")
 ```
+
 A complete table of available summary functions can be found in the [extended documentation](extended_documentation.md).
 
 ### Comparing distributions
 Functions to compare distributions of two annotations datasets, say `dat_a` and `dat_b`, are in general of the form `compareXDistributions`, and expect two `data.tables` as input.
-Let's read in another dataset, this time a post-processed annotations dataset in a previously-saved RDS file:
+Let's read in another dataset, this time a post-processed annotations dataset is provided in the 
+`sumrep` package:
 
 ```
-dat_b <- readRDS("data/test_dat_boot.rds")
+data(test_dat_boot, package="sumrep")
+dat_b <- test_dat_boot
 ```
 
 Then, to compare the pairwise distance distributions of `dat_a` and `dat_b`, we simply run

@@ -1,11 +1,61 @@
 Package: sumrep
-Title: Summary statistics for B cell receptor (BCR) repertoires
+Type: Package
 Version: 0.0.0.9000
-Authors@R: person("Branden", "Olson", email = "brando6@uw.edu", role = c("aut", "cre"))
+Date: 2019-11-19
+Authors@R: c(person("Branden", "Olson", email="brando6@uw.edu", role=c("aut", "cre")),
+             person("Frederick", "Matsen", email="ematsen@gmail.com", role=c("ctb")),
+             person("Jason", "Vander Heiden", email="vanderheiden.jason@gene.com", role=c("ctb")))
+Title: Summary statistics for B cell receptor (BCR) repertoires
 Description: What the package does (one paragraph).
-Depends: R (>= 3.3.3)
-License: What license is it under?
-Encoding: UTF-8
+URL: https://github.com/matsengrp/sumrep
+BugReports: https://github.com/matsengrp/sumrep/issues
+License: TBD
 LazyData: true
-Suggests: testthat
-RoxygenNote: 6.1.0
+BuildVignettes: true
+VignetteBuilder: knitr
+Encoding: UTF-8
+SystemRequirements: Python 2.7
+biocViews:
+Depends: 
+    R (>= 3.3.3),
+    ggplot2 (>= 3.2.0)
+Imports:
+    alakazam (>= 0.3.0),
+    ape,
+    Biostrings,
+    CollessLike,
+    crayon,
+    data.table,
+    dplyr (>= 0.8.1),
+    entropy,
+    glmnet,
+    grid,
+    HDMD,
+    jsonlite,
+    magrittr,
+    methods,
+    Peptides,
+    plotmo,
+    seqinr,
+    shazam (>= 0.2.1),
+    stringdist,
+    stringr,
+    stats,
+    textmineR,
+    utils,
+    yaml
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+RoxygenNote: 6.1.1
+Collate: 
+    'Approximation.R'
+    'Compare.R'
+    'DivergenceFunctions.R'
+    'HelperFunctions.R'
+    'IGoRFunctions.R'
+    'IgBlastFunctions.R'
+    'PartisFunctions.R'
+    'SumRep.R'
+    'SummaryStats.R'

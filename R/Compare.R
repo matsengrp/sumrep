@@ -6,6 +6,8 @@
 #' @param dat data.table or data.frame object to be resampled
 #' @return A new, resampled data.table or data.frame object, depending on 
 #'   the type of \code{dat}
+#'   
+#' @export
 resampleData <- function(dat) {
     return( dat[sample(nrow(dat), replace=TRUE), ] )
 }
@@ -18,6 +20,8 @@ resampleData <- function(dat) {
 #'   See \code{compareRepertoires} for more details.
 #' @param fasta_file Fasta file from which to resample sequences
 #' @param output_filename Desired output_filename
+#' 
+#' @export
 bootstrapFasta <- function(fasta_file, output_filename) {
     if(output_filename %>% file.exists) {
         stop(paste("File", output_filename, "already exists.",
@@ -45,6 +49,8 @@ bootstrapFasta <- function(fasta_file, output_filename) {
 #' @param color Color for text. Green for usual comparison, yellow for 
 #'   bootstrap
 #' @param function_string Name of comparison function
+#' 
+#' @export
 getAndPrintComparison <- function(f, input_1, input_2, string_header, color,
                                   function_string) {
     pt <- proc.time()
@@ -92,6 +98,8 @@ getAndPrintComparison <- function(f, input_1, input_2, string_header, color,
 #'   \code{length(input_list) == 2}, do a usual comparison on the two 
 #'   repertoire inputs. If \code{length(input_list) == 3}, a comparison of
 #'   the first input with a bootstrapped version will be included.
+#'   
+#' @export
 doComparison <- function(function_string, input_list) {
     f <- eval(parse(text=function_string)) 
     input_1 <- input_list[[1]]
@@ -134,6 +142,8 @@ doComparison <- function(function_string, input_list) {
 #'   or "igl", "igk", or "igh" for BCRs
 #' @param do_full_comparison If TRUE, performs all available comparisons for
 #'   the given locus, including comparisons for the slower summaries
+#'   
+#' @export
 compareRepertoires <- function(repertoire_1, 
                                repertoire_2, 
                                rep_1_bootstrap=NULL,
