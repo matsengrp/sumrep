@@ -15,13 +15,12 @@ RUN conda create -n pygor python=3 pandas biopython matplotlib numpy scipy
 ENV PYGOR_PATH="/igor_1-3-0/pygor"
 WORKDIR ..
 
-
 # Install Change-O
 RUN apt-get install idle3 -y && \
-  pip3 install --no-cache-dir --upgrade pip && \
-  \
-  # delete cache and tmp files
-  apt-get clean && \
+  pip3 install --no-cache-dir --upgrade pip
+
+# Delete cache and tmp files
+RUN apt-get clean && \
   apt-get autoclean && \
   rm -rf /var/cache/* && \
   rm -rf /tmp/* && \
@@ -38,17 +37,17 @@ ENV IGBLAST_DIR="/ncbi-igblast-1.13.0"
 ENV PATH="${IGBLAST_DIR}/bin:${PATH}"
 
 # This builds the IMGT database for IgBlast + Change-O
-RUN wget https://bitbucket.org/kleinstein/immcantation/raw/41165c9b9cd10ddf8f27ec80fae799491d6db2db/scripts/fetch_igblastdb.sh
+RUN wget https://bitbucket.org/kleinstein/immcantation/raw/3.0.0/scripts/fetch_igblastdb.sh
 RUN mv fetch_igblastdb.sh /usr/local/bin
 
-RUN wget https://bitbucket.org/kleinstein/immcantation/raw/41165c9b9cd10ddf8f27ec80fae799491d6db2db/scripts/fetch_imgtdb.sh
+RUN wget https://bitbucket.org/kleinstein/immcantation/raw/3.0.0/scripts/fetch_imgtdb.sh
 RUN mv fetch_imgtdb.sh /usr/local/bin
 
-RUN wget https://bitbucket.org/kleinstein/immcantation/raw/41165c9b9cd10ddf8f27ec80fae799491d6db2db/scripts/clean_imgtdb.py
+RUN wget https://bitbucket.org/kleinstein/immcantation/raw/3.0.0/scripts/clean_imgtdb.py
 RUN mv clean_imgtdb.py /usr/local/bin
 RUN chmod +x /usr/local/bin/clean_imgtdb.py
 
-RUN wget https://bitbucket.org/kleinstein/immcantation/raw/41165c9b9cd10ddf8f27ec80fae799491d6db2db/scripts/imgt2igblast.sh
+RUN wget https://bitbucket.org/kleinstein/immcantation/raw/3.0.0/scripts/imgt2igblast.sh
 RUN mv imgt2igblast.sh /usr/local/bin
 
 RUN bash fetch_igblastdb.sh -o ~/share/igblast
@@ -94,27 +93,23 @@ COPY . /partis
 WORKDIR /partis
 RUN ./bin/build.sh
 ENV PARTIS_PATH="/partis/bin/partis"
+WORKDIR ..
 
 RUN unset R_LIBS_SITE
-RUN R --vanilla --slave -e 'install.packages(c("TreeSim", "TreeSimGM"), repos="http://cran.rstudio.com/")'
+RUN Rscript -e 'install.packages(c("TreeSim", "TreeSimGM"), repos="http://cran.rstudio.com")'
 
-# Next let's install sumrep dependencies
-RUN R --vanilla --slave -e \
-  'install.packages(c("alakazam", "ape", "BiocManager", "CollessLike", "data.table", "dplyr", "entropy", "HDMD", "jsonlite", "magrittr", "Peptides", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"), repos = "http://cran.us.r-project.org")' && \
-  R --vanilla --slave -e 'BiocManager::install("Biostrings")'
-
-WORKDIR ..
-RUN git clone https://github.com/matsengrp/sumrep.git
-COPY . /sumrep
+# Download sumrep
+RUN git clone --single-branch --branch master https://github.com/matsengrp/sumrep.git /sumrep
 ENV SUMREP_PATH="/sumrep"
 
 # Download partis annotations for MDS example
-RUN mkdir /sumrep/Examples/flu
-RUN wget https://zenodo.org/record/3385364/files/flu_rds.tar
-RUN tar -C /sumrep/Examples/flu -xvf flu_rds.tar
+RUN mkdir -p /sumrep/Examples/flu && \
+  wget --no-check-certificate https://zenodo.org/record/3385364/files/flu_rds.tar && \
+  tar -C /sumrep/Examples/flu -xvf flu_rds.tar && \
+  rm flu_rds.tar
 
 # Install sumrep
-ARG R_DEPS="c('Rcpp', 'devtools', 'roxygen2', 'testthat', 'rmarkdown', 'knitr', 'optparse')"
-ARG R_BUILD="library(devtools); install_deps(dependencies=TRUE, upgrade=TRUE); document(); install(build_vignettes=TRUE)"
-RUN Rscript -e "install.packages(${R_DEPS})" \
-  && Rscript -e "setwd('/sumrep'); ${R_BUILD}"
+ARG R_DEPS="c('Rcpp', 'devtools', 'roxygen2', 'testthat', 'rmarkdown', 'knitr', 'optparse', 'BiocManager')"
+RUN Rscript -e "install.packages(${R_DEPS}, repos='http://cran.rstudio.com')" && \
+  Rscript -e "setwd('/sumrep'); library(devtools); install_deps(dependencies=TRUE, upgrade=TRUE)" && \
+  Rscript -e "setwd('/sumrep'); library(devtools); document(); install(build_vignettes=TRUE)"

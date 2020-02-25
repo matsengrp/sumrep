@@ -14,5 +14,8 @@ Instructions for getting and using `sumrep` can be found via the following pages
   * [Extended documentation](docs/extended_documentation.md) - In-depth breakdown of data specifications and functionality
   * [FAQ](docs/faq.md) - Frequently asked questions about `sumrep`
 
+A paper describing `sumrep` can be found [here](https://www.frontiersin.org/articles/10.3389/fimmu.2019.02533/full).
+Please cite this publication if you use `sumrep` for your analysis.
+
 ##
 Please submit an issue if you encounter a problem not addressed above!
