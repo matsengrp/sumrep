@@ -19,7 +19,6 @@
 #' @importFrom  dplyr        last
 #' @importFrom  entropy      KL.empirical
 #' @importFrom  grid         grid.newpage grid.layout pushViewport viewport
-#' @importFrom  HDMD         FactorTransform
 #' @importFrom  jsonlite     fromJSON
 #' @importFrom  magrittr     %>% %$% extract
 #' @importFrom  Peptides     kideraFactors aIndex

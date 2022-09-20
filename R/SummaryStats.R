@@ -1,4 +1,5 @@
 #' @include PartisFunctions.R
+#' @include HDMD_FactorTransform.R
 NULL
 
 #' Determine the comparison method for stringdistmatrix 
@@ -1274,7 +1275,7 @@ getAtchleyFactorDistribution <- function(aa_sequences,
                                          factor_number
                                         ) {
     factor_list <- aa_sequences %>% 
-        HDMD::FactorTransform(Factor=factor_number) %>%
+        FactorTransform(Factor=factor_number) %>%
         unlist %>%
         unname
     return(factor_list)
