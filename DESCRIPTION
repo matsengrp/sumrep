@@ -30,7 +30,6 @@ Imports:
     entropy,
     glmnet,
     grid,
-    HDMD,
     jsonlite,
     magrittr,
     methods,
@@ -48,11 +47,12 @@ Suggests:
     knitr,
     rmarkdown,
     testthat
-RoxygenNote: 6.1.1
+RoxygenNote: 7.2.0
 Collate: 
     'Approximation.R'
     'Compare.R'
     'DivergenceFunctions.R'
+    'HDMD_FactorTransform.R'
     'HelperFunctions.R'
     'IGoRFunctions.R'
     'IgBlastFunctions.R'
