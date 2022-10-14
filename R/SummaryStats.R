@@ -2575,7 +2575,7 @@ getMarkovMatrix <- function(seq_list) {
             }
         }
     }
-    probs <- counts/sum(counts)
+    probs <- counts/rowSums(counts)
     return(probs)
 }
 
