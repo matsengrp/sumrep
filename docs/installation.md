@@ -4,15 +4,23 @@
 
 * The following `R` command will install almost all of the remaining `R` package dependencies:
   ```
-  install.packages(c("alakazam", "ape", "CollessLike", "data.table", "dplyr", "entropy", "jsonlite", "magrittr", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"))
+  install.packages(c("alakazam", "ape", "data.table", "dplyr", "entropy", "jsonlite", "magrittr", "Peptides", "RecordLinkage", "shazam", "seqinr", "stringdist", "stringr", "testthat", "textmineR", "yaml"))
   ```
+
+* CollessLike is no longer available on CRAN, but can be installed from GitHub:
+  ```
+  library(devtools)
+  devtools::install_github("https://github.com/cran/CollessLike")
+  ```
+  (try `http://` if `https://` URLs are not supported)
   
 * `Biostrings` needs to be installed in a special way:
-    ```
-    source("https://bioconductor.org/biocLite.R")
-    biocLite("Biostrings")
-    ```
-  (try `http://` if `https://` URLs are not supported)
+  ```
+  if (!require("BiocManager", quietly = TRUE))
+      install.packages("BiocManager")
+    
+  BiocManager::install("Biostrings")
+  ```
 
 * Once all of the above are installed, the following lines will load `sumrep` into your workspace:
   ```
